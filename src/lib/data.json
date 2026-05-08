@@ -1,0 +1,207 @@
+{
+  "brand": {
+    "name": "PAIRO",
+    "tagline": "PREMIUM SHEARLING JACKETS",
+    "description": "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets. Built for comfort, designed for style."
+  },
+  "navigation": {
+    "offers": [
+      "Sign up and get 20% off your first order!",
+      "Free Express Shipping on orders over $500",
+      "Limited Time: 15% off on our Winter Collection",
+      "New Arrivals: The Black Edition Shearling"
+    ],
+    "links": [
+      { "name": "Home", "href": "/" },
+      { "name": "Shop", "href": "/shop", "hasMegaMenu": true },
+      { "name": "All Products", "href": "/shop" },
+      { "name": "About Us", "href": "/about" },
+      { "name": "Contact Us", "href": "/contact" }
+    ]
+  },
+  "hero": {
+    "slides": [
+      {
+        "id": 1,
+        "title": "ELITE SHEARLING COLLECTION",
+        "subtitle": "Discover the pinnacle of winter luxury with our handcrafted shearling jackets, meticulously designed for the modern individual.",
+        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=2000",
+        "buttonText": "Explore Men's"
+      },
+      {
+        "id": 2,
+        "title": "TIMELESS FEMININE ELEGANCE",
+        "subtitle": "Experience unparalleled warmth and sophisticated silhouettes with our exclusive women's shearling outerwear.",
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=2000",
+        "buttonText": "Shop Women's"
+      },
+      {
+        "id": 3,
+        "title": "THE HERITAGE COAT SERIES",
+        "subtitle": "Classic longline designs that stand the test of time, crafted from the finest double-faced sheepskin.",
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=2000",
+        "buttonText": "View Coats"
+      }
+    ],
+    "stats": [
+      { "value": "50+", "label": "Handcrafted Styles" },
+      { "value": "100%", "label": "Genuine Sheepskin" },
+      { "value": "10k+", "label": "Satisfied Clients" }
+    ],
+    "brands": ["VOGUE", "GQ", "ESQUIRE", "BAZAAR", "ELLE"]
+  },
+  "categories": [
+    {
+      "name": "Men",
+      "slug": "men",
+      "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800",
+      "className": "col-span-1"
+    },
+    {
+      "name": "Women",
+      "slug": "women",
+      "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=800",
+      "className": "col-span-1"
+    },
+    {
+      "name": "Coats",
+      "slug": "coats",
+      "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=800",
+      "className": "col-span-1 lg:col-span-3"
+    }
+  ],
+  "products": {
+    "newArrivals": [
+      {
+        "id": 1,
+        "name": "Classic Aviator Shearling Jacket",
+        "category": "Men",
+        "price": 890,
+        "rating": 4.9,
+        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500",
+        "image2": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 2,
+        "name": "Women's Oversized Biker Shearling",
+        "category": "Women",
+        "price": 750,
+        "oldPrice": 850,
+        "rating": 4.8,
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
+        "image2": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 3,
+        "name": "Longline Shearling Overcoat",
+        "category": "Coats",
+        "price": 1200,
+        "rating": 5.0,
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
+        "image2": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 4,
+        "name": "Suede B3 Bomber Jacket",
+        "category": "Men",
+        "price": 640,
+        "oldPrice": 720,
+        "rating": 4.7,
+        "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500"
+      }
+    ],
+    "topSelling": [
+      {
+        "id": 5,
+        "name": "Elite Leather Trench Coat",
+        "category": "Coats",
+        "price": 1500,
+        "oldPrice": 1800,
+        "rating": 5.0,
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 6,
+        "name": "Black Diamond Shearling",
+        "category": "Men",
+        "price": 980,
+        "rating": 4.9,
+        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 7,
+        "name": "Double-Faced Sheepskin Jacket",
+        "category": "Women",
+        "price": 820,
+        "rating": 4.6,
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+      },
+      {
+        "id": 8,
+        "name": "Vintage Shearling Vest",
+        "category": "Coats",
+        "price": 450,
+        "rating": 4.4,
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500"
+      }
+    ]
+  },
+  "productDetails": {
+    "colors": ["#1A1A1A", "#4A3B2F", "#D2B48C"],
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "commonDescription": "Our premium shearling jackets are handcrafted using the finest ethically sourced sheepskin. Designed to provide maximum warmth in sub-zero temperatures while maintaining a sophisticated, high-fashion silhouette."
+  },
+  "filters": {
+    "categories": ["Men", "Women", "Coats"],
+    "priceRange": { "min": 200, "max": 2000 },
+    "colors": ["Black", "Brown", "Tan", "Camel", "Navy"],
+    "sizes": ["S", "M", "L", "XL", "XXL"],
+    "styles": ["Aviator", "Biker", "Bomber", "Longline"]
+  },
+  "testimonials": {
+    "title": "WHAT OUR CLIENTS SAY",
+    "reviews": [
+      {
+        "name": "Michael R.",
+        "verified": true,
+        "rating": 5,
+        "text": "The warmth of this shearling is unmatched. I've worn it in -10°C weather and felt perfectly comfortable. The craftsmanship is world-class."
+      },
+      {
+        "name": "Elena S.",
+        "verified": true,
+        "rating": 5,
+        "text": "Finally found a shearling jacket that doesn't feel bulky. The cut is so elegant, and the leather quality is buttery soft. Worth every penny."
+      },
+      {
+        "name": "David L.",
+        "verified": true,
+        "rating": 5,
+        "text": "Pairo jackets are a statement piece. Everywhere I go, I get compliments. Fast shipping and premium packaging too."
+      }
+    ]
+  },
+  "footer": {
+    "newsletterTitle": "JOIN THE ELITE LIST FOR EXCLUSIVE PREVIEWS",
+    "sections": [
+      {
+        "title": "COMPANY",
+        "links": [
+          { "name": "Our Heritage", "href": "/about" },
+          { "name": "Craftsmanship", "href": "/craft" },
+          { "name": "Stores", "href": "/stores" },
+          { "name": "Careers", "href": "/careers" }
+        ]
+      },
+      {
+        "title": "ASSISTANCE",
+        "links": [
+          { "name": "Size Guide", "href": "/size-guide" },
+          { "name": "Care Instructions", "href": "/care" },
+          { "name": "Shipping", "href": "/shipping" },
+          { "name": "Returns", "href": "/returns" }
+        ]
+      }
+    ]
+  }
+}
