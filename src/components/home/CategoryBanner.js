@@ -5,12 +5,22 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import siteData from "@/lib/data.json";
+import { useSiteData } from "@/context/SiteContext";
 
 export default function CategoryBanner() {
-  const { categories } = siteData;
-  const displayCategories = categories.items.slice(0, 3);
+  const siteData = useSiteData();
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  // Fallback if siteData or categories is missing
+  const categories = siteData?.categories || { 
+    title: "Our Collections", 
+    label: "Pairo Studio", 
+    items: [], 
+    exploreSingle: "Explore", 
+    exploreFull: "Explore Full" 
+  };
+  
+  const displayCategories = categories.items?.slice(0, 3) || [];
 
   // Bento Spans [1 : 2 : 1]
   const layoutSpans = [
@@ -19,87 +29,77 @@ export default function CategoryBanner() {
     "lg:col-span-1"
   ];
 
+  if (displayCategories.length === 0) return null;
+
   return (
-    <section className="py-12 md:py-16">
-      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
-        {/* Header - Aligned to Site Style */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-12 gap-4">
-          <div className="space-y-2">
-             <div className="flex items-center gap-2">
-                <div className="w-1 h-1 rounded-full bg-black/20" />
-                <span className="text-[9px] font-bold tracking-[0.3em] text-black/30 uppercase">
-                  {categories.label}
+    <section className="py-12 md:py-20">
+      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="space-y-3">
+             <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-black/40" />
+                <span className="text-[10px] font-bold tracking-[0.4em] text-black/40 uppercase">
+                  {categories.label || "The Collection"}
                 </span>
              </div>
-             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-black uppercase leading-none">
-               {categories.title}
+             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-black uppercase leading-tight">
+               {categories.title || "Shop By Category"}
              </h2>
           </div>
           
-          <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-8 py-3.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
-             <span className="relative z-10">{categories.viewAll}</span>
+          <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-10 py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
+             <span className="relative z-10">{categories.viewAll || "Explore All"}</span>
              <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
              <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
           </Link>
         </div>
 
-        {/* Bento Grid [Small : Large : Small] */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {displayCategories.map((category, index) => {
             const isSmall = index === 0 || index === 2;
+            const exploreText = index === 1 ? (categories.exploreFull || "Explore Collection") : (categories.exploreSingle || "Explore");
+            
             return (
               <motion.div
                 key={category.name}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                className={`group relative h-[300px] md:h-[380px] rounded-[24px] md:rounded-[32px] overflow-hidden bg-[var(--secondary)] border border-[var(--border)] ${layoutSpans[index]}`}
+                className={`group relative h-[350px] md:h-[450px] rounded-[32px] overflow-hidden bg-gray-50 border border-black/5 ${layoutSpans[index]}`}
               >
                 <Link href={`/shop?category=${category.slug}`} className="absolute inset-0 z-20">
                    <span className="sr-only">View {category.name}</span>
                 </Link>
 
-                {/* Image Layers */}
-                <motion.div 
-                   animate={{ opacity: hoveredIndex === index ? 0 : 1 }}
-                   transition={{ duration: 0.7 }}
-                   className="absolute inset-0"
-                >
-                   <Image src={category.image} alt={category.name} fill className="object-cover" />
-                </motion.div>
-
-                <motion.div 
-                   initial={{ opacity: 0 }}
-                   animate={{ opacity: hoveredIndex === index ? 1 : 0 }}
-                   transition={{ duration: 0.7 }}
-                   className="absolute inset-0"
-                >
-                   <Image src={category.image} alt={category.name} fill className="object-cover scale-110" />
-                </motion.div>
+                {/* Images */}
+                <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-105">
+                   <Image src={category.image} alt={category.name} fill className="object-cover" priority={index === 1} />
+                </div>
                 
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 opacity-50 group-hover:opacity-70 transition-opacity" />
+                {/* Overlay for Text Visibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
                 {/* Content Area */}
-                <div className={`absolute inset-0 p-8 md:p-10 flex flex-col ${isSmall ? 'items-center text-center' : 'items-start text-left'}`}>
-                  {/* Top Section */}
-                  <div className="space-y-1.5">
-                     <span className="text-[9px] font-bold text-white/50 uppercase tracking-[0.2em]">
+                <div className={`absolute inset-0 p-8 md:p-12 flex flex-col ${isSmall ? 'items-center text-center' : 'items-start text-left'}`}>
+                  <div className="space-y-2">
+                     <span className="text-[9px] font-bold text-white/60 uppercase tracking-[0.3em]">
                        DEPARTMENT 0{index + 1}
                      </span>
-                     <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white heading-font uppercase tracking-tighter leading-none`}>
+                     <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
                        {category.name}
                      </h3>
                   </div>
 
-                  {/* Button - Centralized for Small Cards */}
                   <div className={`mt-auto w-full flex ${isSmall ? 'justify-center' : 'justify-start'}`}>
-                     <button className="group/btn relative overflow-hidden bg-white text-black px-8 py-3 rounded-full font-bold text-[9px] uppercase tracking-[0.2em] transition-all duration-500 shadow-xl active:scale-95">
-                        <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white transition-colors duration-300">
-                          {index === 1 ? categories.exploreFull : categories.exploreSingle}
-                          <ArrowRight className="w-3.5 h-3.5" />
+                     <button className="group/btn relative overflow-hidden bg-white text-black px-10 py-3.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] transition-all duration-500 shadow-2xl active:scale-95">
+                        <span className="relative z-10 flex items-center gap-3 group-hover/btn:text-white transition-colors duration-300">
+                          {exploreText}
+                          <ArrowRight className="w-4 h-4" />
                         </span>
                         <div className="absolute inset-0 bg-black translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
                      </button>

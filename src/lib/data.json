@@ -56,7 +56,7 @@
   },
   "categories": {
     "title": "Shop By Category",
-    "label": "PAIRO ARCHIVES",
+    "label": "PAIRO COLLECTION",
     "viewAll": "Explore All Collection",
     "exploreSingle": "Explore",
     "exploreFull": "Explore Full Collection",
@@ -87,7 +87,7 @@
       "topSelling": "Best Sellers",
       "shopAll": "Shop All",
       "seriesLabel": "PAIRO SERIES",
-      "archiveIndex": "Archive Index",
+      "archiveIndex": "Explore Collection",
       "addToBag": "Add to Bag",
       "viewDetails": "View Details"
     },
@@ -97,11 +97,17 @@
         "name": "Classic Aviator Shearling Jacket",
         "category": "Men",
         "price": 890,
+        "oldPrice": 1200,
         "rating": 4.9,
         "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500",
         "image2": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500",
         "colors": ["Black", "Brown"],
-        "sizes": ["S", "M", "L", "XL"]
+        "sizes": ["S", "M", "L", "XL"],
+        "details": "The Classic Aviator is our hallmark piece. It features a heavy-duty brass zipper, reinforced seams, and a plush shearling collar that provides extreme insulation. Handcrafted in our London studio using traditional methods.",
+        "faqs": [
+          { "q": "How do I clean this jacket?", "a": "We recommend professional leather cleaning only. Avoid getting the shearling wet." },
+          { "q": "Is the leather waterproof?", "a": "It is water-resistant, but not fully waterproof. We suggest using a protective spray." }
+        ]
       },
       {
         "id": 2,
@@ -113,18 +119,29 @@
         "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
         "image2": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
         "colors": ["Black", "Tan"],
-        "sizes": ["S", "M", "L"]
+        "sizes": ["S", "M", "L"],
+        "details": "A contemporary take on the classic biker silhouette. This oversized piece offers unparalleled warmth and a bold, editorial look. Features asymmetric zip closure and buckled waist detail.",
+        "faqs": [
+          { "q": "What is the fit like?", "a": "This is an oversized fit. If you prefer a more tailored look, we recommend sizing down." },
+          { "q": "Does it have internal pockets?", "a": "Yes, it features one internal security pocket for your essentials." }
+        ]
       },
       {
         "id": 3,
         "name": "Longline Shearling Overcoat",
         "category": "Coats",
         "price": 1200,
+        "oldPrice": 1500,
         "rating": 5.0,
         "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
         "image2": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
         "colors": ["Brown", "Camel"],
-        "sizes": ["M", "L", "XL", "XXL"]
+        "sizes": ["M", "L", "XL", "XXL"],
+        "details": "The ultimate expression of winter luxury. Our longline overcoat is crafted from double-faced sheepskin, providing a lightweight yet incredibly warm experience. Perfect for formal and casual occasions alike.",
+        "faqs": [
+          { "q": "What is the length?", "a": "The coat falls just below the knee for an average height of 5'10\"." },
+          { "q": "Is the shearling reversible?", "a": "While beautifully finished on both sides, it is designed to be worn leather-side out." }
+        ]
       },
       {
         "id": 4,
@@ -135,7 +152,12 @@
         "rating": 4.7,
         "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500",
         "colors": ["Tan", "Camel"],
-        "sizes": ["S", "M", "L"]
+        "sizes": ["S", "M", "L"],
+        "details": "A lighter-weight bomber with a suede finish. The B3 inspired design features contrasting shearling trim and a comfortable, relaxed fit. Ideal for transitional weather.",
+        "faqs": [
+          { "q": "How do I maintain the suede?", "a": "Use a suede brush regularly to remove dust and keep the nap looking fresh." },
+          { "q": "Is it suitable for extreme cold?", "a": "It is comfortable down to -5°C. For colder climates, we recommend our Aviator series." }
+        ]
       }
     ],
     "topSelling": [
@@ -148,37 +170,60 @@
         "rating": 5.0,
         "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
         "colors": ["Black"],
-        "sizes": ["S", "M", "L", "XL"]
+        "sizes": ["S", "M", "L", "XL"],
+        "details": "Crafted from premium full-grain leather with a subtle sheen. This trench coat offers a modern silhouette with classic details like epaulettes and a waist belt. A true investment piece.",
+        "faqs": [
+          { "q": "Is it heavy?", "a": "Due to the high-quality leather, it has a substantial feel but is balanced for all-day wear." },
+          { "q": "Can I wear it in the rain?", "a": "It is naturally water-repellent, but we recommend avoiding heavy downpours." }
+        ]
       },
       {
         "id": 6,
         "name": "Black Diamond Shearling",
         "category": "Men",
         "price": 980,
+        "oldPrice": 1200,
         "rating": 4.9,
         "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500",
         "colors": ["Black"],
-        "sizes": ["M", "L", "XL"]
+        "sizes": ["M", "L", "XL"],
+        "details": "Our most exclusive shearling jacket. The Black Diamond series uses the highest density wool for absolute warmth. Features matte black hardware and reinforced elbow patches.",
+        "faqs": [
+          { "q": "What makes it 'Elite'?", "a": "It uses a rare selection of pelts that are thicker and more consistent than standard runs." },
+          { "q": "Is the hardware rust-proof?", "a": "Yes, we use gunmetal-plated brass that is resistant to corrosion." }
+        ]
       },
       {
         "id": 7,
         "name": "Double-Faced Sheepskin Jacket",
         "category": "Women",
         "price": 820,
+        "oldPrice": 950,
         "rating": 4.6,
         "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
         "colors": ["Navy", "Black"],
-        "sizes": ["S", "M", "L"]
+        "sizes": ["S", "M", "L"],
+        "details": "A versatile everyday piece. The double-faced construction allows for a slim profile without sacrificing insulation. Features a high collar and deep hand-warmer pockets.",
+        "faqs": [
+          { "q": "Is it true to size?", "a": "Yes, this model follows standard European sizing." },
+          { "q": "Are the pockets lined?", "a": "Yes, they are lined with soft fleece for extra warmth." }
+        ]
       },
       {
         "id": 8,
         "name": "Vintage Shearling Vest",
         "category": "Coats",
         "price": 450,
+        "oldPrice": 550,
         "rating": 4.4,
         "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
         "colors": ["Brown", "Tan"],
-        "sizes": ["S", "M", "L"]
+        "sizes": ["S", "M", "L"],
+        "details": "A heritage-inspired vest perfect for layering. Features raw-edge finishes and traditional toggle closures. Adds a rugged, pioneer feel to any outfit.",
+        "faqs": [
+          { "q": "Can I wear it under a coat?", "a": "Yes, it is designed with a low-profile armhole for comfortable layering." },
+          { "q": "Is the shearling real?", "a": "100%. We never use synthetic or faux materials." }
+        ]
       }
     ]
   },
@@ -203,8 +248,8 @@
   },
   "testimonials": {
     "title": "WHAT OUR CLIENTS SAY",
-    "label": "PAIRO ARCHIVE",
-    "buttonText": "Join The Archive",
+    "label": "PAIRO STUDIO",
+    "buttonText": "Join The List",
     "verifiedLabel": "Verified Member",
     "perspectiveLabel": "Verified Archive Perspective — 0.1",
     "reviews": [
@@ -252,14 +297,14 @@
     ]
   },
   "blogs": {
-    "title": "THE EDITORIAL ARCHIVE",
-    "label": "PAIRO ARCHIVE",
-    "readMore": "Read Story — Archive",
+    "title": "THE PAIRO JOURNAL",
+    "label": "PAIRO STUDIO",
+    "readMore": "Read Story",
     "featuredProduct": {
       "id": 1,
-      "label": "ARCHIVE SHOP",
+      "label": "STUDIO SHOP",
       "name": "The Heritage Aviator",
-      "buttonText": "Shop archive",
+      "buttonText": "Shop now",
       "tagline": "A Modern Classic",
       "description": "The ultimate expression of our shearling craftsmanship. Hand-cut and sewn for a lifetime of wear.",
       "price": 890,
@@ -288,8 +333,8 @@
       },
       {
         "id": 3,
-        "slug": "archive-series-01",
-        "title": "Archive Series: The Evolution of the B3 Bomber",
+        "slug": "pairo-series-01",
+        "title": "Pairo Series: The Evolution of the B3 Bomber",
         "date": "April 15, 2026",
         "category": "HERITAGE",
         "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=800",

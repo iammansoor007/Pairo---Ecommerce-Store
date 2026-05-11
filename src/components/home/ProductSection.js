@@ -4,10 +4,11 @@ import { useRef, useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import siteData from "@/lib/data.json";
+import { useSiteData } from "@/context/SiteContext";
 
 export default function ProductSection({ title, products }) {
-  const { products: productLabels } = siteData;
+  const siteData = useSiteData();
+  const productLabels = siteData?.products || { labels: {} };
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -37,10 +38,11 @@ export default function ProductSection({ title, products }) {
     return () => current?.removeEventListener("scroll", checkScroll);
   }, []);
 
+  if (!siteData) return null;
+
   return (
     <section className="py-12 md:py-16">
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
-        {/* Header Section with Uniform Alignment */}
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
              <motion.div 
@@ -65,15 +67,13 @@ export default function ProductSection({ title, products }) {
              </motion.h2>
           </div>
 
-          {/* Actions Container */}
           <div className="flex items-center gap-4 md:gap-8 shrink-0">
              <button className="group relative hidden sm:flex items-center gap-6 border border-black/20 px-10 py-4.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white hover:border-black active:scale-95 shadow-lg shadow-black/5">
-                <span className="relative z-10">{productLabels.labels.archiveIndex}</span>
+                <span className="relative z-10">{productLabels?.labels?.archiveIndex || "Explore Collection"}</span>
                 <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
                 <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
              </button>
 
-             {/* Carousel Navigation */}
              <div className="flex gap-2 md:gap-3 sm:border-l border-black/10 sm:pl-8">
                 <button 
                   onClick={() => scroll("left")}
@@ -95,7 +95,6 @@ export default function ProductSection({ title, products }) {
           </div>
         </div>
 
-        {/* Carousel Container with Staggered Entrance */}
         <div className="relative -mx-4 md:-mx-12 px-4 md:px-12">
           <motion.div 
             initial="hidden"
@@ -103,12 +102,7 @@ export default function ProductSection({ title, products }) {
             viewport={{ once: true, amount: 0.2 }}
             variants={{
               hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.1
-                }
-              }
+              visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
             }}
             ref={carouselRef}
             className="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-8"

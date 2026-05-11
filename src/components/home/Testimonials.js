@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { Star, ChevronLeft, ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import siteData from "@/lib/data.json";
+import { useSiteData } from "@/context/SiteContext";
 
 const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
   const rotateX = useTransform(mouseY, [-200, 200], [10, -10]);
   const rotateY = useTransform(mouseX, [-200, 200], [-10, 10]);
 
@@ -52,15 +51,9 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
         rotateY: isActive ? rotateY : (position * -35),
         transformStyle: "preserve-3d",
       }}
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        mass: 0.8
-      }}
+      transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
       className={`absolute w-[260px] md:w-[460px] bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-12 shadow-2xl shadow-black/[0.04] border border-black/[0.05] flex flex-col gap-6 group cursor-grab active:cursor-grabbing select-none`}
     >
-      {/* Profile Header */}
       <div style={{ transform: "translateZ(50px)" }} className="flex items-center justify-between">
         <div className="flex items-center gap-3 md:gap-4">
           <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-black text-white flex items-center justify-center font-bold text-base md:text-xl shadow-xl overflow-hidden relative">
@@ -68,50 +61,36 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent" />
           </div>
           <div className="flex flex-col">
-            <h4 className="text-black font-bold text-sm md:text-xl heading-font tracking-tighter leading-none uppercase">
-              {review.name}
-            </h4>
-            <span className="text-black/30 text-[7px] md:text-[9px] font-bold uppercase tracking-[0.2em] mt-1.5">
-              {labels.verifiedLabel}
-            </span>
+            <h4 className="text-black font-bold text-sm md:text-xl heading-font tracking-tighter leading-none uppercase">{review.name}</h4>
+            <span className="text-black/30 text-[7px] md:text-[9px] font-bold uppercase tracking-[0.2em] mt-1.5">{labels.verifiedLabel}</span>
           </div>
         </div>
         <div className="flex gap-0.5">
           {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-[var(--rating)] text-[var(--rating)]' : 'text-black/10'}`}
-            />
+            <Star key={i} className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-[#FFC633] text-[#FFC633]' : 'text-black/10'}`} />
           ))}
         </div>
       </div>
-
       <div className="w-full h-px bg-black/[0.05]" />
-
-      {/* Review Text */}
       <div style={{ transform: "translateZ(30px)" }} className="relative">
-        <p className="text-black text-xs md:text-lg font-medium leading-[1.5] heading-font tracking-tight italic">
-          "{review.text}"
-        </p>
+        <p className="text-black text-xs md:text-lg font-medium leading-[1.5] heading-font tracking-tight italic">"{review.text}"</p>
       </div>
-
-      {/* Verified Status */}
       <div style={{ transform: "translateZ(40px)" }} className="flex items-center gap-3 pt-2">
-        <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-black flex items-center justify-center">
-          <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-white" />
-        </div>
-        <span className="text-black/30 text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
-          {labels.perspectiveLabel}
-        </span>
+        <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-black flex items-center justify-center"><CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-white" /></div>
+        <span className="text-black/30 text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em]">{labels.verifiedLabel} Account</span>
       </div>
     </motion.div>
   );
 };
 
 export default function Testimonials() {
-  const { testimonials } = siteData;
-  const reviews = testimonials.reviews;
+  const siteData = useSiteData();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (!siteData?.testimonials) return null;
+
+  const { testimonials } = siteData;
+  const reviews = testimonials.reviews || [];
 
   const handleSwipe = (direction) => {
     if (direction === "next") {
@@ -134,28 +113,13 @@ export default function Testimonials() {
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
-                {testimonials.label}
-              </span>
+              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{testimonials.label}</span>
             </div>
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
-              {testimonials.title}
-            </h2>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{testimonials.title}</h2>
           </div>
-
           <div className="flex gap-2 shrink-0">
-            <button
-              onClick={() => handleSwipe("prev")}
-              className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"
-            >
-              <ChevronLeft className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:-translate-x-1" />
-            </button>
-            <button
-              onClick={() => handleSwipe("next")}
-              className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"
-            >
-              <ChevronRight className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:translate-x-1" />
-            </button>
+            <button onClick={() => handleSwipe("prev")} className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"><ChevronLeft className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:-translate-x-1" /></button>
+            <button onClick={() => handleSwipe("next")} className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"><ChevronRight className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:translate-x-1" /></button>
           </div>
         </div>
 
@@ -163,35 +127,17 @@ export default function Testimonials() {
           {reviews.map((review, index) => {
             const position = getPosition(index);
             if (Math.abs(position) > 1) return null;
-            return (
-              <TestimonialCard
-                key={index}
-                review={review}
-                isActive={position === 0}
-                position={position}
-                onSwipe={handleSwipe}
-                labels={testimonials}
-              />
-            );
+            return <TestimonialCard key={index} review={review} isActive={position === 0} position={position} onSwipe={handleSwipe} labels={testimonials} />;
           })}
         </div>
 
         <div className="flex flex-col items-center">
           <button className="group relative overflow-hidden bg-black text-white px-8 md:px-12 py-3.5 md:py-4.5 rounded-full font-bold text-[9px] md:text-xs uppercase tracking-[0.3em] shadow-xl transition-all active:scale-95">
-            <span className="relative z-10 flex items-center gap-3 group-hover:text-black transition-colors duration-500">
-              {testimonials.buttonText}
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </span>
-            <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+            <span className="relative z-10 flex items-center gap-3 transition-colors duration-500">{testimonials.buttonText}<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></span>
           </button>
-
           <div className="mt-10 md:mt-14 flex gap-3">
             {reviews.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentIndex(i)}
-                className={`h-1 transition-all duration-700 rounded-full ${i === currentIndex ? 'w-14 bg-black' : 'w-3 bg-black/5'}`}
-              />
+              <button key={i} onClick={() => setCurrentIndex(i)} className={`h-1 transition-all duration-700 rounded-full ${i === currentIndex ? 'w-14 bg-black' : 'w-3 bg-black/5'}`} />
             ))}
           </div>
         </div>

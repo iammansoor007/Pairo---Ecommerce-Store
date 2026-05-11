@@ -5,9 +5,11 @@ import Image from "next/image";
 import { ShoppingBag, Eye, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductCard({ product }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart } = useCart();
 
   return (
     <div 
@@ -57,7 +59,13 @@ export default function ProductCard({ product }) {
         {/* Unified Premium Hover Actions */}
         <div className="absolute bottom-2 md:bottom-3 left-2 md:left-3 right-2 md:right-3 flex gap-2 z-20 pointer-events-none group-hover:pointer-events-auto">
            {/* Add to Bag with Liquid Fill */}
-           <button className="group/btn relative flex-[2] overflow-hidden bg-black text-white h-9 md:h-10 rounded-lg md:rounded-xl font-bold text-[7px] md:text-[9px] uppercase tracking-[0.1em] flex items-center justify-center gap-1 md:gap-2 shadow-xl translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out active:scale-95">
+           <button 
+             onClick={(e) => {
+               e.stopPropagation();
+               addToCart(product);
+             }}
+             className="group/btn relative flex-[2] overflow-hidden bg-black text-white h-9 md:h-10 rounded-lg md:rounded-xl font-bold text-[7px] md:text-[9px] uppercase tracking-[0.1em] flex items-center justify-center gap-1 md:gap-2 shadow-xl translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out active:scale-95"
+           >
               <span className="relative z-10 flex items-center gap-1 md:gap-2 transition-colors duration-300 group-hover/btn:text-black">
                 <ShoppingBag className="w-2.5 h-2.5 md:w-3.5 md:h-3.5" />
                 Add to Bag
