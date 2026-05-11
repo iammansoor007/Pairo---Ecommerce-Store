@@ -1,118 +1,185 @@
+"use client";
+
 import Link from "next/link";
-import { Globe, MessageSquare, Camera, Code } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, Camera, MessageSquare, Globe } from "lucide-react";
+import { motion } from "framer-motion";
 import siteData from "@/lib/data.json";
+import logo from "../../assets/png-file.png";
 
 export default function Footer() {
-  const { brand, footer } = siteData;
+  const { footer, blogs, categories } = siteData;
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }
+    }
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: i => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.08,
+        duration: 0.8,
+        ease: [0.215, 0.61, 0.355, 1]
+      }
+    })
+  };
 
   return (
-    <footer className="bg-[var(--secondary)] pt-40 pb-12 relative mt-20">
-      {/* Newsletter Section - Overlapping */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl px-4">
-        <div className="bg-[var(--background)] border border-[var(--foreground)]/10 shadow-xl rounded-[20px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
-          <h2 className="text-[var(--foreground)] text-3xl md:text-4xl font-black max-w-lg leading-tight">
-            {footer.newsletterTitle}
-          </h2>
-          <div className="w-full md:w-auto flex flex-col gap-3 min-w-[300px]">
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="w-full bg-[var(--secondary)] rounded-full py-3 px-12 text-sm focus:outline-none"
-              />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--accent)]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-              </span>
-            </div>
-            <button className="bg-[var(--primary)] text-[var(--background)] font-bold rounded-full py-3 px-6 text-sm hover:opacity-80 transition-colors">
-              Subscribe to Newsletter
-            </button>
-          </div>
-        </div>
+    <footer className="bg-white text-black pt-16 md:pt-24 pb-12 overflow-hidden relative z-10 border-t border-black/5">
+      <div className="container mx-auto px-6 md:px-16 relative z-20">
+        
+        {/* Top Header */}
+        <motion.div 
+           initial="hidden"
+           whileInView="visible"
+           viewport={{ once: false }}
+           variants={containerVariants}
+           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-black/5"
+        >
+           <motion.div variants={itemVariants}>
+              <Link href="/" className="flex-shrink-0">
+                 <Image 
+                   src={logo} 
+                   alt="Pairo Logo" 
+                   width={110} 
+                   height={40} 
+                   className="object-contain grayscale hover:grayscale-0 transition-all duration-700" 
+                 />
+              </Link>
+           </motion.div>
+           <motion.div variants={itemVariants} className="flex items-center gap-8">
+              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+                 <Camera className="w-5 h-5" />
+              </Link>
+              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+                 <MessageSquare className="w-5 h-5" />
+              </Link>
+              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+                 <Globe className="w-5 h-5" />
+              </Link>
+           </motion.div>
+        </motion.div>
+
+        {/* 4-Column Grid */}
+        <motion.div 
+           initial="hidden"
+           whileInView="visible"
+           viewport={{ once: false }}
+           variants={containerVariants}
+           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 py-16"
+        >
+           {/* Elite List */}
+           <motion.div variants={itemVariants} className="space-y-6">
+              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Elite List</h3>
+              <div className="relative group max-w-sm">
+                 <input 
+                   type="email" 
+                   placeholder="JOIN THE ARCHIVE"
+                   className="w-full bg-transparent border-b border-black/10 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-black transition-colors uppercase text-black"
+                 />
+                 <button className="absolute right-0 top-1/2 -translate-y-1/2 text-black/20 group-hover:text-black transition-colors">
+                    <ArrowUpRight className="w-4 h-4" />
+                 </button>
+              </div>
+           </motion.div>
+
+           {/* Editorial */}
+           <motion.div variants={itemVariants} className="space-y-6">
+              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Editorial</h3>
+              <ul className="space-y-3">
+                 {blogs.posts.slice(0, 4).map((post) => (
+                    <li key={post.id}>
+                       <Link href={`/blog/${post.slug}`} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                          {post.title}
+                       </Link>
+                    </li>
+                 ))}
+              </ul>
+           </motion.div>
+
+           {/* Collections */}
+           <motion.div variants={itemVariants} className="space-y-6">
+              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Collections</h3>
+              <ul className="space-y-3">
+                 {categories.map((cat) => (
+                    <li key={cat.slug}>
+                       <Link href={`/shop?category=${cat.slug}`} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                          {cat.name}
+                       </Link>
+                    </li>
+                 ))}
+              </ul>
+           </motion.div>
+
+           {/* Information */}
+           <motion.div variants={itemVariants} className="space-y-6">
+              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Information</h3>
+              <ul className="space-y-3">
+                 <li key="f-about"><Link href="/about" className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">Our Story</Link></li>
+                 <li key="f-contact"><Link href="/contact" className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">Contact</Link></li>
+                 {footer.sections[1].links.map((link) => (
+                    <li key={`inf-${link.name}`}>
+                       <Link href={link.href} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                          {link.name}
+                       </Link>
+                    </li>
+                 ))}
+              </ul>
+           </motion.div>
+        </motion.div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12 mb-12">
-          {/* Brand Info */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="inline-block mb-6">
-              <span className="text-3xl font-black uppercase tracking-tighter">
-                {brand.name}
-              </span>
-            </Link>
-            <p className="text-[var(--foreground)]/60 text-sm leading-relaxed mb-8 max-w-xs">
-              {brand.description}
+      {/* Massive Brand Reveal - High Visibility Reveal */}
+      <div className="relative my-8 md:my-12">
+         <div className="text-center px-4">
+            <div className="text-[25vw] font-bold heading-font leading-[0.75] uppercase tracking-tighter text-black inline-flex justify-center flex-wrap">
+               {"PAIRO".split("").map((letter, i) => (
+                 <motion.span 
+                    key={`letter-${i}`}
+                    custom={i}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: false, amount: 0.1 }}
+                    variants={letterVariants}
+                    className="inline-block"
+                 >
+                    {letter}
+                 </motion.span>
+               ))}
+            </div>
+         </div>
+      </div>
+
+      {/* Bottom Metadata Bar */}
+      <div className="container mx-auto px-6 md:px-16 relative z-20">
+         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-black/5">
+            <p className="text-black/20 text-[9px] font-bold uppercase tracking-widest">
+               PAIRO — ALL RIGHTS RESERVED © 2026.
             </p>
-            <div className="flex space-x-4">
-              <Link
-                href="#"
-                className="w-10 h-10 bg-[var(--background)] rounded-full flex items-center justify-center hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-all border border-[var(--foreground)]/10 shadow-sm"
-              >
-                <Globe className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
-                className="w-10 h-10 bg-[var(--foreground)] text-[var(--background)] rounded-full flex items-center justify-center hover:opacity-80 transition-all border border-[var(--foreground)]/10 shadow-sm"
-              >
-                <MessageSquare className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
-                className="w-10 h-10 bg-[var(--background)] rounded-full flex items-center justify-center hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-all border border-[var(--foreground)]/10 shadow-sm"
-              >
-                <Camera className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
-                className="w-10 h-10 bg-[var(--background)] rounded-full flex items-center justify-center hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-all border border-[var(--foreground)]/10 shadow-sm"
-              >
-                <Code className="w-4 h-4" />
-              </Link>
+            <div className="flex gap-10">
+               <Link href="#" className="text-black/20 hover:text-black text-[9px] font-bold uppercase tracking-widest transition-colors">Privacy</Link>
+               <Link href="#" className="text-black/20 hover:text-black text-[9px] font-bold uppercase tracking-widest transition-colors">Terms</Link>
             </div>
-          </div>
-
-          {/* Links Sections */}
-          {footer.sections.map((section) => (
-            <div key={section.title}>
-              <h3 className="font-bold tracking-widest text-sm mb-6 uppercase">
-                {section.title}
-              </h3>
-              <ul className="space-y-4">
-                {section.links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-[var(--foreground)]/60 text-sm hover:text-[var(--foreground)] transition-colors"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div className="pt-8 border-t border-[var(--foreground)]/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[var(--foreground)]/60 text-sm">
-            {brand.name} © 2000-2023, All Rights Reserved
-          </p>
-          <div className="flex items-center space-x-4">
-            {/* Payment Icons Placeholder */}
-            <div className="h-8 w-12 bg-[var(--background)] rounded border border-[var(--foreground)]/10 flex items-center justify-center text-[10px] font-bold">VISA</div>
-            <div className="h-8 w-12 bg-[var(--background)] rounded border border-[var(--foreground)]/10 flex items-center justify-center text-[10px] font-bold">MC</div>
-            <div className="h-8 w-12 bg-[var(--background)] rounded border border-[var(--foreground)]/10 flex items-center justify-center text-[10px] font-bold">PAYPAL</div>
-            <div className="h-8 w-12 bg-[var(--background)] rounded border border-[var(--foreground)]/10 flex items-center justify-center text-[10px] font-bold">APPLE</div>
-          </div>
-        </div>
+         </div>
       </div>
     </footer>
   );

@@ -28,7 +28,9 @@ export default function ProductCard({ product }) {
               src={product.image}
               alt={product.name}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover"
+              quality={75}
             />
           </motion.div>
 
@@ -44,7 +46,9 @@ export default function ProductCard({ product }) {
                 src={product.image2}
                 alt={product.name}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover"
+                quality={75}
               />
             </motion.div>
           )}
@@ -80,7 +84,7 @@ export default function ProductCard({ product }) {
 
       {/* Info Section */}
       <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-        <h3 className="text-xs md:text-lg font-medium heading-font text-black/80 group-hover:text-black transition-colors truncate">
+        <h3 className="text-xs md:text-lg font-medium heading-font text-black/80 group-hover:text-black transition-colors">
           {product.name}
         </h3>
 

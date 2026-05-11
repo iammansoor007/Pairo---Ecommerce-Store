@@ -203,5 +203,48 @@
         ]
       }
     ]
+  },
+  "blogs": {
+    "title": "THE EDITORIAL ARCHIVE",
+    "featuredProduct": {
+      "id": 1,
+      "name": "The Heritage Aviator",
+      "tagline": "A Modern Classic",
+      "description": "The ultimate expression of our shearling craftsmanship. Hand-cut and sewn for a lifetime of wear.",
+      "price": 890,
+      "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800"
+    },
+    "posts": [
+      {
+        "id": 1,
+        "slug": "art-of-shearling",
+        "title": "The Silent Art of Shearling Craftsmanship",
+        "date": "May 12, 2026",
+        "category": "CRAFTSMANSHIP",
+        "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800",
+        "excerpt": "Discover the meticulous process behind our double-faced sheepskin jackets, from hand-selecting the finest pelts to the final polish.",
+        "content": "Full story content about craftsmanship..."
+      },
+      {
+        "id": 2,
+        "slug": "winter-styling-guide",
+        "title": "Quiet Luxury: The 2026 Winter Styling Guide",
+        "date": "April 28, 2026",
+        "category": "STYLE",
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=800",
+        "excerpt": "How to layer premium shearling with minimalist essentials for an editorial look that transcends the season.",
+        "content": "Full story content about styling..."
+      },
+      {
+        "id": 3,
+        "slug": "archive-series-01",
+        "title": "Archive Series: The Evolution of the B3 Bomber",
+        "date": "April 15, 2026",
+        "category": "HERITAGE",
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=800",
+        "excerpt": "Tracing the history of the most iconic flight jacket ever made and how Pairo reimagined it for the modern pioneer.",
+        "content": "Full story content about heritage..."
+      }
+    ]
   }
 }

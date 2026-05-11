@@ -36,64 +36,94 @@ export default function ProductSection({ title, products }) {
   }, []);
 
   return (
-    <section className="py-12 md:py-20 bg-white overflow-hidden border-b border-black/5 last:border-0">
-      <div className="container mx-auto px-4 md:px-8">
-        {/* Header Section - Forces heading and arrows on same line for mobile */}
+    <section className="py-16 md:py-20 bg-white overflow-hidden border-b border-black/5 last:border-0">
+      <div className="container mx-auto px-6 md:px-16">
+        {/* Header Section with Uniform Alignment */}
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
-          <div className="space-y-2 md:space-y-3 flex-1 min-w-0">
-             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
+          <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
+             <motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               whileInView={{ opacity: 1, x: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.6 }}
+               className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md"
+             >
                 <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
                   PAIRO SERIES
                 </span>
-             </div>
-             <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
-               {title}
-             </h2>
+             </motion.div>
+             <motion.h2 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ duration: 0.8, delay: 0.1 }}
+               className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none md:max-w-xl"
+             >
+                 {title}
+             </motion.h2>
           </div>
 
           {/* Actions Container */}
-          <div className="flex items-center gap-3 md:gap-6 shrink-0">
-             {/* Desktop Explore Button */}
-             <button className="group relative hidden sm:flex items-center gap-4 border border-black px-8 py-3.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
-                <span className="relative z-10">Explore All Collection</span>
-                <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
+          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+             <button className="group relative hidden sm:flex items-center gap-6 border border-black/20 px-10 py-4.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white hover:border-black active:scale-95 shadow-lg shadow-black/5">
+                <span className="relative z-10">Archive Index</span>
+                <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
                 <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
              </button>
 
-             {/* Carousel Navigation - Now aligned on mobile */}
-             <div className="flex gap-1.5 md:gap-2 sm:border-l border-black/5 sm:pl-6">
+             {/* Carousel Navigation */}
+             <div className="flex gap-2 md:gap-3 sm:border-l border-black/10 sm:pl-8">
                 <button 
                   onClick={() => scroll("left")}
-                  className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${
-                    canScrollLeft ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"
+                  className={`w-12 h-12 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                    canScrollLeft ? "text-black bg-white hover:bg-black hover:text-white shadow-xl scale-100" : "text-black/10 cursor-default scale-95"
                   }`}
                 >
-                  <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+                  <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
                 <button 
                   onClick={() => scroll("right")}
-                  className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${
-                    canScrollRight ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"
+                  className={`w-12 h-12 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                    canScrollRight ? "text-black bg-white hover:bg-black hover:text-white shadow-xl scale-100" : "text-black/10 cursor-default scale-95"
                   }`}
                 >
-                  <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+                  <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
              </div>
           </div>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative -mx-4 md:-mx-8 px-4 md:px-8">
-          <div 
+        {/* Carousel Container with Staggered Entrance */}
+        <div className="relative -mx-4 md:-mx-12 px-4 md:px-12">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
             ref={carouselRef}
-            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+            className="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-8"
           >
             {products.map((product) => (
-              <div key={product.id} className="w-[75vw] sm:w-[45vw] md:w-[35vw] lg:w-[22.5vw] shrink-0 snap-start">
+              <motion.div 
+                key={product.id} 
+                variants={{
+                  hidden: { opacity: 0, y: 40, scale: 0.95 },
+                  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+                }}
+                className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[26vw] shrink-0 snap-start"
+              >
                 <ProductCard product={product} />
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

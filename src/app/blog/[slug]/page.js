@@ -1,0 +1,302 @@
+"use client";
+
+import { useParams, notFound } from "next/navigation";
+import Link from "next/link";
+import { useRef, useState, useEffect } from "react";
+import { ArrowLeft, ArrowRight, Share2, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, useScroll, useSpring } from "framer-motion";
+import siteData from "@/lib/data.json";
+
+const SectionHeader = ({ number, title }) => (
+  <div className="flex items-center gap-3 mb-6">
+     <div className="flex items-center justify-center w-6 h-6 rounded-full border border-black text-[8px] font-bold">
+        {number}
+     </div>
+     <h2 className="text-lg md:text-xl font-bold heading-font uppercase tracking-tight text-black">
+        {title}
+     </h2>
+     <div className="flex-1 h-px bg-black/5" />
+  </div>
+);
+
+const BlogCard = ({ post }) => (
+  <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
+    <div className="relative aspect-square bg-[#F7F7F7] rounded-[16px] md:rounded-[20px] overflow-hidden border border-black/5">
+       <div className="absolute inset-0">
+          <img 
+            src={post.image} 
+            alt={post.title}
+            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+          />
+       </div>
+       <div className="absolute top-2 left-2 z-10">
+          <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[7px] font-bold px-2 py-1 rounded-md tracking-[0.1em] uppercase shadow-lg">
+            {post.category}
+          </span>
+       </div>
+       <div className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black text-white flex items-center justify-center translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
+          <ArrowUpRight className="w-3.5 h-3.5" />
+       </div>
+    </div>
+    <div className="mt-2.5 space-y-1 px-0.5">
+       <h3 className="text-[11px] md:text-sm font-medium heading-font text-black/80 group-hover:text-black transition-colors uppercase leading-tight">
+          {post.title}
+       </h3>
+       <div className="flex items-center justify-between border-t border-black/[0.03] pt-1.5">
+          <span className="text-[8px] md:text-[10px] font-bold text-black uppercase tracking-tight">
+             {post.date}
+          </span>
+       </div>
+    </div>
+  </Link>
+);
+
+export default function BlogDetail() {
+  const { slug } = useParams();
+  const post = siteData.blogs.posts.find((p) => p.slug === slug);
+  const recommendedPosts = siteData.blogs.posts.filter((p) => p.slug !== slug);
+  
+  const carouselRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const scroll = (direction) => {
+    if (carouselRef.current) {
+      const { scrollLeft, clientWidth } = carouselRef.current;
+      const scrollTo = direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      carouselRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
+    }
+  };
+
+  const checkScroll = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setCanScrollLeft(scrollLeft > 20);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 20);
+    }
+  };
+
+  useEffect(() => {
+    const current = carouselRef.current;
+    if (current) {
+      current.addEventListener("scroll", checkScroll);
+      checkScroll();
+    }
+    return () => current?.removeEventListener("scroll", checkScroll);
+  }, []);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  if (!post) {
+    notFound();
+  }
+
+  const sections = [
+    { id: "heritage", title: "Heritage", num: "01" },
+    { id: "process", title: "Process", num: "02" },
+    { id: "style", title: "Style", num: "03" },
+    { id: "archive", title: "Archive", num: "04" }
+  ];
+
+  const scrollToSection = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  return (
+    <main className="bg-white min-h-screen selection:bg-black selection:text-white">
+      
+      {/* Progress Bar */}
+      <motion.div className="fixed top-0 left-0 right-0 h-0.5 bg-black origin-left z-[100]" style={{ scaleX }} />
+
+      {/* Sub-Header */}
+      <div className="container mx-auto px-4 md:px-8 pt-5 pb-2 border-b border-black/5">
+         <div className="flex justify-between items-center">
+            <Link href="/blog" className="flex items-center gap-2 text-black font-bold text-[9px] uppercase tracking-[0.2em] hover:opacity-50 transition-all">
+               <ArrowLeft className="w-3.5 h-3.5" />
+               Archive Index
+            </Link>
+            <div className="flex items-center gap-4">
+               <button className="flex items-center gap-2 text-black/40 hover:text-black transition-colors font-bold text-[9px] uppercase tracking-[0.2em]">
+                  <Share2 className="w-3.5 h-3.5" />
+                  Share Story
+               </button>
+            </div>
+         </div>
+      </div>
+
+      {/* Header Section */}
+      <header className="pt-10 pb-8 md:pt-14 md:pb-10 border-b border-black/5">
+         <div className="container mx-auto px-4 md:px-12">
+            <div className="flex items-center gap-2 mb-3">
+               <span className="text-[9px] font-bold tracking-[0.3em] text-black/30 uppercase">{post.category}</span>
+               <div className="w-5 h-px bg-black/10" />
+               <span className="text-[9px] font-bold tracking-[0.3em] text-black/30 uppercase">{post.date}</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-black uppercase leading-tight mb-4 max-w-4xl">
+               {post.title}
+            </h1>
+            <p className="text-black/30 text-[8px] font-bold uppercase tracking-[0.2em]">
+               PAIRO ARCHIVE SERIES — EDITION 0.1
+            </p>
+         </div>
+      </header>
+
+      {/* Main Grid Layout */}
+      <div className="container mx-auto px-4 md:px-12 py-8 md:py-12">
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
+            
+            {/* LEFT: Narrative */}
+            <div className="lg:col-span-8">
+               <div className="aspect-[16/9] rounded-[12px] md:rounded-[16px] overflow-hidden border border-black/5 shadow-sm mb-10">
+                  <img src={post.image} className="w-full h-full object-cover" />
+               </div>
+
+               <div className="max-w-2xl space-y-12 md:space-y-16">
+                  <section id="heritage" className="scroll-mt-32">
+                     <SectionHeader number="01" title="Heritage" />
+                     <div className="space-y-6">
+                        <p className="text-lg md:text-xl font-medium leading-tight text-black tracking-tight border-l-2 border-black pl-5 italic">
+                           "{post.excerpt}"
+                        </p>
+                        <div className="text-sm md:text-base text-black/60 leading-relaxed space-y-4 font-medium">
+                           <p>
+                              In the Pairo Archive, heritage is not a static concept. It is a living dialogue between the rugged utility of the past and the uncompromised luxury of the present. Every shearling jacket we produce is a testament to this philosophy.
+                           </p>
+                        </div>
+                     </div>
+                  </section>
+
+                  <section id="process" className="scroll-mt-32">
+                     <SectionHeader number="02" title="Process" />
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="aspect-square rounded-[8px] overflow-hidden border border-black/5 bg-[#F9F9F9]">
+                           <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="aspect-square rounded-[8px] overflow-hidden border border-black/5 bg-[#F9F9F9]">
+                           <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover" />
+                        </div>
+                     </div>
+                  </section>
+
+                  <section id="style" className="scroll-mt-32">
+                     <SectionHeader number="03" title="Style" />
+                     <div className="text-sm md:text-base text-black/60 leading-relaxed font-medium">
+                        <p>
+                           "Quiet Luxury" is the cornerstone of the Pairo identity. We believe that true quality doesn't need to shout. It is felt in the density of the wool.
+                        </p>
+                     </div>
+                  </section>
+               </div>
+            </div>
+
+            {/* RIGHT: Archive Index */}
+            <div className="lg:col-span-4 relative">
+               <aside className="sticky top-24 space-y-8 pl-6 border-l border-black/5">
+                  <div className="space-y-5">
+                     <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">INDEX</span>
+                     <div className="flex flex-col gap-3">
+                        {sections.map((section) => (
+                           <button 
+                             key={section.id}
+                             onClick={() => scrollToSection(section.id)}
+                             className="group flex items-center justify-between text-left"
+                           >
+                              <span className="text-sm md:text-base font-bold heading-font text-black/30 group-hover:text-black transition-all uppercase tracking-tighter">
+                                 {section.title}
+                              </span>
+                              <ArrowRight className="w-3 h-3 text-black/5 group-hover:text-black transition-all" />
+                           </button>
+                        ))}
+                     </div>
+                  </div>
+
+                  {/* Sidebar Shop */}
+                  <div id="archive" className="space-y-3 pt-6 border-t border-black/5">
+                     <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">SHOP PIECE</span>
+                     <div className="aspect-square rounded-[8px] overflow-hidden border border-black/5 group cursor-pointer relative">
+                        <img src={siteData.blogs.featuredProduct.image} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                     </div>
+                     <h4 className="text-xs font-bold heading-font text-black uppercase">{siteData.blogs.featuredProduct.name}</h4>
+                     <Link 
+                        href={`/product/${siteData.blogs.featuredProduct.id}`}
+                        className="flex items-center justify-center gap-2 w-full bg-black text-white py-2 rounded-full font-bold text-[8px] uppercase tracking-[0.1em] hover:bg-[#FFC633] hover:text-black transition-all"
+                     >
+                        Shop now
+                        <ArrowRight className="w-3 h-3" />
+                     </Link>
+                  </div>
+               </aside>
+            </div>
+         </div>
+      </div>
+
+      {/* Recommendation Section - Now a Carousel like Homepage */}
+      <section className="bg-[#FBFBFB] py-12 md:py-16 border-y border-black/5 overflow-hidden">
+         <div className="container mx-auto px-4 md:px-12">
+            <div className="flex items-end justify-between mb-8">
+               <div className="space-y-1">
+                  <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">DISCOVER MORE</span>
+                  <h2 className="text-lg md:text-xl font-bold heading-font text-black uppercase">RELATED STORIES</h2>
+               </div>
+               
+               <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => scroll("left")}
+                    className={`w-8 h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                      canScrollLeft ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"
+                    }`}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => scroll("right")}
+                    className={`w-8 h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                      canScrollRight ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"
+                    }`}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+               </div>
+            </div>
+
+            <div className="relative -mx-4 md:-mx-0">
+               <div 
+                 ref={carouselRef}
+                 className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 md:px-0"
+               >
+                  {recommendedPosts.map((rPost) => (
+                    <div key={rPost.id} className="w-[70vw] sm:w-[35vw] md:w-[25vw] lg:w-[20vw] shrink-0 snap-start">
+                      <BlogCard post={rPost} />
+                    </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 md:py-16 bg-white">
+         <div className="container mx-auto px-4 md:px-8 text-center space-y-4">
+            <span className="text-black/20 text-[8px] font-bold uppercase tracking-[0.3em]">NEXT ENTRY</span>
+            <Link 
+               href={`/blog/${siteData.blogs.posts[0].slug === post.slug ? siteData.blogs.posts[1].slug : siteData.blogs.posts[0].slug}`}
+               className="group block"
+            >
+               <h2 className="text-lg md:text-2xl font-bold heading-font tracking-tighter uppercase text-black leading-tight transition-all duration-700 group-hover:text-black/30">
+                 {siteData.blogs.posts[0].slug === post.slug ? siteData.blogs.posts[1].title : siteData.blogs.posts[0].title}
+               </h2>
+               <div className="mt-4 inline-flex items-center gap-2 text-black font-bold text-[8px] uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
+                  Read next story
+                  <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+               </div>
+            </Link>
+         </div>
+      </footer>
+    </main>
+  );
+}

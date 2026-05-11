@@ -46,10 +46,10 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
         scale: isActive ? 1 : 0.75,
         x: position * 220, // Clearly visible on sides
         zIndex: isActive ? 30 : 20 - Math.abs(position),
-        opacity: isActive ? 1 : 0.15,
+        opacity: isActive ? 1 : 0.5,
         rotateY: position * -35,
         y: isActive ? 0 : 20,
-        filter: isActive ? "blur(0px)" : "blur(10px)",
+        filter: isActive ? "blur(0px)" : "blur(4px)",
       }}
       style={{
         rotateX: isActive ? rotateX : 0,
@@ -58,8 +58,9 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
       }}
       transition={{
         type: "spring",
-        stiffness: 220,
-        damping: 26
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8
       }}
       className={`absolute w-[260px] md:w-[460px] bg-white rounded-[24px] md:rounded-[40px] p-6 md:p-12 shadow-2xl shadow-black/[0.04] border border-black/[0.05] flex flex-col gap-6 group cursor-grab active:cursor-grabbing select-none`}
     >
@@ -133,18 +134,18 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-6 md:py-12 bg-white overflow-hidden relative">
+    <section className="py-16 md:py-20 bg-white overflow-hidden relative">
       <div className="container mx-auto px-4 md:px-8 relative z-10">
 
-        {/* Compact Site Heading */}
-        <div className="flex items-end justify-between mb-4 md:mb-6 gap-6">
-          <div className="space-y-2 md:space-y-3 flex-1 min-w-0">
+        {/* Compact Site Heading with Uniform Alignment */}
+        <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
+          <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
               <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
                 PAIRO ARCHIVE
               </span>
             </div>
-            <h2 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
               {testimonials.title || "The Voices"}
             </h2>
           </div>
