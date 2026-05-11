@@ -5,7 +5,7 @@ import { Truck, ShieldCheck, Headphones, Star, Zap, Globe, ArrowUpRight } from "
 const MarqueeItem = ({ item }) => (
   <div className="flex items-center gap-3 md:gap-8 px-5 md:px-12 group cursor-pointer">
     {/* Texture Circle Accent */}
-    <div className="w-7 h-7 md:w-11 md:h-11 rounded-full bg-[#F5F5F5] border border-black/5 overflow-hidden flex-shrink-0 relative">
+    <div className="w-7 h-7 md:w-11 md:h-11 rounded-full bg-[var(--secondary)] border border-[var(--border)] overflow-hidden flex-shrink-0 relative">
        <div className="absolute inset-0 bg-black/5 mix-blend-overlay" />
        <item.icon className="w-3.5 h-3.5 md:w-5 md:h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black/40 group-hover:text-black transition-colors duration-500" />
     </div>
@@ -42,7 +42,7 @@ export default function FeatureMarquee() {
   ];
 
   return (
-    <section className="py-4 md:py-8 bg-white overflow-hidden border-y border-black/[0.03]">
+    <section className="py-4 md:py-8 bg-[var(--background)] overflow-hidden border-y border-[var(--border)]">
       <div className="marquee-container flex whitespace-nowrap">
         <div className="marquee-content flex shrink-0 items-center animate-scroll-left hover:pause">
           {[...Array(6)].map((_, i) => (

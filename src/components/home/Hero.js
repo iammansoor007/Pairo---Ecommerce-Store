@@ -112,7 +112,7 @@ export default function Hero() {
                     <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
                   </button>
                   <button className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group">
-                    <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">View Collection</span>
+                    <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
                   </button>
                 </div>
               </motion.div>

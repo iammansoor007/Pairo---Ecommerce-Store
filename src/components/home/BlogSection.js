@@ -5,9 +5,9 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowUpRight, ArrowRight } from "lucide-react";
 import siteData from "@/lib/data.json";
 
-const BlogCard = ({ post }) => (
+const BlogCard = ({ post, readMoreLabel }) => (
   <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
-    {/* Image Container - Matching ProductCard */}
+    {/* Image Container */}
     <div className="relative aspect-square bg-[#F7F7F7] rounded-[16px] md:rounded-[24px] overflow-hidden border border-black/5">
        <div className="absolute inset-0">
           <img 
@@ -17,7 +17,7 @@ const BlogCard = ({ post }) => (
           />
        </div>
        
-       {/* Category Badge - Matching ProductCard */}
+       {/* Category Badge */}
        <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
           <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">
             {post.category || "JOURNAL"}
@@ -31,7 +31,7 @@ const BlogCard = ({ post }) => (
        </div>
     </div>
 
-    {/* Info Section - Matching ProductCard */}
+    {/* Info Section */}
     <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
        <h3 className="text-xs md:text-base font-medium heading-font text-black/80 group-hover:text-black transition-colors uppercase">
           {post.title}
@@ -42,7 +42,7 @@ const BlogCard = ({ post }) => (
              {post.date}
           </span>
           <span className="text-[7px] md:text-[9px] font-bold text-black/40 uppercase tracking-[0.1em]">
-             Read Story — Archive
+             {readMoreLabel}
           </span>
        </div>
     </div>
@@ -82,14 +82,14 @@ export default function BlogSection() {
   }, []);
 
   return (
-    <section className="py-16 md:py-20 bg-white overflow-hidden border-b border-black/5">
+    <section className="py-16 md:py-20 bg-[var(--background)] overflow-hidden border-b border-black/5">
       <div className="container mx-auto px-6 md:px-16">
         
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
              <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
                 <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
-                  PAIRO ARCHIVE
+                  {blogs.label}
                 </span>
              </div>
              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
@@ -126,15 +126,15 @@ export default function BlogSection() {
           >
             {posts.map((post) => (
               <div key={post.id} className="w-[75vw] sm:w-[45vw] md:w-[35vw] lg:w-[22.5vw] shrink-0 snap-start">
-                <BlogCard post={post} />
+                <BlogCard post={post} readMoreLabel={blogs.readMore} />
               </div>
             ))}
             
-            {/* Featured Product Promo Card - Also matching the carousel item width */}
+            {/* Featured Product Promo Card */}
             <div className="w-[75vw] sm:w-[45vw] md:w-[35vw] lg:w-[22.5vw] shrink-0 snap-start">
                <div className="h-full bg-black text-white p-8 md:p-10 rounded-[16px] md:rounded-[24px] flex flex-col justify-between relative overflow-hidden group min-h-[300px] md:min-h-[400px]">
                   <div className="relative z-10 space-y-4">
-                     <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">ARCHIVE SHOP</span>
+                     <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">{blogs.featuredProduct.label}</span>
                      <h3 className="text-xl md:text-2xl font-bold heading-font uppercase leading-tight">
                         {blogs.featuredProduct.name}
                      </h3>
@@ -146,11 +146,11 @@ export default function BlogSection() {
                     href={`/product/${blogs.featuredProduct.id}`}
                     className="relative z-10 flex items-center justify-center gap-3 w-full bg-white text-black py-3.5 md:py-4 rounded-lg md:rounded-xl font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFC633] transition-all shadow-xl active:scale-95"
                   >
-                    Shop archive
+                    {blogs.featuredProduct.buttonText}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <div className="absolute -bottom-6 -right-6 w-32 h-32 md:w-48 md:h-48 opacity-20 group-hover:scale-110 transition-transform duration-1000">
-                     <img src={blogs.featuredProduct.image} className="w-full h-full object-cover rounded-[16px]" />
+                     <img src={blogs.featuredProduct.image} alt="Featured" className="w-full h-full object-cover rounded-[16px]" />
                   </div>
                </div>
             </div>

@@ -43,6 +43,10 @@
         "buttonText": "View Coats"
       }
     ],
+    "labels": {
+      "viewCollection": "View Collection",
+      "statsHeading": "Performance Stats"
+    },
     "stats": [
       { "value": "50+", "label": "Handcrafted Styles" },
       { "value": "100%", "label": "Genuine Sheepskin" },
@@ -50,27 +54,43 @@
     ],
     "brands": ["VOGUE", "GQ", "ESQUIRE", "BAZAAR", "ELLE"]
   },
-  "categories": [
-    {
-      "name": "Men",
-      "slug": "men",
-      "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800",
-      "className": "col-span-1"
-    },
-    {
-      "name": "Women",
-      "slug": "women",
-      "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=800",
-      "className": "col-span-1"
-    },
-    {
-      "name": "Coats",
-      "slug": "coats",
-      "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=800",
-      "className": "col-span-1 lg:col-span-3"
-    }
-  ],
+  "categories": {
+    "title": "Shop By Category",
+    "label": "PAIRO ARCHIVES",
+    "viewAll": "Explore All Collection",
+    "exploreSingle": "Explore",
+    "exploreFull": "Explore Full Collection",
+    "items": [
+      {
+        "name": "Men",
+        "slug": "men",
+        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=800",
+        "className": "col-span-1"
+      },
+      {
+        "name": "Women",
+        "slug": "women",
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=800",
+        "className": "col-span-1"
+      },
+      {
+        "name": "Coats",
+        "slug": "coats",
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=800",
+        "className": "col-span-1 lg:col-span-3"
+      }
+    ]
+  },
   "products": {
+    "labels": {
+      "newArrivals": "New Arrivals",
+      "topSelling": "Best Sellers",
+      "shopAll": "Shop All",
+      "seriesLabel": "PAIRO SERIES",
+      "archiveIndex": "Archive Index",
+      "addToBag": "Add to Bag",
+      "viewDetails": "View Details"
+    },
     "newArrivals": [
       {
         "id": 1,
@@ -79,7 +99,9 @@
         "price": 890,
         "rating": 4.9,
         "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500",
-        "image2": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500"
+        "image2": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Black", "Brown"],
+        "sizes": ["S", "M", "L", "XL"]
       },
       {
         "id": 2,
@@ -89,7 +111,9 @@
         "oldPrice": 850,
         "rating": 4.8,
         "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
-        "image2": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500"
+        "image2": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Black", "Tan"],
+        "sizes": ["S", "M", "L"]
       },
       {
         "id": 3,
@@ -98,7 +122,9 @@
         "price": 1200,
         "rating": 5.0,
         "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
-        "image2": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+        "image2": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Brown", "Camel"],
+        "sizes": ["M", "L", "XL", "XXL"]
       },
       {
         "id": 4,
@@ -107,7 +133,9 @@
         "price": 640,
         "oldPrice": 720,
         "rating": 4.7,
-        "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500"
+        "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Tan", "Camel"],
+        "sizes": ["S", "M", "L"]
       }
     ],
     "topSelling": [
@@ -118,7 +146,9 @@
         "price": 1500,
         "oldPrice": 1800,
         "rating": 5.0,
-        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Black"],
+        "sizes": ["S", "M", "L", "XL"]
       },
       {
         "id": 6,
@@ -126,7 +156,9 @@
         "category": "Men",
         "price": 980,
         "rating": 4.9,
-        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500"
+        "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Black"],
+        "sizes": ["M", "L", "XL"]
       },
       {
         "id": 7,
@@ -134,7 +166,9 @@
         "category": "Women",
         "price": 820,
         "rating": 4.6,
-        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500"
+        "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Navy", "Black"],
+        "sizes": ["S", "M", "L"]
       },
       {
         "id": 8,
@@ -142,7 +176,9 @@
         "category": "Coats",
         "price": 450,
         "rating": 4.4,
-        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500"
+        "image": "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=500",
+        "colors": ["Brown", "Tan"],
+        "sizes": ["S", "M", "L"]
       }
     ]
   },
@@ -152,6 +188,13 @@
     "commonDescription": "Our premium shearling jackets are handcrafted using the finest ethically sourced sheepskin. Designed to provide maximum warmth in sub-zero temperatures while maintaining a sophisticated, high-fashion silhouette."
   },
   "filters": {
+    "labels": {
+      "category": "Category",
+      "price": "Price Range",
+      "color": "Color",
+      "size": "Size",
+      "style": "Style"
+    },
     "categories": ["Men", "Women", "Coats"],
     "priceRange": { "min": 200, "max": 2000 },
     "colors": ["Black", "Brown", "Tan", "Camel", "Navy"],
@@ -160,6 +203,10 @@
   },
   "testimonials": {
     "title": "WHAT OUR CLIENTS SAY",
+    "label": "PAIRO ARCHIVE",
+    "buttonText": "Join The Archive",
+    "verifiedLabel": "Verified Member",
+    "perspectiveLabel": "Verified Archive Perspective — 0.1",
     "reviews": [
       {
         "name": "Michael R.",
@@ -206,9 +253,13 @@
   },
   "blogs": {
     "title": "THE EDITORIAL ARCHIVE",
+    "label": "PAIRO ARCHIVE",
+    "readMore": "Read Story — Archive",
     "featuredProduct": {
       "id": 1,
+      "label": "ARCHIVE SHOP",
       "name": "The Heritage Aviator",
+      "buttonText": "Shop archive",
       "tagline": "A Modern Classic",
       "description": "The ultimate expression of our shearling craftsmanship. Hand-cut and sewn for a lifetime of wear.",
       "price": 890,
@@ -246,5 +297,117 @@
         "content": "Full story content about heritage..."
       }
     ]
+  },
+  "about": {
+    "hero": {
+      "title": "Quality Jackets Made to Last",
+      "subtitle": "We make handmade shearling jackets with a focus on comfort and high-quality materials.",
+      "label": "Founded in 1994",
+      "buttonText": "Discover Our Story",
+      "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=2000"
+    },
+    "story": {
+      "label": "Our Story",
+      "title": "Traditional Methods, Modern Style.",
+      "description": "We don't just make jackets; we focus on every detail. Every stitch is carefully placed, and every material is hand-picked. Our process is simple: we take our time to make things right.",
+      "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=1000",
+      "features": [
+        {
+          "title": "Materials",
+          "desc": "Highest grade double-faced shearling from prestigious Spanish and Italian tanneries."
+        },
+        {
+          "title": "Handmade",
+          "desc": "Hand-cut and hand-sewn by master artisans with decades of experience."
+        }
+      ]
+    },
+    "studio": {
+      "label": "Our Studio",
+      "title": "Where We Work",
+      "images": [
+        "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=600",
+        "https://images.unsplash.com/photo-1539533377285-a42a8830ce11?auto=format&fit=crop&q=80&w=600",
+        "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=600",
+        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80&w=600"
+      ]
+    },
+    "promise": {
+      "label": "Our Commitment",
+      "title": "Our Promise",
+      "description": "A jacket from our studio is built to last. We stand by our work and offer services to keep your jacket in great condition for years to come.",
+      "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=1000",
+      "overlayTitle": "Our Standard",
+      "overlaySubtitle": "Quality Guaranteed Since 1994",
+      "items": [
+        {
+          "title": "Free Repairs",
+          "desc": "We offer free repair services for life. We make sure your jacket stays in perfect shape so you can wear it for a long time."
+        },
+        {
+          "title": "Fair Sourcing",
+          "desc": "We only use materials from tanneries that follow strict environmental and animal welfare rules."
+        }
+      ],
+      "stats": [
+        { "label": "Craft Time", "value": "14 DAYS" },
+        { "label": "Heritage", "value": "30 YEARS" }
+      ]
+    },
+    "cta": {
+      "title": "Experience Pairo",
+      "shopNow": "Shop Now",
+      "contactUs": "Contact Us"
+    }
+  },
+  "contact": {
+    "hero": {
+      "label": "Customer Support",
+      "title": "Get in Touch with Our Team",
+      "subtitle": "We are here to help with your questions about sizing, orders, or custom jackets.",
+      "buttonText": "Send a Message",
+      "image": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=2000"
+    },
+    "details": {
+      "office": {
+        "label": "Our Office",
+        "title": "London Studio",
+        "address": "27 Savile Row, Mayfair London, W1S 2ER, United Kingdom"
+      },
+      "channels": [
+        { "label": "Email Us", "value": "hello@pairo.com", "type": "email" },
+        { "label": "Call Us", "value": "+44 (0) 20 7946 0958", "type": "phone" }
+      ],
+      "socialLabel": "Social Media",
+      "stores": {
+        "title": "Our Stores",
+        "cities": "London — Milan — New York — Tokyo",
+        "buttonText": "Find a Store"
+      }
+    },
+    "form": {
+      "title": "Send a Message",
+      "subtitle": "Typically responds within 24 hours",
+      "buttonText": "Send Message",
+      "subjects": ["General Question", "Help with Sizing", "Custom Orders", "Shipping Info"]
+    },
+    "map": {
+      "title": "Our Flagship Store",
+      "description": "Visit us for a custom fitting at our studio in London.",
+      "image": "https://images.unsplash.com/photo-1544022613-e87ce71c8599?auto=format&fit=crop&q=80&w=2000"
+    }
+  },
+  "search": {
+    "placeholder": "Search...",
+    "close": "Close",
+    "suggestedDepartments": "Suggested Departments",
+    "trendingSearches": "Trending Searches",
+    "matchingProducts": "Matching Products",
+    "noProductsFound": "No products found for",
+    "popularCategories": "Popular Categories",
+    "featuredCollection": "Featured Collection",
+    "featuredTitle": "Winter '24 Essentials",
+    "shopCollection": "Shop Collection",
+    "trending": ["Shearling Jackets", "Aviator Style", "Winter Coats", "New Arrivals"]
   }
 }

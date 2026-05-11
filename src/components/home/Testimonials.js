@@ -5,7 +5,7 @@ import { Star, ChevronLeft, ChevronRight, CheckCircle2, ArrowRight } from "lucid
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import siteData from "@/lib/data.json";
 
-const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
+const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -26,10 +26,6 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
     mouseY.set(0);
   };
 
-  // Logic for side cards
-  const isLeft = position < 0;
-  const isRight = position > 0;
-
   return (
     <motion.div
       drag={isActive ? "x" : false}
@@ -44,7 +40,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
       initial={false}
       animate={{
         scale: isActive ? 1 : 0.75,
-        x: position * 220, // Clearly visible on sides
+        x: position * 220,
         zIndex: isActive ? 30 : 20 - Math.abs(position),
         opacity: isActive ? 1 : 0.5,
         rotateY: position * -35,
@@ -76,7 +72,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
               {review.name}
             </h4>
             <span className="text-black/30 text-[7px] md:text-[9px] font-bold uppercase tracking-[0.2em] mt-1.5">
-              Verified Member
+              {labels.verifiedLabel}
             </span>
           </div>
         </div>
@@ -84,7 +80,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-[#FFC633] text-[#FFC633]' : 'text-black/5'}`}
+              className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-[var(--rating)] text-[var(--rating)]' : 'text-black/10'}`}
             />
           ))}
         </div>
@@ -92,7 +88,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
 
       <div className="w-full h-px bg-black/[0.05]" />
 
-      {/* Review Text - Compact & Decent */}
+      {/* Review Text */}
       <div style={{ transform: "translateZ(30px)" }} className="relative">
         <p className="text-black text-xs md:text-lg font-medium leading-[1.5] heading-font tracking-tight italic">
           "{review.text}"
@@ -105,7 +101,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe }) => {
           <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-white" />
         </div>
         <span className="text-black/30 text-[8px] md:text-[9px] font-bold uppercase tracking-[0.2em]">
-          Verified Archive Perspective — 0.1
+          {labels.perspectiveLabel}
         </span>
       </div>
     </motion.div>
@@ -127,30 +123,26 @@ export default function Testimonials() {
 
   const getPosition = (index) => {
     let diff = index - currentIndex;
-    // Handle infinite wrap
     if (diff > reviews.length / 2) diff -= reviews.length;
     if (diff < -reviews.length / 2) diff += reviews.length;
     return diff;
   };
 
   return (
-    <section className="py-16 md:py-20 bg-white overflow-hidden relative">
+    <section className="py-16 md:py-20 bg-[var(--background)] overflow-hidden relative">
       <div className="container mx-auto px-4 md:px-8 relative z-10">
-
-        {/* Compact Site Heading with Uniform Alignment */}
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
               <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
-                PAIRO ARCHIVE
+                {testimonials.label}
               </span>
             </div>
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">
-              {testimonials.title || "The Voices"}
+              {testimonials.title}
             </h2>
           </div>
 
-          {/* Minimalist Swiper Controls */}
           <div className="flex gap-2 shrink-0">
             <button
               onClick={() => handleSwipe("prev")}
@@ -167,14 +159,10 @@ export default function Testimonials() {
           </div>
         </div>
 
-        {/* Compact 3D Swiper - Showing Left, Center, and Right */}
         <div className="relative h-[350px] md:h-[500px] flex items-center justify-center perspective-[2000px]">
           {reviews.map((review, index) => {
             const position = getPosition(index);
-            const isVisible = Math.abs(position) <= 1;
-
-            if (!isVisible) return null;
-
+            if (Math.abs(position) > 1) return null;
             return (
               <TestimonialCard
                 key={index}
@@ -182,19 +170,19 @@ export default function Testimonials() {
                 isActive={position === 0}
                 position={position}
                 onSwipe={handleSwipe}
+                labels={testimonials}
               />
             );
           })}
         </div>
 
-        {/* Optimized Footer */}
         <div className="flex flex-col items-center">
           <button className="group relative overflow-hidden bg-black text-white px-8 md:px-12 py-3.5 md:py-4.5 rounded-full font-bold text-[9px] md:text-xs uppercase tracking-[0.3em] shadow-xl transition-all active:scale-95">
             <span className="relative z-10 flex items-center gap-3 group-hover:text-black transition-colors duration-500">
-              Join The Archive
+              {testimonials.buttonText}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </span>
-            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+            <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
           </button>
 
           <div className="mt-10 md:mt-14 flex gap-3">

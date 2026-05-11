@@ -16,7 +16,7 @@ export default function ProductCard({ product }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Product Image Container */}
-      <div className="relative aspect-square bg-[#F7F7F7] rounded-[16px] md:rounded-[24px] overflow-hidden border border-black/5">
+      <div className="relative aspect-square bg-[var(--secondary)] rounded-[16px] md:rounded-[24px] overflow-hidden border border-[var(--border)]">
         <Link href={`/product/${product.id}`} className="block h-full w-full">
           {/* Main Image */}
           <motion.div
@@ -104,7 +104,7 @@ export default function ProductCard({ product }) {
                 {[...Array(5)].map((_, i) => (
                   <Star 
                     key={i} 
-                    className={`w-2 md:w-2.5 h-2 md:h-2.5 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-black/10 text-black/10'}`} 
+                    className={`w-2 md:w-2.5 h-2 md:h-2.5 ${i < Math.floor(product.rating) ? 'fill-[var(--rating)] text-[var(--rating)]' : 'fill-[var(--black)]/10 text-[var(--black)]/10'}`} 
                   />
                 ))}
               </div>

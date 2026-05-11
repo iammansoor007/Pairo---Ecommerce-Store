@@ -44,7 +44,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white text-black pt-16 md:pt-24 pb-12 overflow-hidden relative z-10 border-t border-black/5">
+    <footer className="bg-[var(--black)] text-[var(--sand)] pt-16 md:pt-24 pb-12 overflow-hidden relative z-10 border-t border-white/5">
       <div className="container mx-auto px-6 md:px-16 relative z-20">
         
         {/* Top Header */}
@@ -53,7 +53,7 @@ export default function Footer() {
            whileInView="visible"
            viewport={{ once: false }}
            variants={containerVariants}
-           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-black/5"
+           className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-white/5"
         >
            <motion.div variants={itemVariants}>
               <Link href="/" className="flex-shrink-0">
@@ -62,18 +62,18 @@ export default function Footer() {
                    alt="Pairo Logo" 
                    width={110} 
                    height={40} 
-                   className="object-contain grayscale hover:grayscale-0 transition-all duration-700" 
+                   className="object-contain" 
                  />
               </Link>
            </motion.div>
            <motion.div variants={itemVariants} className="flex items-center gap-8">
-              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+              <Link href="#" className="text-[var(--sand)]/30 hover:text-[var(--sand)] transition-colors">
                  <Camera className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+              <Link href="#" className="text-[var(--sand)]/30 hover:text-[var(--sand)] transition-colors">
                  <MessageSquare className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-black/30 hover:text-black transition-colors">
+              <Link href="#" className="text-[var(--sand)]/30 hover:text-[var(--sand)] transition-colors">
                  <Globe className="w-5 h-5" />
               </Link>
            </motion.div>
@@ -89,14 +89,14 @@ export default function Footer() {
         >
            {/* Elite List */}
            <motion.div variants={itemVariants} className="space-y-6">
-              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Elite List</h3>
+              <h3 className="text-[10px] font-bold text-[var(--sand)]/30 uppercase tracking-[0.4em]">Elite List</h3>
               <div className="relative group max-w-sm">
                  <input 
                    type="email" 
                    placeholder="JOIN THE ARCHIVE"
-                   className="w-full bg-transparent border-b border-black/10 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-black transition-colors uppercase text-black"
+                   className="w-full bg-transparent border-b border-white/10 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-[var(--sand)] transition-colors uppercase text-[var(--sand)]"
                  />
-                 <button className="absolute right-0 top-1/2 -translate-y-1/2 text-black/20 group-hover:text-black transition-colors">
+                 <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[var(--sand)]/20 group-hover:text-[var(--sand)] transition-colors">
                     <ArrowUpRight className="w-4 h-4" />
                  </button>
               </div>
@@ -104,11 +104,11 @@ export default function Footer() {
 
            {/* Editorial */}
            <motion.div variants={itemVariants} className="space-y-6">
-              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Editorial</h3>
+              <h3 className="text-[10px] font-bold text-[var(--sand)]/30 uppercase tracking-[0.4em]">Editorial</h3>
               <ul className="space-y-3">
                  {blogs.posts.slice(0, 4).map((post) => (
                     <li key={post.id}>
-                       <Link href={`/blog/${post.slug}`} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                       <Link href={`/blog/${post.slug}`} className="text-[var(--sand)]/40 hover:text-[var(--sand)] font-bold text-[9px] uppercase tracking-widest transition-colors block">
                           {post.title}
                        </Link>
                     </li>
@@ -118,11 +118,11 @@ export default function Footer() {
 
            {/* Collections */}
            <motion.div variants={itemVariants} className="space-y-6">
-              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Collections</h3>
+              <h3 className="text-[10px] font-bold text-[var(--sand)]/30 uppercase tracking-[0.4em]">Collections</h3>
               <ul className="space-y-3">
-                 {categories.map((cat) => (
+                 {categories.items.map((cat) => (
                     <li key={cat.slug}>
-                       <Link href={`/shop?category=${cat.slug}`} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                       <Link href={`/shop?category=${cat.slug}`} className="text-[var(--sand)]/40 hover:text-[var(--sand)] font-bold text-[9px] uppercase tracking-widest transition-colors block">
                           {cat.name}
                        </Link>
                     </li>
@@ -132,13 +132,13 @@ export default function Footer() {
 
            {/* Information */}
            <motion.div variants={itemVariants} className="space-y-6">
-              <h3 className="text-[10px] font-bold text-black uppercase tracking-[0.4em]">Information</h3>
+              <h3 className="text-[10px] font-bold text-[var(--sand)]/30 uppercase tracking-[0.4em]">Information</h3>
               <ul className="space-y-3">
-                 <li key="f-about"><Link href="/about" className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">Our Story</Link></li>
-                 <li key="f-contact"><Link href="/contact" className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">Contact</Link></li>
+                 <li key="f-about"><Link href="/about" className="text-[var(--sand)]/40 hover:text-[var(--sand)] font-bold text-[9px] uppercase tracking-widest transition-colors block">Our Story</Link></li>
+                 <li key="f-contact"><Link href="/contact" className="text-[var(--sand)]/40 hover:text-[var(--sand)] font-bold text-[9px] uppercase tracking-widest transition-colors block">Contact</Link></li>
                  {footer.sections[1].links.map((link) => (
                     <li key={`inf-${link.name}`}>
-                       <Link href={link.href} className="text-black/40 hover:text-black font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                       <Link href={link.href} className="text-[var(--sand)]/40 hover:text-[var(--sand)] font-bold text-[9px] uppercase tracking-widest transition-colors block">
                           {link.name}
                        </Link>
                     </li>
@@ -151,7 +151,7 @@ export default function Footer() {
       {/* Massive Brand Reveal - High Visibility Reveal */}
       <div className="relative my-8 md:my-12">
          <div className="text-center px-4">
-            <div className="text-[25vw] font-bold heading-font leading-[0.75] uppercase tracking-tighter text-black inline-flex justify-center flex-wrap">
+            <div className="text-[25vw] font-bold heading-font leading-[0.75] uppercase tracking-tighter text-[var(--sand)] inline-flex justify-center flex-wrap">
                {"PAIRO".split("").map((letter, i) => (
                  <motion.span 
                     key={`letter-${i}`}
@@ -171,13 +171,13 @@ export default function Footer() {
 
       {/* Bottom Metadata Bar */}
       <div className="container mx-auto px-6 md:px-16 relative z-20">
-         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-black/5">
-            <p className="text-black/20 text-[9px] font-bold uppercase tracking-widest">
+         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-white/5">
+            <p className="text-[var(--sand)]/20 text-[9px] font-bold uppercase tracking-widest">
                PAIRO — ALL RIGHTS RESERVED © 2026.
             </p>
             <div className="flex gap-10">
-               <Link href="#" className="text-black/20 hover:text-black text-[9px] font-bold uppercase tracking-widest transition-colors">Privacy</Link>
-               <Link href="#" className="text-black/20 hover:text-black text-[9px] font-bold uppercase tracking-widest transition-colors">Terms</Link>
+               <Link href="#" className="text-[var(--sand)]/20 hover:text-[var(--sand)] text-[9px] font-bold uppercase tracking-widest transition-colors">Privacy</Link>
+               <Link href="#" className="text-[var(--sand)]/20 hover:text-[var(--sand)] text-[9px] font-bold uppercase tracking-widest transition-colors">Terms</Link>
             </div>
          </div>
       </div>
