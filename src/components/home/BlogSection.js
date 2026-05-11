@@ -82,8 +82,8 @@ export default function BlogSection() {
   }, []);
 
   return (
-    <section className="py-16 md:py-20 bg-[var(--background)] overflow-hidden border-b border-black/5">
-      <div className="container mx-auto px-6 md:px-16">
+    <section className="py-12 md:py-16 overflow-hidden">
+      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">

@@ -24,7 +24,7 @@ export default function FeaturedBanner() {
         </div>
 
         {/* Content Area - Responsive Fitting */}
-        <div className="w-full relative z-10 px-6 md:px-12 lg:px-20 py-10 md:py-0">
+        <div className="w-full relative z-10 px-6 md:px-16 py-10 md:py-0">
           <div className="max-w-full md:max-w-lg lg:max-w-xl space-y-6 md:space-y-8">
             {/* Minimalist Badges */}
             <div className="flex flex-wrap gap-2">

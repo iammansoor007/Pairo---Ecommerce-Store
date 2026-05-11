@@ -40,22 +40,12 @@ export default function ContactPage() {
 
   return (
     <main className="bg-white">
-      {/* Hero Section - Synchronized with Main Hero Style */}
+      {/* Hero Section */}
       <section className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden mx-4 md:mx-8 my-6 rounded-[32px] md:rounded-[40px] shadow-2xl bg-black">
         <div className="absolute inset-0">
-          <Image
-            src={contact.hero.image}
-            alt="Contact Pairo"
-            fill
-            className="object-cover brightness-75"
-            priority
-          />
+          <Image src={contact.hero.image} alt="Contact Pairo" fill className="object-cover brightness-75" priority />
         </div>
-
-        {/* Luxury Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent" />
-
-        {/* Content Area */}
         <div className="container mx-auto px-6 md:px-16 h-full flex items-center relative z-10">
           <div className="max-w-3xl">
             <motion.div
@@ -66,19 +56,10 @@ export default function ContactPage() {
             >
               <div className="flex items-center gap-3">
                 <div className="h-[1.5px] w-8 bg-white/30" />
-                <span className="text-white/50 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase heading-font">
-                  {contact.hero.label}
-                </span>
+                <span className="text-white/50 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase heading-font">{contact.hero.label}</span>
               </div>
-
-              <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-white heading-font leading-[0.95] tracking-tighter uppercase">
-                {contact.hero.title}
-              </h1>
-
-              <p className="text-white/50 text-sm md:text-xl max-w-xl leading-relaxed font-sans">
-                {contact.hero.subtitle}
-              </p>
-
+              <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-white heading-font leading-[0.95] tracking-tighter uppercase">{contact.hero.title}</h1>
+              <p className="text-white/50 text-sm md:text-xl max-w-xl leading-relaxed font-sans">{contact.hero.subtitle}</p>
               <div className="flex flex-wrap items-center gap-6 pt-4">
                 <button className="group relative overflow-hidden bg-white text-black px-10 md:px-12 py-4 md:py-5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl active:scale-95">
                   <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors duration-500">
@@ -91,34 +72,21 @@ export default function ContactPage() {
             </motion.div>
           </div>
         </div>
-
-        {/* Marquee Synchronization */}
         <MarqueeSection />
       </section>
 
-      <section className="py-24 md:py-32">
-        <div className="container mx-auto px-6 md:px-16">
+      {/* Main Content Section - Card Layout */}
+      <section className="py-12 md:py-16">
+        <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
           <div className="grid lg:grid-cols-2 gap-20">
-            
             {/* Contact Information */}
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={containerVariants}
-              className="space-y-16"
-            >
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="space-y-16">
               <div className="space-y-8">
                 <motion.div variants={itemVariants} className="space-y-4">
                   <span className="text-[10px] font-bold tracking-[0.3em] text-black/30 uppercase">{contact.details.office.label}</span>
-                  <h2 className="text-4xl md:text-5xl font-bold heading-font tracking-tighter uppercase leading-none">
-                    {contact.details.office.title}
-                  </h2>
-                  <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-sm">
-                    {contact.details.office.address}
-                  </p>
+                  <h2 className="text-4xl md:text-5xl font-bold heading-font tracking-tighter uppercase leading-none">{contact.details.office.title}</h2>
+                  <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-sm">{contact.details.office.address}</p>
                 </motion.div>
-
                 <div className="grid sm:grid-cols-2 gap-8 pt-8">
                   {contact.details.channels.map((channel, i) => (
                     <motion.div key={i} variants={itemVariants} className="p-8 rounded-3xl bg-black/[0.02] border border-black/[0.05] space-y-4">
@@ -128,37 +96,23 @@ export default function ContactPage() {
                   ))}
                 </div>
               </div>
-
               <motion.div variants={itemVariants} className="space-y-8 pt-8 border-t border-black/5">
                 <span className="text-[10px] font-bold tracking-[0.3em] text-black/30 uppercase">{contact.details.socialLabel}</span>
                 <div className="flex gap-4">
-                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90">
-                    <InstagramIcon />
-                  </button>
-                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90">
-                    <TwitterIcon />
-                  </button>
-                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90">
-                    <LinkedinIcon />
-                  </button>
+                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90"><InstagramIcon /></button>
+                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90"><TwitterIcon /></button>
+                  <button className="w-14 h-14 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 shadow-lg active:scale-90"><LinkedinIcon /></button>
                 </div>
               </motion.div>
             </motion.div>
 
             {/* Contact Form Card */}
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-black text-white p-8 md:p-16 rounded-[40px] md:rounded-[60px] shadow-2xl relative overflow-hidden"
-            >
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} className="bg-black text-white p-8 md:p-16 rounded-[40px] md:rounded-[60px] shadow-2xl relative overflow-hidden">
               <div className="relative z-10 space-y-12">
                 <div className="space-y-4">
                   <h3 className="text-3xl md:text-4xl font-bold heading-font uppercase tracking-tighter">{contact.form.title}</h3>
                   <p className="text-white/40 text-sm uppercase tracking-widest">{contact.form.subtitle}</p>
                 </div>
-
                 <form className="space-y-8">
                   <div className="grid sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
@@ -170,43 +124,33 @@ export default function ContactPage() {
                       <input type="email" className="w-full bg-white/5 border-b border-white/10 py-4 px-4 rounded-xl focus:outline-none focus:border-white transition-colors text-sm" placeholder="john@example.com" />
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 ml-1">Subject</label>
                     <select className="w-full bg-white/5 border-b border-white/10 py-4 px-4 rounded-xl focus:outline-none focus:border-white transition-colors text-sm appearance-none cursor-pointer">
-                      {contact.form.subjects.map(sub => (
-                        <option key={sub} className="bg-black text-white">{sub}</option>
-                      ))}
+                      {contact.form.subjects.map(sub => (<option key={sub} className="bg-black text-white">{sub}</option>))}
                     </select>
                   </div>
-
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-white/30 ml-1">Message</label>
                     <textarea rows="4" className="w-full bg-white/5 border-b border-white/10 py-4 px-4 rounded-xl focus:outline-none focus:border-white transition-colors text-sm resize-none" placeholder="Your message here..."></textarea>
                   </div>
-
-                  <button className="w-full bg-white text-black py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-xl hover:bg-[#FFC633] transition-all active:scale-[0.98]">
-                    {contact.form.buttonText}
-                  </button>
+                  <button className="w-full bg-white text-black py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-xl hover:bg-[#FFC633] transition-all active:scale-[0.98]">{contact.form.buttonText}</button>
                 </form>
               </div>
             </motion.div>
-
           </div>
         </div>
       </section>
 
-      {/* Grid Location Visual */}
-      <section className="px-4 md:px-8 pb-12">
-         <div className="bg-black rounded-[32px] md:rounded-[48px] overflow-hidden relative min-h-[400px] md:min-h-[600px] flex items-center justify-center text-center p-8">
+      {/* Location Section - Matches Card Style */}
+      <section className="pb-12 md:pb-16">
+         <div className="mx-4 md:mx-8 bg-black rounded-[32px] md:rounded-[48px] overflow-hidden relative min-h-[400px] md:min-h-[600px] flex items-center justify-center text-center p-8 shadow-2xl">
             <Image src={contact.map.image} alt="Location" fill className="object-cover opacity-30" />
             <div className="relative z-10 max-w-2xl space-y-6">
                <h3 className="text-4xl md:text-6xl font-bold heading-font text-white uppercase tracking-tighter">{contact.map.title}</h3>
                <p className="text-lg text-white/50 leading-relaxed">{contact.map.description}</p>
                <div className="pt-6">
-                  <button className="px-10 py-4 border border-white/20 text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                     {contact.details.stores.buttonText}
-                  </button>
+                  <button className="px-10 py-4 border border-white/20 text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">{contact.details.stores.buttonText}</button>
                </div>
             </div>
          </div>

@@ -38,8 +38,8 @@ export default function ProductSection({ title, products }) {
   }, []);
 
   return (
-    <section className="py-16 md:py-20 bg-[var(--sand)] overflow-hidden border-b border-[var(--border)] last:border-0">
-      <div className="container mx-auto px-6 md:px-16">
+    <section className="py-12 md:py-16">
+      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         {/* Header Section with Uniform Alignment */}
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">

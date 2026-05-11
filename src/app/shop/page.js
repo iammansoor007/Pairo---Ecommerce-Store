@@ -198,7 +198,7 @@ function ShopContent() {
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="container mx-auto px-4 md:px-16 py-8 md:py-16">
+      <div className="container mx-auto px-6 md:px-16 py-8 md:py-16">
         {/* Simplified Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
           <div className="space-y-4">

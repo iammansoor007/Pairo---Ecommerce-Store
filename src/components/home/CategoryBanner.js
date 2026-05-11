@@ -20,8 +20,8 @@ export default function CategoryBanner() {
   ];
 
   return (
-    <section className="py-12 md:py-20 bg-[var(--background)]">
-      <div className="container mx-auto px-4 md:px-8">
+    <section className="py-12 md:py-16">
+      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         {/* Header - Aligned to Site Style */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 md:mb-12 gap-4">
           <div className="space-y-2">

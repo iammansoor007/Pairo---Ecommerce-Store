@@ -129,8 +129,8 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-16 md:py-20 bg-[var(--background)] overflow-hidden relative">
-      <div className="container mx-auto px-4 md:px-8 relative z-10">
+    <section className="py-12 md:py-16 overflow-hidden relative">
+      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16 relative z-10">
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">

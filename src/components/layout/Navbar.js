@@ -59,7 +59,7 @@ export default function Navbar() {
           scrolled ? "bg-white/90 backdrop-blur-xl shadow-sm" : "bg-white"
         }`}
       >
-        <div className="container mx-auto px-4 md:px-16">
+        <div className="container mx-auto px-6 md:px-16">
           <nav className="flex items-center justify-between">
             {/* Left: Logo */}
             <div className="flex-shrink-0">
