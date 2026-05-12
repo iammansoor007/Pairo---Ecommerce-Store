@@ -23,8 +23,8 @@ function ShopContent() {
     fetch("/api/products")
       .then(res => res.json())
       .then(data => {
-        // Handle both grouped and flat responses
-        const flatProducts = data.newArrivals ? [...data.newArrivals, ...data.topSelling] : data;
+        // Handle both grouped (homepage) and flat responses
+        const flatProducts = data.all ? data.all : (data.newArrivals ? [...data.newArrivals, ...data.topSelling] : data);
         setProducts(flatProducts);
         setLoading(false);
       });

@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
 
 const DiscountSchema = new mongoose.Schema({
-  code: { type: String, required: true, unique: true },
+  code: { type: String, required: true, unique: true, index: true },
   type: { type: String, enum: ['percentage', 'fixed'], default: 'percentage' },
   value: { type: Number, required: true },
   minPurchase: { type: Number, default: 0 },
   startDate: { type: Date, default: Date.now },
   endDate: { type: Date },
-  usageLimit: { type: Number },
+  usageLimit: { type: Number }, // Total times this code can be used
   usageCount: { type: Number, default: 0 },
-  isActive: { type: Boolean, default: true },
-  isDeleted: { type: Boolean, default: false }
+  usagePerUserLimit: { type: Number, default: 1 }, // Max times one user can use this
+  isActive: { type: Boolean, default: true, index: true },
+  isDeleted: { type: Boolean, default: false, index: true }
 }, { timestamps: true });
 
 export default mongoose.models.Discount || mongoose.model('Discount', DiscountSchema);

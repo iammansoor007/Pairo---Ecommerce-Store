@@ -71,6 +71,39 @@ body {
   border-color: rgba(26, 26, 26, 0.06);
 }
 
+/* Professional Print Styling */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide admin sidebars, navs, and buttons */
+  aside, 
+  nav, 
+  header,
+  footer,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  main,
+  div[class*="pl-[160px]"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    width: 100% !important;
+  }
+
+  /* Show only the invoice template */
+  #invoice-print {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
 /* Prevent image jumping */
 img {
   content-visibility: auto;

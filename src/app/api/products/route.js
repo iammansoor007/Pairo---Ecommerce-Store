@@ -21,13 +21,13 @@ export async function GET(req) {
     if (category && category !== 'all') query.category = { $regex: new RegExp(category, 'i') };
     if (type) query.type = type;
 
-    const products = await Product.find(query);
+    const products = await Product.find(query).sort({ createdAt: -1 });
     
-    // Group them like data.json for compatibility if no specific query
+    // Group them like data.json for compatibility but include ALL for the shop
     if (!category && !type && !id) {
-      const newArrivals = await Product.find({ ...baseQuery, type: 'newArrival' });
-      const topSelling = await Product.find({ ...baseQuery, type: 'topSelling' });
-      return Response.json({ newArrivals, topSelling });
+      const newArrivals = products.filter(p => p.type === 'newArrival');
+      const topSelling = products.filter(p => p.type === 'topSelling');
+      return Response.json({ newArrivals, topSelling, all: products });
     }
 
     return Response.json(products);
