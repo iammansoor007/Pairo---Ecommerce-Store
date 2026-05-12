@@ -33,7 +33,13 @@ import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 export default async function RootLayout({ children }) {
   await dbConnect();
-  const config = await SiteConfig.findOne({ key: 'main' }).lean();
+  const config = await SiteConfig.findOne({ key: 'main' }).lean() || { 
+    brand: { name: "Pairo", tagline: "Premium Shearling" },
+    navigation: { links: [], offers: ["Welcome to Pairo"] },
+    hero: { slides: [{ title: "Pairo", subtitle: "Handcrafted Luxury", image: "/placeholder.jpg", buttonText: "Shop Now" }], labels: { viewCollection: "View Collection" } },
+    footer: { sections: [{}, { links: [] }] },
+    categories: { items: [] }
+  };
   const sanitizedConfig = JSON.parse(JSON.stringify(config));
 
   return (
