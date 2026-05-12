@@ -170,10 +170,13 @@ export default function CartPage() {
               </div>
 
               <div className="space-y-4">
-                <button className="w-full bg-black text-white h-16 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 hover:bg-black/90 active:scale-[0.98] transition-all shadow-xl shadow-black/10">
+                <Link 
+                  href="/checkout"
+                  className="w-full bg-black text-white h-16 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 hover:bg-black/90 active:scale-[0.98] transition-all shadow-xl shadow-black/10"
+                >
                   Proceed to Checkout
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </Link>
                 <div className="flex items-center justify-center gap-4">
                   <Image src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" width={30} height={20} className="opacity-20 grayscale" />
                   <Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={30} height={20} className="opacity-20 grayscale" />
