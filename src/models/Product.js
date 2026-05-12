@@ -1,19 +1,80 @@
 import mongoose from 'mongoose';
 
 const ProductSchema = new mongoose.Schema({
-  id: { type: Number, unique: true },
+  // Core Info
   name: { type: String, required: true },
-  category: { type: String, required: true },
-  price: { type: Number, required: true },
-  oldPrice: { type: Number },
+  slug: { type: String, unique: true },
+  shortDescription: { type: String },
+  description: { type: String }, // Long Description (Rich Text)
+  status: { type: String, enum: ['Draft', 'Published'], default: 'Draft' },
+  isFeatured: { type: Boolean, default: false },
+  category: { type: String }, // Main category string (Legacy)
+  categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }], // Multi-category support
+  collections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Collection' }],
+  
+  // Pricing & Inventory
+  price: { type: Number, required: true }, // Regular Price
+  compareAtPrice: { type: Number }, // Sale Price
+  sku: { type: String },
+  stock: { type: Number, default: 0 },
+  manageStock: { type: Boolean, default: true },
+  lowStockThreshold: { type: Number, default: 2 },
+  availabilityStatus: { type: String, enum: ['In Stock', 'Out of Stock', 'On Backorder'], default: 'In Stock' },
+
+  // Media
+  images: [{ type: String }], // Array of image URLs/paths
+  image: { type: String }, // Legacy Main Image
+  
+  // Variants (Shopify-style)
+  variants: [{
+    name: String, // e.g. "Size"
+    values: [String] // e.g. ["S", "M", "L"]
+  }],
+  variantCombinations: [{
+    title: String, // e.g. "Black / M"
+    sku: String,
+    price: Number,
+    stock: Number,
+    image: String
+  }],
+
+  // Dynamic Sections
+  narrative: {
+    title: { type: String, default: "Craftsmanship Narrative" },
+    content: String
+  },
+  specifications: [{
+    label: String,
+    value: String
+  }],
+  faqs: [{
+    question: String,
+    answer: String
+  }],
+
+  // SEO
+  seo: {
+    title: String,
+    description: String,
+    canonicalUrl: String,
+    ogImage: String,
+    keywords: [String]
+  },
+
+  // Relations
+  tags: [String],
+  relatedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  upsellProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+
+  // Meta
+  isDeleted: { type: Boolean, default: false },
   rating: { type: Number, default: 0 },
-  image: { type: String, required: true },
-  image2: { type: String },
-  colors: [{ type: String }],
-  sizes: [{ type: String }],
-  details: { type: String },
-  faqs: [{ q: String, a: String }],
-  type: { type: String, enum: ['newArrival', 'topSelling'], required: true }
+  type: { type: String }, // Legacy type (newArrival, etc)
+  id: { type: Number } // Legacy numeric ID
 }, { timestamps: true });
 
+// Ensure unique slugs
+ProductSchema.index({ slug: 1 }, { unique: true, sparse: true });
+
+delete mongoose.models.Product;
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

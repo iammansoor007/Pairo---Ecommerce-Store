@@ -31,6 +31,11 @@ const UserSchema = new mongoose.Schema({
     last4: String,
     expiry: String,
     isDefault: { type: Boolean, default: false }
+  }],
+  activityLog: [{
+    action: String,
+    details: String,
+    timestamp: { type: Date, default: Date.now }
   }]
 }, { timestamps: true });
 

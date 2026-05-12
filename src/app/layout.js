@@ -1,9 +1,6 @@
 import { Inter, Space_Grotesk, Manrope } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
-import CartDrawer from "@/components/layout/CartDrawer";
 import AuthProvider from "@/components/providers/AuthProvider";
 
 import dbConnect from "@/lib/db";
@@ -32,6 +29,8 @@ export const metadata = {
   description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
 };
 
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
+
 export default async function RootLayout({ children }) {
   await dbConnect();
   const config = await SiteConfig.findOne({ key: 'main' }).lean();
@@ -43,10 +42,9 @@ export default async function RootLayout({ children }) {
         <AuthProvider>
           <SiteProvider initialData={sanitizedConfig}>
             <CartProvider>
-              <Navbar />
-              <CartDrawer />
-              <main>{children}</main>
-              <Footer />
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
             </CartProvider>
           </SiteProvider>
         </AuthProvider>

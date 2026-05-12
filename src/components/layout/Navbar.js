@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingCart, User, Menu, X, ChevronDown, LogIn } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, ChevronDown, LogIn, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import logo from '../../assets/png-file.png';
@@ -137,8 +137,8 @@ export default function Navbar() {
                 )}
               </Link>
               
-              <Link 
-                href={mounted && session ? "/profile" : "/login"} 
+                <Link 
+                  href={mounted && session ? "/profile" : "/login"} 
                 className="hidden lg:flex items-center gap-3 p-2 pr-4 hover:bg-black/5 rounded-full transition-all group"
               >
                 <div className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center">

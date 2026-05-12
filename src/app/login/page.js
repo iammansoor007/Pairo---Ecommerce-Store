@@ -23,7 +23,13 @@ export default function LoginPage() {
     if (result.error) {
       setError(result.error);
     } else {
-      router.push("/profile");
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      if (session?.user?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/profile");
+      }
     }
   };
 

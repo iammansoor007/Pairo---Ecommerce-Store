@@ -9,11 +9,23 @@ import ClientTabSystem from "@/components/product/ClientTabSystem";
 
 export default async function ProductDetailPage({ params }) {
   const resolvedParams = await params;
-  const productId = parseInt(resolvedParams.id);
+  const { id: paramId } = resolvedParams;
   
   await dbConnect();
-  const product = await Product.findOne({ id: productId }).lean();
-  const relatedProducts = await Product.find({ type: 'topSelling' }).limit(4).lean();
+  let product;
+  
+  // Try finding by numeric ID first (Legacy)
+  const numericId = parseInt(paramId);
+  if (!isNaN(numericId)) {
+    product = await Product.findOne({ id: numericId, isDeleted: { $ne: true } }).lean();
+  }
+  
+  // Try finding by Slug if not found by ID (Modern)
+  if (!product) {
+    product = await Product.findOne({ slug: paramId, isDeleted: { $ne: true } }).lean();
+  }
+  
+  const relatedProducts = await Product.find({ isDeleted: { $ne: true } }).limit(4).lean();
 
   if (!product) {
     return (
@@ -58,12 +70,12 @@ export default async function ProductDetailPage({ params }) {
               <div className="flex md:flex-col gap-2 md:w-20 order-2 md:order-1 overflow-x-auto md:overflow-y-auto scrollbar-hide shrink-0">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="relative aspect-square md:aspect-square w-20 md:w-full bg-[#F0F0F0] rounded-lg overflow-hidden cursor-pointer shrink-0">
-                    <Image src={product.image} alt="Thumb" fill className="object-cover opacity-60 hover:opacity-100 transition-all" />
+                    <Image src={product.images?.[0] || product.image || "/placeholder.jpg"} alt="Thumb" fill className="object-cover opacity-60 hover:opacity-100 transition-all" />
                   </div>
                 ))}
               </div>
               <div className="relative flex-1 aspect-[3/4] bg-[#F0F0F0] rounded-xl overflow-hidden border border-black/5 order-1 md:order-2">
-                 <Image src={product.image} alt={product.name} fill className="object-cover" priority />
+                 <Image src={product.images?.[0] || product.image || "/placeholder.jpg"} alt={product.name} fill className="object-cover" priority />
               </div>
             </div>
           </div>
@@ -98,7 +110,7 @@ export default async function ProductDetailPage({ params }) {
             </div>
 
             <p className="text-black/50 text-xs md:text-sm leading-relaxed font-medium">
-              {product.details || "A premium handcrafted shearling masterpiece from the Pairo collection."}
+              {product.description || product.details || "A premium handcrafted shearling masterpiece from the Pairo collection."}
             </p>
 
             {/* Use Client Component for interactive parts */}
