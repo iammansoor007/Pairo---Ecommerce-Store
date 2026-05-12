@@ -109,7 +109,7 @@ export default function ProductSection({ title, products }) {
           >
             {products.map((product) => (
               <motion.div 
-                key={product.id} 
+                key={product._id || product.id} 
                 variants={{
                   hidden: { opacity: 0, y: 40, scale: 0.95 },
                   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }

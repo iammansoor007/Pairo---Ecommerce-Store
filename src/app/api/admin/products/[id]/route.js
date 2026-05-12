@@ -4,16 +4,19 @@ import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { NextResponse } from "next/server";
 
-// GET single product
+// GET single product with relations
 export async function GET(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   await dbConnect();
   try {
-    const product = await Product.findById(params.id);
+    const product = await Product.findById(params.id)
+      .populate('categories')
+      .populate('collections')
+      .populate('relatedProducts')
+      .populate('upsellProducts');
+      
     if (!product) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json(product);
   } catch (error) {
@@ -21,34 +24,41 @@ export async function GET(req, { params }) {
   }
 }
 
-// PUT update product
+// PUT update product with full schema support
 export async function PUT(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   await dbConnect();
   try {
     const data = await req.json();
-    const product = await Product.findByIdAndUpdate(params.id, data, { new: true });
+    
+    // Auto-generate slug if it's being updated or missing
+    if (data.name && (!data.slug || data.slug === "")) {
+      data.slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    const product = await Product.findByIdAndUpdate(params.id, data, { new: true, runValidators: true });
     return NextResponse.json(product);
   } catch (error) {
+    console.error("PUT Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// DELETE (Soft delete)
+// DELETE (Move to Trash)
 export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   await dbConnect();
   try {
-    const product = await Product.findByIdAndUpdate(params.id, { isDeleted: true }, { new: true });
-    return NextResponse.json({ message: "Product moved to trash" });
+    const product = await Product.findByIdAndUpdate(params.id, { 
+      isDeleted: true,
+      status: 'Draft' 
+    }, { new: true });
+    
+    return NextResponse.json({ message: "Product moved to trash", product });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

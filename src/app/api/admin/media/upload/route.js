@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Media from "@/models/Media";
 import { NextResponse } from "next/server";

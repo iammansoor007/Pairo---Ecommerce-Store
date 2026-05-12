@@ -10,6 +10,8 @@ export async function GET(req) {
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const isDeleted = searchParams.get("isDeleted") === "true";
+  const status = searchParams.get("status");
 
   await dbConnect();
   try {
@@ -17,7 +19,11 @@ export async function GET(req) {
       const product = await Product.findById(id);
       return NextResponse.json(product);
     }
-    const products = await Product.find({ isDeleted: false }).sort({ createdAt: -1 });
+
+    let query = { isDeleted };
+    if (status) query.status = status;
+
+    const products = await Product.find(query).sort({ createdAt: -1 });
     return NextResponse.json(products);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,11 +37,15 @@ export async function POST(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    console.log("Creating product with data:", data);
+    
+    // Generate unique slug if not provided
+    if (!data.slug) {
+      data.slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    }
+
     const product = await Product.create(data);
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    console.error("Product creation error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -47,7 +57,7 @@ export async function PUT(req) {
   await dbConnect();
   try {
     const { id, ...data } = await req.json();
-    const product = await Product.findByIdAndUpdate(id, data, { new: true });
+    const product = await Product.findByIdAndUpdate(id, data, { new: true, runValidators: true });
     return NextResponse.json(product);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -63,6 +73,7 @@ export async function DELETE(req) {
 
   await dbConnect();
   try {
+    // Soft delete
     const product = await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return NextResponse.json(product);
   } catch (error) {
