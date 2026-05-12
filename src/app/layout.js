@@ -32,15 +32,25 @@ export const metadata = {
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 export default async function RootLayout({ children }) {
-  await dbConnect();
-  const config = await SiteConfig.findOne({ key: 'main' }).lean() || { 
+  let config = null;
+  
+  try {
+    await dbConnect();
+    config = await SiteConfig.findOne({ key: 'main' }).lean();
+  } catch (error) {
+    console.error("Layout Data Fetch Error:", error);
+  }
+
+  // Fallback if DB is down or config is missing
+  const finalConfig = config || { 
     brand: { name: "Pairo", tagline: "Premium Shearling" },
-    navigation: { links: [], offers: ["Welcome to Pairo"] },
+    navigation: { links: [], offers: ["Welcome to Pairo Store"] },
     hero: { slides: [{ title: "Pairo", subtitle: "Handcrafted Luxury", image: "/placeholder.jpg", buttonText: "Shop Now" }], labels: { viewCollection: "View Collection" } },
-    footer: { sections: [{}, { links: [] }] },
+    footer: { sections: [{}, { links: [] }], categories: { items: [] } },
     categories: { items: [] }
   };
-  const sanitizedConfig = JSON.parse(JSON.stringify(config));
+
+  const sanitizedConfig = JSON.parse(JSON.stringify(finalConfig));
 
   return (
     <html lang="en">
