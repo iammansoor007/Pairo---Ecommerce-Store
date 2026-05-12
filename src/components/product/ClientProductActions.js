@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { Plus, Minus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useRouter } from "next/navigation";
 
 export default function ClientProductActions({ product }) {
   // Store selected options as { "Size": "M", "Color": "Red" }
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const router = useRouter();
 
   const handleOptionSelect = (attrName, value) => {
     setSelectedOptions(prev => ({
@@ -24,6 +26,11 @@ export default function ClientProductActions({ product }) {
         selectedOptions
       });
     }
+  };
+
+  const handleSecureCheckout = () => {
+    handleAddToCart();
+    router.push("/checkout");
   };
 
   // Extract variants from product
@@ -103,7 +110,10 @@ export default function ClientProductActions({ product }) {
           </button>
         </div>
 
-        <button className="w-full h-13 border-2 border-black rounded-xl text-black font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-black hover:text-white transition-all active:scale-[0.98]">
+        <button 
+          onClick={handleSecureCheckout}
+          className="w-full h-13 border-2 border-black rounded-xl text-black font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-black hover:text-white transition-all active:scale-[0.98]"
+        >
           Secure Checkout
         </button>
       </div>

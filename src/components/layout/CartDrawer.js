@@ -193,10 +193,14 @@ export default function CartDrawer() {
                 </div>
 
                 <div className="space-y-2">
-                  <button className="w-full bg-black text-white h-12 rounded-lg font-bold uppercase tracking-[0.2em] text-[9px] flex items-center justify-center gap-2 hover:bg-black/90 active:scale-[0.98] transition-all">
+                  <Link 
+                    href="/checkout"
+                    onClick={() => setIsCartOpen(false)}
+                    className="w-full bg-black text-white h-12 rounded-lg font-bold uppercase tracking-[0.2em] text-[9px] flex items-center justify-center gap-2 hover:bg-black/90 active:scale-[0.98] transition-all"
+                  >
                     Checkout
                     <ArrowRight className="w-3 h-3" />
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}
