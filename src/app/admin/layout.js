@@ -4,9 +4,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AdminSidebar from "@/components/admin/Sidebar";
-import AdminTopbar from "@/components/admin/Topbar";
+import AuthProvider from "@/components/providers/AuthProvider";
 
-export default function AdminLayout({ children }) {
+function AdminGuard({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -35,5 +35,13 @@ export default function AdminLayout({ children }) {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AdminLayout({ children }) {
+  return (
+    <AuthProvider>
+      <AdminGuard>{children}</AdminGuard>
+    </AuthProvider>
   );
 }

@@ -46,7 +46,9 @@ export default function ProductForm({ productId = null }) {
   });
 
   useEffect(() => {
-    fetch("/api/admin/categories").then(res => res.json()).then(setCategories);
+    fetch("/api/admin/categories")
+      .then(res => res.json())
+      .then(data => setCategories(Array.isArray(data) ? data : []));
 
     if (productId) {
       fetch(`/api/admin/products?id=${productId}`)

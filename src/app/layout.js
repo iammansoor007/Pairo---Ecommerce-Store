@@ -2,25 +2,14 @@ import { Inter, Space_Grotesk, Manrope } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import AuthProvider from "@/components/providers/AuthProvider";
-
 import dbConnect from "@/lib/db";
 import SiteConfig from "@/models/SiteConfig";
 import { SiteProvider } from "@/context/SiteContext";
+import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +17,6 @@ export const metadata = {
   title: "Pairo | Premium Shearling Jackets",
   description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
 };
-
-import LayoutWrapper from "@/components/layout/LayoutWrapper";
 
 export default async function RootLayout({ children }) {
   let config = null;
@@ -41,7 +28,6 @@ export default async function RootLayout({ children }) {
     console.error("Layout Data Fetch Error:", error);
   }
 
-  // Fallback if DB is down or config is missing
   const finalConfig = config || { 
     brand: { name: "Pairo", tagline: "Premium Shearling" },
     navigation: { links: [], offers: ["Welcome to Pairo Store"] },
