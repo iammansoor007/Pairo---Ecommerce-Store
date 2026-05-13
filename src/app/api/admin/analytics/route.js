@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import Blog from "@/models/Blog";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
@@ -20,7 +21,7 @@ export async function GET(req) {
     const sevenDaysAgo = new Date(new Date().setDate(now.getDate() - 7));
 
     // Run all queries in parallel for performance
-    const [stats, totalProducts, totalUsers, recentOrders, statusBreakdown] = await Promise.all([
+    const [stats, totalProducts, totalUsers, totalBlogs, recentOrders, statusBreakdown] = await Promise.all([
 
       // 1. Order Aggregation
       Order.aggregate([
@@ -103,13 +104,16 @@ export async function GET(req) {
       // 3. Total Users (non-admin)
       User.countDocuments({ role: { $ne: "admin" } }),
 
-      // 4. Recent 5 Orders
+      // 4. Total Blogs
+      Blog.countDocuments({ isDeleted: { $ne: true } }),
+
+      // 5. Recent 5 Orders
       Order.find()
         .sort({ createdAt: -1 })
         .limit(5)
         .select("orderNumber status createdAt financials customer shippingAddress"),
 
-      // 5. Order Status Breakdown
+      // 6. Order Status Breakdown
       Order.aggregate([
         { $group: { _id: "$status", count: { $count: {} } } },
         { $sort: { count: -1 } }
@@ -122,6 +126,7 @@ export async function GET(req) {
         ...stats[0],
         totalProducts,
         totalUsers,
+        totalBlogs,
         recentOrders,
         statusBreakdown
       }

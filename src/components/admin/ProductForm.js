@@ -25,6 +25,7 @@ const TiptapEditor = dynamic(() => import('./TiptapEditor'), { ssr: false });
 import MediaPicker from "./MediaPicker";
 import MediaPickerModal from "./MediaPickerModal";
 import GallerySorter from "./GallerySorter";
+import AdminPageLayout from "./AdminPageLayout";
 
 // Tiny inline image button — opens MediaPickerModal without the full MediaPicker drop-zone UI
 function InlinePick({ value, onChange }) {
@@ -66,6 +67,7 @@ export default function ProductForm({ productId = null }) {
       description: "",
       status: "Draft",
       isFeatured: false,
+      productType: "simple",
       price: "",
       compareAtPrice: "",
       sku: "",
@@ -82,7 +84,7 @@ export default function ProductForm({ productId = null }) {
    });
 
    useEffect(() => {
-      fetch("/api/admin/categories")
+      fetch("/api/admin/categories?type=product")
          .then(res => res.json())
          .then(data => setCategories(Array.isArray(data) ? data : []));
 
@@ -92,6 +94,7 @@ export default function ProductForm({ productId = null }) {
             .then(data => {
                setFormData({
                   ...data,
+                  productType: data.productType || "simple",
                   images: data.images || [],
                   categories: data.categories || [],
                   seo: data.seo || { title: "", description: "", ogImage: "" },
@@ -215,17 +218,16 @@ export default function ProductForm({ productId = null }) {
       }
    };
 
-   if (loading) return <div className="p-10 text-[13px] font-medium text-gray-500">Loading editor...</div>;
+   if (loading) return <div className="p-10 text-[13px] font-medium text-gray-500 bg-[#f0f2f1] min-h-screen">Loading editor...</div>;
 
    return (
-      <div className="font-sans text-[#3c434a] bg-[#f0f2f1] min-h-screen p-4">
-         {/* WP Header */}
-         <div className="flex items-center gap-4 mb-6">
-            <h1 className="text-[23px] font-normal text-[#1d2327]">{productId ? "Edit Product" : "Add New Product"}</h1>
-            <button type="button" onClick={() => router.push("/admin/products/new")} className="border border-[#2271b1] text-[#2271b1] px-2 py-0.5 rounded-[3px] text-[13px] font-medium bg-white hover:bg-[#f0f6fa]">Add New</button>
-         </div>
-
-         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start max-w-[1200px]">
+    <AdminPageLayout 
+      title={productId ? "Edit Product" : "Add New Product"} 
+      addNewLink="/admin/products/new"
+      addNewLabel="Add New"
+      breadcrumbs={[{ label: "WooCommerce", href: "/admin/orders" }, { label: "Products", href: "/admin/products" }, { label: productId ? "Edit" : "New" }]}
+    >
+         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
             {/* Main Column */}
             <div className="lg:col-span-3 space-y-4">
                <div className="space-y-1">
@@ -243,7 +245,7 @@ export default function ProductForm({ productId = null }) {
                </div>
 
                {/* Long Description Meta Box with Tiptap */}
-               <div className="bg-white border border-[#c3c4c7]">
+               <div className="bg-white border border-[#c3c4c7] shadow-sm">
                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-1 flex items-center justify-between">
                      <div className="flex gap-2">
                         <button type="button" className="p-1 px-3 bg-white border border-[#c3c4c7] border-b-white -mb-[5px] text-[12px] font-bold z-10">Visual</button>
@@ -257,24 +259,27 @@ export default function ProductForm({ productId = null }) {
                   />
                </div>
 
-               {/* Short Description Meta Box */}
-               <div className="bg-white border border-[#c3c4c7]">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold flex items-center gap-2 text-gray-700">
-                     <Info className="w-4 h-4 text-gray-400" /> Product Short Description
-                  </div>
-                  <textarea
-                     rows={4}
-                     className="w-full p-4 outline-none text-[14px] leading-relaxed italic text-gray-600 bg-[#fdfdfd]"
-                     placeholder="Write a brief excerpt..."
-                     value={formData.shortDescription}
-                     onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
-                  />
-               </div>
-
                {/* Product Data Meta Box */}
-               <div className="bg-white border border-[#c3c4c7]">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold flex items-center justify-between text-gray-700">
-                     <span>Product Data — {(formData.variants || []).length > 0 ? "Variable product" : "Simple product"}</span>
+               <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-4 py-2 flex items-center justify-between gap-4">
+                     <div className="flex items-center gap-3">
+                        <span className="text-[13px] font-bold text-gray-700">Product Data —</span>
+                        <div className="relative">
+                           <select 
+                              className="appearance-none bg-white border border-[#c3c4c7] pl-3 pr-8 py-1 rounded-[3px] text-[13px] font-medium text-[#2271b1] focus:outline-none focus:border-[#2271b1] cursor-pointer"
+                              value={formData.productType}
+                              onChange={(e) => {
+                                 const val = e.target.value;
+                                 setFormData({ ...formData, productType: val });
+                                 if (val === "variable") setActiveTab("variants");
+                              }}
+                           >
+                              <option value="simple">Simple product</option>
+                              <option value="variable">Variable product</option>
+                           </select>
+                           <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
+                     </div>
                   </div>
                   <div className="flex min-h-[400px]">
                      {/* Vertical Tabs */}
@@ -282,19 +287,21 @@ export default function ProductForm({ productId = null }) {
                         {[
                            { id: "general", label: "General", icon: Zap },
                            { id: "inventory", label: "Inventory", icon: Package },
-                           { id: "variants", label: "Variants Engine", icon: Layers },
+                           formData.productType === "variable" && { id: "variants", label: "Variants Engine", icon: Layers },
                            { id: "stats", label: "Product Stats", icon: Activity },
                            { id: "faqs", label: "FAQs", icon: HelpCircle },
                            { id: "seo", label: "SEO Settings", icon: Globe }
-                        ].map(tab => (
+                        ].filter(Boolean).map(tab => (
                            <button
                               key={tab.id}
                               type="button"
                               onClick={() => setActiveTab(tab.id)}
-                              className={`p-3.5 text-[13px] text-left border-b border-[#c3c4c7]/30 flex items-center gap-3 transition-colors ${activeTab === tab.id ? "bg-white text-black font-bold border-r-4 border-[#2271b1]" : "text-[#2271b1] hover:bg-[#f0f0f1]"
+                              className={`p-3 text-[13px] text-left border-b border-[#c3c4c7]/30 flex items-center gap-3 transition-all ${activeTab === tab.id 
+                                 ? "bg-white text-black font-bold -mr-[1px] border-l-[3px] border-l-[#2271b1] z-10" 
+                                 : "text-[#2271b1] hover:bg-[#f0f0f1]"
                                  }`}
                            >
-                              <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-[#2271b1]' : 'text-gray-400'}`} /> {tab.label}
+                              <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.id ? 'text-[#2271b1]' : 'text-gray-400'}`} /> {tab.label}
                            </button>
                         ))}
                      </div>
@@ -303,20 +310,24 @@ export default function ProductForm({ productId = null }) {
                      <div className="flex-1 p-8 bg-white overflow-y-auto">
                         {activeTab === "general" && (
                            <div className="space-y-4 max-w-xl">
-                              <div className="flex items-center gap-6 py-2 border-b border-gray-50">
-                                 <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Regular price</label>
-                                 <div className="flex-1 flex items-center gap-2 border border-gray-200 bg-gray-50/50 px-3 py-2 rounded-sm focus-within:border-[#2271b1] transition-colors">
-                                    <span className="text-gray-400 text-[13px]">$</span>
-                                    <input className="w-full bg-transparent text-[14px] outline-none" placeholder="0.00" value={formData.compareAtPrice} onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })} />
-                                 </div>
-                              </div>
-                              <div className="flex items-center gap-6 py-2 border-b border-gray-50">
-                                 <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Sale price</label>
-                                 <div className="flex-1 flex items-center gap-2 border border-gray-200 bg-gray-50/50 px-3 py-2 rounded-sm focus-within:border-[#2271b1] transition-colors">
-                                    <span className="text-gray-400 text-[13px] font-bold">$</span>
-                                    <input className="w-full bg-transparent text-[14px] outline-none font-bold" placeholder="0.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
-                                 </div>
-                              </div>
+                              {formData.productType === "simple" && (
+                                 <>
+                                    <div className="flex items-center gap-6 py-2 border-b border-gray-50">
+                                       <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Regular price</label>
+                                       <div className="flex-1 flex items-center gap-2 border border-gray-200 bg-gray-50/50 px-3 py-2 rounded-sm focus-within:border-[#2271b1] transition-colors">
+                                          <span className="text-gray-400 text-[13px]">$</span>
+                                          <input className="w-full bg-transparent text-[14px] outline-none" placeholder="0.00" value={formData.compareAtPrice} onChange={(e) => setFormData({ ...formData, compareAtPrice: e.target.value })} />
+                                       </div>
+                                    </div>
+                                    <div className="flex items-center gap-6 py-2 border-b border-gray-50">
+                                       <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Sale price</label>
+                                       <div className="flex-1 flex items-center gap-2 border border-gray-200 bg-gray-50/50 px-3 py-2 rounded-sm focus-within:border-[#2271b1] transition-colors">
+                                          <span className="text-gray-400 text-[13px] font-bold">$</span>
+                                          <input className="w-full bg-transparent text-[14px] outline-none font-bold" placeholder="0.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+                                       </div>
+                                    </div>
+                                 </>
+                              )}
                               <div className="flex items-center gap-6 py-2 border-b border-gray-50">
                                  <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Shipping Type</label>
                                  <select className="flex-1 border border-gray-200 bg-gray-50/50 p-2 text-[14px] outline-none rounded-sm focus:border-[#2271b1]" value={formData.shippingType} onChange={(e) => setFormData({ ...formData, shippingType: e.target.value })}>
@@ -353,7 +364,6 @@ export default function ProductForm({ productId = null }) {
 
                         {activeTab === "variants" && (
                            <div className="space-y-4">
-                              {/* Header */}
                               <div className="flex items-center justify-between">
                                  <p className="text-[13px] font-bold text-gray-700">Variant Attributes</p>
                                  <div className="flex gap-2">
@@ -363,12 +373,6 @@ export default function ProductForm({ productId = null }) {
                                  </div>
                               </div>
 
-                              {(formData.attributes || []).length === 0 && (
-                                 <div className="border border-dashed border-gray-200 rounded-lg py-10 text-center">
-                                    <p className="text-[12px] text-gray-300">No variants yet. Add Color or Size above.</p>
-                                 </div>
-                              )}
-
                               {(formData.attributes || []).map((attr, aIdx) => {
                                  const updateAttr = (key, v) => { const n=[...formData.attributes]; n[aIdx][key]=v; setFormData({...formData,attributes:n}); };
                                  const updateVal = (vIdx, key, v) => { const n=[...formData.attributes]; n[aIdx].values[vIdx][key]=v; setFormData({...formData,attributes:n}); };
@@ -376,347 +380,169 @@ export default function ProductForm({ productId = null }) {
 
                                  return (
                                     <div key={aIdx} className="border border-gray-200 rounded-lg bg-white overflow-hidden">
-
-                                       {/* Attribute bar */}
                                        <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border-b border-gray-200">
-                                          <input className="border border-gray-200 rounded px-2 py-1 text-[12px] font-bold w-32 outline-none focus:border-[#2271b1] bg-white" placeholder="Name" value={attr.name} onChange={e=>updateAttr("name",e.target.value)} />
-                                          <select className="border border-gray-200 rounded px-2 py-1 text-[11px] font-bold outline-none text-[#2271b1] bg-white focus:border-[#2271b1]" value={attr.type} onChange={e=>updateAttr("type",e.target.value)}>
+                                          <input className="border border-gray-200 rounded px-2 py-1 text-[12px] font-bold w-32 outline-none focus:border-[#2271b1] bg-white" value={attr.name} onChange={e=>updateAttr("name",e.target.value)} />
+                                          <select className="border border-gray-200 rounded px-2 py-1 text-[11px] font-bold outline-none text-[#2271b1] bg-white" value={attr.type} onChange={e=>updateAttr("type",e.target.value)}>
                                              <option value="color">Color</option>
                                              <option value="size">Size</option>
                                              <option value="custom">Custom</option>
                                           </select>
-                                          <span className="text-[10px] text-gray-400">{(attr.values||[]).length} values</span>
                                           <button type="button" onClick={()=>setFormData({...formData,attributes:formData.attributes.filter((_,i)=>i!==aIdx)})} className="ml-auto text-gray-300 hover:text-red-500 p-0.5"><X className="w-3.5 h-3.5" /></button>
                                        </div>
-
-                                       {/* Table header */}
-                                       {(attr.values||[]).length > 0 && (
-                                          <div className={`grid px-3 py-1.5 text-[9px] font-bold uppercase tracking-widest text-gray-400 bg-gray-50/70 border-b border-gray-100 ${ attr.type==="color" ? "grid-cols-[28px_1fr_auto_24px]" : "grid-cols-[1fr_auto_24px]" } gap-3`}>
-                                             {attr.type==="color" && <span>SW</span>}
-                                             <span>Label</span>
-                                             <span>Image</span>
-                                             <span/>
-                                          </div>
-                                       )}
-
-                                       {/* Value rows — fixed single-line height */}
                                        <div className="divide-y divide-gray-50">
                                           {(attr.values||[]).map((val,vIdx)=>(
-                                             <div key={vIdx} className={`grid items-center gap-3 px-3 py-2 ${ attr.type==="color" ? "grid-cols-[28px_1fr_auto_24px]" : "grid-cols-[1fr_auto_24px]" }`}>
-
-                                                {/* Swatch (color only) */}
-                                                {attr.type==="color" && (
-                                                   <div className="relative w-7 h-7 rounded-full overflow-hidden border border-gray-200 shadow-sm cursor-pointer shrink-0">
-                                                      <input type="color" value={val.hex||"#000000"} onChange={e=>updateVal(vIdx,"hex",e.target.value)} className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10" />
-                                                      <div className="w-full h-full" style={{backgroundColor:val.hex||"#000000"}} />
-                                                   </div>
-                                                )}
-
-                                                {/* Label */}
-                                                <input className="w-full border border-gray-200 rounded px-2 py-1 text-[12px] outline-none focus:border-[#2271b1] bg-white" placeholder="Label" value={val.label} onChange={e=>{updateVal(vIdx,"label",e.target.value);updateVal(vIdx,"value",e.target.value);}} />
-
-                                                {/* Image — single button only, no drop-zone */}
+                                             <div key={vIdx} className="flex items-center gap-3 px-3 py-2">
+                                                {attr.type==="color" && <input type="color" value={val.hex} onChange={e=>updateVal(vIdx,"hex",e.target.value)} className="w-6 h-6 p-0 border-none rounded-full" />}
+                                                <input className="flex-1 border border-gray-200 rounded px-2 py-1 text-[12px]" value={val.label} onChange={e=>updateVal(vIdx,"label",e.target.value)} />
                                                 <InlinePick value={val.variantImage} onChange={url=>updateVal(vIdx,"variantImage",url)} />
-
-                                                {/* Delete */}
-                                                <button type="button" onClick={()=>removeVal(vIdx)} className="text-gray-300 hover:text-red-500 p-0.5 shrink-0"><X className="w-3.5 h-3.5" /></button>
+                                                <button type="button" onClick={()=>removeVal(vIdx)} className="text-gray-300 hover:text-red-500"><X className="w-3.5 h-3.5" /></button>
                                              </div>
                                           ))}
                                        </div>
-
-                                       {/* Add value */}
-                                       <div className="flex gap-2 px-3 py-2.5 border-t border-gray-100">
-                                          <input
-                                             className="flex-1 border border-gray-200 rounded px-3 py-1.5 text-[12px] outline-none focus:border-[#2271b1] bg-gray-50"
-                                             placeholder={attr.type==="color" ? "Color name (e.g. Midnight Black)..." : attr.type==="size" ? "Size (e.g. XS, M, XL)..." : "Value..."}
-                                             onKeyDown={e=>{ if(e.key==="Enter"){ e.preventDefault(); addAttributeValue(aIdx,e.target.value); e.target.value=""; } }}
-                                          />
-                                          <button type="button" onClick={e=>{ const i=e.currentTarget.previousSibling; addAttributeValue(aIdx,i.value); i.value=""; }} className="bg-[#2271b1] text-white px-4 py-1.5 rounded text-[11px] font-bold hover:bg-[#135e96] shrink-0">
-                                             Add
-                                          </button>
+                                       <div className="p-2">
+                                          <input className="w-full border border-gray-200 rounded px-3 py-1 text-[12px]" placeholder="Add value..." onKeyDown={e=>{ if(e.key==="Enter"){ e.preventDefault(); addAttributeValue(aIdx,e.target.value); e.target.value=""; } }} />
                                        </div>
                                     </div>
                                  );
                               })}
+
+                              <div className="pt-4 border-t border-gray-100">
+                                 <button type="button" onClick={generateCombinations} className="bg-white border border-[#2271b1] text-[#2271b1] px-4 py-1.5 rounded-[3px] text-[11px] font-bold hover:bg-[#f0f6fb]">Generate All Combinations</button>
+                                 {formData.variantCombinations?.length > 0 && (
+                                    <div className="mt-4 border border-gray-200 rounded-lg overflow-x-auto">
+                                       <table className="w-full text-left text-[11px]">
+                                          <thead className="bg-gray-50 border-b border-gray-200 text-gray-400 uppercase font-bold">
+                                             <tr>
+                                                <th className="px-4 py-3">IMG</th>
+                                                <th className="px-4 py-3">Variant</th>
+                                                <th className="px-4 py-3">Price</th>
+                                                <th className="px-4 py-3">Stock</th>
+                                                <th className="px-4 py-3"></th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             {formData.variantCombinations.map((comb, cIdx) => (
+                                                <tr key={cIdx} className="border-b border-gray-100">
+                                                   <td className="px-4 py-2"><InlinePick value={comb.image} onChange={url=>{ const n=[...formData.variantCombinations]; n[cIdx].image=url; setFormData({...formData,variantCombinations:n}); }} /></td>
+                                                   <td className="px-4 py-2 font-bold">{comb.title}</td>
+                                                   <td className="px-4 py-2"><input className="w-20 border border-gray-200 p-1" type="number" value={comb.price} onChange={e=>{ const n=[...formData.variantCombinations]; n[cIdx].price=e.target.value; setFormData({...formData,variantCombinations:n}); }} /></td>
+                                                   <td className="px-4 py-2"><input className="w-16 border border-gray-200 p-1" type="number" value={comb.stock} onChange={e=>{ const n=[...formData.variantCombinations]; n[cIdx].stock=e.target.value; setFormData({...formData,variantCombinations:n}); }} /></td>
+                                                   <td className="px-4 py-2"><button type="button" onClick={()=>setFormData({...formData,variantCombinations:formData.variantCombinations.filter((_,i)=>i!==cIdx)})}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button></td>
+                                                </tr>
+                                             ))}
+                                          </tbody>
+                                       </table>
+                                    </div>
+                                 )}
+                              </div>
                            </div>
                         )}
 
                         {activeTab === "stats" && (
-                           <div className="space-y-8">
-                              <div className="flex justify-between items-center pb-4 border-b border-gray-100">
-                                 <div>
-                                    <h3 className="text-[14px] font-bold text-gray-800">Product Highlights</h3>
-                                    <p className="text-[11px] text-gray-400 mt-0.5">Showcase key specifications and features with visual icons.</p>
+                           <div className="space-y-6">
+                              <button type="button" onClick={() => setFormData({ ...formData, stats: [...(formData.stats || []), { label: "", value: "", icon: "Shield" }] })} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold">+ Add Stat</button>
+                              {(formData.stats || []).map((stat, sIdx) => (
+                                 <div key={sIdx} className="flex items-center gap-4 bg-white p-4 border border-gray-100 rounded shadow-sm">
+                                    <input className="flex-1 border-b border-gray-100 p-1.5 text-[13px]" placeholder="Label" value={stat.label} onChange={e=>{ const n=[...formData.stats]; n[sIdx].label=e.target.value; setFormData({...formData,stats:n}); }} />
+                                    <input className="flex-1 border-b border-gray-100 p-1.5 text-[13px]" placeholder="Value" value={stat.value} onChange={e=>{ const n=[...formData.stats]; n[sIdx].value=e.target.value; setFormData({...formData,stats:n}); }} />
+                                    <button type="button" onClick={()=>setFormData({...formData,stats:formData.stats.filter((_,i)=>i!==sIdx)})}><X className="w-4 h-4 text-gray-300" /></button>
                                  </div>
-                                 <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, stats: [...(formData.stats || []), { label: "", value: "", icon: "Shield" }] })}
-                                    className="bg-[#2271b1] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold shadow-sm hover:bg-[#135e96] uppercase tracking-wider"
-                                 >
-                                    + Add Stat
-                                 </button>
-                              </div>
- 
-                              <div className="grid grid-cols-1 gap-3">
-                                 {(formData.stats || []).map((stat, sIdx) => (
-                                    <div key={sIdx} className="flex items-center gap-4 bg-white p-4 border border-gray-100 rounded-md shadow-sm hover:border-gray-200 transition-all group">
-                                       <div className="flex flex-col gap-1 w-32">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Icon</label>
-                                          <select
-                                             className="w-full bg-gray-50 border border-transparent p-1.5 text-[12px] outline-none rounded focus:bg-white focus:border-[#2271b1] transition-colors"
-                                             value={stat.icon}
-                                             onChange={(e) => {
-                                                const n = [...formData.stats];
-                                                n[sIdx].icon = e.target.value;
-                                                setFormData({ ...formData, stats: n });
-                                             }}
-                                          >
-                                             <option value="Shield">🛡️ Protection</option>
-                                             <option value="Truck">🚚 Shipping</option>
-                                             <option value="Zap">⚡ Power</option>
-                                             <option value="Package">📦 Packaging</option>
-                                             <option value="Globe">🌍 Global</option>
-                                             <option value="Star">⭐ Quality</option>
-                                             <option value="Layers">📑 Material</option>
-                                             <option value="Heart">❤️ Care</option>
-                                             <option value="Anchor">⚓ Security</option>
-                                             <option value="Award">🏆 Award</option>
-                                          </select>
-                                       </div>
-                                       <div className="flex-1 flex flex-col gap-1">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Label</label>
-                                          <input
-                                             className="w-full bg-transparent border-b border-gray-100 p-1.5 text-[13px] font-medium outline-none focus:border-[#2271b1] transition-colors"
-                                             placeholder="e.g. Composition"
-                                             value={stat.label}
-                                             onChange={(e) => {
-                                                const n = [...formData.stats];
-                                                n[sIdx].label = e.target.value;
-                                                setFormData({ ...formData, stats: n });
-                                             }}
-                                          />
-                                       </div>
-                                       <div className="flex-1 flex flex-col gap-1">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detail Value</label>
-                                          <input
-                                             className="w-full bg-transparent border-b border-gray-100 p-1.5 text-[13px] font-medium outline-none focus:border-[#2271b1] transition-colors"
-                                             placeholder="e.g. Organic Cotton"
-                                             value={stat.value}
-                                             onChange={(e) => {
-                                                const n = [...formData.stats];
-                                                n[sIdx].value = e.target.value;
-                                                setFormData({ ...formData, stats: n });
-                                             }}
-                                          />
-                                       </div>
-                                       <button
-                                          type="button"
-                                          onClick={() => setFormData({ ...formData, stats: formData.stats.filter((_, i) => i !== sIdx) })}
-                                          className="text-gray-200 hover:text-red-500 transition-colors p-2"
-                                       >
-                                          <X className="w-5 h-5" />
-                                       </button>
-                                    </div>
-                                 ))}
-                              </div>
+                              ))}
                            </div>
                         )}
- 
+
                         {activeTab === "faqs" && (
-                           <div className="space-y-8">
-                              <div className="flex justify-between items-center pb-4 border-b border-gray-100">
-                                 <div>
-                                    <h3 className="text-[14px] font-bold text-gray-800">Support FAQs</h3>
-                                    <p className="text-[11px] text-gray-400 mt-0.5">Answer common customer questions for this specific product.</p>
+                           <div className="space-y-6">
+                              <button type="button" onClick={() => setFormData({ ...formData, faqs: [...(formData.faqs || []), { question: "", answer: "" }] })} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold">+ Add FAQ</button>
+                              {(formData.faqs || []).map((faq, fIdx) => (
+                                 <div key={fIdx} className="bg-white border border-gray-100 p-4 rounded shadow-sm space-y-4">
+                                    <input className="w-full border-b border-gray-100 p-2 text-[13px] font-bold" placeholder="Question" value={faq.question} onChange={e=>{ const n=[...formData.faqs]; n[fIdx].question=e.target.value; setFormData({...formData,faqs:n}); }} />
+                                    <textarea className="w-full border-b border-gray-100 p-2 text-[13px]" placeholder="Answer" rows={2} value={faq.answer} onChange={e=>{ const n=[...formData.faqs]; n[fIdx].answer=e.target.value; setFormData({...formData,faqs:n}); }} />
+                                    <button type="button" onClick={()=>setFormData({...formData,faqs:formData.faqs.filter((_,i)=>i!==fIdx)})} className="text-red-500 text-[11px]">Remove</button>
                                  </div>
-                                 <button
-                                    type="button"
-                                    onClick={() => setFormData({ ...formData, faqs: [...(formData.faqs || []), { question: "", answer: "" }] })}
-                                    className="bg-[#2271b1] text-white px-4 py-1.5 rounded-sm text-[11px] font-bold shadow-sm hover:bg-[#135e96] uppercase tracking-wider"
-                                 >
-                                    + Add FAQ
-                                 </button>
-                              </div>
- 
-                              <div className="space-y-4">
-                                 {(formData.faqs || []).map((faq, fIdx) => (
-                                    <div key={fIdx} className="bg-white border border-gray-100 rounded-md p-5 shadow-sm space-y-4 relative group">
-                                       <button
-                                          type="button"
-                                          onClick={() => setFormData({ ...formData, faqs: formData.faqs.filter((_, i) => i !== fIdx) })}
-                                          className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-colors"
-                                       >
-                                          <X className="w-5 h-5" />
-                                       </button>
-                                       <div className="space-y-1">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Question</label>
-                                          <input
-                                             className="w-full bg-gray-50 border border-transparent p-2.5 text-[13px] font-bold outline-none rounded-sm focus:bg-white focus:border-[#2271b1] transition-all"
-                                             placeholder="e.g. How do I wash this garment?"
-                                             value={faq.question}
-                                             onChange={(e) => {
-                                                const n = [...formData.faqs];
-                                                n[fIdx].question = e.target.value;
-                                                setFormData({ ...formData, faqs: n });
-                                             }}
-                                          />
-                                       </div>
-                                       <div className="space-y-1">
-                                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detailed Answer</label>
-                                          <textarea
-                                             rows={3}
-                                             className="w-full bg-gray-50 border border-transparent p-2.5 text-[13px] outline-none rounded-sm focus:bg-white focus:border-[#2271b1] transition-all"
-                                             placeholder="Provide a helpful response..."
-                                             value={faq.answer}
-                                             onChange={(e) => {
-                                                const n = [...formData.faqs];
-                                                n[fIdx].answer = e.target.value;
-                                                setFormData({ ...formData, faqs: n });
-                                             }}
-                                          />
-                                       </div>
-                                    </div>
-                                 ))}
-                              </div>
+                              ))}
                            </div>
                         )}
- 
+
                         {activeTab === "seo" && (
-                           <div className="space-y-8">
-                              <div className="pb-4 border-b border-gray-100">
-                                 <h3 className="text-[14px] font-bold text-gray-800">Search Engine Optimization</h3>
-                                 <p className="text-[11px] text-gray-400 mt-0.5">Configure how this product appears in search engines and social media.</p>
+                           <div className="space-y-6 max-w-2xl">
+                              <div className="space-y-2">
+                                 <label className="text-[11px] font-bold text-gray-400 uppercase">Meta Title</label>
+                                 <input className="w-full border border-gray-200 p-3 text-[14px]" value={formData.seo?.title} onChange={e=>setFormData({...formData, seo: {...formData.seo, title: e.target.value}})} />
                               </div>
- 
-                              <div className="space-y-6 max-w-2xl">
-                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Meta Title</label>
-                                    <input 
-                                       className="w-full bg-white border border-gray-200 p-3 text-[14px] outline-none rounded-sm focus:border-[#2271b1] shadow-sm transition-all" 
-                                       placeholder="Product name usually goes here..."
-                                       value={formData.seo?.title} 
-                                       onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, title: e.target.value } })} 
-                                    />
-                                    <p className="text-[11px] text-gray-400 italic">Recommended: Under 60 characters.</p>
-                                 </div>
- 
-                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Meta Description</label>
-                                    <textarea 
-                                       className="w-full bg-white border border-gray-200 p-3 text-[14px] outline-none rounded-sm focus:border-[#2271b1] shadow-sm transition-all" 
-                                       rows={4} 
-                                       placeholder="Summarize the product for search results..."
-                                       value={formData.seo?.description} 
-                                       onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, description: e.target.value } })} 
-                                    />
-                                    <p className="text-[11px] text-gray-400 italic">Recommended: 150-160 characters.</p>
-                                 </div>
- 
-                                 <div className="pt-6 border-t border-gray-100">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Open Graph Image (Social Sharing)</label>
-                                    <div className="bg-gray-50/50 p-6 border border-dashed border-gray-200 rounded-md">
-                                       <MediaPicker
-                                          value={formData.seo?.ogImage}
-                                          onChange={(url) => setFormData({ ...formData, seo: { ...formData.seo, ogImage: url } })}
-                                          label="Select OG Image"
-                                       />
-                                       <p className="text-[11px] text-gray-400 mt-4 text-center">Optimized for Facebook, X (Twitter), and WhatsApp (1200x630px recommended).</p>
-                                    </div>
-                                 </div>
+                              <div className="space-y-2">
+                                 <label className="text-[11px] font-bold text-gray-400 uppercase">Meta Description</label>
+                                 <textarea className="w-full border border-gray-200 p-3 text-[14px]" rows={4} value={formData.seo?.description} onChange={e=>setFormData({...formData, seo: {...formData.seo, description: e.target.value}})} />
                               </div>
+                              <MediaPicker value={formData.seo?.ogImage} onChange={url=>setFormData({...formData, seo: {...formData.seo, ogImage: url}})} label="Social Share Image" />
                            </div>
                         )}
-                      </div>
-                   </div>
-                </div>
-             </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
 
             {/* Sidebar */}
             <div className="space-y-4">
-               <div className="bg-white border border-[#c3c4c7]">
+               <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Publish</div>
                   <div className="p-3 space-y-4 text-[13px]">
                      <div className="flex justify-between items-center">
                         <button type="button" onClick={handleSubmit} className="border border-[#c3c4c7] px-3 py-1.5 rounded-[3px] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[12px] font-medium">Save Draft</button>
-                        <button type="button" className="text-[#2271b1] underline text-[12px]">Preview</button>
+                        <button type="button" className="text-[#2271b1] underline">Preview</button>
                      </div>
                      <div className="space-y-3 py-3 border-y border-gray-100">
-                        <p className="flex items-center gap-2">
-                           <span className="text-gray-400">Status:</span>
-                           <span className={`font-bold ${formData.status === 'Published' ? 'text-green-600' : 'text-orange-600'}`}>{formData.status}</span>
-                           <button type="button" onClick={() => setFormData({ ...formData, status: formData.status === "Published" ? "Draft" : "Published" })} className="text-[#2271b1] underline text-[11px] ml-auto">Edit</button>
-                        </p>
-                        <p className="flex items-center gap-2">
-                           <span className="text-gray-400">Visibility:</span>
-                           <span className="font-bold">Public</span>
-                           <button type="button" className="text-[#2271b1] underline text-[11px] ml-auto">Edit</button>
-                        </p>
+                        <p><span className="text-gray-400">Status:</span> <strong>{formData.status}</strong></p>
+                        <p><span className="text-gray-400">Visibility:</span> <strong>Public</strong></p>
                      </div>
                      <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] -mx-3 -mb-3 p-3 flex justify-between items-center">
-                        <button type="button" onClick={() => router.push("/admin/trash")} className="text-red-600 underline text-[12px] font-medium">Move to Trash</button>
-                        <button type="submit" disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96] shadow-sm">
+                        <button type="button" className="text-red-600 underline">Move to Trash</button>
+                        <button type="submit" disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96]">
                            {saving ? "Saving..." : (productId ? "Update" : "Publish")}
                         </button>
                      </div>
                   </div>
                </div>
 
-               <div className="bg-white border border-[#c3c4c7]">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Product Categories</div>
-                  <div className="p-4 space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                     {(categories || []).map(cat => (
-                        <label key={cat._id} className="flex items-center gap-2 text-[13px] cursor-pointer hover:text-[#2271b1]">
-                           <input
-                              type="checkbox"
-                              className="rounded-none border-gray-400"
-                              checked={(formData.categories || []).includes(cat._id)}
-                              onChange={(e) => {
-                                 const n = e.target.checked ? [...(formData.categories || []), cat._id] : (formData.categories || []).filter(id => id !== cat._id);
-                                 setFormData({ ...formData, categories: n });
-                              }}
-                           /> {cat.name}
-                        </label>
-                     ))}
+               <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700 flex items-center justify-between">
+                     <span>Categories</span>
+                     <button type="button" onClick={() => router.push("/admin/categories")} className="text-[10px] text-[#2271b1] hover:underline font-normal">Manage</button>
+                  </div>
+                  <div className="p-4 max-h-48 overflow-y-auto">
+                     {categories.length === 0 ? (
+                        <p className="text-[11px] text-gray-400 italic">No categories found.</p>
+                     ) : (
+                        categories.map(cat => (
+                           <label key={cat._id} className="flex items-center gap-2 text-[13px] mb-2 cursor-pointer">
+                              <input 
+                                 type="checkbox" 
+                                 className="w-4 h-4 rounded border-gray-300 text-[#2271b1] focus:ring-[#2271b1]" 
+                                 checked={(formData.categories || []).includes(cat._id)} 
+                                 onChange={e => {
+                                    const n = e.target.checked ? [...(formData.categories || []), cat._id] : (formData.categories || []).filter(id => id !== cat._id);
+                                    setFormData({ ...formData, categories: n });
+                                 }} 
+                              /> 
+                              {cat.name}
+                           </label>
+                        ))
+                     )}
                   </div>
                </div>
 
-               <div className="bg-white border border-[#c3c4c7]">
+               <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Product Image</div>
                   <div className="p-4">
-                     <MediaPicker
-                        value={formData.images?.[0]}
-                        onChange={(url) => {
-                           const rest = (formData.images || []).slice(1);
-                           setFormData({ ...formData, images: [url, ...rest] });
-                        }}
-                        label=""
-                     />
-                     <p className="text-[11px] text-[#646970] mt-2 italic">This is the main product image (featured).</p>
+                     <MediaPicker value={formData.images[0]} onChange={url => setFormData({ ...formData, images: [url] })} />
                   </div>
-               </div>
-
-               <div className="bg-white border border-[#c3c4c7]">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Product Gallery</div>
-                  <div className="p-4 space-y-4">
-                     {formData.images?.length > 1 && (
-                        <GallerySorter
-                           images={formData.images.slice(1)}
-                           onChange={(newGallery) => setFormData({ ...formData, images: [formData.images[0], ...newGallery] })}
-                        />
-                     )}
-                     <MediaPicker
-                        multiple
-                        value={formData.images?.slice(1)}
-                        onChange={(urls) => {
-                           const featured = formData.images?.[0] || "";
-                           setFormData({ ...formData, images: [featured, ...urls] });
-                        }}
-                        label="Add Gallery Images"
-                     />
+                  <div className="p-4 border-t border-gray-100">
+                     <label className="text-[13px] font-bold block mb-2 text-gray-700">Product Gallery</label>
+                     <MediaPicker multiple value={formData.images.slice(1)} onChange={urls => setFormData({ ...formData, images: [formData.images[0], ...urls] })} />
                   </div>
                </div>
             </div>
          </form>
-      </div>
+    </AdminPageLayout>
    );
 }

@@ -81,6 +81,7 @@ const ProductSchema = new mongoose.Schema({
   upsellProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
 
   // Meta
+  productType: { type: String, enum: ['simple', 'variable'], default: 'simple' },
   isDeleted: { type: Boolean, default: false },
   rating: { type: Number, default: 0 },
   type: { type: String }, // Legacy type (newArrival, etc)

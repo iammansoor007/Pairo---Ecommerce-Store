@@ -10,7 +10,7 @@ export async function GET() {
 
   await dbConnect();
   try {
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    const users = await User.find({ role: { $ne: "admin" } }).select('-password').sort({ createdAt: -1 });
     return NextResponse.json(users);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

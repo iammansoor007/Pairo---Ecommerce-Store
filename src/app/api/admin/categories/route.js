@@ -4,13 +4,22 @@ import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get("type") || "product";
+
   await dbConnect();
   try {
-    const categories = await Category.find({ isDeleted: false }).sort({ name: 1 });
+    const query = { isDeleted: false };
+    if (type === "product") {
+       query.$or = [{ type: "product" }, { type: { $exists: false } }];
+    } else {
+       query.type = type;
+    }
+    const categories = await Category.find(query).sort({ name: 1 });
     return NextResponse.json(categories);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -24,20 +33,59 @@ export async function POST(req) {
   await dbConnect();
   try {
     const data = await req.json();
-    const category = await Category.create(data);
+    console.log("=== CATEGORY POST REQUEST ===");
+    console.log("Received data:", data);
+    
+    const type = data.type || "product";
+    console.log("Determined type to save:", type);
+    
+    // Check if a category with this slug already exists (even if deleted) in the SAME type
+    const existing = await Category.findOne({ slug: data.slug, type });
+    
+    let category;
+    if (existing) {
+       console.log("Found existing category. isDeleted:", existing.isDeleted);
+       if (existing.isDeleted) {
+          // Restore the deleted category
+          existing.isDeleted = false;
+          existing.name = data.name; 
+          existing.type = type;
+          existing.image = data.image || existing.image;
+          existing.description = data.description || existing.description;
+          existing.content = data.content || existing.content;
+          existing.status = data.status || existing.status;
+          existing.isFeatured = data.isFeatured || existing.isFeatured;
+          if (data.seo) existing.seo = { ...existing.seo, ...data.seo };
+          category = await existing.save();
+          console.log("Restored category:", category._id, "with type:", category.type);
+       } else {
+          return NextResponse.json({ error: "A category with this slug already exists." }, { status: 400 });
+       }
+    } else {
+       category = await Category.create({ ...data, type });
+       console.log("Created NEW category:", category._id, "with type:", category.type);
+    }
 
-    // Track media usage for category image
-    if (data.image) {
-      const { trackMediaUsage, findMediaByUrl } = await import("@/lib/mediaUsage");
-      const media = await findMediaByUrl(data.image);
-      if (media) {
-        await trackMediaUsage(media._id, {
-          entityType: 'Category',
-          entityId: category._id,
-          fieldName: 'image',
-          label: category.name
-        });
-      }
+    // Handle Linked Items
+    if (data.linkedItems && Array.isArray(data.linkedItems)) {
+       const mongoose = require('mongoose');
+       const objectIds = data.linkedItems.map(lid => new mongoose.Types.ObjectId(lid));
+       
+       if (type === 'product' && objectIds.length > 0) {
+          const Product = (await import("@/models/Product")).default;
+          // Add to newly linked products
+          await Product.updateMany(
+             { _id: { $in: objectIds } },
+             { $addToSet: { categories: category._id } }
+          );
+       } else if (type === 'blog' && objectIds.length > 0) {
+          const Blog = (await import("@/models/Blog")).default;
+          // Add to newly linked blogs
+          await Blog.updateMany(
+             { _id: { $in: objectIds } },
+             { $set: { category: category.name } }
+          );
+       }
     }
 
     return NextResponse.json(category, { status: 201 });
@@ -53,6 +101,7 @@ export async function PUT(req) {
   await dbConnect();
   try {
     const { id, ...data } = await req.json();
+    const mongoose = require('mongoose');
     const oldCategory = await Category.findById(id);
     const category = await Category.findByIdAndUpdate(id, data, { new: true });
 
@@ -80,11 +129,48 @@ export async function PUT(req) {
       }
     }
 
+    // Handle Linked Items update
+    if (data.linkedItems && Array.isArray(data.linkedItems)) {
+       const objectIds = data.linkedItems.map(lid => new mongoose.Types.ObjectId(lid));
+       const catId = new mongoose.Types.ObjectId(id);
+
+       if (category.type === 'product') {
+          const Product = (await import("@/models/Product")).default;
+          // Remove from all first
+          await Product.updateMany(
+             { categories: catId },
+             { $pull: { categories: catId } }
+          );
+          // Add to newly linked
+          if (objectIds.length > 0) {
+             await Product.updateMany(
+                { _id: { $in: objectIds } },
+                { $addToSet: { categories: catId } }
+             );
+          }
+       } else if (category.type === 'blog') {
+          const Blog = (await import("@/models/Blog")).default;
+          // Remove from all first (that have this category name)
+          await Blog.updateMany(
+             { category: oldCategory.name },
+             { $set: { category: "" } }
+          );
+          // Add to newly linked
+          if (objectIds.length > 0) {
+             await Blog.updateMany(
+                { _id: { $in: objectIds } },
+                { $set: { category: category.name } }
+             );
+          }
+       }
+    }
+
     return NextResponse.json(category);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
 
 export async function DELETE(req) {
   const session = await getServerSession(authOptions);

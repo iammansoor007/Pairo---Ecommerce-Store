@@ -68,7 +68,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
   return (
     <div className="space-y-6 pt-6 border-t border-black/5">
-      {attributes.map((attr) => {
+      {product.productType === "variable" && attributes.map((attr) => {
         const isColor =
           attr.type === "color" || attr.name.toLowerCase().includes("color");
 

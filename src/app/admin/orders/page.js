@@ -15,6 +15,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import Link from "next/link";
+import AdminPageLayout from "@/components/admin/AdminPageLayout";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -59,17 +60,14 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="bg-[#f0f0f1] min-h-screen p-4 md:p-8 font-sans text-[#2c3338]">
-      <div className="max-w-[1200px] mx-auto space-y-6">
-        
-        {/* WP Header */}
-        <div className="flex items-center justify-between border-b border-[#ccd0d4] pb-4">
-          <h1 className="text-[23px] font-normal">Orders <span className="text-[13px] text-[#646970] ml-2">({pagination.total} acquisitions)</span></h1>
-          <button className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded text-[13px] font-semibold hover:bg-[#f0f6fb] transition-colors">
-            Add New Order
-          </button>
-        </div>
-
+    <AdminPageLayout 
+      title="Orders" 
+      subtitle={`(${pagination.total} acquisitions)`}
+      addNewLink="/admin/orders/new"
+      addNewLabel="Add Order"
+      breadcrumbs={[{ label: "WooCommerce", href: "/admin/orders" }, { label: "Orders" }]}
+    >
+      <div className="space-y-6">
         {/* Filters Bar (WP Style) */}
         <div className="flex flex-wrap items-center gap-2 text-[13px]">
           <button onClick={() => setStatusFilter('all')} className={`${statusFilter === 'all' ? 'text-black font-bold' : 'text-[#2271b1]'} hover:text-[#135e96]`}>All</button> |
@@ -79,7 +77,7 @@ export default function AdminOrdersPage() {
         </div>
 
         {/* Table Actions Bar */}
-        <div className="bg-white border border-[#ccd0d4] p-3 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="bg-white border border-[#ccd0d4] p-3 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-2">
             <select className="border border-[#8c8f94] rounded px-2 py-1 text-[13px] outline-none">
               <option>Bulk actions</option>
@@ -93,11 +91,11 @@ export default function AdminOrdersPage() {
              <input 
               type="text" 
               placeholder="Search orders..." 
-              className="border border-[#8c8f94] rounded px-3 py-1 text-[13px] outline-none focus:border-[#2271b1] flex-1 md:w-64"
+              className="border border-[#8c8f94] rounded px-3 py-1 text-[13px] outline-none focus:border-[#2271b1] flex-1 md:w-64 shadow-inner"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
              />
-             <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 rounded text-[13px] font-semibold hover:bg-gray-50">Search</button>
+             <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 rounded text-[13px] font-semibold hover:bg-gray-50">Search Orders</button>
           </div>
         </div>
 
@@ -105,8 +103,8 @@ export default function AdminOrdersPage() {
         <div className="bg-white border border-[#ccd0d4] overflow-x-auto shadow-sm">
           <table className="w-full text-left border-collapse text-[13px]">
             <thead>
-              <tr className="border-b border-[#ccd0d4]">
-                <th className="px-4 py-2 w-10"><input type="checkbox" /></th>
+              <tr className="border-b border-[#ccd0d4] bg-[#f6f7f7]">
+                <th className="px-4 py-2 w-10 text-center"><input type="checkbox" /></th>
                 <th className="px-4 py-2 font-bold text-[#2c3338]">Order</th>
                 <th className="px-4 py-2 font-bold text-[#2c3338]">Date</th>
                 <th className="px-4 py-2 font-bold text-[#2c3338]">Status</th>
@@ -122,7 +120,7 @@ export default function AdminOrdersPage() {
               ) : (
                 orders.map((order) => (
                   <tr key={order._id} className="hover:bg-[#f6f7f7] transition-colors group">
-                    <td className="px-4 py-4"><input type="checkbox" /></td>
+                    <td className="px-4 py-4 text-center"><input type="checkbox" /></td>
                     <td className="px-4 py-4">
                        <Link href={`/admin/orders/${order._id}`} className="text-[#2271b1] font-bold text-[14px] hover:text-[#135e96]">
                           #{order.orderNumber}
@@ -175,8 +173,7 @@ export default function AdminOrdersPage() {
               </button>
            </div>
         </div>
-
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }

@@ -13,8 +13,12 @@ import {
   Undo,
   Heading1,
   Heading2,
-  Code
+  Code,
+  Link as LinkIcon,
+  Link2Off,
+  ExternalLink
 } from 'lucide-react';
+import Link from '@tiptap/extension-link';
 
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
@@ -75,6 +79,27 @@ const MenuBar = ({ editor }) => {
       <div className="w-[1px] h-4 bg-gray-300 mx-1 self-center" />
       <button
         type="button"
+        onClick={() => {
+          const url = window.prompt('Enter URL (use relative paths like /shop for Interlinks, or https:// for Outerlinks)');
+          if (url) editor.chain().focus().setLink({ href: url }).run();
+        }}
+        className={btnClass(editor.isActive('link'))}
+        title="Insert Link (Outer/Inter)"
+      >
+        <LinkIcon className="w-3.5 h-3.5" />
+      </button>
+      <button
+        type="button"
+        onClick={() => editor.chain().focus().unsetLink().run()}
+        disabled={!editor.isActive('link')}
+        className={btnClass(false) + " disabled:opacity-30"}
+        title="Remove Link"
+      >
+        <Link2Off className="w-3.5 h-3.5" />
+      </button>
+      <div className="w-[1px] h-4 bg-gray-300 mx-1 self-center" />
+      <button
+        type="button"
         onClick={() => editor.chain().focus().undo().run()}
         className="p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all"
       >
@@ -93,10 +118,17 @@ const MenuBar = ({ editor }) => {
 
 export default function TiptapEditor({ content, onChange }) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3],
+        },
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-[#2271b1] underline font-medium cursor-pointer transition-colors hover:text-[#135e96]',
         },
       }),
     ],
