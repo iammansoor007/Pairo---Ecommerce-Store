@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { useEffect } from 'react';
 import { 
   Bold, 
   Italic, 
@@ -18,73 +19,73 @@ import {
 const MenuBar = ({ editor }) => {
   if (!editor) return null;
 
+  const btnClass = (active) => `p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${active ? 'bg-white border-[#c3c4c7] shadow-sm' : ''}`;
+
   return (
-    <div className="border-b border-[#c3c4c7] bg-[#f0f0f1] px-2 py-1 flex flex-wrap gap-1">
+    <div className="border-b border-[#c3c4c7] bg-[#f6f7f7] px-2 py-1 flex flex-wrap gap-1 sticky top-0 z-10">
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBold().run()}
-        disabled={!editor.can().chain().focus().toggleBold().run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('bold') ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('bold'))}
       >
         <Bold className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        disabled={!editor.can().chain().focus().toggleItalic().run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('italic') ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('italic'))}
       >
         <Italic className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('heading', { level: 1 }) ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('heading', { level: 1 }))}
       >
         <Heading1 className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('heading', { level: 2 }) ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('heading', { level: 2 }))}
       >
         <Heading2 className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('bulletList') ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('bulletList'))}
       >
         <List className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('orderedList') ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('orderedList'))}
       >
         <ListOrdered className="w-3.5 h-3.5" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
-        className={`p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all ${editor.isActive('blockquote') ? 'bg-white border-[#c3c4c7]' : ''}`}
+        className={btnClass(editor.isActive('blockquote'))}
       >
         <Quote className="w-3.5 h-3.5" />
       </button>
-      <div className="w-[1px] h-6 bg-gray-300 mx-1 self-center" />
+      <div className="w-[1px] h-4 bg-gray-300 mx-1 self-center" />
       <button
         type="button"
         onClick={() => editor.chain().focus().undo().run()}
         className="p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all"
       >
-        <Undo className="w-3.5 h-3.5" />
+        <Undo className="w-3.5 h-3.5 text-gray-400" />
       </button>
       <button
         type="button"
         onClick={() => editor.chain().focus().redo().run()}
         className="p-1.5 px-3 rounded-[2px] border border-transparent hover:border-[#c3c4c7] hover:bg-white transition-all"
       >
-        <Redo className="w-3.5 h-3.5" />
+        <Redo className="w-3.5 h-3.5 text-gray-400" />
       </button>
     </div>
   );
@@ -92,23 +93,55 @@ const MenuBar = ({ editor }) => {
 
 export default function TiptapEditor({ content, onChange }) {
   const editor = useEditor({
-    extensions: [StarterKit],
-    content: content,
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+    ],
+    content: content || '',
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl focus:outline-none min-h-[400px] p-4 text-[15px] leading-relaxed max-w-none font-serif',
+        class: 'focus:outline-none min-h-[450px] p-8 text-[15px] leading-[1.6] max-w-none font-sans bg-white text-gray-800',
       },
     },
   });
 
+  // Keep editor content in sync with external prop changes (e.g. initial load)
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content || '');
+    }
+  }, [content, editor]);
+
   return (
-    <div className="bg-white border border-[#c3c4c7]">
+    <div className="bg-white border border-[#c3c4c7] shadow-inner overflow-hidden">
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
+      <div className="tiptap-wrapper">
+         <EditorContent editor={editor} />
+      </div>
+      <style jsx global>{`
+        .tiptap-wrapper .ProseMirror {
+          min-height: 450px;
+          outline: none;
+        }
+        .tiptap-wrapper .ProseMirror > * { margin-top: 0; margin-bottom: 1rem; }
+        .tiptap-wrapper .ProseMirror > *:last-child { margin-bottom: 0; }
+        .tiptap-wrapper .ProseMirror h1 { font-size: 1.75rem; font-weight: 800; line-height: 1.2; margin-top: 1.5rem; color: #111; }
+        .tiptap-wrapper .ProseMirror h2 { font-size: 1.4rem; font-weight: 700; line-height: 1.3; margin-top: 1.25rem; color: #222; }
+        .tiptap-wrapper .ProseMirror p { margin-bottom: 0.75rem; }
+        .tiptap-wrapper .ProseMirror ul { list-style-type: disc; padding-left: 1.5rem; margin-top: 0.25rem; margin-bottom: 0.75rem; }
+        .tiptap-wrapper .ProseMirror ol { list-style-type: decimal; padding-left: 1.5rem; margin-top: 0.25rem; margin-bottom: 0.75rem; }
+        .tiptap-wrapper .ProseMirror li { margin-bottom: 0.15rem; }
+        .tiptap-wrapper .ProseMirror li p { margin-bottom: 0 !important; }
+        .tiptap-wrapper .ProseMirror blockquote { border-left: 3px solid #e5e7eb; padding-left: 1.25rem; font-style: italic; color: #4b5563; margin: 1.5rem 0; }
+        .tiptap-wrapper .ProseMirror *:first-child { margin-top: 0 !important; }
+      `}</style>
     </div>
   );
 }

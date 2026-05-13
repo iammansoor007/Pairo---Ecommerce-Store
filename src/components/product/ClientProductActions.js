@@ -1,31 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Minus, ShoppingBag } from "lucide-react";
+import { Plus, Minus, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
-export default function ClientProductActions({ product }) {
-  // Store selected options as { "Size": "M", "Color": "Red" }
+export default function ClientProductActions({ product, onVariantChange }) {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [addedFeedback, setAddedFeedback] = useState(false);
   const { addToCart } = useCart();
   const router = useRouter();
 
-  const handleOptionSelect = (attrName, value) => {
-    setSelectedOptions(prev => ({
-      ...prev,
-      [attrName]: value
-    }));
+  const attributes =
+    product.attributes ||
+    product.variants?.map((v) => ({
+      name: v.name,
+      type: v.name.toLowerCase().includes("color") ? "color" : "custom",
+      values: v.values.map((val) => ({
+        label: val.name || val,
+        value: val.name || val,
+        hex: val.hex || "",
+        image: val.image || "",
+        variantImage: "",
+      })),
+    })) ||
+    [];
+
+  const handleOptionSelect = (attrName, option) => {
+    const newOptions = { ...selectedOptions, [attrName]: option.label };
+    setSelectedOptions(newOptions);
+
+    // Find the attribute type
+    const attr = attributes.find((a) => a.name === attrName);
+    const isColor =
+      attr?.type === "color" || attrName.toLowerCase().includes("color");
+
+    if (isColor && onVariantChange) {
+      // Always emit — even if no variantImage (empty string = reset to product default)
+      onVariantChange({ image: option.variantImage || "", isPartial: true });
+    } else if (option.variantImage && onVariantChange) {
+      onVariantChange({ image: option.variantImage, isPartial: true });
+    }
+
+    // Full combination match (price/stock/sku)
+    if (product.variantCombinations?.length) {
+      const selectedStr = Object.values(newOptions).join(" / ");
+      const match = product.variantCombinations.find(
+        (v) => v.title === selectedStr
+      );
+      if (match && onVariantChange) onVariantChange(match);
+    }
   };
 
   const handleAddToCart = () => {
-    for(let i = 0; i < quantity; i++) {
-      addToCart({
-        ...product,
-        selectedOptions
-      });
+    for (let i = 0; i < quantity; i++) {
+      addToCart({ ...product, selectedOptions });
     }
+    setAddedFeedback(true);
+    setTimeout(() => setAddedFeedback(false), 1800);
   };
 
   const handleSecureCheckout = () => {
@@ -33,86 +66,144 @@ export default function ClientProductActions({ product }) {
     router.push("/checkout");
   };
 
-  // Extract variants from product
-  const variants = product.variants || [];
-
   return (
-    <div className="space-y-8 pt-6 border-t border-black/5">
-      {/* Dynamic Variants from DB */}
-      {variants.map((variant) => (
-        <div key={variant.name} className="space-y-3">
-          <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.2em]">{variant.name}</p>
-          <div className="flex flex-wrap gap-2">
-            {(variant.values || []).map((option) => {
-              const isSelected = selectedOptions[variant.name] === option;
-              
-              // Simple Color detection for visual dots
-              const isColor = variant.name.toLowerCase().includes("color");
-              const colorMap = { "Black": "#000000", "White": "#FFFFFF", "Navy": "#000080", "Gray": "#808080", "Red": "#FF0000" };
-              const colorValue = colorMap[option] || option;
+    <div className="space-y-6 pt-6 border-t border-black/5">
+      {attributes.map((attr) => {
+        const isColor =
+          attr.type === "color" || attr.name.toLowerCase().includes("color");
 
-              if (isColor) {
+        return (
+          <div key={attr.name} className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <p className="text-[9px] font-bold text-black/30 uppercase tracking-[0.25em]">
+                {attr.name}
+              </p>
+              {selectedOptions[attr.name] && (
+                <span className="text-[10px] font-bold text-black/60 uppercase tracking-wider">
+                  {selectedOptions[attr.name]}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {(attr.values || []).map((option) => {
+                const isSelected = selectedOptions[attr.name] === option.label;
+
+                if (isColor) {
+                  return (
+                    <button
+                      key={option.label}
+                      type="button"
+                      onClick={() => handleOptionSelect(attr.name, option)}
+                      title={option.label}
+                      className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${
+                        isSelected
+                          ? "ring-2 ring-offset-2 ring-black scale-105 shadow-lg"
+                          : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
+                      }`}
+                      style={{
+                        backgroundColor: option.hex || "#ddd",
+                        backgroundImage: option.image
+                          ? `url(${option.image})`
+                          : "none",
+                        backgroundSize: "cover",
+                      }}
+                    >
+                      {isSelected && (
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10">
+                          <Check
+                            className={`w-3 h-3 ${
+                              option.hex === "#FFFFFF" ||
+                              option.hex === "#ffffff"
+                                ? "text-black"
+                                : "text-white"
+                            }`}
+                            strokeWidth={3}
+                          />
+                        </div>
+                      )}
+                    </button>
+                  );
+                }
+
                 return (
                   <button
-                    key={option}
-                    onClick={() => handleOptionSelect(variant.name, option)}
-                    className={`w-8 h-8 md:w-10 md:h-10 rounded-full border-2 transition-all flex items-center justify-center ${isSelected ? 'border-black scale-110 shadow-lg' : 'border-transparent hover:border-black/20'}`}
-                    style={{ backgroundColor: colorValue.startsWith("#") ? colorValue : "transparent" }}
-                    title={option}
+                    key={option.label}
+                    type="button"
+                    onClick={() => handleOptionSelect(attr.name, option)}
+                    className={`h-10 px-5 rounded-lg text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-200 border-2 ${
+                      isSelected
+                        ? "bg-black text-white border-black shadow-md"
+                        : "bg-[#F9F9F9] text-black/40 border-transparent hover:border-black/10 hover:text-black"
+                    }`}
                   >
-                     {!colorValue.startsWith("#") && <span className="text-[8px] font-bold uppercase">{option.substring(0,1)}</span>}
-                     {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white shadow-sm" />}
+                    {option.label}
                   </button>
                 );
-              }
-
-              return (
-                <button
-                  key={option}
-                  onClick={() => handleOptionSelect(variant.name, option)}
-                  className={`h-11 md:h-13 px-6 md:px-10 rounded-xl text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] transition-all border-2 ${isSelected
-                      ? "bg-black text-white border-black shadow-xl"
-                      : "bg-[#F9F9F9] text-black/30 border-transparent hover:border-black/10 hover:text-black"
-                    }`}
-                >
-                  {option}
-                </button>
-              );
-            })}
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      {/* Legacy Fallbacks (Remove if you want purely dynamic) */}
-      {variants.length === 0 && (
-         <p className="text-[10px] text-gray-400 italic">No specific variations available for this selection.</p>
-      )}
+      {/* Stock */}
+      <div className="flex items-center gap-2">
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${
+            product.stock > 0 ? "bg-emerald-500" : "bg-red-500"
+          }`}
+        />
+        <span className="text-[9px] font-bold uppercase tracking-widest text-black/30">
+          {product.stock > 0
+            ? `In Stock — ${product.stock} units`
+            : "Out of Stock"}
+        </span>
+      </div>
 
-      {/* Quantity & Add to Cart */}
-      <div className="space-y-4 pt-4 border-t border-black/[0.03]">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex items-center justify-between bg-[#F9F9F9] rounded-xl px-6 h-13 gap-10 border border-black/[0.03] w-full sm:w-auto shadow-sm">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-black/20 hover:text-black transition-colors">
-              <Minus className="w-5 h-5" />
+      {/* Quantity + ATC */}
+      <div className="space-y-3">
+        <div className="flex gap-3">
+          <div className="flex items-center bg-[#F9F9F9] rounded-xl border border-black/[0.04] px-4 gap-4 h-12 shadow-sm shrink-0">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="text-black/20 hover:text-black transition-colors"
+            >
+              <Minus className="w-4 h-4" />
             </button>
-            <span className="font-bold text-lg w-6 text-center heading-font">{quantity}</span>
-            <button onClick={() => setQuantity(quantity + 1)} className="text-black/20 hover:text-black transition-colors">
-              <Plus className="w-5 h-5" />
+            <span className="font-bold text-base w-5 text-center">{quantity}</span>
+            <button
+              onClick={() => setQuantity(quantity + 1)}
+              className="text-black/20 hover:text-black transition-colors"
+            >
+              <Plus className="w-4 h-4" />
             </button>
           </div>
-          
-          <button 
+
+          <button
             onClick={handleAddToCart}
-            className="flex-1 bg-black text-white h-13 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-black/90 active:scale-[0.98] transition-all shadow-2xl shadow-black/20 flex items-center justify-center gap-3"
+            className={`flex-1 h-12 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] shadow-xl ${
+              addedFeedback
+                ? "bg-emerald-500 text-white shadow-emerald-500/30"
+                : "bg-black text-white hover:bg-black/90 shadow-black/20"
+            }`}
           >
-            <ShoppingBag className="w-4 h-4" />
-            Add to Bag
+            {addedFeedback ? (
+              <>
+                <Check className="w-4 h-4" strokeWidth={2.5} />
+                Added!
+              </>
+            ) : (
+              <>
+                <ShoppingBag className="w-4 h-4" />
+                Add to Bag
+              </>
+            )}
           </button>
         </div>
 
-        <button 
+        <button
           onClick={handleSecureCheckout}
-          className="w-full h-13 border-2 border-black rounded-xl text-black font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-black hover:text-white transition-all active:scale-[0.98]"
+          className="w-full h-12 border-2 border-black rounded-xl text-black font-bold uppercase tracking-[0.25em] text-[10px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
         >
           Secure Checkout
         </button>

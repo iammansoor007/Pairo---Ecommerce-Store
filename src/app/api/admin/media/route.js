@@ -1,32 +1,61 @@
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Media from "@/models/Media";
-import { NextResponse } from "next/server";
 
-export async function GET() {
+// GET /api/admin/media — List media with search, filter, pagination
+export async function GET(req) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || session.user.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   await dbConnect();
-  try {
-    const media = await Media.find({ isDeleted: false }).sort({ createdAt: -1 });
-    return NextResponse.json(media);
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
+  const { searchParams } = new URL(req.url);
 
-export async function POST(req) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const search   = searchParams.get('search') || '';
+  const type     = searchParams.get('type') || 'all';    // all, image, video, document
+  const trash    = searchParams.get('trash') === 'true';
+  const page     = parseInt(searchParams.get('page') || '1');
+  const limit    = parseInt(searchParams.get('limit') || '30');
+  const sort     = searchParams.get('sort') || 'newest'; // newest, oldest, name
 
-  await dbConnect();
-  try {
-    const data = await req.json();
-    const media = await Media.create(data);
-    return NextResponse.json(media, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  const query = { isDeleted: trash };
+
+  if (search) {
+    query.$or = [
+      { filename: { $regex: search, $options: 'i' } },
+      { title: { $regex: search, $options: 'i' } },
+      { altText: { $regex: search, $options: 'i' } },
+      { tags: { $in: [new RegExp(search, 'i')] } },
+    ];
   }
+
+  if (type !== 'all') {
+    query.mediaType = type;
+  }
+
+  const sortMap = {
+    newest: { createdAt: -1 },
+    oldest: { createdAt: 1 },
+    name: { filename: 1 },
+  };
+
+  const skip = (page - 1) * limit;
+  const [items, total] = await Promise.all([
+    Media.find(query).sort(sortMap[sort] || { createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Media.countDocuments(query),
+  ]);
+
+  return NextResponse.json({
+    success: true,
+    items,
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    }
+  });
 }

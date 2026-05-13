@@ -3,6 +3,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { NextResponse } from "next/server";
+import { trackMediaUsage, removeMediaUsage, findMediaByUrl } from "@/lib/mediaUsage";
 
 export async function GET(req) {
   const session = await getServerSession(authOptions);
@@ -44,6 +45,26 @@ export async function POST(req) {
     }
 
     const product = await Product.create(data);
+
+    // Track media usage
+    const allImages = [
+      ...(data.images || []),
+      data.seo?.ogImage,
+      ...(data.variantCombinations || []).map(v => v.image)
+    ].filter(Boolean);
+
+    for (const url of allImages) {
+      const media = await findMediaByUrl(url);
+      if (media) {
+        await trackMediaUsage(media._id, {
+          entityType: 'Product',
+          entityId: product._id,
+          fieldName: 'multiple',
+          label: product.name
+        });
+      }
+    }
+
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -57,7 +78,45 @@ export async function PUT(req) {
   await dbConnect();
   try {
     const { id, ...data } = await req.json();
+    const oldProduct = await Product.findById(id);
     const product = await Product.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+
+    // Update media usage tracking
+    const oldImages = [
+      ...(oldProduct?.images || []),
+      oldProduct?.seo?.ogImage,
+      ...(oldProduct?.variantCombinations || []).map(v => v.image)
+    ].filter(Boolean);
+
+    const newImages = [
+      ...(data.images || []),
+      data.seo?.ogImage,
+      ...(data.variantCombinations || []).map(v => v.image)
+    ].filter(Boolean);
+
+    // Remove old usage refs
+    for (const url of oldImages) {
+      if (!newImages.includes(url)) {
+        const media = await findMediaByUrl(url);
+        if (media) await removeMediaUsage(media._id, 'Product', id);
+      }
+    }
+
+    // Add new usage refs
+    for (const url of newImages) {
+      if (!oldImages.includes(url)) {
+        const media = await findMediaByUrl(url);
+        if (media) {
+          await trackMediaUsage(media._id, {
+            entityType: 'Product',
+            entityId: id,
+            fieldName: 'multiple',
+            label: product.name
+          });
+        }
+      }
+    }
+
     return NextResponse.json(product);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

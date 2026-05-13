@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
+import MediaPicker from "@/components/admin/MediaPicker";
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -12,7 +13,8 @@ export default function AdminCategories() {
     name: "",
     slug: "",
     parent: "None",
-    description: ""
+    description: "",
+    image: ""
   });
 
   const fetchCategories = async () => {
@@ -25,6 +27,10 @@ export default function AdminCategories() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setFormData({ name: "", slug: "", parent: "None", description: "", image: "" });
   };
 
   useEffect(() => {
@@ -40,9 +46,19 @@ export default function AdminCategories() {
         body: JSON.stringify(formData)
       });
       if (res.ok) {
-        setFormData({ name: "", slug: "", parent: "None", description: "" });
+        handleReset();
         fetchCategories();
       }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this category?")) return;
+    try {
+      const res = await fetch(`/api/admin/categories?id=${id}`, { method: "DELETE" });
+      if (res.ok) fetchCategories();
     } catch (err) {
       console.error(err);
     }
@@ -100,7 +116,15 @@ export default function AdminCategories() {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                 />
-                <p className="text-[12px] text-[#646970] italic">The description is not prominent by default.</p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[14px] text-[#1d2327]">Category Image</label>
+                <MediaPicker 
+                  value={formData.image} 
+                  onChange={(url) => setFormData({...formData, image: url})}
+                  label=""
+                />
               </div>
 
               <button className="bg-[#2271b1] text-white px-4 py-2 rounded-sm text-[13px] font-medium hover:bg-[#135e96] transition-all">
@@ -160,7 +184,7 @@ export default function AdminCategories() {
                               <span className="text-[#c3c4c7]">|</span>
                               <button className="text-[#2271b1] hover:text-[#135e96]">Quick Edit</button>
                               <span className="text-[#c3c4c7]">|</span>
-                              <button className="text-[#d63638] hover:text-[#bc0b0d]">Delete</button>
+                              <button onClick={() => handleDelete(cat._id)} className="text-[#d63638] hover:text-[#bc0b0d]">Delete</button>
                               <span className="text-[#c3c4c7]">|</span>
                               <button className="text-[#2271b1] hover:text-[#135e96]">View</button>
                            </div>

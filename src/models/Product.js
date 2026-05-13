@@ -25,10 +25,17 @@ const ProductSchema = new mongoose.Schema({
   images: [{ type: String }], // Array of image URLs/paths
   image: { type: String }, // Legacy Main Image
   
-  // Variants (Shopify-style)
-  variants: [{
-    name: String, // e.g. "Size"
-    values: [String] // e.g. ["S", "M", "L"]
+  // Advanced Variant Engine (Product Independent)
+  attributes: [{
+    name: String, // e.g. "Color", "Material", "Size"
+    type: { type: String, enum: ['color', 'size', 'custom'], default: 'custom' },
+    values: [{
+      label: String, // Display label
+      hex: String, // For color swatches
+      image: String, // Optional swatch image (pattern/texture)
+      value: String, // Actual value (e.g. "S", "M")
+      variantImage: String // Image override for this specific selection
+    }]
   }],
   variantCombinations: [{
     title: String, // e.g. "Black / M"
@@ -39,6 +46,13 @@ const ProductSchema = new mongoose.Schema({
   }],
 
   // Dynamic Sections
+  overview: String, // Replacing static Product Overview
+  shippingType: { type: String, default: "Express" },
+  stats: [{
+    label: String,
+    value: String,
+    icon: String // Lucide icon name
+  }],
   narrative: {
     title: { type: String, default: "Craftsmanship Narrative" },
     content: String
