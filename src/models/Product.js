@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
 const ProductSchema = new mongoose.Schema({
+  tenantId: { type: String, required: true, index: true },
   // Core Info
   name: { type: String, required: true },
-  slug: { type: String, unique: true },
+  slug: { type: String, index: true },
   shortDescription: { type: String },
   description: { type: String }, // Long Description (Rich Text)
   status: { type: String, enum: ['Draft', 'Published'], default: 'Draft' },
@@ -88,8 +89,8 @@ const ProductSchema = new mongoose.Schema({
   id: { type: Number } // Legacy numeric ID
 }, { timestamps: true });
 
-// Ensure unique slugs
-ProductSchema.index({ slug: 1 }, { unique: true, sparse: true });
+// Ensure unique slugs per tenant
+ProductSchema.index({ tenantId: 1, slug: 1 }, { unique: true, sparse: true });
 
 delete mongoose.models.Product;
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

@@ -16,7 +16,8 @@ import {
   Eye,
   Check,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -231,6 +232,7 @@ export default function AdminProducts() {
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-24">SKU</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-28 text-center">Stock</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-20">Price</th>
+                <th className="px-3 py-2 font-bold text-[#1d2327] w-24">Status</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-32">Date</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-20 text-right">Actions</th>
               </tr>
@@ -251,15 +253,17 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-3 py-4 align-top">
                        <Link href={`/admin/products/${p._id}`} className="text-[#2271b1] font-bold hover:underline">{p.name}</Link>
-                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[#2271b1] mt-1 font-medium">
-                          <Link href={`/admin/products/${p._id}`} className="hover:text-[#135e96]">Edit</Link>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <button onClick={() => handleDuplicate(p)} className="hover:text-[#135e96]">Duplicate</button>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <button onClick={() => handleTrash(p._id)} className="text-[#d63638] hover:text-[#bc0b0d]">Trash</button>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <Link href={`/product/${p.slug}`} target="_blank" className="hover:text-[#135e96]">View</Link>
-                       </div>
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[#2271b1] mt-1 font-medium">
+                           <Link href={`/admin/products/${p._id}`} className="hover:text-[#135e96]">Edit</Link>
+                           <span className="text-[#c3c4c7]">|</span>
+                           <button onClick={() => openQuickEdit(p)} className="hover:text-[#135e96]">Quick Edit</button>
+                           <span className="text-[#c3c4c7]">|</span>
+                           <button onClick={() => handleDuplicate(p)} className="hover:text-[#135e96]">Duplicate</button>
+                           <span className="text-[#c3c4c7]">|</span>
+                           <button onClick={() => handleTrash(p._id)} className="hover:text-[#d63638] hover:text-[#bc0b0d]">Trash</button>
+                           <span className="text-[#c3c4c7]">|</span>
+                           <Link href={`/product/${p.slug}`} target="_blank" className="hover:text-[#135e96]">View</Link>
+                        </div>
                     </td>
                     <td className="px-3 py-4 align-top">
                       <div className="flex flex-wrap gap-1">
@@ -285,6 +289,22 @@ export default function AdminProducts() {
                        </span>
                     </td>
                     <td className="px-3 py-4 align-top font-bold">${p.price?.toFixed(2)}</td>
+                    <td className="px-3 py-4 align-top">
+                       <button 
+                          onClick={async () => {
+                             const newStatus = p.status === 'Published' ? 'Draft' : 'Published';
+                             const res = await fetch("/api/admin/products", {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: p._id, status: newStatus, tenantId: "DEFAULT_STORE" })
+                             });
+                             if (res.ok) fetchProducts();
+                          }}
+                          className={`px-2 py-0.5 rounded-[2px] text-[10px] font-bold uppercase transition-colors ${p.status === 'Published' ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                       >
+                          {p.status}
+                       </button>
+                    </td>
                     <td className="px-3 py-4 align-top text-[#646970]">
                        {new Date(p.createdAt).toLocaleDateString()}
                     </td>
@@ -299,6 +319,68 @@ export default function AdminProducts() {
             </tbody>
           </table>
         </div>
+
+        {/* Quick Edit Overlay */}
+        {quickEditId && (
+            <div className="fixed inset-0 bg-black/5 backdrop-blur-[1px] z-50 flex items-center justify-center p-4">
+                <div className="bg-white border border-[#ccd0d4] shadow-2xl w-full max-w-4xl rounded-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div className="bg-[#f6f7f7] border-b border-[#ccd0d4] px-4 py-3 flex items-center justify-between">
+                        <h3 className="text-[14px] font-bold text-[#1d2327]">Quick Edit — {quickEditData.name}</h3>
+                        <button onClick={() => setQuickEditId(null)} className="text-gray-400 hover:text-black"><X className="w-5 h-5" /></button>
+                    </div>
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-[12px] font-bold mb-1">Title</label>
+                                <input className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-2 text-[13px]" value={quickEditData.name} onChange={e => setQuickEditData({...quickEditData, name: e.target.value})} />
+                            </div>
+                            <div>
+                                <label className="block text-[12px] font-bold mb-1">Slug</label>
+                                <input className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-2 text-[13px] font-mono text-gray-500" value={quickEditData.slug} onChange={e => setQuickEditData({...quickEditData, slug: e.target.value})} />
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[12px] font-bold mb-1">Price ($)</label>
+                                    <input type="number" className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-2 text-[13px]" value={quickEditData.price} onChange={e => setQuickEditData({...quickEditData, price: parseFloat(e.target.value)})} />
+                                </div>
+                                <div>
+                                    <label className="block text-[12px] font-bold mb-1">SKU</label>
+                                    <input className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-2 text-[13px] uppercase" value={quickEditData.sku} onChange={e => setQuickEditData({...quickEditData, sku: e.target.value})} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[12px] font-bold mb-1">Status</label>
+                                <select className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-2 text-[13px]" value={quickEditData.status} onChange={e => setQuickEditData({...quickEditData, status: e.target.value})}>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Published">Published</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-[#f6f7f7] border-t border-[#ccd0d4] px-4 py-3 flex items-center justify-between">
+                        <button onClick={() => setQuickEditId(null)} className="text-[13px] text-[#2271b1] hover:text-[#135e96] underline">Cancel</button>
+                        <button 
+                            onClick={async () => {
+                                const res = await fetch("/api/admin/products", {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ ...quickEditData, id: quickEditId, tenantId: "DEFAULT_STORE" })
+                                });
+                                if (res.ok) {
+                                    setQuickEditId(null);
+                                    fetchProducts();
+                                }
+                            }}
+                            className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold text-[13px] hover:bg-[#135e96]"
+                        >
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
 
         {/* Pagination */}
         <div className="flex items-center justify-between text-[13px] text-[#646970]">

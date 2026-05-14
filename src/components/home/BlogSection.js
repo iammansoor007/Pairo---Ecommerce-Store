@@ -34,6 +34,17 @@ export default function BlogSection() {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [dbBlogs, setDbBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/blogs?limit=6")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setDbBlogs(data);
+        setLoading(false);
+      });
+  }, []);
 
   const scroll = (direction) => {
     if (carouselRef.current) {
@@ -58,12 +69,34 @@ export default function BlogSection() {
       checkScroll();
     }
     return () => current?.removeEventListener("scroll", checkScroll);
-  }, []);
+  }, [dbBlogs]);
 
-  if (!siteData?.blogs) return null;
+  if (!siteData?.blogs && dbBlogs.length === 0) return null;
 
-  const { blogs } = siteData;
-  const posts = blogs.posts || [];
+  const { blogs } = siteData || { 
+    blogs: { 
+      title: "OUR JOURNAL", 
+      label: "BLOG", 
+      readMore: "READ MORE",
+      featuredProduct: {
+        label: "FEATURED",
+        name: "Collection",
+        description: "Discover our latest additions.",
+        buttonText: "SHOP NOW",
+        image: "/placeholder.jpg"
+      }
+    } 
+  };
+  
+  // Combine or prioritize database blogs
+  const posts = dbBlogs.length > 0 ? dbBlogs.map(b => ({
+    id: b._id,
+    title: b.title,
+    slug: b.slug,
+    image: b.image,
+    category: b.category,
+    date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  })) : (blogs?.posts || []);
 
   return (
     <section className="py-12 md:py-16 overflow-hidden">

@@ -10,7 +10,11 @@ export async function GET(req) {
     const id = searchParams.get('id');
 
     // Always filter for Published and not Deleted for public API
-    const baseQuery = { status: 'Published', isDeleted: { $ne: true } };
+    const baseQuery = { 
+        tenantId: searchParams.get('tenantId') || 'DEFAULT_STORE',
+        status: 'Published', 
+        isDeleted: { $ne: true } 
+    };
 
     if (id) {
       const product = await Product.findOne({ ...baseQuery, id: parseInt(id) });

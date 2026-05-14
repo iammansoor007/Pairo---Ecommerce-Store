@@ -125,7 +125,7 @@ export default function AdminOrdersPage() {
                        <Link href={`/admin/orders/${order._id}`} className="text-[#2271b1] font-bold text-[14px] hover:text-[#135e96]">
                           #{order.orderNumber}
                        </Link>
-                       <p className="text-[12px] text-[#646970] font-medium">{order.shippingAddress.fullName}</p>
+                       <p className="text-[12px] text-[#646970] font-medium">{order.shippingAddress?.fullName || order.customer?.email || "Guest"}</p>
                     </td>
                     <td className="px-4 py-4 text-[#646970]">
                        {new Date(order.createdAt).toLocaleDateString()}
@@ -136,7 +136,7 @@ export default function AdminOrdersPage() {
                        </span>
                     </td>
                     <td className="px-4 py-4 font-bold">
-                       ${order.financials.total.toLocaleString()}
+                       ${order.financials?.total?.toLocaleString() || "0"}
                     </td>
                     <td className="px-4 py-4 text-right">
                        <div className="flex items-center justify-end gap-2">

@@ -21,7 +21,10 @@ export async function GET(req) {
       return NextResponse.json(product);
     }
 
-    let query = { isDeleted };
+    let query = { 
+        tenantId: searchParams.get('tenantId') || "DEFAULT_STORE",
+        isDeleted 
+    };
     if (status) query.status = status;
 
     const products = await Product.find(query).sort({ createdAt: -1 });
@@ -39,12 +42,18 @@ export async function POST(req) {
   try {
     const data = await req.json();
     
+    // Inject tenantId (Mandatory for SaaS Hardening)
+    const productData = {
+        ...data,
+        tenantId: data.tenantId || "DEFAULT_STORE"
+    };
+
     // Generate unique slug if not provided
-    if (!data.slug) {
-      data.slug = data.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    if (!productData.slug && productData.name) {
+      productData.slug = productData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
     }
 
-    const product = await Product.create(data);
+    const product = await Product.create(productData);
 
     // Track media usage
     const allImages = [
@@ -77,9 +86,13 @@ export async function PUT(req) {
 
   await dbConnect();
   try {
-    const { id, ...data } = await req.json();
-    const oldProduct = await Product.findById(id);
-    const product = await Product.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    const { id, tenantId = "DEFAULT_STORE", ...data } = await req.json();
+    
+    // Scoped Update
+    const oldProduct = await Product.findOne({ _id: id, tenantId });
+    if (!oldProduct) return NextResponse.json({ error: "Product not found" }, { status: 404 });
+
+    const product = await Product.findOneAndUpdate({ _id: id, tenantId }, data, { new: true, runValidators: true });
 
     // Update media usage tracking
     const oldImages = [
@@ -129,11 +142,12 @@ export async function DELETE(req) {
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const tenantId = searchParams.get("tenantId") || "DEFAULT_STORE";
 
   await dbConnect();
   try {
-    // Soft delete
-    const product = await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    // Scoped Soft delete
+    const product = await Product.findOneAndUpdate({ _id: id, tenantId }, { isDeleted: true }, { new: true });
     return NextResponse.json(product);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

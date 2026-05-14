@@ -10,7 +10,23 @@ const BlogSchema = new mongoose.Schema({
   author: { type: String, default: "Pairo Studio" },
   status: { type: String, enum: ['Draft', 'Published'], default: 'Draft' },
   isFeatured: { type: Boolean, default: false },
-  tags: [String]
+  tags: [String],
+  tenantId: { type: String, required: true, default: "DEFAULT_STORE" },
+  heritage: { type: String, default: "" },
+  process: { type: String, default: "" },
+  style: { type: String, default: "" },
+  featuredProductId: { type: String, default: "" },
+  featuredProductData: {
+    name: String,
+    image: String,
+    price: String
+  },
+  isDeleted: { type: Boolean, default: false },
+  seo: {
+    title: String,
+    description: String,
+    keywords: String
+  }
 }, { timestamps: true });
 
 delete mongoose.models.Blog;

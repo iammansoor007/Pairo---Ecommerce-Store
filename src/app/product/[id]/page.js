@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
     ]
   }).lean();
 
-  if (!product || product.status !== 'Published') return { title: "Product Not Found" };
+  if (!product) return { title: "Product Not Found" };
 
   return {
     title: product.seo?.title || `${product.name} | Pairo Store`,
@@ -54,9 +54,7 @@ export default async function ProductDetailPage({ params }) {
       .lean();
   }
   
-  if (product && product.status !== 'Published') {
-    product = null;
-  }
+  // Removed hard Published check to allow previews
   
   const relatedProducts = await Product.find({ 
     isDeleted: { $ne: true },

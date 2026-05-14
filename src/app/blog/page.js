@@ -1,8 +1,15 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Plus, ArrowRight } from "lucide-react";
-import siteData from "@/lib/data.json";
+import dbConnect from "@/lib/db";
+import Blog from "@/models/Blog";
+import SiteConfig from "@/models/SiteConfig";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Journal | Pairo Editorial",
+  description: "Explore the stories, craftsmanship, and heritage behind Pairo's archival shearling collection.",
+};
 
 const BlogCard = ({ post }) => (
   <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
@@ -42,12 +49,35 @@ const BlogCard = ({ post }) => (
   </Link>
 );
 
-export default function BlogArchive() {
-  const { blogs } = siteData;
+export default async function BlogArchive() {
+  await dbConnect();
+  
+  const dbBlogs = await Blog.find({ 
+    status: 'Published', 
+    isDeleted: { $ne: true },
+    tenantId: 'DEFAULT_STORE' 
+  }).sort({ createdAt: -1 }).lean();
+
+  const posts = dbBlogs.map(b => ({
+    id: b._id.toString(),
+    title: b.title,
+    slug: b.slug,
+    image: b.image,
+    category: b.category,
+    date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  }));
+
+  const config = await SiteConfig.findOne({ key: 'main' }).lean();
+  const rawFeaturedProduct = config?.blogs?.featuredProduct || {
+    id: "default",
+    name: "Archival Piece",
+    image: "/placeholder.jpg",
+    label: "FEATURED"
+  };
+  const featuredProduct = JSON.parse(JSON.stringify(rawFeaturedProduct));
 
   return (
     <main className="bg-white min-h-screen">
-      {/* Header Section */}
       <section className="pt-32 pb-16 md:pt-48 md:pb-24 border-b border-black/5">
          <div className="container mx-auto px-4 md:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
@@ -68,41 +98,38 @@ export default function BlogArchive() {
          </div>
       </section>
 
-      {/* Grid Section */}
       <section className="py-20 md:py-32">
          <div className="container mx-auto px-4 md:px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-12">
-               {blogs.posts.map((post) => (
+               {posts.map((post) => (
                   <BlogCard key={post.id} post={post} />
                ))}
                
-               {/* Archive Promotional Callout */}
                <div className="bg-black text-white p-8 rounded-[24px] flex flex-col justify-between relative overflow-hidden group min-h-[300px]">
                   <div className="relative z-10 space-y-4">
                      <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">ARCHIVE SHOP</span>
                      <h3 className="text-2xl font-bold heading-font uppercase leading-tight">
-                        {blogs.featuredProduct.name}
+                        {featuredProduct.name}
                      </h3>
                      <p className="text-white/50 text-[10px] md:text-sm line-clamp-3">
                         Featured in this season's archival entries.
                      </p>
                   </div>
                   <Link 
-                    href={`/product/${blogs.featuredProduct.id}`}
+                    href={`/product/${featuredProduct.id}`}
                     className="relative z-10 flex items-center justify-center gap-3 w-full bg-white text-black py-4 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFC633] transition-all"
                   >
                     Shop archive
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <div className="absolute -bottom-10 -right-10 w-48 h-48 opacity-20 group-hover:scale-110 transition-transform duration-1000">
-                     <img src={blogs.featuredProduct.image} className="w-full h-full object-cover" />
+                     <img src={featuredProduct.image} className="w-full h-full object-cover" />
                   </div>
                </div>
             </div>
          </div>
       </section>
 
-      {/* Subscription Callout */}
       <section className="py-20 md:py-32 bg-[#FBFBFB] border-t border-black/5">
          <div className="container mx-auto px-4 md:px-8 text-center max-w-4xl">
             <span className="text-black/30 text-[9px] font-bold uppercase tracking-[0.5em] mb-8 block">THE ELITE LIST</span>

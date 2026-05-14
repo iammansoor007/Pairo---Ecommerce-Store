@@ -20,8 +20,9 @@ export async function GET(req) {
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
+    const tenantId = searchParams.get("tenantId") || "DEFAULT_STORE";
 
-    let query = {};
+    let query = { tenantId };
 
     if (status && status !== "all") {
       query.status = status;

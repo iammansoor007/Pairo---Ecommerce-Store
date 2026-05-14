@@ -13,9 +13,10 @@ async function dbConnect() {
     return cached.conn;
   }
 
-  // Check for URI inside the function to avoid crashing at module evaluation
-  if (!MONGODB_URI) {
-    console.warn('⚠️ MONGODB_URI is not defined. Skipping database connection (expected during build shell generation).');
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    console.warn('⚠️ MONGODB_URI is not defined. Skipping database connection.');
     return null;
   }
 
@@ -24,7 +25,7 @@ async function dbConnect() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
       return mongoose;
     });
   }

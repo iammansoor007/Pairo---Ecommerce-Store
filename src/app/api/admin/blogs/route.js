@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Blog from "@/models/Blog";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(req) {
    await dbConnect();
@@ -14,7 +16,16 @@ export async function GET(req) {
          const blog = await Blog.findById(id);
          return NextResponse.json(blog);
       }
-      let query = { isDeleted };
+      let query = { 
+         tenantId: searchParams.get('tenantId') || "DEFAULT_STORE"
+      };
+      
+      if (searchParams.get("isDeleted") === "true") {
+         query.isDeleted = true;
+      } else {
+         query.isDeleted = { $ne: true };
+      }
+
       if (status) query.status = status;
       
       const blogs = await Blog.find(query).sort({ createdAt: -1 });
@@ -25,29 +36,78 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+   const session = await getServerSession(authOptions);
+   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   
    await dbConnect();
    try {
       const data = await req.json();
-      const blog = await Blog.create(data);
+      const blogData = {
+         ...data,
+         tenantId: data.tenantId || "DEFAULT_STORE"
+      };
+
+      // Auto-generate slug if missing or handle collisions
+      if (!blogData.slug && blogData.title) {
+         blogData.slug = blogData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+      }
+
+      // Check for collision and append suffix if needed
+      let slug = blogData.slug;
+      let count = 1;
+      while (await Blog.findOne({ slug, tenantId: blogData.tenantId })) {
+         slug = `${blogData.slug}-${count}`;
+         count++;
+      }
+      blogData.slug = slug;
+
+      console.log("CREATING BLOG:", blogData);
+      const blog = await Blog.create(blogData);
       return NextResponse.json(blog);
-   } catch (err) {
+    } catch (err) {
+      console.error("BLOG POST ERROR:", err);
       return NextResponse.json({ error: err.message }, { status: 500 });
-   }
+    }
 }
 
 export async function PUT(req) {
+   const session = await getServerSession(authOptions);
+   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
    await dbConnect();
    try {
       const data = await req.json();
-      const { id, ...updateData } = data;
-      const blog = await Blog.findByIdAndUpdate(id, updateData, { new: true });
+      const { id, tenantId = "DEFAULT_STORE", ...updateData } = data;
+
+      // Auto-generate slug if missing
+      if (!updateData.slug && updateData.title) {
+         updateData.slug = updateData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+      }
+
+      // Handle collision on update (only if slug is being changed)
+      if (updateData.slug) {
+         let slug = updateData.slug;
+         let count = 1;
+         while (await Blog.findOne({ slug, _id: { $ne: id }, tenantId })) {
+            slug = `${updateData.slug}-${count}`;
+            count++;
+         }
+         updateData.slug = slug;
+      }
+
+      console.log("UPDATING BLOG:", id, updateData);
+      const blog = await Blog.findOneAndUpdate({ _id: id, tenantId }, updateData, { new: true });
       return NextResponse.json(blog);
-   } catch (err) {
+    } catch (err) {
+      console.error("BLOG PUT ERROR:", err);
       return NextResponse.json({ error: err.message }, { status: 500 });
-   }
+    }
 }
 
 export async function DELETE(req) {
+   const session = await getServerSession(authOptions);
+   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
    await dbConnect();
    const { searchParams } = new URL(req.url);
    const id = searchParams.get("id");

@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
-  orderNumber: { type: String, required: true, unique: true, index: true },
+  tenantId: { type: String, required: true, index: true },
+  orderNumber: { type: String, required: true, index: true },
   status: { 
     type: String, 
     enum: ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled', 'Refunded'],
@@ -30,7 +31,17 @@ const OrderSchema = new mongoose.Schema({
     discountTotal: { type: Number, default: 0 },
     total: Number,
     currency: { type: String, default: 'USD' },
-    promoCode: String
+    promoCode: String, // Keep for legacy/simple reference
+    appliedPromotions: [{
+      promotionId: mongoose.Schema.Types.Mixed, // Use Mixed to avoid casting issues between different model versions
+      code: String,
+      title: String,
+      type: String,
+      value: mongoose.Schema.Types.Mixed,
+      discountAmount: Number,
+      explanation: String,
+      rulesSnapshot: mongoose.Schema.Types.Mixed
+    }]
   },
   
   payment: {
@@ -66,6 +77,10 @@ const OrderSchema = new mongoose.Schema({
     source: { type: String, enum: ['System', 'Admin', 'Customer'], default: 'System' }
   }]
 }, { timestamps: true });
+
+// SaaS Unique Constraints
+OrderSchema.index({ tenantId: 1, orderNumber: 1 }, { unique: true });
+OrderSchema.index({ tenantId: 1, idempotencyKey: 1 }, { unique: true, sparse: true });
 
 // Performance Indexes
 OrderSchema.index({ createdAt: -1 });

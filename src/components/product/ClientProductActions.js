@@ -150,13 +150,13 @@ export default function ClientProductActions({ product, onVariantChange }) {
       <div className="flex items-center gap-2">
         <span
           className={`w-1.5 h-1.5 rounded-full ${
-            product.stock > 0 ? "bg-emerald-500" : "bg-red-500"
+            (!product.manageStock || product.stock > 0) ? "bg-emerald-500" : "bg-red-500"
           }`}
         />
         <span className="text-[9px] font-bold uppercase tracking-widest text-black/30">
-          {product.stock > 0
-            ? `In Stock — ${product.stock} units`
-            : "Out of Stock"}
+          {!product.manageStock 
+            ? "Available" 
+            : (product.stock > 0 ? `In Stock — ${product.stock} units` : "Out of Stock")}
         </span>
       </div>
 

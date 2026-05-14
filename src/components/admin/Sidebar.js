@@ -128,7 +128,7 @@ export default function AdminSidebar() {
                  <div className="bg-[#2c3338] py-1 border-l-[3px] border-[#2271b1]/30">
                     <NavLink href="/admin/orders" icon={ShoppingBag}>Orders</NavLink>
                     <NavLink href="/admin/users" icon={Users}>Customers</NavLink>
-                    <NavLink href="/admin/discounts" icon={Tag}>Coupons</NavLink>
+                    <NavLink href="/admin/promotions" icon={Tag}>Discounts & Coupons</NavLink>
                     <NavLink href="/admin/analytics" icon={BarChart3}>Analytics</NavLink>
                     
                     {/* Products grouped inside Woo */}

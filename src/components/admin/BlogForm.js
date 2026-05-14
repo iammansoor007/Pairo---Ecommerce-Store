@@ -28,6 +28,14 @@ export default function BlogForm({ blogId }) {
       image: "",
       category: "Uncategorized",
       status: "Draft",
+      heritage: "",
+      process: "",
+      style: "",
+      featuredProductId: "",
+      featuredProductData: {
+         name: "",
+         image: ""
+      },
       seo: {
          title: "",
          description: "",
@@ -36,11 +44,20 @@ export default function BlogForm({ blogId }) {
    });
 
    const [categories, setCategories] = useState([]);
+   const [products, setProducts] = useState([]);
 
    useEffect(() => {
       fetch("/api/admin/categories?type=blog")
          .then(res => res.json())
          .then(data => setCategories(Array.isArray(data) ? data : []));
+
+      // Fetch products for the dropdown
+      fetch("/api/admin/products")
+         .then(res => res.json())
+         .then(data => {
+            const productList = Array.isArray(data) ? data : (data.products || []);
+            setProducts(productList);
+         });
 
       if (blogId) {
          fetch(`/api/admin/blogs?id=${blogId}`)
@@ -66,9 +83,15 @@ export default function BlogForm({ blogId }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(blogId ? { ...formData, id: blogId } : formData)
          });
-         if (res.ok) router.push("/admin/blogs");
+         if (res.ok) {
+            router.push("/admin/blogs");
+         } else {
+            const data = await res.json();
+            alert(`Error: ${data.error || "Failed to save blog"}`);
+         }
       } catch (err) {
          console.error(err);
+         alert(`Network Error: ${err.message}`);
       } finally {
          setSaving(false);
       }
@@ -100,18 +123,39 @@ export default function BlogForm({ blogId }) {
                   </div>
                </div>
 
-               {/* Content Meta Box */}
+               {/* Content Meta Box (General) */}
                <div className="bg-white border border-[#c3c4c7] shadow-sm">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-1 flex items-center justify-between">
-                     <div className="flex gap-2">
-                        <button type="button" className="p-1 px-3 bg-white border border-[#c3c4c7] border-b-white -mb-[5px] text-[12px] font-bold z-10">Visual</button>
-                        <button type="button" className="p-1 px-3 text-[12px] text-gray-400">Text</button>
-                     </div>
-                     <button type="button" className="text-[12px] text-[#2271b1] hover:text-black font-medium">Add Media</button>
-                  </div>
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">General Content</div>
                   <TiptapEditor
                      content={formData.content}
                      onChange={(html) => setFormData({ ...formData, content: html })}
+                  />
+               </div>
+
+               {/* Heritage Section */}
+               <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 01: Heritage</div>
+                  <TiptapEditor
+                     content={formData.heritage}
+                     onChange={(html) => setFormData({ ...formData, heritage: html })}
+                  />
+               </div>
+
+               {/* Process Section */}
+               <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 02: Process</div>
+                  <TiptapEditor
+                     content={formData.process}
+                     onChange={(html) => setFormData({ ...formData, process: html })}
+                  />
+               </div>
+
+               {/* Style Section */}
+               <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 03: Style</div>
+                  <TiptapEditor
+                     content={formData.style}
+                     onChange={(html) => setFormData({ ...formData, style: html })}
                   />
                </div>
 
@@ -154,11 +198,27 @@ export default function BlogForm({ blogId }) {
                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Publish</div>
                   <div className="p-3 space-y-4">
                      <div className="flex justify-between items-center">
-                        <button type="button" className="border border-[#c3c4c7] px-3 py-1.5 rounded-[3px] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[12px] font-medium">Save Draft</button>
+                        <button 
+                            type="button" 
+                            onClick={handleSubmit}
+                            className="border border-[#c3c4c7] px-3 py-1.5 rounded-[3px] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[12px] font-medium"
+                        >
+                            Save Draft
+                        </button>
                         <button type="button" className="text-[#2271b1] underline text-[12px]">Preview</button>
                      </div>
                      <div className="space-y-3 py-3 border-y border-gray-100 text-[13px]">
-                        <p className="flex items-center gap-2"><span className="text-gray-400">Status:</span> <strong>{formData.status}</strong> <button type="button" className="text-[#2271b1] underline ml-auto text-[12px]">Edit</button></p>
+                        <div className="flex items-center justify-between">
+                            <p><span className="text-gray-400">Status:</span> <strong>{formData.status}</strong></p>
+                            <select 
+                                className="text-[11px] border border-gray-200 rounded px-1 py-0.5 outline-none focus:border-[#2271b1]"
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            >
+                                <option value="Draft">Draft</option>
+                                <option value="Published">Published</option>
+                            </select>
+                        </div>
                         <p className="flex items-center gap-2"><span className="text-gray-400">Visibility:</span> <strong>Public</strong> <button type="button" className="text-[#2271b1] underline ml-auto text-[12px]">Edit</button></p>
                         <p className="flex items-center gap-2"><span className="text-gray-400"><Calendar className="w-3.5 h-3.5 inline mr-1" /> Publish immediately</span> <button type="button" className="text-[#2271b1] underline ml-auto text-[12px]">Edit</button></p>
                      </div>
@@ -200,18 +260,41 @@ export default function BlogForm({ blogId }) {
                   </div>
                </div>
 
-               {/* Featured Image Box */}
-               <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
-                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Featured Image</div>
-                  <div className="p-4">
-                     <MediaPicker 
-                        value={formData.image}
-                        onChange={(url) => setFormData({...formData, image: url})}
-                        label="Set featured image"
-                     />
-                  </div>
-               </div>
-            </div>
+                {/* Featured Image Box */}
+                <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
+                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Featured Image</div>
+                   <div className="p-4">
+                      <MediaPicker 
+                         value={formData.image}
+                         onChange={(url) => setFormData({...formData, image: url})}
+                         label="Set featured image"
+                      />
+                   </div>
+                </div>
+
+                {/* Featured Product Box */}
+                <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-[2px]">
+                   <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Featured Product</div>
+                   <div className="p-4 space-y-4">
+                      <div className="space-y-1.5">
+                         <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Select Product</label>
+                         <select 
+                            className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white"
+                            value={formData.featuredProductId || ""} 
+                            onChange={(e) => setFormData({...formData, featuredProductId: e.target.value})}
+                         >
+                            <option value="">— Select a Product —</option>
+                            {products.map(product => (
+                               <option key={product._id} value={product._id || product.slug}>
+                                  {product.name}
+                               </option>
+                            ))}
+                         </select>
+                         <p className="text-[10px] text-gray-400">Choose a product to feature in the sidebar.</p>
+                      </div>
+                   </div>
+                </div>
+             </div>
          </form>
     </AdminPageLayout>
    );

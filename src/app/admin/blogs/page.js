@@ -176,9 +176,20 @@ export default function AdminBlogs() {
                     <td className="px-3 py-4 align-top text-[#2271b1]">Admin</td>
                     <td className="px-3 py-4 align-top text-[#2271b1] font-medium">{b.category || "Uncategorized"}</td>
                     <td className="px-3 py-4 align-top text-center">
-                       <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase ${b.status === 'Published' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
+                       <button 
+                          onClick={async () => {
+                             const newStatus = b.status === 'Published' ? 'Draft' : 'Published';
+                             await fetch(`/api/admin/blogs`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: b._id, status: newStatus })
+                             });
+                             fetchBlogs();
+                          }}
+                          className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase transition-colors ${b.status === 'Published' ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'}`}
+                       >
                           {b.status}
-                       </span>
+                       </button>
                     </td>
                     <td className="px-3 py-4 align-top text-[#646970]">
                        {new Date(b.createdAt).toLocaleDateString()}

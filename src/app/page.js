@@ -10,14 +10,27 @@ import Reveal from "@/components/common/Reveal";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let newArrivals = [];
   let topSelling = [];
 
   try {
     await dbConnect();
-    newArrivals = await Product.find({ type: 'newArrival', status: 'Published' }).lean();
-    topSelling = await Product.find({ type: 'topSelling', status: 'Published' }).lean();
+    const query = { tenantId: 'DEFAULT_STORE', status: 'Published' };
+    
+    // Fetch specifically tagged products
+    newArrivals = await Product.find({ ...query, type: 'newArrival' }).limit(8).lean();
+    topSelling = await Product.find({ ...query, type: 'topSelling' }).limit(8).lean();
+
+    // FALLBACK: If sections are empty, just show the latest products
+    if (newArrivals.length === 0) {
+      newArrivals = await Product.find(query).sort({ createdAt: -1 }).limit(8).lean();
+    }
+    if (topSelling.length === 0) {
+      topSelling = await Product.find(query).sort({ updatedAt: -1 }).limit(8).lean();
+    }
   } catch (error) {
     console.error("Home Page Data Fetch Error:", error);
   }

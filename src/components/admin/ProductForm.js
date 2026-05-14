@@ -492,7 +492,26 @@ export default function ProductForm({ productId = null }) {
                         <button type="button" className="text-[#2271b1] underline">Preview</button>
                      </div>
                      <div className="space-y-3 py-3 border-y border-gray-100">
-                        <p><span className="text-gray-400">Status:</span> <strong>{formData.status}</strong></p>
+                        <div className="flex items-center justify-between">
+                            <p><span className="text-gray-400">Status:</span> <strong>{formData.status}</strong></p>
+                            <select 
+                                className="text-[11px] border border-gray-200 rounded px-1 py-0.5 outline-none focus:border-[#2271b1]"
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            >
+                                <option value="Draft">Draft</option>
+                                <option value="Published">Published</option>
+                            </select>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <input 
+                              type="checkbox" 
+                              id="isFeatured"
+                              checked={formData.isFeatured}
+                              onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                           />
+                           <label htmlFor="isFeatured" className="text-gray-400 cursor-pointer">Featured Product</label>
+                        </div>
                         <p><span className="text-gray-400">Visibility:</span> <strong>Public</strong></p>
                      </div>
                      <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] -mx-3 -mb-3 p-3 flex justify-between items-center">
