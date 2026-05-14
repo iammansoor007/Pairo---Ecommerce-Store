@@ -93,19 +93,23 @@ export default function AdminUsers() {
                          <div className="w-8 h-8 bg-gray-50 border border-gray-200 rounded-[2px] flex items-center justify-center text-[#8c8f94]">
                             <UserIcon className="w-4 h-4" />
                          </div>
-                         <div className="flex flex-col">
-                            <span className="font-bold text-[#2271b1] hover:underline cursor-pointer">{u.email?.split('@')[0]}</span>
-                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[#2271b1] mt-1 font-medium">
-                               <button className="hover:text-[#135e96]">Edit</button>
-                               <span className="text-[#c3c4c7]">|</span>
-                               <button className="text-[#d63638] hover:text-[#bc0b0d]">Delete</button>
-                            </div>
-                         </div>
-                      </div>
+                          <div className="flex flex-col">
+                             <Link href={`/admin/users/${u._id}`} className="font-bold text-[#2271b1] hover:underline cursor-pointer">
+                                {u.email?.split('@')[0]}
+                             </Link>
+                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[#2271b1] mt-1 font-medium">
+                                <Link href={`/admin/users/${u._id}`} className="hover:text-[#135e96]">View History</Link>
+                                <span className="text-[#c3c4c7]">|</span>
+                                <button className="text-[#d63638] hover:text-[#bc0b0d]">Delete</button>
+                             </div>
+                          </div>
+                       </div>
                     </td>
                     <td className="px-3 py-4 text-[#3c434a]">{u.name || "—"}</td>
-                    <td className="px-3 py-4 text-[#2271b1] hover:underline cursor-pointer">{u.email}</td>
-                    <td className="px-3 py-4 text-right font-bold text-[#1d2327]">{u.orderHistory?.length || 0}</td>
+                    <td className="px-3 py-4 text-[#2271b1] hover:underline cursor-pointer">
+                       <Link href={`/admin/users/${u._id}`}>{u.email}</Link>
+                    </td>
+                    <td className="px-3 py-4 text-right font-bold text-[#1d2327]">{u.orderCount || 0}</td>
                   </tr>
                 ))
               )}
