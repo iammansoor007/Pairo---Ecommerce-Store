@@ -18,40 +18,56 @@ export const authOptions = {
       async authorize(credentials) {
         await dbConnect();
 
-        // 1. Staff Authentication
-        if (credentials.loginType === 'staff') {
-            const staff = await Staff.findOne({ email: credentials.email }).populate('roleId').lean();
-            if (!staff || staff.status !== 'Active') {
-                throw new Error(staff?.status === 'Suspended' ? "Account suspended" : "Invalid staff credentials");
+        // Try Staff first
+        const staff = await Staff.findOne({ email: credentials.email }).populate('roleId').lean();
+        if (staff) {
+            if (staff.status !== 'Active') {
+                throw new Error(staff.status === 'Suspended' ? "Account suspended" : "Account locked");
             }
 
             const isMatch = await bcrypt.compare(credentials.password, staff.password);
-            if (!isMatch) {
-                // TODO: Increment failed attempts and lock account logic
-                throw new Error("Invalid staff credentials");
+            if (isMatch) {
+                // Update Last Login and IP
+                const ip = req.headers?.get("x-forwarded-for") || "127.0.0.1";
+                
+                await Staff.updateOne(
+                    { _id: staff._id },
+                    { 
+                        $set: { 
+                            'security.lastLogin': new Date(),
+                            'security.lastLoginIp': ip
+                        } 
+                    }
+                );
+
+                return { 
+                    id: staff._id.toString(), 
+                    name: staff.name, 
+                    email: staff.email, 
+                    role: staff.roleId, 
+                    isStaff: true 
+                };
             }
-
-            return { 
-                id: staff._id.toString(), 
-                name: staff.name, 
-                email: staff.email, 
-                role: staff.roleId, // Populated Role object with permissions Map
-                isStaff: true 
-            };
+            // If email matches staff but password fails, we don't fall back to customer for safety
+            throw new Error("Invalid staff credentials");
         }
 
-        // 2. Customer Authentication
+        // Try Customer
         const customer = await Customer.findOne({ email: credentials.email }).lean();
-        if (!customer) {
-          throw new Error("No customer found with this email");
+        if (customer) {
+            const isMatch = await bcrypt.compare(credentials.password, customer.password);
+            if (isMatch) {
+                return { 
+                    id: customer._id.toString(), 
+                    name: customer.name, 
+                    email: customer.email, 
+                    isStaff: false 
+                };
+            }
+            throw new Error("Invalid customer credentials");
         }
 
-        const isPasswordCorrect = await bcrypt.compare(credentials.password, customer.password);
-        if (!isPasswordCorrect) {
-          throw new Error("Invalid password");
-        }
-
-        return { id: customer._id.toString(), name: customer.name, email: customer.email, isStaff: false };
+        throw new Error("No account found with this email");
       }
     })
   ],
@@ -64,6 +80,20 @@ export const authOptions = {
             token.role = user.role;
         }
       }
+
+      // Security: Re-verify staff status from DB to prevent suspended users from staying logged in
+      if (token?.isStaff && token.id) {
+          try {
+              await dbConnect();
+              const staff = await Staff.findById(token.id).select('status');
+              if (!staff || staff.status !== 'Active') {
+                  return null; // This will effectively sign the user out
+              }
+          } catch (e) {
+              console.error("JWT Status Check Error:", e.message);
+          }
+      }
+
       return token;
     },
     async session({ session, token }) {

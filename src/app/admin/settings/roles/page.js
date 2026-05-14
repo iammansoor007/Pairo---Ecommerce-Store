@@ -65,6 +65,48 @@ export default function RoleManagement() {
     }
   };
 
+  const handleCreateRole = async () => {
+    const name = prompt("Enter new role name (e.g., Marketing Manager):");
+    if (!name) return;
+    const description = prompt("Enter role description:");
+    
+    try {
+      const res = await fetch("/api/admin/roles", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description, permissions: {} })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRoles([...roles, data]);
+        setSelectedRole(data);
+        alert(`Role "${name}" created successfully!`);
+      } else {
+        alert(data.error || "Failed to create role");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error creating role");
+    }
+  };
+
+  const deleteRole = async (role) => {
+    if (role.isSystem) return alert("System roles cannot be deleted.");
+    if (!confirm(`Are you sure you want to delete the "${role.name}" role?`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/roles/${role._id}`, { method: 'DELETE' });
+      if (res.ok) {
+        const remaining = roles.filter(r => r._id !== role._id);
+        setRoles(remaining);
+        if (selectedRole?._id === role._id) setSelectedRole(remaining[0] || null);
+        alert("Role deleted successfully.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const toggleModule = (module) => {
     setExpandedModules(prev => ({ ...prev, [module]: !prev[module] }));
   };
@@ -82,7 +124,12 @@ export default function RoleManagement() {
           <div className="bg-white border border-[#ccd0d4] shadow-sm">
             <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
                <h3 className="text-[13px] font-bold text-[#1d2327] uppercase">System Roles</h3>
-               <button className="text-[#2271b1] hover:text-[#135e96]"><Plus className="w-4 h-4" /></button>
+               <button 
+                 onClick={handleCreateRole}
+                 className="text-[#2271b1] hover:text-[#135e96] flex items-center gap-1 text-[11px] font-bold uppercase"
+               >
+                 <Plus className="w-4 h-4" /> New Role
+               </button>
             </div>
             <div className="divide-y divide-[#f0f0f1]">
               {roles.map((role) => (
@@ -119,15 +166,25 @@ export default function RoleManagement() {
                   </div>
                   <p className="text-[13px] text-[#646970] mt-1">{selectedRole.description}</p>
                 </div>
-                <button 
-                  onClick={handleSave}
-                  disabled={saving || selectedRole.slug === 'super-admin'}
-                  className={`flex items-center gap-2 px-4 py-2 rounded font-bold text-[13px] transition-all ${
-                    selectedRole.slug === 'super-admin' ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#2271b1] text-white hover:bg-[#135e96]"
-                  }`}
-                >
-                  <Save className="w-4 h-4" /> {saving ? "Saving..." : "Save Changes"}
-                </button>
+                 <div className="flex items-center gap-2">
+                    {!selectedRole.isSystem && (
+                      <button 
+                        onClick={() => deleteRole(selectedRole)}
+                        className="flex items-center gap-2 px-4 py-2 rounded font-bold text-[13px] border border-red-200 text-red-600 hover:bg-red-50 transition-all mr-2"
+                      >
+                        <Trash2 className="w-4 h-4" /> Delete Role
+                      </button>
+                    )}
+                    <button 
+                      onClick={handleSave}
+                      disabled={saving || selectedRole.slug === 'super-admin'}
+                      className={`flex items-center gap-2 px-4 py-2 rounded font-bold text-[13px] transition-all ${
+                        selectedRole.slug === 'super-admin' ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#2271b1] text-white hover:bg-[#135e96]"
+                      }`}
+                    >
+                      <Save className="w-4 h-4" /> {saving ? "Saving..." : "Save Changes"}
+                    </button>
+                 </div>
               </div>
 
               {selectedRole.slug === 'super-admin' ? (

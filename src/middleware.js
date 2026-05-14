@@ -17,16 +17,17 @@ export default withAuth(
         // For more granular control, we use can() inside the pages/APIs.
         // But we can block entire sections here if needed.
         const permissions = token.role?.permissions || {};
+        const isSuperAdmin = token.role?.slug === 'super-admin';
         
-        if (path.startsWith("/admin/customers") && !permissions.customers?.includes("view")) {
+        if (path.startsWith("/admin/customers") && !isSuperAdmin && !permissions.customers?.includes("view")) {
             return NextResponse.redirect(new URL("/admin?error=NoPermission", req.url));
         }
         
-        if (path.startsWith("/admin/settings/team") && !permissions.staff?.includes("view")) {
+        if (path.startsWith("/admin/settings/team") && !isSuperAdmin && !permissions.staff?.includes("view")) {
             return NextResponse.redirect(new URL("/admin?error=NoPermission", req.url));
         }
         
-        if (path.startsWith("/admin/settings/roles") && !permissions.staff?.includes("manage_roles")) {
+        if (path.startsWith("/admin/settings/roles") && !isSuperAdmin && !permissions.staff?.includes("manage_roles")) {
             return NextResponse.redirect(new URL("/admin?error=NoPermission", req.url));
         }
     }

@@ -51,7 +51,7 @@ const OrderSchema = new mongoose.Schema({
   },
 
   customer: {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', index: true },
     email: { type: String, index: true },
     isGuest: { type: Boolean, default: false },
     ipAddress: String

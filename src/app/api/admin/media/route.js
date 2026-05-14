@@ -7,9 +7,8 @@ import Media from "@/models/Media";
 // GET /api/admin/media — List media with search, filter, pagination
 export async function GET(req) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!can(session.user, "media.view")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   await dbConnect();
   const { searchParams } = new URL(req.url);

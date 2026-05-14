@@ -35,10 +35,14 @@ export const ACTIONS = {
  * @returns {boolean}
  */
 export function can(staff, permissionKey) {
-    if (!staff || !staff.role) return false;
+    if (!staff) return false;
+    
+    // Normalize role location (NextAuth session might store it as role or roleId)
+    const role = staff.role || staff.roleId;
+    if (!role) return false;
 
     // Super Admin Bypass
-    if (staff.role.slug === 'super-admin') return true;
+    if (role.slug === 'super-admin') return true;
 
     if (!permissionKey.includes('.')) {
         console.warn(`Invalid permission key format: ${permissionKey}. Expected "module.action"`);
@@ -48,7 +52,7 @@ export function can(staff, permissionKey) {
     const [module, action] = permissionKey.split('.');
     
     // Check if the role has this specific action for the module
-    const rolePermissions = staff.permissions || {};
+    const rolePermissions = role.permissions || {};
     const moduleActions = rolePermissions[module] || [];
 
     return moduleActions.includes(action);

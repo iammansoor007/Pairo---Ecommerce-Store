@@ -78,9 +78,9 @@ export default function AuditLogs() {
                              <td className="px-4 py-4">
                                 <div className="flex items-center gap-2">
                                    <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
-                                      log.action.includes('CREATE') ? 'bg-green-100 text-green-700' :
-                                      log.action.includes('DELETE') ? 'bg-red-100 text-red-700' :
-                                      log.action.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
+                                      (log.action || '').includes('CREATE') ? 'bg-green-100 text-green-700' :
+                                      (log.action || '').includes('DELETE') ? 'bg-red-100 text-red-700' :
+                                      (log.action || '').includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
                                       'bg-gray-100 text-gray-700'
                                    }`}>
                                       {log.action}

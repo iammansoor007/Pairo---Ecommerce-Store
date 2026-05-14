@@ -22,7 +22,7 @@ const MediaSchema = new mongoose.Schema({
   format: { type: String },
 
   // Upload Info
-  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
   uploadSource: { type: String, default: 'admin-upload' }, // "admin-upload", "product-editor"
 
   // Media Type Classification

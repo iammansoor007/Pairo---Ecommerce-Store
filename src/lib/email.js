@@ -1,10 +1,20 @@
 import nodemailer from 'nodemailer';
+import dbConnect from './db';
+import Staff from '@/models/Staff';
+import Role from '@/models/Role';
 
-// Gmail SMTP Transporter
+/**
+ * Enterprise Email Dispatcher (Optimized for Gmail)
+ * 
+ * Note: To use Gmail, you must:
+ * 1. Enable 2-Step Verification on your Google Account.
+ * 2. Generate an "App Password" (Security > App Passwords).
+ * 3. Use that 16-character password in EMAIL_PASS.
+ */
+
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_SERVER,
-  port: parseInt(process.env.EMAIL_PORT || '587'),
-  secure: false, // TLS on port 587
+  // Use 'gmail' service directly as it handles the host/port/secure defaults automatically
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -15,7 +25,7 @@ const transporter = nodemailer.createTransport({
  * Send Order Confirmation Email to Customer
  */
 export async function sendOrderConfirmation(order) {
-  if (!process.env.EMAIL_SERVER) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.log(`[Email Simulation] Confirmation → ${order.customer?.email}`);
     return;
   }
@@ -78,14 +88,14 @@ export async function sendOrderConfirmation(order) {
 
   try {
     const info = await transporter.sendMail({
-      from: `"PAIRO Store" <${process.env.EMAIL_FROM}>`,
+      from: `"PAIRO Store" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
       to: order.customer?.email,
       subject: `Order Confirmed: #${order.orderNumber}`,
       html,
     });
-    console.log(`[Gmail] ✅ Confirmation sent to ${order.customer?.email} | MsgID: ${info.messageId}`);
+    console.log(`[Email] ✅ Confirmation sent to ${order.customer?.email} | MsgID: ${info.messageId}`);
   } catch (err) {
-    console.error('[Gmail] ❌ Failed to send confirmation:', err.message);
+    console.error('[Email] ❌ Failed to send confirmation:', err.message);
     throw err;
   }
 }
@@ -94,13 +104,29 @@ export async function sendOrderConfirmation(order) {
  * Send Admin Notification for New Order
  */
 export async function sendAdminOrderNotification(order) {
-  if (!process.env.EMAIL_SERVER) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.log(`[Email Simulation] Admin notified of Order ${order.orderNumber}`);
     return;
   }
 
-  if (!process.env.ADMIN_EMAIL) {
-    console.warn('[Gmail] ADMIN_EMAIL not set — skipping admin notification.');
+  let adminEmail = process.env.ADMIN_EMAIL;
+
+  // Fallback: If ADMIN_EMAIL is not set, try to find the Super Admin
+  if (!adminEmail) {
+    try {
+        await dbConnect();
+        const superAdminRole = await Role.findOne({ slug: 'super-admin' });
+        if (superAdminRole) {
+            const superAdmin = await Staff.findOne({ roleId: superAdminRole._id });
+            if (superAdmin) adminEmail = superAdmin.email;
+        }
+    } catch (e) {
+        console.error("Failed to fetch super admin for email fallback:", e.message);
+    }
+  }
+
+  if (!adminEmail) {
+    console.warn('[Email] ADMIN_EMAIL and Super Admin not found — skipping admin notification.');
     return;
   }
 
@@ -132,14 +158,14 @@ export async function sendAdminOrderNotification(order) {
 
   try {
     const info = await transporter.sendMail({
-      from: `"PAIRO System" <${process.env.EMAIL_FROM}>`,
-      to: process.env.ADMIN_EMAIL,
+      from: `"PAIRO System" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: adminEmail,
       subject: `🛍 New Order: #${order.orderNumber} — $${(order.financials?.total || 0).toLocaleString()}`,
       html,
     });
-    console.log(`[Gmail] ✅ Admin notified | MsgID: ${info.messageId}`);
+    console.log(`[Email] ✅ Admin notified (${adminEmail}) | MsgID: ${info.messageId}`);
   } catch (err) {
-    console.error('[Gmail] ❌ Failed to send admin notification:', err.message);
+    console.error('[Email] ❌ Failed to send admin notification:', err.message);
     throw err;
   }
 }

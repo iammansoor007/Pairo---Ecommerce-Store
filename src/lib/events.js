@@ -6,10 +6,11 @@ class PairoEventEmitter extends EventEmitter {
   constructor() {
     super();
     this.setMaxListeners(20);
+    this.ready = false;
     
     // Automatically initialize listeners on server-side only
     if (typeof window === 'undefined') {
-       this._init();
+       this.initPromise = this._init();
     }
   }
 
@@ -17,6 +18,8 @@ class PairoEventEmitter extends EventEmitter {
     try {
       const { initOrderListeners } = await import('./listeners/orderListeners');
       initOrderListeners();
+      this.ready = true;
+      console.log("=> Event System Ready");
     } catch (err) {
       console.error("Failed to init listeners:", err);
     }
@@ -25,6 +28,11 @@ class PairoEventEmitter extends EventEmitter {
   // Enhanced emit with logging
   async dispatch(event, data) {
     try {
+      // Wait for listeners to be ready if they are still initializing
+      if (!this.ready && this.initPromise) {
+          await this.initPromise;
+      }
+
       console.log(`[Event Dispatched]: ${event}`, data.orderId || data.id || '');
       
       // Log event to DB for audit trail

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Blog from "@/models/Blog";
 import { getServerSession } from "next-auth";
+import { can } from "@/lib/rbac";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
 export async function GET(req) {
@@ -37,7 +38,8 @@ export async function GET(req) {
 
 export async function POST(req) {
    const session = await getServerSession(authOptions);
-   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!can(session.user, "blogs.view")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
    
    await dbConnect();
    try {
@@ -72,7 +74,8 @@ export async function POST(req) {
 
 export async function PUT(req) {
    const session = await getServerSession(authOptions);
-   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!can(session.user, "blogs.create")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
    await dbConnect();
    try {
@@ -106,7 +109,8 @@ export async function PUT(req) {
 
 export async function DELETE(req) {
    const session = await getServerSession(authOptions);
-   if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+   if (!can(session.user, "blogs.delete")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
    await dbConnect();
    const { searchParams } = new URL(req.url);

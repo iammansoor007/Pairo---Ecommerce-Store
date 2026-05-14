@@ -14,21 +14,37 @@ export async function GET() {
 
   await dbConnect();
   try {
-    const customers = await Customer.find({ role: { $ne: "admin" } }).select('-password').sort({ createdAt: -1 }).lean();
+    // 1. Fetch all customers (excluding admins if any)
+    const customers = await Customer.find({ role: { $ne: "admin" } })
+        .select('-password')
+        .sort({ createdAt: -1 })
+        .lean();
     
-    // Enrich customers with real order stats from Order collection
+    if (!customers || customers.length === 0) {
+        return NextResponse.json([]);
+    }
+
+    // 2. Enrich customers with real order stats
     const enrichedCustomers = await Promise.all(customers.map(async (customer) => {
-        const orders = await Order.find({ "customer.userId": customer._id }).lean();
-        return {
-            ...customer,
-            orderCount: orders.length,
-            totalSpent: orders.reduce((sum, o) => sum + (o.financials?.total || 0), 0),
-            lastOrderDate: orders[0]?.createdAt || null
-        };
+        try {
+            // Find orders for this specific customer
+            const orders = await Order.find({ "customer.userId": customer._id }).sort({ createdAt: -1 }).lean();
+            
+            return {
+                ...customer,
+                orderCount: orders.length,
+                totalSpent: orders.reduce((sum, o) => sum + (o.financials?.total || 0), 0),
+                lastOrderDate: orders[0]?.createdAt || null
+            };
+        } catch (e) {
+            console.error(`Error enriching customer ${customer.email}:`, e.message);
+            return { ...customer, orderCount: 0, totalSpent: 0, lastOrderDate: null };
+        }
     }));
 
     return NextResponse.json(enrichedCustomers);
   } catch (error) {
+    console.error("[Customer API Error]:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

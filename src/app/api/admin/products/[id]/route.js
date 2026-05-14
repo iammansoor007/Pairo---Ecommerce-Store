@@ -2,12 +2,14 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
+import { can } from "@/lib/rbac";
 import { NextResponse } from "next/server";
 
 // GET single product with relations
 export async function GET(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!can(session.user, "products.view")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   await dbConnect();
   try {
@@ -27,7 +29,8 @@ export async function GET(req, { params }) {
 // PUT update product with full schema support
 export async function PUT(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!can(session.user, "products.edit")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   await dbConnect();
   try {
@@ -49,7 +52,8 @@ export async function PUT(req, { params }) {
 // DELETE (Move to Trash)
 export async function DELETE(req, { params }) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!can(session.user, "products.delete")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   await dbConnect();
   try {

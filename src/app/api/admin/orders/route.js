@@ -8,10 +8,15 @@ export async function GET(req) {
   try {
     await dbConnect();
     const session = await getServerSession(authOptions);
+    const { can } = await import("@/lib/rbac");
 
     // Security Check
-    if (!session || session.user.role !== "admin") {
+    if (!session || !session.user.isStaff) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!can(session.user, "orders.view")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -22,12 +27,15 @@ export async function GET(req) {
     const skip = (page - 1) * limit;
     const tenantId = searchParams.get("tenantId") || "DEFAULT_STORE";
 
+    // Base query must include tenantId
     let query = { tenantId };
 
+    // Filter by status if not "all"
     if (status && status !== "all") {
       query.status = status;
     }
 
+    // Search logic
     if (search) {
       query.$or = [
         { orderNumber: { $regex: search, $options: "i" } },
@@ -36,10 +44,12 @@ export async function GET(req) {
       ];
     }
 
+    // Fetch orders with lean() for performance and better serialization
     const orders = await Order.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     const total = await Order.countDocuments(query);
 

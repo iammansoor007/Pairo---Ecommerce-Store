@@ -25,7 +25,7 @@ export default function LoginPage() {
     } else {
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
-      if (session?.user?.role === "admin") {
+      if (session?.user?.isStaff) {
         router.push("/admin");
       } else {
         router.push("/profile");

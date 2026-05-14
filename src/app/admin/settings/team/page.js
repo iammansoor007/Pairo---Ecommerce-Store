@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UserPlus, Search, Shield, Mail, Key, UserCheck, UserX, MoreVertical } from "lucide-react";
+import { UserPlus, Search, Shield, Mail, Key, UserCheck, UserX, MoreVertical, Lock } from "lucide-react";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import { useRBAC } from "@/hooks/useRBAC";
 
 export default function StaffManagement() {
+  const { session } = useRBAC();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,6 +24,56 @@ export default function StaffManagement() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleStatus = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
+    try {
+      const res = await fetch(`/api/admin/staff/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        setStaff(staff.map(s => s._id === id ? { ...s, status: newStatus } : s));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const deleteStaff = async (id) => {
+    if (!confirm("Are you sure you want to delete this staff member? This cannot be undone.")) return;
+    try {
+      const res = await fetch(`/api/admin/staff/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setStaff(staff.filter(s => s._id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const resetPassword = async (id) => {
+    const newPassword = prompt("Enter new password (min 6 characters):");
+    if (!newPassword || newPassword.length < 6) return;
+    
+    try {
+      const res = await fetch(`/api/admin/staff/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword })
+      });
+      if (res.ok) {
+        alert("Password reset successfully!");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to reset password");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error resetting password");
     }
   };
 
@@ -118,22 +170,58 @@ export default function StaffManagement() {
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                       <span className={`flex items-center gap-1.5 text-[11px] font-bold ${
-                         s.status === 'Active' ? 'text-green-600' : 'text-red-600'
-                       }`}>
-                          <div className={`w-1.5 h-1.5 rounded-full ${s.status === 'Active' ? 'bg-green-600' : 'bg-red-600'}`} />
-                          {s.status}
-                       </span>
+                       {s.roleId?.slug === 'super-admin' || s._id === session?.user?.id ? (
+                          <div className="flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 text-gray-400 cursor-default">
+                             <div className="w-1.5 h-1.5 rounded-full bg-gray-300" />
+                             {s.status}
+                          </div>
+                       ) : (
+                          <button 
+                            onClick={() => toggleStatus(s._id, s.status)}
+                            className={`flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 rounded transition-colors ${
+                              s.status === 'Active' ? 'text-green-600 hover:bg-green-50' : 'text-red-600 hover:bg-red-50'
+                            }`}
+                          >
+                             <div className={`w-1.5 h-1.5 rounded-full ${s.status === 'Active' ? 'bg-green-600' : 'bg-red-600'}`} />
+                             {s.status}
+                          </button>
+                       )}
                     </td>
                     <td className="px-4 py-4 text-[#646970]">
                        {s.security?.lastLogin ? new Date(s.security.lastLogin).toLocaleString() : "Never"}
                     </td>
-                    <td className="px-4 py-4 text-center">
-                       <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 justify-end transition-opacity">
-                          <button title="Reset Password" className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-[#f0f6fb] rounded"><Key className="w-4 h-4" /></button>
-                          <button title="Edit Member" className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-[#f0f6fb] rounded"><MoreVertical className="w-4 h-4" /></button>
-                       </div>
-                    </td>
+                     <td className="px-4 py-4 text-center">
+                        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 justify-end transition-opacity">
+                           {s.roleId?.slug !== 'super-admin' && s._id !== session?.user?.id && (
+                              <button 
+                                title="Delete Staff Member" 
+                                onClick={() => deleteStaff(s._id)}
+                                className="p-1.5 text-[#646970] hover:text-red-600 hover:bg-red-50 rounded"
+                              >
+                                <UserX className="w-4 h-4" />
+                              </button>
+                           )}
+                           {s.roleId?.slug === 'super-admin' && (
+                              <div title="System Protected" className="p-1.5 text-gray-300">
+                                 <Lock className="w-4 h-4" />
+                              </div>
+                           )}
+                           <button 
+                             title="Reset Password" 
+                             onClick={() => resetPassword(s._id)}
+                             className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-[#f0f6fb] rounded"
+                           >
+                             <Key className="w-4 h-4" />
+                           </button>
+                           <button 
+                             title="Edit Member" 
+                             onClick={() => alert("Edit feature coming in next update")}
+                             className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-[#f0f6fb] rounded"
+                           >
+                             <MoreVertical className="w-4 h-4" />
+                           </button>
+                        </div>
+                     </td>
                   </tr>
                 ))
               )}
