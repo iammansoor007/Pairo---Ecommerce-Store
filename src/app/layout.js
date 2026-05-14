@@ -6,6 +6,8 @@ import dbConnect from "@/lib/db";
 import SiteConfig from "@/models/SiteConfig";
 import { SiteProvider } from "@/context/SiteContext";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
+import ScriptLoader from "@/components/common/ScriptLoader";
+import { Toaster } from "react-hot-toast";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -40,8 +42,13 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="en">
+      <head>
+        <ScriptLoader location="head" />
+      </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${manrope.variable} font-sans antialiased`}>
+        <ScriptLoader location="body_top" />
         <AuthProvider>
+          <Toaster position="top-right" />
           <SiteProvider initialData={sanitizedConfig}>
             <CartProvider>
               <LayoutWrapper>
@@ -50,6 +57,7 @@ export default async function RootLayout({ children }) {
             </CartProvider>
           </SiteProvider>
         </AuthProvider>
+        <ScriptLoader location="body_bottom" />
       </body>
     </html>
   );
