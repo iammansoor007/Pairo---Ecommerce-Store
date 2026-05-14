@@ -6,14 +6,19 @@ import Customer from "@/models/Customer";
 import Blog from "@/models/Blog";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { can } from "@/lib/rbac";
 
 export async function GET(req) {
   try {
     await dbConnect();
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "admin") {
+    if (!session || !session.user.isStaff) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!can(session.user, "analytics.view")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const now = new Date();
