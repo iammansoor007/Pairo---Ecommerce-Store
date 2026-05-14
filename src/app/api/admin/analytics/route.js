@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import Blog from "@/models/Blog";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -101,8 +101,8 @@ export async function GET(req) {
       // 2. Total Published Products
       Product.countDocuments({ status: "Published", isDeleted: { $ne: true } }),
 
-      // 3. Total Users (non-admin)
-      User.countDocuments({ role: { $ne: "admin" } }),
+      // 3. Total Customers (non-admin)
+      Customer.countDocuments({ role: { $ne: "admin" } }),
 
       // 4. Total Blogs
       Blog.countDocuments({ isDeleted: { $ne: true } }),
@@ -125,7 +125,7 @@ export async function GET(req) {
       data: {
         ...stats[0],
         totalProducts,
-        totalUsers,
+        totalCustomers: totalUsers,
         totalBlogs,
         recentOrders,
         statusBreakdown

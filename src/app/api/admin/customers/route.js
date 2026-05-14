@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import Order from "@/models/Order";
 import { NextResponse } from "next/server";
 
@@ -11,20 +11,20 @@ export async function GET() {
 
   await dbConnect();
   try {
-    const users = await User.find({ role: { $ne: "admin" } }).select('-password').sort({ createdAt: -1 }).lean();
+    const customers = await Customer.find({ role: { $ne: "admin" } }).select('-password').sort({ createdAt: -1 }).lean();
     
-    // Enrich users with real order stats from Order collection
-    const enrichedUsers = await Promise.all(users.map(async (user) => {
-        const orders = await Order.find({ "customer.userId": user._id }).lean();
+    // Enrich customers with real order stats from Order collection
+    const enrichedCustomers = await Promise.all(customers.map(async (customer) => {
+        const orders = await Order.find({ "customer.userId": customer._id }).lean();
         return {
-            ...user,
+            ...customer,
             orderCount: orders.length,
             totalSpent: orders.reduce((sum, o) => sum + (o.financials?.total || 0), 0),
             lastOrderDate: orders[0]?.createdAt || null
         };
     }));
 
-    return NextResponse.json(enrichedUsers);
+    return NextResponse.json(enrichedCustomers);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

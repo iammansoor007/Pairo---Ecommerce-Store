@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "@/lib/db";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import bcrypt from "bcryptjs";
 
 export const authOptions = {
@@ -15,17 +15,17 @@ export const authOptions = {
       async authorize(credentials) {
         await dbConnect();
 
-        const user = await User.findOne({ email: credentials.email });
-        if (!user) {
-          throw new Error("No user found with this email");
+        const customer = await Customer.findOne({ email: credentials.email });
+        if (!customer) {
+          throw new Error("No customer found with this email");
         }
 
-        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(credentials.password, customer.password);
         if (!isPasswordCorrect) {
           throw new Error("Invalid password");
         }
 
-        return { id: user._id, name: user.name, email: user.email, role: user.role };
+        return { id: customer._id, name: customer.name, email: customer.email, role: customer.role };
       }
     })
   ],

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import bcrypt from "bcryptjs";
 
 export const runtime = 'nodejs';
@@ -31,10 +31,10 @@ export async function POST(req) {
     }
 
     // 3. Check existing
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      console.warn(`[Signup] ⚠️ User already exists: ${email}`);
-      return NextResponse.json({ message: "User already exists" }, { status: 400 });
+    const existingCustomer = await Customer.findOne({ email });
+    if (existingCustomer) {
+      console.warn(`[Signup] ⚠️ Customer already exists: ${email}`);
+      return NextResponse.json({ message: "Customer already exists" }, { status: 400 });
     }
 
     // 4. Hash Password
@@ -48,17 +48,17 @@ export async function POST(req) {
     }
     console.log("[Signup] ✅ Password hashed");
 
-    // 5. Create User
-    const user = await User.create({
+    // 5. Create Customer
+    const customer = await Customer.create({
       name,
       email,
       password: hashedPassword
     });
-    console.log(`[Signup] ✨ User created successfully: ${user._id}`);
+    console.log(`[Signup] ✨ Customer created successfully: ${customer._id}`);
 
     return NextResponse.json({ 
-      message: "User created", 
-      user: { id: user._id, name, email } 
+      message: "Customer created", 
+      user: { id: customer._id, name, email } 
     }, { status: 201 });
 
   } catch (error) {

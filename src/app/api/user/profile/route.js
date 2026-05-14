@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import Order from "@/models/Order";
 
 export async function GET() {
@@ -11,9 +11,9 @@ export async function GET() {
     if (!session) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     await dbConnect();
     
-    // Fetch User
-    const user = await User.findById(session.user.id).select("-password").lean();
-    if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
+    // Fetch Customer
+    const customer = await Customer.findById(session.user.id).select("-password").lean();
+    if (!customer) return NextResponse.json({ message: "Customer not found" }, { status: 404 });
 
     // Fetch Orders from Order collection (Live data)
     const orders = await Order.find({ 
@@ -23,7 +23,7 @@ export async function GET() {
 
     // Merge for compatibility with frontend
     const profileData = {
-      ...user,
+      ...customer,
       orderHistory: orders.map(o => ({
         id: o._id.toString(),
         orderNumber: o.orderNumber,
@@ -69,7 +69,7 @@ export async function POST(req) {
         user.paymentMethods = user.paymentMethods.filter(p => p._id.toString() !== data.id);
         break;
       case "deleteAccount":
-        await User.findByIdAndDelete(session.user.id);
+        await Customer.findByIdAndDelete(session.user.id);
         return NextResponse.json({ message: "Account deleted" });
       case "cancelOrder": {
         const order = await Order.findOne({ _id: data.orderId, "customer.userId": session.user.id });

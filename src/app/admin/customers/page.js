@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { Search, User as UserIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
 
-export default function AdminUsers() {
-  const [users, setUsers] = useState([]);
+export default function AdminCustomers() {
+  const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchUsers = async () => {
+  const fetchCustomers = async () => {
     try {
-      const res = await fetch("/api/admin/users");
+      const res = await fetch("/api/admin/customers");
       const data = await res.json();
-      if (res.ok) setUsers(data);
+      if (res.ok) setCustomers(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -22,25 +23,25 @@ export default function AdminUsers() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchCustomers();
   }, []);
 
-  const filteredUsers = users.filter(u => 
-    u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCustomers = customers.filter(c => 
+    c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <AdminPageLayout 
       title="Customers" 
-      addNewLink="/admin/users/new"
+      addNewLink="/admin/customers/new"
       addNewLabel="Add New"
       breadcrumbs={[{ label: "WooCommerce", href: "/admin/orders" }, { label: "Customers" }]}
     >
       <div className="space-y-4">
         {/* Filter Links */}
         <ul className="flex items-center gap-2 text-[13px] text-[#2271b1]">
-           <li className="text-[#1d2327] font-bold">All <span className="text-[#646970] font-normal">({users.length})</span></li>
+           <li className="text-[#1d2327] font-bold">All <span className="text-[#646970] font-normal">({customers.length})</span></li>
            <span className="text-[#c3c4c7]">|</span>
            <li className="cursor-pointer hover:text-[#135e96]">Active Customers</li>
         </ul>
@@ -82,11 +83,11 @@ export default function AdminUsers() {
             <tbody className="divide-y divide-[#f0f0f1]">
               {loading ? (
                 <tr><td colSpan={5} className="p-10 text-center italic text-gray-400">Loading customers...</td></tr>
-              ) : filteredUsers.length === 0 ? (
+              ) : filteredCustomers.length === 0 ? (
                 <tr><td colSpan={5} className="p-10 text-center italic text-gray-400">No customers found.</td></tr>
               ) : (
-                filteredUsers.map((u) => (
-                  <tr key={u._id} className="hover:bg-[#f6f7f7] group">
+                filteredCustomers.map((c) => (
+                  <tr key={c._id} className="hover:bg-[#f6f7f7] group">
                     <td className="px-3 py-4 text-center"><input type="checkbox" /></td>
                     <td className="px-3 py-4">
                       <div className="flex items-center gap-3">
@@ -94,22 +95,22 @@ export default function AdminUsers() {
                             <UserIcon className="w-4 h-4" />
                          </div>
                           <div className="flex flex-col">
-                             <Link href={`/admin/users/${u._id}`} className="font-bold text-[#2271b1] hover:underline cursor-pointer">
-                                {u.email?.split('@')[0]}
+                             <Link href={`/admin/customers/${c._id}`} className="font-bold text-[#2271b1] hover:underline cursor-pointer">
+                                {c.email?.split('@')[0]}
                              </Link>
                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-[#2271b1] mt-1 font-medium">
-                                <Link href={`/admin/users/${u._id}`} className="hover:text-[#135e96]">View History</Link>
+                                <Link href={`/admin/customers/${c._id}`} className="hover:text-[#135e96]">View History</Link>
                                 <span className="text-[#c3c4c7]">|</span>
                                 <button className="text-[#d63638] hover:text-[#bc0b0d]">Delete</button>
                              </div>
                           </div>
                        </div>
                     </td>
-                    <td className="px-3 py-4 text-[#3c434a]">{u.name || "—"}</td>
+                    <td className="px-3 py-4 text-[#3c434a]">{c.name || "—"}</td>
                     <td className="px-3 py-4 text-[#2271b1] hover:underline cursor-pointer">
-                       <Link href={`/admin/users/${u._id}`}>{u.email}</Link>
+                       <Link href={`/admin/customers/${c._id}`}>{c.email}</Link>
                     </td>
-                    <td className="px-3 py-4 text-right font-bold text-[#1d2327]">{u.orderCount || 0}</td>
+                    <td className="px-3 py-4 text-right font-bold text-[#1d2327]">{c.orderCount || 0}</td>
                   </tr>
                 ))
               )}
@@ -119,7 +120,7 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         <div className="flex items-center justify-between text-[13px] text-[#646970]">
-           <div>{filteredUsers.length} items</div>
+           <div>{filteredCustomers.length} items</div>
            <div className="flex items-center gap-1">
               <button className="p-1 border border-[#ccd0d4] bg-white rounded disabled:opacity-50"><ChevronLeft className="w-4 h-4" /></button>
               <span className="px-3">1 of 1</span>

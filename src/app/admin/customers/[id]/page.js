@@ -13,7 +13,7 @@ export default function CustomerDetail({ params }) {
   useEffect(() => {
     const fetchCustomer = async () => {
       try {
-        const res = await fetch(`/api/admin/users/${id}`);
+        const res = await fetch(`/api/admin/customers/${id}`);
         const data = await res.json();
         if (res.ok) setCustomer(data);
       } catch (err) {
@@ -31,11 +31,11 @@ export default function CustomerDetail({ params }) {
   return (
     <AdminPageLayout 
       title={customer.name} 
-      breadcrumbs={[{ label: "Customers", href: "/admin/users" }, { label: customer.name }]}
+      breadcrumbs={[{ label: "Customers", href: "/admin/customers" }, { label: customer.name }]}
     >
       <div className="space-y-6">
          <div className="flex items-center gap-4 mb-2">
-            <Link href="/admin/users" className="text-[#2271b1] hover:text-[#135e96] flex items-center gap-1 text-[13px] font-medium">
+            <Link href="/admin/customers" className="text-[#2271b1] hover:text-[#135e96] flex items-center gap-1 text-[13px] font-medium">
                <ArrowLeft className="w-4 h-4" /> Back to Customers
             </Link>
          </div>

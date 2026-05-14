@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
-import User from "@/models/User";
+import Customer from "@/models/Customer";
 import Order from "@/models/Order";
 import { NextResponse } from "next/server";
 
@@ -13,14 +13,14 @@ export async function GET(req, { params }) {
   await dbConnect();
 
   try {
-    const user = await User.findById(id).select("-password").lean();
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const customer = await Customer.findById(id).select("-password").lean();
+    if (!customer) return NextResponse.json({ error: "Customer not found" }, { status: 404 });
 
     // Fetch all orders for this user
     const orders = await Order.find({ "customer.userId": id }).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json({
-        ...user,
+        ...customer,
         orders: orders.map(o => ({
             ...o,
             id: o._id.toString()
