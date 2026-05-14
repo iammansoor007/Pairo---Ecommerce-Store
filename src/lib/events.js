@@ -9,9 +9,16 @@ class PairoEventEmitter extends EventEmitter {
     
     // Automatically initialize listeners on server-side only
     if (typeof window === 'undefined') {
-      import('./listeners/orderListeners').then(({ initOrderListeners }) => {
-        initOrderListeners();
-      });
+       this._init();
+    }
+  }
+
+  async _init() {
+    try {
+      const { initOrderListeners } = await import('./listeners/orderListeners');
+      initOrderListeners();
+    } catch (err) {
+      console.error("Failed to init listeners:", err);
     }
   }
 

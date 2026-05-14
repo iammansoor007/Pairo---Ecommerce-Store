@@ -7,19 +7,16 @@ import { sendOrderConfirmation, sendAdminOrderNotification } from '../email';
  */
 export function initOrderListeners() {
   // 1. ORDER_CREATED
-  pairoEvents.on('ORDER_CREATED', (order) => {
-    // Email Customer (Queue for reliability)
-    QueueService.push('SEND_CUSTOMER_CONFIRMATION', async () => {
-      await sendOrderConfirmation(order);
-    }, { retries: 3, referenceId: order._id });
-
-    // Email Admin (Queue for reliability)
-    QueueService.push('SEND_ADMIN_NOTIFICATION', async () => {
-      await sendAdminOrderNotification(order);
-    }, { retries: 3, referenceId: order._id });
-
-    // Update Analytics (Non-blocking)
-    // In the future, we could trigger a cache revalidation here
+  pairoEvents.on('ORDER_CREATED', async (order) => {
+    try {
+        console.log(`[Event Received] ORDER_CREATED: ${order.orderNumber}`);
+        // Email Customer
+        await sendOrderConfirmation(order).catch(e => console.error("Email Cust Error:", e.message));
+        // Email Admin
+        await sendAdminOrderNotification(order).catch(e => console.error("Email Admin Error:", e.message));
+    } catch (err) {
+        console.error("Order created listener error:", err);
+    }
   });
 
   // 2. ORDER_CANCELLED

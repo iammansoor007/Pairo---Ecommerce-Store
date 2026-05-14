@@ -1,4 +1,4 @@
-import { NextResponse } from "next-auth";
+import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -10,7 +10,7 @@ export async function POST(req) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return Response.json({ message: "User already exists" }, { status: 400 });
+      return NextResponse.json({ message: "User already exists" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -20,8 +20,9 @@ export async function POST(req) {
       password: hashedPassword
     });
 
-    return Response.json({ message: "User created", user: { id: user._id, name, email } }, { status: 201 });
+    return NextResponse.json({ message: "User created", user: { id: user._id, name, email } }, { status: 201 });
   } catch (error) {
-    return Response.json({ message: "Internal server error" }, { status: 500 });
+    console.error("Signup Error:", error);
+    return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });
   }
 }

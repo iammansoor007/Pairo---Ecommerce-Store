@@ -205,16 +205,47 @@ export default function ProfilePage() {
                    <p className="text-[10px] text-black/20 uppercase tracking-widest font-medium">Your history is currently empty</p>
                 </div>
              ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {userData.orderHistory.map((order, i) => (
-                    <div key={i} className="p-6 flex items-center justify-between bg-gray-50/50 hover:bg-gray-50 border border-black/[0.02] rounded-2xl transition-all group cursor-pointer">
-                      <div className="flex items-center gap-8">
-                        <p className="text-sm font-medium uppercase tracking-tight opacity-40">#{i+1024}</p>
-                        <p className="text-[11px] font-medium uppercase tracking-widest opacity-20">{new Date(order.date).toLocaleDateString()}</p>
+                    <div key={i} className="p-6 bg-gray-50/50 border border-black/[0.03] rounded-3xl space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-6">
+                          <p className="text-sm font-medium uppercase tracking-tight opacity-40">#{order.orderNumber || i+1024}</p>
+                          <span className={`text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${
+                            order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 
+                            order.status === 'Cancelled' ? 'bg-red-50 text-red-400' :
+                            'bg-black text-white'
+                          }`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium uppercase tracking-widest opacity-20">{new Date(order.date).toLocaleDateString()}</p>
                       </div>
-                      <div className="flex items-center gap-6">
-                        <p className="text-xl font-medium tracking-tighter">${order.total.toFixed(0)}</p>
-                        <ChevronRight className="w-4 h-4 opacity-10 group-hover:opacity-100 transition-opacity" />
+
+                      <div className="flex items-center justify-between pt-2">
+                        <div className="flex -space-x-2">
+                          {(order.items || []).slice(0, 3).map((item, idx) => (
+                            <div key={idx} className="w-8 h-8 rounded-full border border-white bg-gray-200 overflow-hidden">
+                              <img src={item.image} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                          {order.items?.length > 3 && (
+                            <div className="w-8 h-8 rounded-full border border-white bg-black text-white text-[8px] flex items-center justify-center">
+                              +{order.items.length - 3}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-medium tracking-tighter">${order.total.toFixed(0)}</p>
+                          {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
+                            <button 
+                              onClick={() => handleAction("cancelOrder", { orderId: order.id })}
+                              className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:underline mt-1"
+                            >
+                              Request Cancellation
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
