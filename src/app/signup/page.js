@@ -30,7 +30,11 @@ export default function SignupPage() {
       if (res.ok) {
         router.push("/login");
       } else {
-        setError(data.message || "Something went wrong");
+        // Show detailed error if available from backend
+        const errorMessage = data.error 
+          ? `${data.message}: ${data.error}` 
+          : (data.message || "Something went wrong");
+        setError(errorMessage);
       }
     } catch (err) {
       setError("Failed to create account");
