@@ -23,14 +23,17 @@ async function dbConnect() {
   }
 
   if (!cached.promise) {
+    // Sanitization: Trim whitespace/newlines that often creep into Vercel env vars
+    const cleanUri = MONGODB_URI.trim().replace(/[\n\r]/g, "");
+
     const opts = {
       bufferCommands: false,
-      maxPoolSize: 10, // Maintain a smaller pool for serverless
+      maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(cleanUri, opts).then((mongoose) => {
       console.log("=> New MongoDB connection established");
       return mongoose;
     });
