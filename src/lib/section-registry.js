@@ -8,6 +8,11 @@ export const SECTION_REGISTRY = {
   category_showcase: dynamic(() => import("@/components/home/CategoryBanner")),
   blog_grid: dynamic(() => import("@/components/home/BlogSection")),
   testimonials: dynamic(() => import("@/components/home/Testimonials")),
+  about_hero: dynamic(() => import("@/components/sections/AboutHero")),
+  story_section: dynamic(() => import("@/components/sections/StorySection")),
+  studio_gallery: dynamic(() => import("@/components/sections/StudioGallery")),
+  promise_section: dynamic(() => import("@/components/sections/PromiseSection")),
+  cta_section: dynamic(() => import("@/components/sections/CTASection")),
 };
 
 export const getSectionComponent = (type) => {

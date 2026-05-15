@@ -92,5 +92,78 @@ export const SECTION_SCHEMAS = {
       { name: "productId", label: "Select Product", type: "select", options: "products", dependsOn: "linkType", visibleIf: "product" },
       { name: "collectionId", label: "Select Collection", type: "select", options: "categories", dependsOn: "linkType", visibleIf: "collection" }
     ]
+  },
+  about_hero: {
+    name: "About Hero",
+    icon: "Layout",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "subtitle", label: "Subtitle", type: "textarea" },
+      { name: "label", label: "Label", type: "text" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "buttonText", label: "Button Text", type: "text" },
+      { name: "link", label: "Button Link", type: "text" },
+      { name: "marqueeEnabled", label: "Enable Marquee", type: "select", options: [
+        { label: "Yes", value: "true" },
+        { label: "No", value: "false" }
+      ]},
+      { name: "marqueeItems", label: "Marquee Items", type: "repeater", fields: [
+        { name: "text", label: "Item Text", type: "text" }
+      ]}
+    ]
+  },
+  story_section: {
+    name: "Story Section",
+    icon: "BookOpen",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "label", label: "Label", type: "text" },
+      { name: "description", label: "Description", type: "textarea" },
+      { name: "image", label: "Side Image", type: "image" },
+      { name: "features", label: "Features", type: "repeater", fields: [
+        { name: "title", label: "Feature Title", type: "text" },
+        { name: "desc", label: "Feature Description", type: "textarea" }
+      ]}
+    ]
+  },
+  studio_gallery: {
+    name: "Studio Gallery",
+    icon: "Image",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "label", label: "Label", type: "text" },
+      { name: "images", label: "Gallery Images", type: "repeater", fields: [
+        { name: "url", label: "Image URL", type: "image" }
+      ]}
+    ]
+  },
+  promise_section: {
+    name: "Promise Section",
+    icon: "ShieldCheck",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "label", label: "Label", type: "text" },
+      { name: "description", label: "Description", type: "textarea" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "items", label: "Promise Items", type: "repeater", fields: [
+        { name: "title", label: "Item Title", type: "text" },
+        { name: "desc", label: "Item Description", type: "textarea" }
+      ]},
+      { name: "stats", label: "Stats", type: "repeater", fields: [
+        { name: "label", label: "Stat Label", type: "text" },
+        { name: "value", label: "Stat Value", type: "text" }
+      ]}
+    ]
+  },
+  cta_section: {
+    name: "CTA Section",
+    icon: "Target",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "primaryBtnLabel", label: "Primary Button Label", type: "text" },
+      { name: "primaryBtnLink", label: "Primary Button Link", type: "text" },
+      { name: "secondaryBtnLabel", label: "Secondary Button Label", type: "text" },
+      { name: "secondaryBtnLink", label: "Secondary Button Link", type: "text" }
+    ]
   }
 };

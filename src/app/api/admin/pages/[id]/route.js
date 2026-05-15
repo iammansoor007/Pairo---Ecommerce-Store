@@ -33,6 +33,18 @@ export async function PUT(req, { params }) {
     await dbConnect();
     try {
         const body = await req.json();
+        
+        // --- PRODUCTION DATA VALIDATION ---
+        if (!body.title || typeof body.title !== 'string') return NextResponse.json({ error: "Invalid Title" }, { status: 400 });
+        if (!Array.isArray(body.sections)) return NextResponse.json({ error: "Sections must be an array" }, { status: 400 });
+        
+        // Validate section structure
+        for (const section of body.sections) {
+            if (!section.id || !section.type) {
+                return NextResponse.json({ error: "Invalid Section Data" }, { status: 400 });
+            }
+        }
+
         const existing = await Page.findById(id);
         if (!existing) return NextResponse.json({ error: "Page not found" }, { status: 404 });
 

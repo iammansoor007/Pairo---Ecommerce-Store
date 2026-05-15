@@ -4,6 +4,7 @@ import dbConnect from "@/lib/db";
 import Media from "@/models/Media";
 import { NextResponse } from "next/server";
 import { uploadToStorage } from "@/lib/storage";
+import { can } from "@/lib/rbac";
 
 // Allowed MIME types
 const ALLOWED_TYPES = [
@@ -12,10 +13,16 @@ const ALLOWED_TYPES = [
 ];
 const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8MB
 
+// SECURITY: Using centralized RBAC check to ensure only authorized staff 
+// with 'media.manage' permissions can upload assets.
 export async function POST(req) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!session || !session.user.isStaff) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  
+  if (!can(session.user, "media.manage")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {

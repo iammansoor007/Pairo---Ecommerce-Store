@@ -3,22 +3,24 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
-export default function MarqueeSection() {
-  const items = [
+export default function MarqueeSection({ items: propItems, speed = 35, className = "" }) {
+  const defaultItems = [
     "ELITE SHEARLING COLLECTION",
     "HANDCRAFTED LUXURY",
-    "PAIRO EST. 2026",
+    "PAIRO EST. 2024",
     "GENUINE SHEEPSKIN",
     "GLOBAL SHIPPING",
     "LIMITED EDITION"
   ];
 
+  const items = propItems || defaultItems;
+
   return (
-    <div className="absolute bottom-0 left-0 w-full z-30 pointer-events-none">
+    <div className={`absolute bottom-0 left-0 w-full z-30 pointer-events-none ${className}`}>
       <div className="bg-white/90 backdrop-blur-md border-t border-black/5 py-3.5 overflow-hidden flex items-center">
         <motion.div 
           animate={{ x: [0, -1000] }}
-          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: speed, repeat: Infinity, ease: "linear" }}
           className="flex whitespace-nowrap"
         >
           {[...Array(6)].map((_, i) => (

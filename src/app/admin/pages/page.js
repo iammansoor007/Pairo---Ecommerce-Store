@@ -114,10 +114,21 @@ export default function PagesManagementPage() {
                                    {p.isSystem ? <Settings className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
                                 </div>
                                 <div className="flex flex-col">
-                                   <Link href={`/admin/pages/${p._id}/builder`} className="font-bold text-[#2271b1] hover:underline">
+                                   <Link href={`/admin/pages/${p._id}`} className="font-bold text-[#2271b1] hover:underline">
                                       {p.title}
                                    </Link>
-                                   {p.isSystem && <span className="text-[10px] font-bold text-amber-600 uppercase tracking-tighter">System Page</span>}
+                                   <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <Link href={`/admin/pages/${p._id}`} className="text-[11px] text-[#2271b1] hover:text-black">Edit</Link>
+                                      <span className="text-gray-300">|</span>
+                                      <Link href={`/${p.slug}`} target="_blank" className="text-[11px] text-[#2271b1] hover:text-black">View</Link>
+                                      {!p.isSystem && (
+                                         <>
+                                            <span className="text-gray-300">|</span>
+                                            <button onClick={() => deletePage(p._id, p.isSystem)} className="text-[11px] text-[#d63638] hover:text-red-700">Trash</button>
+                                         </>
+                                      )}
+                                   </div>
+                                   {p.isSystem && <span className="text-[10px] font-bold text-amber-600 uppercase tracking-tighter mt-1">System Page</span>}
                                 </div>
                              </div>
                           </td>
@@ -153,8 +164,8 @@ export default function PagesManagementPage() {
                           <td className="px-4 py-4 text-[#646970]">{new Date(p.updatedAt).toLocaleDateString()}</td>
                           <td className="px-4 py-4 text-right">
                              <div className="flex items-center justify-end gap-2">
-                                <Link href={`/admin/pages/${p._id}/builder`} className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-blue-50 rounded transition-colors" title="Visual Builder">
-                                   <Layout className="w-4 h-4" />
+                                <Link href={`/admin/pages/${p._id}`} className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-blue-50 rounded transition-colors" title="Edit Page">
+                                   <FileText className="w-4 h-4" />
                                 </Link>
                                 <button onClick={() => deletePage(p._id, p.isSystem)} className={`p-1.5 rounded transition-colors ${p.isSystem ? 'text-gray-200 cursor-not-allowed' : 'text-[#646970] hover:text-red-600 hover:bg-red-50'}`} title="Delete" disabled={p.isSystem}>
                                    <Trash2 className="w-4 h-4" />
@@ -162,7 +173,8 @@ export default function PagesManagementPage() {
                              </div>
                           </td>
                        </tr>
-                    ))
+                    )
+)
                  )}
               </tbody>
            </table>

@@ -14,7 +14,7 @@ export default async function Home() {
 
   try {
     // 1. Try to fetch the dynamic Home Page
-    pageData = await Page.findOne({ slug: 'home', status: 'Published' });
+    pageData = await Page.findOne({ slug: 'home', status: 'Published' }).lean();
     
     if (pageData && pageData.sections?.length > 0) {
       // 2. Resolve dynamic data for sections (Products, Categories, etc.)
