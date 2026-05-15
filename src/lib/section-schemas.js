@@ -165,5 +165,34 @@ export const SECTION_SCHEMAS = {
       { name: "secondaryBtnLabel", label: "Secondary Button Label", type: "text" },
       { name: "secondaryBtnLink", label: "Secondary Button Link", type: "text" }
     ]
+  },
+  contact_hero: {
+    name: "Contact Hero",
+    icon: "Layout",
+    fields: [
+      { name: "title", label: "Hero Title", type: "text" },
+      { name: "subtitle", label: "Hero Subtitle", type: "textarea" },
+      { name: "label", label: "Hero Label (Badge)", type: "text" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "buttonText", label: "CTA Button Text", type: "text" }
+    ]
+  },
+  contact_section: {
+    name: "Contact Details & Form",
+    icon: "Mail",
+    fields: [
+      { name: "officeLabel", label: "Office Label", type: "text" },
+      { name: "officeTitle", label: "Office Title", type: "text" },
+      { name: "address", label: "Physical Address", type: "textarea" },
+      { name: "channels", label: "Contact Channels", type: "repeater", fields: [
+        { name: "label", label: "Channel Label", type: "text" },
+        { name: "value", label: "Channel Value (Email/Phone)", type: "text" }
+      ]},
+      { name: "socialLabel", label: "Social Label", type: "text" },
+      { name: "formTitle", label: "Form Heading", type: "text" },
+      { name: "formSubtitle", label: "Form Subheading", type: "text" },
+      { name: "subjects", label: "Form Subjects (Comma separated)", type: "text" },
+      { name: "buttonText", label: "Submit Button Text", type: "text" }
+    ]
   }
 };

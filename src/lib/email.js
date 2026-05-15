@@ -169,3 +169,45 @@ export async function sendAdminOrderNotification(order) {
     throw err;
   }
 }
+
+/**
+ * Send CRM Reply to Customer Submission
+ */
+export async function sendSubmissionReply(toEmail, subject, message, customerName) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`[Email Simulation] CRM Reply → ${toEmail} | Subject: ${subject}`);
+    return;
+  }
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: auto; color: #1a1a1a; line-height: 1.6;">
+      <div style="background: #1a1a1a; padding: 25px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; letter-spacing: 2px; font-size: 20px; font-weight: 300;">PAIRO CONCIERGE</h1>
+      </div>
+      <div style="padding: 40px 30px; background: #fff;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Dear ${customerName || 'Customer'},</p>
+        <div style="font-size: 15px; color: #1a1a1a; white-space: pre-wrap;">${message}</div>
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
+          <p style="font-size: 13px; color: #888; margin: 0;">Kind Regards,</p>
+          <p style="font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 5px 0;">The Pairo Team</p>
+        </div>
+      </div>
+      <div style="background: #f9f9f9; padding: 20px; text-align: center; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">
+        © ${new Date().getFullYear()} PAIRO — Artisanal Heritage • Modern Lifestyle
+      </div>
+    </div>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"PAIRO Support" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: subject,
+      html,
+    });
+    console.log(`[Email] ✅ CRM Reply sent to ${toEmail} | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send CRM reply:', err.message);
+    throw err;
+  }
+}

@@ -13,6 +13,8 @@ export const SECTION_REGISTRY = {
   studio_gallery: dynamic(() => import("@/components/sections/StudioGallery")),
   promise_section: dynamic(() => import("@/components/sections/PromiseSection")),
   cta_section: dynamic(() => import("@/components/sections/CTASection")),
+  contact_hero: dynamic(() => import("@/components/sections/ContactHero")),
+  contact_section: dynamic(() => import("@/components/sections/ContactSection")),
 };
 
 export const getSectionComponent = (type) => {
