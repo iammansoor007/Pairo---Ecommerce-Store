@@ -1,6 +1,7 @@
 "use client";
 
-import { Truck, ShieldCheck, Headphones, Star, Zap, Globe, ArrowUpRight } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { ArrowUpRight, Zap } from "lucide-react";
 
 const MarqueeItem = ({ item }) => (
   <div className="flex items-center gap-3 md:gap-8 px-5 md:px-12 group cursor-pointer">
@@ -31,15 +32,25 @@ const MarqueeItem = ({ item }) => (
   </div>
 );
 
-export default function FeatureMarquee() {
-  const features = [
-    { icon: Zap, text: "20% Off First" },
-    { icon: Truck, text: "Express Ship" },
-    { icon: Star, text: "Premium Pelt" },
-    { icon: ShieldCheck, text: "30-Day Policy" },
-    { icon: Globe, text: "Global Reach" },
-    { icon: Headphones, text: "Direct Desk" },
+export default function FeatureMarquee({ 
+  items: propItems, 
+  speed: propSpeed 
+}) {
+  const defaultFeatures = [
+    { text: "20% Off First" },
+    { text: "Express Ship" },
+    { text: "Premium Pelt" },
+    { text: "30-Day Policy" },
+    { text: "Global Reach" },
+    { text: "Direct Desk" },
   ];
+
+  const features = (propItems || defaultFeatures).map(item => ({
+    ...item,
+    icon: LucideIcons[item.icon] || Zap
+  }));
+
+  const speed = propSpeed || 40;
 
   return (
     <section className="py-4 md:py-8 bg-[var(--background)] overflow-hidden border-y border-[var(--border)]">
@@ -57,7 +68,7 @@ export default function FeatureMarquee() {
 
       <style dangerouslySetInnerHTML={{ __html: `
         .animate-scroll-left {
-          animation: scroll-left 40s linear infinite;
+          animation: scroll-left ${speed}s linear infinite;
         }
         .hover\\:pause:hover {
           animation-play-state: paused;

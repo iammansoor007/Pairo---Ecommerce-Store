@@ -23,12 +23,14 @@ export async function GET(req) {
       return NextResponse.json(product);
     }
 
-    let query = { 
-        tenantId: searchParams.get('tenantId') || "DEFAULT_STORE",
-        isDeleted 
-    };
+    const tenantId = searchParams.get('tenantId');
+    const isDeleted = searchParams.get('isDeleted') === 'true';
+    
+    let query = { isDeleted, status: "Published" };
+    if (tenantId) query.tenantId = tenantId;
+    
     if (status) query.status = status;
-
+    
     const products = await Product.find(query).sort({ createdAt: -1 });
     return NextResponse.json(products);
   } catch (error) {

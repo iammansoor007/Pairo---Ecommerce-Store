@@ -6,9 +6,17 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { useSiteData } from "@/context/SiteContext";
 
-export default function ProductSection({ title, products }) {
+export default function ProductSection({ 
+  title, 
+  products = [], 
+  seriesLabel, 
+  ctaLabel 
+}) {
   const siteData = useSiteData();
-  const productLabels = siteData?.products || { labels: {} };
+  const productLabels = {
+    seriesLabel: seriesLabel || siteData?.products?.labels?.seriesLabel || "Collection",
+    ctaLabel: ctaLabel || siteData?.products?.labels?.archiveIndex || "Explore Collection"
+  };
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -41,7 +49,7 @@ export default function ProductSection({ title, products }) {
   if (!siteData) return null;
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-2 md:py-4">
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
@@ -53,7 +61,7 @@ export default function ProductSection({ title, products }) {
                className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md"
              >
                 <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
-                  {productLabels.labels.seriesLabel}
+                  {productLabels.seriesLabel}
                 </span>
              </motion.div>
              <motion.h2 
@@ -69,7 +77,7 @@ export default function ProductSection({ title, products }) {
 
           <div className="flex items-center gap-4 md:gap-8 shrink-0">
              <button className="group relative hidden sm:flex items-center gap-6 border border-black/20 px-10 py-4.5 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white hover:border-black active:scale-95 shadow-lg shadow-black/5">
-                <span className="relative z-10">{productLabels?.labels?.archiveIndex || "Explore Collection"}</span>
+                <span className="relative z-10">{productLabels.ctaLabel}</span>
                 <ArrowRight className="w-5 h-5 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
                 <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
              </button>

@@ -7,20 +7,26 @@ import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useSiteData } from "@/context/SiteContext";
 
-export default function CategoryBanner() {
+export default function CategoryBanner({ 
+  title, 
+  label, 
+  viewAll, 
+  categories: propCategories 
+}) {
   const siteData = useSiteData();
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  // Fallback if siteData or categories is missing
-  const categories = siteData?.categories || { 
-    title: "Our Collections", 
-    label: "Pairo Studio", 
-    items: [], 
-    exploreSingle: "Explore", 
-    exploreFull: "Explore Full" 
+  const categoriesConfig = {
+    title: title || siteData?.categories?.title || "Our Collections",
+    label: label || siteData?.categories?.label || "Pairo Studio",
+    viewAll: viewAll || siteData?.categories?.viewAll || "Explore All",
+    exploreSingle: siteData?.categories?.exploreSingle || "Explore",
+    exploreFull: siteData?.categories?.exploreFull || "Explore Collection"
   };
   
-  const displayCategories = categories.items?.slice(0, 3) || [];
+  const displayCategories = (propCategories && propCategories.length > 0) 
+    ? propCategories.slice(0, 3) 
+    : (siteData?.categories?.items?.slice(0, 3) || []);
 
   // Bento Spans [1 : 2 : 1]
   const layoutSpans = [
@@ -32,7 +38,7 @@ export default function CategoryBanner() {
   if (displayCategories.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-20">
+    <section className="py-2 md:py-4">
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
@@ -40,16 +46,16 @@ export default function CategoryBanner() {
              <div className="flex items-center gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-black/40" />
                 <span className="text-[10px] font-bold tracking-[0.4em] text-black/40 uppercase">
-                  {categories.label || "The Collection"}
+                  {categoriesConfig.label || "The Collection"}
                 </span>
              </div>
              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter text-black uppercase leading-tight">
-               {categories.title || "Shop By Category"}
+               {categoriesConfig.title || "Shop By Category"}
              </h2>
           </div>
           
           <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-10 py-4 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
-             <span className="relative z-10">{categories.viewAll || "Explore All"}</span>
+             <span className="relative z-10">{categoriesConfig.viewAll || "Explore All"}</span>
              <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
              <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
           </Link>
@@ -59,7 +65,7 @@ export default function CategoryBanner() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {displayCategories.map((category, index) => {
             const isSmall = index === 0 || index === 2;
-            const exploreText = index === 1 ? (categories.exploreFull || "Explore Collection") : (categories.exploreSingle || "Explore");
+            const exploreText = index === 1 ? (categoriesConfig.exploreFull || "Explore Collection") : (categoriesConfig.exploreSingle || "Explore");
             
             return (
               <motion.div

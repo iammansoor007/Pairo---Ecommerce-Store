@@ -101,6 +101,12 @@ export default function AdminSidebar() {
               <span>Dashboard</span>
            </Link>
 
+           {/* Page Builder */}
+           <FlyoutMenu title="Page Builder" icon={Layers} permission="pages.view" activePath="/admin/pages">
+                <NavLink href="/admin/pages" exact isSubmenu>Manage Pages</NavLink>
+                <NavLink href="/admin/pages/new" isSubmenu>Add New Page</NavLink>
+           </FlyoutMenu>
+
            {/* Blog Flyout */}
            <FlyoutMenu title="Blog" icon={FileText} permission="blogs.view" activePath="/admin/blogs">
                 <NavLink href="/admin/blogs" exact isSubmenu>All Posts</NavLink>

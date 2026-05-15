@@ -29,7 +29,12 @@ const BlogCard = ({ post, readMoreLabel }) => (
   </Link>
 );
 
-export default function BlogSection() {
+export default function BlogSection({ 
+  title, 
+  label, 
+  limit, 
+  readMore 
+}) {
   const siteData = useSiteData();
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -37,14 +42,28 @@ export default function BlogSection() {
   const [dbBlogs, setDbBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const blogsConfig = {
+    title: title || siteData?.blogs?.title || "OUR JOURNAL",
+    label: label || siteData?.blogs?.label || "BLOG",
+    readMore: readMore || siteData?.blogs?.readMore || "READ MORE",
+    limit: limit || 6,
+    featuredProduct: siteData?.blogs?.featuredProduct || {
+        label: "FEATURED",
+        name: "Collection",
+        description: "Discover our latest additions.",
+        buttonText: "SHOP NOW",
+        image: "/placeholder.jpg"
+    }
+  };
+
   useEffect(() => {
-    fetch("/api/blogs?limit=6")
+    fetch(`/api/blogs?limit=${blogsConfig.limit}`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setDbBlogs(data);
         setLoading(false);
       });
-  }, []);
+  }, [blogsConfig.limit]);
 
   const scroll = (direction) => {
     if (carouselRef.current) {
@@ -71,24 +90,6 @@ export default function BlogSection() {
     return () => current?.removeEventListener("scroll", checkScroll);
   }, [dbBlogs]);
 
-  if (!siteData?.blogs && dbBlogs.length === 0) return null;
-
-  const { blogs } = siteData || { 
-    blogs: { 
-      title: "OUR JOURNAL", 
-      label: "BLOG", 
-      readMore: "READ MORE",
-      featuredProduct: {
-        label: "FEATURED",
-        name: "Collection",
-        description: "Discover our latest additions.",
-        buttonText: "SHOP NOW",
-        image: "/placeholder.jpg"
-      }
-    } 
-  };
-  
-  // Combine or prioritize database blogs
   const posts = dbBlogs.length > 0 ? dbBlogs.map(b => ({
     id: b._id,
     title: b.title,
@@ -96,17 +97,17 @@ export default function BlogSection() {
     image: b.image,
     category: b.category,
     date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-  })) : (blogs?.posts || []);
+  })) : (siteData?.blogs?.posts || []);
 
   return (
-    <section className="py-12 md:py-16 overflow-hidden">
+    <section className="py-2 md:py-4 overflow-hidden">
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
              <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-                <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{blogs.label}</span>
+                <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</span>
              </div>
-             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{blogs.title}</h2>
+             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{blogsConfig.title}</h2>
           </div>
           <div className="flex items-center gap-3 md:gap-6 shrink-0">
              <div className="flex gap-1.5 md:gap-2">
@@ -120,20 +121,20 @@ export default function BlogSection() {
           <div ref={carouselRef} className="flex gap-5 md:gap-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
             {posts.map((post) => (
               <div key={post.id} className="w-[75vw] sm:w-[45vw] md:w-[35vw] lg:w-[22.5vw] shrink-0 snap-start">
-                <BlogCard post={post} readMoreLabel={blogs.readMore} />
+                <BlogCard post={post} readMoreLabel={blogsConfig.readMore} />
               </div>
             ))}
             <div className="w-[75vw] sm:w-[45vw] md:w-[35vw] lg:w-[22.5vw] shrink-0 snap-start">
                <div className="h-full bg-black text-white p-8 md:p-10 rounded-[16px] md:rounded-[24px] flex flex-col justify-between relative overflow-hidden group min-h-[300px] md:min-h-[400px]">
                   <div className="relative z-10 space-y-4">
-                     <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">{blogs.featuredProduct.label}</span>
-                     <h3 className="text-xl md:text-2xl font-bold heading-font uppercase leading-tight">{blogs.featuredProduct.name}</h3>
-                     <p className="text-white/50 text-[10px] md:text-sm line-clamp-3">{blogs.featuredProduct.description}</p>
+                     <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">{blogsConfig.featuredProduct.label}</span>
+                     <h3 className="text-xl md:text-2xl font-bold heading-font uppercase leading-tight">{blogsConfig.featuredProduct.name}</h3>
+                     <p className="text-white/50 text-[10px] md:text-sm line-clamp-3">{blogsConfig.featuredProduct.description}</p>
                   </div>
-                  <Link href={`/product/${blogs.featuredProduct.id}`} className="relative z-10 flex items-center justify-center gap-3 w-full bg-white text-black py-3.5 md:py-4 rounded-lg md:rounded-xl font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100 transition-all shadow-xl active:scale-95">
-                    {blogs.featuredProduct.buttonText}<ArrowRight className="w-4 h-4" />
+                  <Link href={`/product/${blogsConfig.featuredProduct.id}`} className="relative z-10 flex items-center justify-center gap-3 w-full bg-white text-black py-3.5 md:py-4 rounded-lg md:rounded-xl font-bold text-[8px] md:text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100 transition-all shadow-xl active:scale-95">
+                    {blogsConfig.featuredProduct.buttonText}<ArrowRight className="w-4 h-4" />
                   </Link>
-                  <div className="absolute -bottom-6 -right-6 w-32 h-32 md:w-48 md:h-48 opacity-20 group-hover:scale-110 transition-transform duration-1000"><img src={blogs.featuredProduct.image} alt="Featured" className="w-full h-full object-cover rounded-[16px]" /></div>
+                  <div className="absolute -bottom-6 -right-6 w-32 h-32 md:w-48 md:h-48 opacity-20 group-hover:scale-110 transition-transform duration-1000"><img src={blogsConfig.featuredProduct.image} alt="Featured" className="w-full h-full object-cover rounded-[16px]" /></div>
                </div>
             </div>
           </div>

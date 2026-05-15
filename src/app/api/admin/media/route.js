@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Media from "@/models/Media";
+import { can } from "@/lib/rbac";
 
 // GET /api/admin/media — List media with search, filter, pagination
 export async function GET(req) {

@@ -83,16 +83,28 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
   );
 };
 
-export default function Testimonials() {
+export default function Testimonials({ 
+  title, 
+  label, 
+  buttonText, 
+  verifiedLabel, 
+  reviews: propReviews 
+}) {
   const siteData = useSiteData();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (!siteData?.testimonials) return null;
+  const testimonialsConfig = {
+    title: title || siteData?.testimonials?.title || "CUSTOMER LOVE",
+    label: label || siteData?.testimonials?.label || "REVIEWS",
+    buttonText: buttonText || siteData?.testimonials?.buttonText || "WRITE A REVIEW",
+    verifiedLabel: verifiedLabel || siteData?.testimonials?.verifiedLabel || "Verified Account",
+    reviews: propReviews || siteData?.testimonials?.reviews || []
+  };
 
-  const { testimonials } = siteData;
-  const reviews = testimonials.reviews || [];
+  const reviews = testimonialsConfig.reviews;
 
   const handleSwipe = (direction) => {
+    if (!reviews.length) return;
     if (direction === "next") {
       setCurrentIndex((prev) => (prev + 1) % reviews.length);
     } else {
@@ -101,6 +113,7 @@ export default function Testimonials() {
   };
 
   const getPosition = (index) => {
+    if (!reviews.length) return 0;
     let diff = index - currentIndex;
     if (diff > reviews.length / 2) diff -= reviews.length;
     if (diff < -reviews.length / 2) diff += reviews.length;
@@ -108,14 +121,14 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-12 md:py-16 overflow-hidden relative">
+    <section className="py-2 md:py-4 overflow-hidden relative">
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16 relative z-10">
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{testimonials.label}</span>
+              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</span>
             </div>
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{testimonials.title}</h2>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{testimonialsConfig.title}</h2>
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => handleSwipe("prev")} className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"><ChevronLeft className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:-translate-x-1" /></button>
@@ -127,13 +140,13 @@ export default function Testimonials() {
           {reviews.map((review, index) => {
             const position = getPosition(index);
             if (Math.abs(position) > 1) return null;
-            return <TestimonialCard key={index} review={review} isActive={position === 0} position={position} onSwipe={handleSwipe} labels={testimonials} />;
+            return <TestimonialCard key={index} review={review} isActive={position === 0} position={position} onSwipe={handleSwipe} labels={testimonialsConfig} />;
           })}
         </div>
 
         <div className="flex flex-col items-center">
           <button className="group relative overflow-hidden bg-black text-white px-8 md:px-12 py-3.5 md:py-4.5 rounded-full font-bold text-[9px] md:text-xs uppercase tracking-[0.3em] shadow-xl transition-all active:scale-95">
-            <span className="relative z-10 flex items-center gap-3 transition-colors duration-500">{testimonials.buttonText}<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></span>
+            <span className="relative z-10 flex items-center gap-3 transition-colors duration-500">{testimonialsConfig.buttonText}<ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></span>
           </button>
           <div className="mt-10 md:mt-14 flex gap-3">
             {reviews.map((_, i) => (

@@ -33,6 +33,7 @@ export default function MediaPickerModal({ open, onClose, onSelect, multiple = f
     try {
       const params = new URLSearchParams({ search: searchVal, page: pg, limit: 30 });
       const res = await fetch(`/api/admin/media?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch media");
       const data = await res.json();
       if (data.success) {
         setItems(data.items);

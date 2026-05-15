@@ -1,0 +1,96 @@
+export const SECTION_SCHEMAS = {
+  hero_slider: {
+    name: "Hero Slider",
+    icon: "Layout",
+    fields: [
+      { name: "slides", label: "Slides", type: "repeater", fields: [
+        { name: "title", label: "Title", type: "text" },
+        { name: "subtitle", label: "Subtitle", type: "textarea" },
+        { name: "image", label: "Image URL", type: "image" },
+        { name: "buttonText", label: "Button Text", type: "text" },
+        { name: "link", label: "Button Link", type: "text" }
+      ]},
+      { name: "brand", label: "Brand Settings", type: "group", fields: [
+        { name: "tagline", label: "Tagline", type: "text" }
+      ]},
+      { name: "labels", label: "Labels", type: "group", fields: [
+        { name: "viewCollection", label: "View Collection Label", type: "text" }
+      ]}
+    ]
+  },
+  product_grid: {
+    name: "Product Collection",
+    icon: "ShoppingBag",
+    fields: [
+      { name: "title", label: "Section Title", type: "text" },
+      { name: "seriesLabel", label: "Series Label (Badge)", type: "text" },
+      { name: "ctaLabel", label: "CTA Button Text", type: "text" },
+      { name: "collectionId", label: "Select Collection", type: "select", options: "categories" },
+      { name: "limit", label: "Product Limit", type: "number", default: 8 },
+    ]
+  },
+  feature_marquee: {
+    name: "Feature Marquee",
+    icon: "Zap",
+    fields: [
+      { name: "items", label: "Marquee Items", type: "repeater", fields: [
+        { name: "text", label: "Display Text", type: "text" },
+        { name: "icon", label: "Icon", type: "icon" }
+      ]},
+      { name: "speed", label: "Scroll Speed (seconds)", type: "number", default: 40 }
+    ]
+  },
+  category_showcase: {
+    name: "Category Showcase",
+    icon: "Grid",
+    fields: [
+      { name: "title", label: "Section Title", type: "text" },
+      { name: "label", label: "Section Badge", type: "text" },
+      { name: "viewAll", label: "View All Label", type: "text" },
+      { name: "categoryIds", label: "Selected Categories", type: "multiselect", options: "categories" }
+    ]
+  },
+  blog_grid: {
+    name: "Blog Showcase",
+    icon: "FileText",
+    fields: [
+      { name: "title", label: "Section Title", type: "text" },
+      { name: "label", label: "Section Badge", type: "text" },
+      { name: "blogIds", label: "Select Blogs to Show", type: "multiselect", options: "blogs" },
+      { name: "readMore", label: "Read More Label", type: "text" }
+    ]
+  },
+  testimonials: {
+    name: "Testimonial Slider",
+    icon: "Star",
+    fields: [
+      { name: "title", label: "Section Title", type: "text" },
+      { name: "label", label: "Section Badge", type: "text" },
+      { name: "buttonText", label: "CTA Button Text", type: "text" },
+      { name: "verifiedLabel", label: "Verified Account Label", type: "text" },
+      { name: "reviews", label: "Reviews", type: "repeater", fields: [
+        { name: "name", label: "Customer Name", type: "text" },
+        { name: "text", label: "Testimonial Text", type: "textarea" },
+        { name: "rating", label: "Rating (1-5)", type: "number" }
+      ]}
+    ]
+  },
+  banner_feature: {
+    name: "Promotional Banner",
+    icon: "Image",
+    fields: [
+      { name: "title", label: "Banner Heading", type: "text" },
+      { name: "description", label: "Paragraph text", type: "textarea" },
+      { name: "badge1", label: "Badge 1 (Top)", type: "text" },
+      { name: "badge2", label: "Badge 2 (Bottom)", type: "text" },
+      { name: "image", label: "Banner Image URL", type: "image" },
+      { name: "ctaText", label: "Button Label", type: "text" },
+      { name: "linkType", label: "Link to", type: "select", options: [
+        { label: "Product", value: "product" },
+        { label: "Collection", value: "collection" }
+      ]},
+      { name: "productId", label: "Select Product", type: "select", options: "products", dependsOn: "linkType", visibleIf: "product" },
+      { name: "collectionId", label: "Select Collection", type: "select", options: "categories", dependsOn: "linkType", visibleIf: "collection" }
+    ]
+  }
+};

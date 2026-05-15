@@ -1,0 +1,83 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import dbConnect from "@/lib/db";
+import Page from "@/models/Page";
+import { can } from "@/lib/rbac";
+import { logAction } from "@/lib/audit";
+
+export async function GET(req, { params }) {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!can(session.user, "pages.view")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    await dbConnect();
+    try {
+        const page = await Page.findById(id).lean();
+        if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
+        return NextResponse.json(page);
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function PUT(req, { params }) {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!can(session.user, "pages.edit")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    await dbConnect();
+    try {
+        const body = await req.json();
+        const existing = await Page.findById(id);
+        if (!existing) return NextResponse.json({ error: "Page not found" }, { status: 404 });
+
+        const updated = await Page.findByIdAndUpdate(id, {
+            ...body,
+            updatedBy: session.user.id
+        }, { returnDocument: 'after' });
+
+        await logAction(req, session, 'UPDATE_PAGE', 'page', {
+            before: existing,
+            after: updated,
+            message: `Updated page: ${updated.title}`
+        });
+
+        return NextResponse.json(updated);
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function DELETE(req, { params }) {
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!can(session.user, "pages.delete")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    await dbConnect();
+    try {
+        const page = await Page.findById(id);
+        if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
+
+        if (page.isSystem) {
+            return NextResponse.json({ error: "Cannot delete system pages" }, { status: 400 });
+        }
+
+        await Page.findByIdAndDelete(id);
+
+        await logAction(req, session, 'DELETE_PAGE', 'page', {
+            before: page,
+            message: `Deleted page: ${page.title}`
+        });
+
+        return NextResponse.json({ message: "Page deleted" });
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

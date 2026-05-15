@@ -7,34 +7,48 @@ import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import MarqueeSection from "./MarqueeSection";
 import { useSiteData } from "@/context/SiteContext";
 
-export default function Hero() {
+export default function Hero({ 
+  slides: propSlides, 
+  brand: propBrand, 
+  labels: propLabels 
+}) {
   const siteData = useSiteData();
+  
+  // Use props if available (Page Builder mode), otherwise fallback to SiteContext (Legacy mode)
+  const heroData = {
+    hero: {
+      slides: propSlides || siteData?.hero?.slides || [],
+      labels: propLabels || siteData?.hero?.labels || { viewCollection: "View Collection" }
+    },
+    brand: propBrand || siteData?.brand || { tagline: "Premium Shearling" }
+  };
+
+  const { hero, brand } = heroData;
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0); 
 
   const nextSlide = () => {
-    if (!siteData?.hero?.slides) return;
+    if (!hero.slides.length) return;
     setDirection(1);
-    setCurrentSlide((prev) => (prev + 1) % siteData.hero.slides.length);
+    setCurrentSlide((prev) => (prev + 1) % hero.slides.length);
   };
 
   const prevSlide = () => {
-    if (!siteData?.hero?.slides) return;
+    if (!hero.slides.length) return;
     setDirection(-1);
-    setCurrentSlide((prev) => (prev === 0 ? siteData.hero.slides.length - 1 : prev - 1));
+    setCurrentSlide((prev) => (prev === 0 ? hero.slides.length - 1 : prev - 1));
   };
 
   useEffect(() => {
-    if (!siteData?.hero?.slides) return;
+    if (!hero.slides.length) return;
     const timer = setInterval(() => {
       nextSlide();
     }, 7000);
     return () => clearInterval(timer);
-  }, [currentSlide, siteData]);
+  }, [currentSlide, hero.slides.length]);
 
-  if (!siteData) return <div className="h-[650px] bg-black/5 rounded-[40px] m-8 animate-pulse" />;
-
-  const { hero, brand } = siteData;
+  if (!siteData && !propSlides) return <div className="h-[650px] bg-black/5 rounded-[40px] m-8 animate-pulse" />;
 
   const slideVariants = {
     initial: (direction) => ({ x: direction > 0 ? "20%" : "-20%", opacity: 0 }),
