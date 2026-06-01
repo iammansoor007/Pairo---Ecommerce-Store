@@ -120,6 +120,15 @@ export default function AdminSidebar() {
               </Link>
            )}
 
+           {/* Site Settings */}
+           {can("settings.view") && (
+              <Link href="/admin/settings/site" className={`flex items-center gap-2 px-3 py-2 text-[14px] transition-all ${pathname.startsWith("/admin/settings/site") ? "bg-[#2271b1] text-white" : "hover:bg-[#2c3338] hover:text-[#72aee6]"}`}>
+                 <Settings className="w-4 h-4" />
+                 <span>Site Settings</span>
+              </Link>
+           )}
+
+
            {/* Blog Flyout */}
            <FlyoutMenu title="Blog" icon={FileText} permission="blogs.view" activePath="/admin/blogs">
                 <NavLink href="/admin/blogs" exact isSubmenu>All Posts</NavLink>

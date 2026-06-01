@@ -313,15 +313,16 @@ export default function AdminContact() {
                 </th>
                 <th className="px-3 py-2 font-bold text-[#1d2327]">Author</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327]">Submission</th>
+                <th className="px-3 py-2 font-bold text-[#1d2327]">Source</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327]">Status / Priority</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327]">Submitted on</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#f0f0f1]">
               {loading ? (
-                <tr><td colSpan={5} className="p-10 text-center italic text-gray-400">Loading submissions...</td></tr>
+                <tr><td colSpan={6} className="p-10 text-center italic text-gray-400">Loading submissions...</td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={5} className="p-10 text-center italic text-gray-400">No submissions found.</td></tr>
+                <tr><td colSpan={6} className="p-10 text-center italic text-gray-400">No submissions found.</td></tr>
               ) : (
                 items.filter(s => s !== null).map((s) => (
                   <tr key={s._id} className={`hover:bg-[#f6f7f7] group ${s?.status === 'New' ? 'bg-blue-50/30' : ''}`}>
@@ -363,6 +364,16 @@ export default function AdminContact() {
                           <button onClick={() => handleAction(s._id, 'SET_STATUS', { status: 'Spam' })} className="text-orange-600 hover:text-orange-700">Spam</button>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-3 py-4 align-top">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider w-fit ${
+                        s.sourceForm === 'Email Subscriber' ? 'bg-purple-100 text-purple-700' :
+                        s.sourceForm === 'Newsletter' ? 'bg-purple-100 text-purple-700' :
+                        s.sourceForm === 'Contact' ? 'bg-blue-100 text-blue-600' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {s.sourceForm || 'Contact'}
+                      </span>
                     </td>
                     <td className="px-3 py-4 align-top">
                       <div className="flex flex-col gap-1.5">

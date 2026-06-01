@@ -1,0 +1,73 @@
+<USER_REQUEST>
+the mega menu  is still not showing and the behavior is not like the one i want , i would give u the refrence please check i am just giving u the  refernce of the setting thing i have build for my another page u can also make the same to same , "use client";
+
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Globe, Mail, Phone, MapPin, Share2, Plus, Trash2, List, ExternalLink, Search, Check, X, Upload } from "lucide-react";
+import Link from "next/link";
+import * as LucideIcons from "lucide-react";
+import ImageField from "@/components/admin/ImageField";
+import dynamic from "next/dynamic";
+const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
+  ssr: false,
+  loading: () => <div className="h-20 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+});
+
+const COMMON_ICONS = [
+  "Home", "Info", "Briefcase", "Phone", "Mail", "MapPin", "Shield", "Star", "Check", "Award",
+  "Hammer", "Construction", "Wind", "Sun", "Cloud", "Zap", "Layers", "Box", "Package",
+  "Facebook", "Instagram", "Twitter", "Linkedin", "Youtube", "Github", "Globe",
+  "Calendar", "Clock", "User", "Users", "Camera", "Image", "Video", "FileText", "File",
+  "ShieldCheck", "Trophy", "CreditCard", "Settings", "Layout", "Menu", "ExternalLink",
+  "ArrowRight", "ChevronRight", "Search", "Map", "Truck", "HardHat", "Ruler", "Paintbrush"
+];
+
+function IconPicker({ value, onChange }: { value: string, onChange: (val: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const filteredIcons = COMMON_ICONS.filter(icon => icon.toLowerCase().includes(search.toLowerCase()));
+  const CurrentIcon = (LucideIcons as any)[value] || LucideIcons.HelpCircle;
+
+  return (
+    <div className="relative inline-block">
+      <button onClick
+<truncated 34309 bytes>
+((_:any,idx:number)=>idx!==i))} className="p-2 text-[#d63638] hover:bg-white rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                     </div>
+                  ))}
+                  <button onClick={() => updateData("footer", "social", [...(data.footer?.social || []), { platform: "Facebook", href: "", icon: "Facebook" }])} className="text-[#2271b1] text-xs underline font-bold">+ Add New Social Profile</button>
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-12 pt-6 border-t border-[#c3c4c7]">
+           <button
+             onClick={handleSave}
+             disabled={saving}
+             className="bg-[#2271b1] text-white px-6 py-2 rounded-[3px] text-[13px] font-semibold border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-all disabled:opacity-50 flex items-center gap-2 shadow-[0_1px_0_#135e96]"
+           >
+             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+             Save Changes
+           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-06-01T22:19:52+05:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\components\layout\Navbar.js (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\app\admin\layout.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\models\Product.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\models\SiteConfig.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\components\layout\Navbar.js (LANGUAGE_JAVASCRIPT)
+- c:\Users\dell\Desktop\Pairo - Ecommerce Store\src\components\admin\Sidebar.js (LANGUAGE_JAVASCRIPT)
+Running terminal commands:
+- npm run dev (in c:\Users\dell\Desktop\Pairo - Ecommerce Store, running for 1h59m4s)
+</ADDITIONAL_METADATA>

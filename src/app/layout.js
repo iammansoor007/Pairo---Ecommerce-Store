@@ -4,9 +4,13 @@ import { CartProvider } from "@/context/CartContext";
 import AuthProvider from "@/components/providers/AuthProvider";
 import dbConnect from "@/lib/db";
 import SiteConfig from "@/models/SiteConfig";
+import Category from "@/models/Category";
+import Blog from "@/models/Blog";
+import Page from "@/models/Page";
 import { SiteProvider } from "@/context/SiteContext";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import ScriptLoader from "@/components/common/ScriptLoader";
+import ThemeStyle from "@/components/common/ThemeStyle";
 import { Toaster } from "react-hot-toast";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
@@ -14,58 +18,115 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
 export const dynamic = 'force-dynamic';
-// export const revalidate = 0;
 
-import ThemeStyle from "@/components/common/ThemeStyle";
-
-export const metadata = {
-  title: "Pairo | Premium Shearling Jackets",
-  description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairo.store"),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-};
-
-export default async function RootLayout({ children }) {
-  let config = null;
-  
+export async function generateMetadata() {
   try {
     await dbConnect();
-    config = await SiteConfig.findOne({ key: 'main' }).lean();
+    const config = await SiteConfig.findOne({ key: 'main' }).maxTimeMS(4000).lean();
+    if (config?.brand) {
+      const name = config.brand.name || "Pairo";
+      const tagline = config.brand.tagline || "Premium Shearling Jackets";
+      const title = tagline ? `${name} | ${tagline}` : name;
+      return {
+        title,
+        description: config.brand.description || "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
+        metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairo.store"),
+        robots: {
+          index: true,
+          follow: true,
+          googleBot: { index: true, follow: true },
+        },
+      };
+    }
   } catch (error) {
-    console.error("Layout Data Fetch Error:", error);
+    console.error("Failed to generate metadata", error);
   }
 
-  const sanitizedConfig = config ? JSON.parse(JSON.stringify(config)) : { 
-    brand: { name: "Pairo", tagline: "Premium Shearling" },
+  return {
+    title: "Pairo | Premium Shearling Jackets",
+    description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairo.store"),
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+  };
+}
+
+const QUERY_TIMEOUT_MS = 4000;
+
+export default async function RootLayout({ children }) {
+  let sanitizedConfig = {
+    brand: { name: "Pairo", tagline: "Premium Shearling", footerBrandName: "PAIRO", copyrightText: "PAIRO — ALL RIGHTS RESERVED © 2026", privacyUrl: "#", termsUrl: "#" },
     navigation: { links: [], offers: ["Welcome to Pairo Store"] },
-    hero: { slides: [{ title: "Pairo", subtitle: "Handcrafted Luxury", image: "/placeholder.jpg", buttonText: "Shop Now" }], labels: { viewCollection: "View Collection" } },
-    footer: { sections: [{}, { links: [] }], categories: { items: [] } },
-    categories: { items: [] }
+    headerConfig: { logoUrl: '', navItems: [], megaCategoryIds: [], topOffers: ["Welcome to Pairo Store"] },
+    footerConfig: { logoUrl: '', newsletterHeading: 'Elite List', newsletterPlaceholder: 'JOIN THE LIST', footerCategoryIds: [], footerBlogIds: [], footerCustomLinks: [], footerCustomLinksHeading: 'Information' },
+    socialLinks: [],
+    hero: { slides: [], labels: { viewCollection: "View Collection" } },
+    footer: { sections: [{}, { links: [] }] },
+    categories: { items: [] },
+    _dbCategories: [],
+    _dbPages: [],
+    _dbBlogs: [],
   };
 
-  // Using headers to detect admin route in server component
-  const { headers } = await import("next/headers");
-  const headerList = await headers();
-  const isAdminHeader = headerList.get("x-is-admin") === "true";
-  const pathnameHeader = headerList.get("x-pathname") || "";
-  const invokePath = headerList.get("x-invoke-path") || "";
-  
-  const isActuallyAdmin = isAdminHeader || 
-                          pathnameHeader.startsWith("/admin") || 
-                          invokePath.startsWith("/admin");
+  try {
+    await dbConnect();
+
+    // Run all DB reads in parallel with a shared timeout so any single
+    // slow query never blocks the entire page render.
+    const [configResult, catsResult, pagesResult, blogsResult, prodsResult] = await Promise.allSettled([
+      SiteConfig.findOne({ key: 'main' }).maxTimeMS(QUERY_TIMEOUT_MS).lean(),
+      Category.find({ status: { $ne: 'Draft' }, isDeleted: { $ne: true } })
+        .select('name slug image type')
+        .sort({ name: 1 })
+        .maxTimeMS(QUERY_TIMEOUT_MS)
+        .lean(),
+      Page.find({ status: 'Published' })
+        .select('title slug template')
+        .sort({ title: 1 })
+        .maxTimeMS(QUERY_TIMEOUT_MS)
+        .lean(),
+      Blog.find({ status: 'Published', isDeleted: { $ne: true } })
+        .select('title slug')
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .maxTimeMS(QUERY_TIMEOUT_MS)
+        .lean(),
+      import('@/models/Product').then(m => m.default.find({ status: 'Active', isDeleted: { $ne: true } })
+        .select('title slug images')
+        .sort({ title: 1 })
+        .maxTimeMS(QUERY_TIMEOUT_MS)
+        .lean()),
+    ]);
+
+    const config = configResult.status === 'fulfilled' ? configResult.value : null;
+    const dbCategories = catsResult.status === 'fulfilled' ? (catsResult.value || []) : [];
+    const dbPages = pagesResult.status === 'fulfilled' ? (pagesResult.value || []) : [];
+    const dbBlogs = blogsResult.status === 'fulfilled' ? (blogsResult.value || []) : [];
+    const dbProducts = prodsResult.status === 'fulfilled' ? (prodsResult.value || []) : [];
+
+    if (config) {
+      sanitizedConfig = JSON.parse(JSON.stringify(config));
+    }
+
+    // Inject resolved DB data for Navbar/Footer dynamic rendering
+    sanitizedConfig._dbCategories = JSON.parse(JSON.stringify(dbCategories));
+    sanitizedConfig._dbPages = JSON.parse(JSON.stringify(dbPages));
+    sanitizedConfig._dbBlogs = JSON.parse(JSON.stringify(dbBlogs));
+    sanitizedConfig._dbProducts = JSON.parse(JSON.stringify(dbProducts));
+
+  } catch (error) {
+    // dbConnect() itself failed — all data remains at defaults, app still renders
+    console.error("Layout DB connection failed:", error.message);
+  }
 
   return (
     <html lang="en">
       <head>
         <ScriptLoader location="head" />
-        {!isActuallyAdmin && <ThemeStyle />}
+        <ThemeStyle />
       </head>
       <body className={`${inter.variable} ${spaceGrotesk.variable} ${manrope.variable} font-sans antialiased`}>
         <ScriptLoader location="body_top" />
