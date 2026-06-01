@@ -12,7 +12,7 @@ function AdminGuard({ children }) {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/admin-login");
     } else if (status === "authenticated" && !session?.user?.isStaff) {
       router.push("/");
     }

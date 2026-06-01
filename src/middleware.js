@@ -6,16 +6,26 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
-    // 1. Basic Admin Area Protection
+    // 1. API Admin Protection
+    if (path.startsWith("/api/admin")) {
+        if (!token || !token?.isStaff) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        return NextResponse.next();
+    }
+
+    // 2. UI Admin Protection
     if (path.startsWith("/admin")) {
+        // If not logged in at all, send to admin login page
+        if (!token) {
+            return NextResponse.redirect(new URL("/admin-login?callbackUrl=" + encodeURIComponent(req.url), req.url));
+        }
         // Must be staff to access any /admin route
         if (!token?.isStaff) {
-            return NextResponse.redirect(new URL("/login?error=Unauthorized", req.url));
+            return NextResponse.redirect(new URL("/admin-login?error=Unauthorized", req.url));
         }
 
-        // 2. Module-Specific Protection (Optional high-level check)
-        // For more granular control, we use can() inside the pages/APIs.
-        // But we can block entire sections here if needed.
+        // 3. Module-Specific Protection (Optional high-level check)
         const permissions = token.role?.permissions || {};
         const isSuperAdmin = token.role?.slug === 'super-admin';
         
@@ -47,7 +57,7 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: () => true, // Let the middleware handle redirects manually based on route type (UI vs API)
     },
   }
 );

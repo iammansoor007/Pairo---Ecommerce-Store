@@ -87,7 +87,7 @@ export const authOptions = {
               await dbConnect();
               const staff = await Staff.findById(token.id).select('status');
               if (!staff || staff.status !== 'Active') {
-                  return null; // This will effectively sign the user out
+                  return {}; // Clear the token instead of returning null to avoid NextAuth session crash
               }
           } catch (e) {
               console.error("JWT Status Check Error:", e.message);
@@ -97,7 +97,7 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && token.id) {
         session.user.id = token.id;
         session.user.isStaff = token.isStaff;
         if (token.isStaff) {

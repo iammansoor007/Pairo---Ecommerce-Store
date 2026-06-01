@@ -77,6 +77,7 @@ export async function PUT(req, { params }) {
         const updated = await Page.findByIdAndUpdate(id, {
             ...body,
             template: existingTemplate, // Force template to be immutable
+            isSystem: existing.isSystem, // Force isSystem to be immutable
             updatedBy: session.user.id
         }, { returnDocument: 'after' });
 

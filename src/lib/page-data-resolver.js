@@ -4,7 +4,7 @@ import Blog from "@/models/Blog";
 
 export async function resolvePageSections(sections) {
   const resolvedSections = await Promise.all(sections.map(async (section) => {
-    const config = { ...section.config };
+    const config = { ...(section.config || {}) };
     
     try {
       // Resolve Product Grid Data

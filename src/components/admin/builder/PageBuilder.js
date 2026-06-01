@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { SECTION_SCHEMAS } from "@/lib/section-schemas";
+import { TEMPLATE_REGISTRY } from "@/lib/templates";
 import Link from "next/link";
 import MediaPickerModal from "@/components/admin/MediaPickerModal";
 import SectionRenderer from "@/components/common/SectionRenderer";
@@ -120,6 +121,7 @@ const SortableSection = ({
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
   const schema = SECTION_SCHEMAS[section.type] || { name: section.type, fields: [] };
+  const config = section.config || {};
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -160,10 +162,10 @@ const SortableSection = ({
       {isExpanded && (
         <div className="p-4 bg-white border-t border-[#f0f0f1]">
           <div className="grid grid-cols-1 gap-6">
-            {schema.fields.filter(field => field.dependsOn ? section.config[field.dependsOn] === field.visibleIf : true).map((field) => (
+            {schema.fields.filter(field => field.dependsOn ? config[field.dependsOn] === field.visibleIf : true).map((field) => (
               <div key={field.name} className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500">{field.label}</label>
-                {renderField(field, section.config[field.name], (val) => onUpdate(section.id, { [field.name]: val }), onOpenMediaPicker)}
+                {renderField(field, config[field.name], (val) => onUpdate(section.id, { [field.name]: val }), onOpenMediaPicker)}
               </div>
             ))}
           </div>
@@ -335,7 +337,7 @@ export default function PageBuilder({ initialPage }) {
   const updateSection = (id, newConfig, enabled) => {
     setPage(prev => ({
       ...prev,
-      sections: prev.sections.map(s => s.id === id ? { ...s, enabled: enabled !== undefined ? enabled : s.enabled, config: newConfig ? { ...s.config, ...newConfig } : s.config } : s)
+      sections: prev.sections.map(s => s.id === id ? { ...s, enabled: enabled !== undefined ? enabled : s.enabled, config: newConfig ? { ...(s.config || {}), ...newConfig } : (s.config || {}) } : s)
     }));
   };
 
@@ -435,7 +437,12 @@ export default function PageBuilder({ initialPage }) {
                    <div className="bg-white border border-[#ccd0d4] p-4 rounded-sm shadow-sm">
                       <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4 border-b border-gray-100 pb-2">Add Content Module</h4>
                       <div className="grid grid-cols-2 gap-2">
-                         {Object.entries(SECTION_SCHEMAS).map(([type, s]) => (
+                         {Object.entries(SECTION_SCHEMAS)
+                           .filter(([type]) => {
+                             const templateConfig = TEMPLATE_REGISTRY[page.template || "default"];
+                             return !templateConfig || !templateConfig.allowedSections || templateConfig.allowedSections.includes(type);
+                           })
+                           .map(([type, s]) => (
                             <button key={type} onClick={() => addSection(type)} className="text-left px-3 py-2.5 bg-[#f6f7f7] border border-[#ccd0d4] text-[10px] font-bold uppercase tracking-wider hover:bg-white hover:border-[#2271b1] hover:text-[#2271b1] transition-all rounded-sm flex items-center gap-2"><Plus className="w-3 h-3" /> {s.name}</button>
                          ))}
                       </div>

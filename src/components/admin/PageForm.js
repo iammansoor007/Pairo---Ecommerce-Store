@@ -133,6 +133,7 @@ const SectionMetaBox = ({
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
   const schema = SECTION_SCHEMAS[section.type] || { name: section.type, fields: [] };
+  const config = section.config || {};
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -172,10 +173,10 @@ const SectionMetaBox = ({
 
       {isExpanded && (
         <div className="p-5 bg-white space-y-6">
-          {schema.fields.filter(field => field.dependsOn ? section.config[field.dependsOn] === field.visibleIf : true).map((field) => (
+          {schema.fields.filter(field => field.dependsOn ? config[field.dependsOn] === field.visibleIf : true).map((field) => (
             <div key={field.name} className="space-y-1.5">
               <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400">{field.label}</label>
-              {renderField(field, section.config[field.name], (val) => onUpdate(section.id, { [field.name]: val }), onOpenMediaPicker)}
+              {renderField(field, config[field.name], (val) => onUpdate(section.id, { [field.name]: val }), onOpenMediaPicker)}
             </div>
           ))}
           <div className="pt-3 border-t border-gray-100 flex justify-between items-center opacity-30 text-[9px] font-mono">
@@ -206,21 +207,65 @@ export default function PageForm({ pageId }) {
    useEffect(() => {
       const fetchData = async () => {
          try {
-            const [pageRes, catsRes, prodsRes, blogsRes] = await Promise.all([
-               fetch(`/api/admin/pages/${pageId}`),
+            const promises = [
                fetch("/api/admin/categories"),
                fetch("/api/admin/products"),
                fetch("/api/admin/blogs")
-            ]);
+            ];
+            if (pageId && pageId !== "new") {
+               promises.unshift(fetch(`/api/admin/pages/${pageId}`));
+            }
 
-            const [pData, cats, prods, blogs] = await Promise.all([
-               pageRes.json(),
+            const results = await Promise.all(promises);
+
+            let pageData = null;
+            let catsRes, prodsRes, blogsRes;
+
+            if (pageId && pageId !== "new") {
+               const [pageRes, catsFetch, prodsFetch, blogsFetch] = results;
+               pageData = await pageRes.json();
+               catsRes = catsFetch;
+               prodsRes = prodsFetch;
+               blogsRes = blogsFetch;
+            } else {
+               const [catsFetch, prodsFetch, blogsFetch] = results;
+               catsRes = catsFetch;
+               prodsRes = prodsFetch;
+               blogsRes = blogsFetch;
+               pageData = {
+                  title: "",
+                  slug: "",
+                  description: "",
+                  status: "Draft",
+                  template: "default",
+                  sections: [],
+                  seo: {
+                     title: "",
+                     description: "",
+                     keywords: [],
+                     focusKeyword: "",
+                     secondaryKeywords: "",
+                     canonicalUrl: "",
+                     noIndex: false,
+                     noFollow: false,
+                     ogTitle: "",
+                     ogDescription: "",
+                     ogImage: "",
+                     twitterTitle: "",
+                     twitterDescription: "",
+                     twitterImage: "",
+                     structuredData: ""
+                  }
+               };
+            }
+
+            const [cats, prods, blogs] = await Promise.all([
                catsRes.json(),
                prodsRes.json(),
                blogsRes.json()
             ]);
 
-            setPage(pData);
+            setPage(pageData);
             setDynamicOptions({
                categories: Array.isArray(cats) ? cats.filter(c => c.status === 'Published').map(c => ({ label: c.name, value: c.slug })) : [],
                products: Array.isArray(prods) ? prods.map(p => ({ label: p.name, value: p.slug || p._id })) : [],
@@ -243,14 +288,20 @@ export default function PageForm({ pageId }) {
          // Strip immutable Mongoose fields that cause _id update errors
          const { _id, __v, createdAt, updatedAt, ...cleanPage } = page;
          console.log("[PageForm] Saving page seo:", cleanPage.seo);
-         const res = await fetch(`/api/admin/pages/${pageId}`, {
-            method: "PUT",
+         
+         const isNew = pageId === "new" || !_id;
+         const url = isNew ? "/api/admin/pages" : `/api/admin/pages/${pageId}`;
+         const method = isNew ? "POST" : "PUT";
+
+         const res = await fetch(url, {
+            method: method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(cleanPage)
          });
          if (res.ok) {
-            toast.success("Page updated successfully");
-            router.push("/admin/pages");
+            const savedData = await res.json();
+            toast.success(isNew ? "Page created successfully" : "Page updated successfully");
+            router.push(isNew ? `/admin/pages/${savedData._id}` : "/admin/pages");
          } else {
             const errData = await res.json().catch(() => ({}));
             toast.error(`Save failed: ${errData.error || res.statusText || "Unknown error"}`);
@@ -261,6 +312,31 @@ export default function PageForm({ pageId }) {
          console.error(err);
       } finally {
          setSaving(false);
+      }
+   };
+
+   const handleDelete = async () => {
+      if (page.isSystem) {
+         toast.error("System pages cannot be deleted");
+         return;
+      }
+      if (!confirm("Are you sure you want to delete this page? This action cannot be undone.")) {
+         return;
+      }
+      try {
+         const res = await fetch(`/api/admin/pages/${pageId}`, {
+            method: "DELETE"
+         });
+         if (res.ok) {
+            toast.success("Page deleted successfully");
+            router.push("/admin/pages");
+         } else {
+            const errData = await res.json().catch(() => ({}));
+            toast.error(`Delete failed: ${errData.error || res.statusText || "Unknown error"}`);
+         }
+      } catch (err) {
+         toast.error(`Failed to delete page: ${err.message}`);
+         console.error(err);
       }
    };
 
@@ -343,7 +419,7 @@ export default function PageForm({ pageId }) {
    const updateSection = (id, newConfig, enabled) => {
       setPage(prev => ({
          ...prev,
-         sections: prev.sections.map(s => s.id === id ? { ...s, enabled: enabled !== undefined ? enabled : s.enabled, config: newConfig ? { ...s.config, ...newConfig } : s.config } : s)
+         sections: prev.sections.map(s => s.id === id ? { ...s, enabled: enabled !== undefined ? enabled : s.enabled, config: newConfig ? { ...(s.config || {}), ...newConfig } : (s.config || {}) } : s)
       }));
    };
 
@@ -414,12 +490,54 @@ export default function PageForm({ pageId }) {
                         placeholder="Enter title here"
                         className="w-full border border-[#c3c4c7] outline-none px-3 py-2 text-[20px] bg-white shadow-inner font-semibold post-title-input"
                         value={page.title}
-                        onChange={(e) => setPage({ ...page, title: e.target.value })}
+                        onChange={(e) => {
+                           const val = e.target.value;
+                           if (pageId === "new") {
+                              const slug = val
+                                 .toLowerCase()
+                                 .replace(/[^a-z0-9]+/g, '-')
+                                 .replace(/(^-|-$)/g, '');
+                              setPage(prev => ({ ...prev, title: val, slug }));
+                           } else {
+                              setPage(prev => ({ ...prev, title: val }));
+                           }
+                        }}
                      />
                      {page.isSystem && <span className="bg-amber-100 text-amber-700 text-[9px] font-black uppercase px-2 py-1 rounded">System Page</span>}
-                     <span className="bg-blue-50 text-blue-700 text-[9px] font-black uppercase px-2 py-1 rounded select-none border border-blue-200">
-                        Template: {TEMPLATE_REGISTRY[page.template || "default"]?.name || page.template || "Default"}
-                     </span>
+                     {pageId === "new" ? (
+                        <div className="flex items-center gap-1.5 shrink-0 bg-white border border-[#c3c4c7] px-2 py-1 rounded-[3px]">
+                           <span className="text-[11px] font-bold text-gray-500 uppercase tracking-tight">Template:</span>
+                           <select 
+                              value={page.template || "default"}
+                              onChange={(e) => {
+                                 const nextTemplate = e.target.value;
+                                 const templateConfig = TEMPLATE_REGISTRY[nextTemplate] || TEMPLATE_REGISTRY.default;
+                                 const defaultSecs = templateConfig.defaultSections ? templateConfig.defaultSections.map((s, i) => ({
+                                    id: generateId(),
+                                    type: s.type,
+                                    enabled: true,
+                                    order: i,
+                                    config: s.config || {}
+                                 })) : [];
+                                 setPage(prev => ({
+                                    ...prev,
+                                    template: nextTemplate,
+                                    sections: defaultSecs
+                                 }));
+                              }}
+                              className="text-[11px] font-bold text-[#2271b1] bg-transparent outline-none cursor-pointer border-none p-0 focus:ring-0"
+                           >
+                              <option value="default">Default Template</option>
+                              <option value="home">Homepage Template</option>
+                              <option value="about">About Page Template</option>
+                              <option value="contact">Contact Page Template</option>
+                           </select>
+                        </div>
+                     ) : (
+                        <span className="bg-blue-50 text-blue-700 text-[9px] font-black uppercase px-2 py-1 rounded select-none border border-blue-200">
+                           Template: {TEMPLATE_REGISTRY[page.template || "default"]?.name || page.template || "Default"}
+                        </span>
+                     )}
                   </div>
                   <div className="text-[12px] text-gray-500 px-1 mt-1 flex items-center gap-1">
                      Permalink: <span className="text-gray-400">pairo.store/</span>
@@ -554,7 +672,11 @@ export default function PageForm({ pageId }) {
                      </div>
                      <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] -mx-3 -mb-3 p-3 flex justify-between items-center">
                         <div>
-                           {!page.isSystem && <button type="button" className="text-red-600 underline">Delete Page</button>}
+                           {!page.isSystem && pageId !== "new" && (
+                              <button type="button" onClick={handleDelete} className="text-[#d63638] underline hover:text-red-800 transition-colors">
+                                 Delete Page
+                              </button>
+                           )}
                         </div>
                         <button type="submit" disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96]">
                            {saving ? "Saving..." : "Update"}
