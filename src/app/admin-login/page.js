@@ -29,6 +29,8 @@ export default function AdminLoginPage() {
       if (res.error) {
         setError("Invalid credentials. Please check your admin access.");
       } else {
+        const { getSession } = await import("next-auth/react");
+        await getSession(); // Syncs the NextAuth client state
         router.push("/admin");
       }
     } catch (err) {

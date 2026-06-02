@@ -16,12 +16,17 @@ export default withAuth(
 
     // 2. UI Admin Protection
     if (path.startsWith("/admin")) {
+        console.log(`[Middleware] Accessing ${path}`);
+        console.log(`[Middleware] Token:`, token);
+        
         // If not logged in at all, send to admin login page
         if (!token) {
+            console.log(`[Middleware] No token found, redirecting to /admin-login`);
             return NextResponse.redirect(new URL("/admin-login?callbackUrl=" + encodeURIComponent(req.url), req.url));
         }
         // Must be staff to access any /admin route
         if (!token?.isStaff) {
+            console.log(`[Middleware] Token found but isStaff is false, redirecting to /admin-login`);
             return NextResponse.redirect(new URL("/admin-login?error=Unauthorized", req.url));
         }
 
@@ -56,6 +61,7 @@ export default withAuth(
     return NextResponse.next();
   },
   {
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       authorized: () => true, // Let the middleware handle redirects manually based on route type (UI vs API)
     },

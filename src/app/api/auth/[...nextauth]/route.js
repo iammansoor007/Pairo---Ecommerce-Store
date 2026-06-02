@@ -86,7 +86,9 @@ export const authOptions = {
           try {
               await dbConnect();
               const staff = await Staff.findById(token.id).select('status');
+              console.log("[NextAuth] Re-verifying staff:", token.id, "Found:", !!staff, "Status:", staff?.status);
               if (!staff || staff.status !== 'Active') {
+                  console.log("[NextAuth] Clearing token because staff is missing or inactive!");
                   return {}; // Clear the token instead of returning null to avoid NextAuth session crash
               }
           } catch (e) {
@@ -94,6 +96,7 @@ export const authOptions = {
           }
       }
 
+      console.log("[NextAuth] Final JWT token:", JSON.stringify(token));
       return token;
     },
     async session({ session, token }) {
