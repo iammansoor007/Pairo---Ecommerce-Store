@@ -286,8 +286,8 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-3 py-4 align-top text-[#646970] font-mono">{p.sku || "—"}</td>
                     <td className="px-3 py-4 align-top text-center">
-                       <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${p.stock > 0 ? "text-green-700" : "text-red-700"}`}>
-                          {p.stock > 0 ? `In stock (${p.stock})` : "Out of stock"}
+                       <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${!p.manageStock || p.stock > 0 ? "text-green-700" : "text-red-700"}`}>
+                          {!p.manageStock ? "In stock (Untracked)" : p.stock > 0 ? `In stock (${p.stock})` : "Out of stock"}
                        </span>
                     </td>
                     <td className="px-3 py-4 align-top font-bold">${p.price?.toFixed(2)}</td>

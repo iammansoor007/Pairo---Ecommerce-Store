@@ -95,7 +95,7 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
       });
       
       if (res.ok) {
-        router.push(type === 'product' ? '/admin/products/categories' : '/admin/blogs/categories');
+        router.push(type === 'product' ? '/admin/categories' : '/admin/blogs/categories');
       } else {
         const data = await res.json();
         alert("Error saving category: " + (data.error || "Unknown error"));
@@ -114,7 +114,7 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
   );
 
   const breadcrumbs = type === "product"
-    ? [{ label: "WooCommerce", href: "/admin/orders" }, { label: "Categories", href: "/admin/products/categories" }, { label: categoryId ? "Edit" : "New" }]
+    ? [{ label: "WooCommerce", href: "/admin/orders" }, { label: "Categories", href: "/admin/categories" }, { label: categoryId ? "Edit" : "New" }]
     : [{ label: "Blog", href: "/admin/blogs" }, { label: "Categories", href: "/admin/blogs/categories" }, { label: categoryId ? "Edit" : "New" }];
 
   if (loading) return <div className="p-10 text-[13px] font-medium text-gray-500 bg-[#f0f2f1] min-h-screen">Loading editor...</div>;
@@ -238,7 +238,7 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
                      </label>
                   </div>
                   <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] -mx-3 -mb-3 p-3 flex justify-between items-center">
-                     <button type="button" onClick={() => router.push(type === 'product' ? '/admin/products/categories' : '/admin/blogs/categories')} className="text-red-600 hover:underline">Cancel</button>
+                     <button type="button" onClick={() => router.push(type === 'product' ? '/admin/categories' : '/admin/blogs/categories')} className="text-red-600 hover:underline">Cancel</button>
                      <button type="submit" disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96]">
                         {saving ? "Saving..." : (categoryId ? "Update" : "Publish")}
                      </button>
