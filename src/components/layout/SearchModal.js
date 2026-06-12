@@ -6,13 +6,17 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Search, ArrowRight, TrendingUp } from "lucide-react";
 import siteData from "@/lib/data.json";
+import { useSiteData } from "@/context/SiteContext";
 
 export default function SearchModal({ isOpen, onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [dbProducts, setDbProducts] = useState([]);
   const [results, setResults] = useState({ products: [], categories: [] });
   const inputRef = useRef(null);
 
-  const { products, categories, search } = siteData;
+  const siteContextData = useSiteData();
+  const dbCategories = siteContextData?._dbCategories || [];
+  const { search } = siteData;
 
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -32,19 +36,33 @@ export default function SearchModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
+  // Fetch live products when modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      fetch("/api/products")
+        .then((res) => res.json())
+        .then((data) => {
+          const flatProducts = data.all 
+            ? data.all 
+            : (data.newArrivals ? [...data.newArrivals, ...data.topSelling] : data);
+          setDbProducts(flatProducts || []);
+        })
+        .catch((err) => console.error("Search modal products fetch failed:", err));
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const runSearch = () => {
       if (searchQuery.trim().length > 1) {
         const query = searchQuery.toLowerCase();
-        const allProducts = [...products.newArrivals, ...products.topSelling];
-        const filteredProducts = allProducts.filter(p => 
-          p.name.toLowerCase().includes(query) || 
-          p.category.toLowerCase().includes(query)
+        const filteredProducts = dbProducts.filter(p => 
+          p.name?.toLowerCase().includes(query) || 
+          p.category?.toLowerCase().includes(query)
         ).slice(0, 8);
 
-        const filteredCategories = categories.items.filter(c => 
-          c.name.toLowerCase().includes(query) || 
-          c.slug.toLowerCase().includes(query)
+        const filteredCategories = dbCategories.filter(c => 
+          c.name?.toLowerCase().includes(query) || 
+          c.slug?.toLowerCase().includes(query)
         ).slice(0, 4);
 
         setResults({ products: filteredProducts, categories: filteredCategories });
@@ -57,7 +75,7 @@ export default function SearchModal({ isOpen, onClose }) {
       }
     };
     Promise.resolve().then(runSearch);
-  }, [searchQuery, products, categories]);
+  }, [searchQuery, dbProducts, dbCategories]);
 
   return (
     <AnimatePresence>
@@ -121,7 +139,7 @@ export default function SearchModal({ isOpen, onClose }) {
                             >
                               <div className="flex items-center gap-3 md:gap-4">
                                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-black/5 border border-black/5 flex-shrink-0">
-                                   <Image src={cat.image} alt={cat.name} width={40} height={40} className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                   <Image src={cat.image || "/placeholder.jpg"} alt={cat.name} width={40} height={40} className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <span className="text-[11px] md:text-xs font-bold uppercase tracking-widest group-hover:text-black/60 transition-colors">{cat.name} Collection</span>
                               </div>
@@ -159,13 +177,13 @@ export default function SearchModal({ isOpen, onClose }) {
                       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         {results.products.map((product) => (
                           <Link
-                            key={product.id}
-                            href={`/product/${product.id}`}
+                            key={product._id || product.id}
+                            href={`/product/${product.slug || product.id || product._id}`}
                             onClick={onClose}
                             className="group"
                           >
                             <div className="relative aspect-[3/4] rounded-xl md:rounded-2xl overflow-hidden bg-black/5 mb-3 md:mb-4">
-                              <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                              <Image src={product.image || "/placeholder.jpg"} alt={product.name} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                             </div>
                             <div className="space-y-0.5 md:space-y-1">
                                <p className="text-[7px] md:text-[8px] font-bold text-black/30 uppercase tracking-widest">{product.category}</p>
@@ -183,7 +201,7 @@ export default function SearchModal({ isOpen, onClose }) {
                   </div>
                 </div>
               ) : (
-                /* Static State */
+                /* Dynamic State */
                 <div 
                   onClick={(e) => e.stopPropagation()}
                   className="max-w-5xl mx-auto py-4 md:py-10"
@@ -192,7 +210,7 @@ export default function SearchModal({ isOpen, onClose }) {
                       <div className="space-y-6 md:space-y-8">
                         <h4 className="text-[8px] md:text-[10px] font-bold text-black/30 uppercase tracking-[0.4em]">{search.popularCategories}</h4>
                         <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-6">
-                            {categories.items.map((cat) => (
+                            {dbCategories.map((cat) => (
                               <Link key={cat.slug} href={`/shop?category=${cat.slug}`} onClick={onClose} className="group block text-lg md:text-2xl font-bold heading-font uppercase tracking-tighter hover:text-black/40 transition-colors">
                                 {cat.name}
                               </Link>
@@ -202,16 +220,25 @@ export default function SearchModal({ isOpen, onClose }) {
                       
                       <div className="md:col-span-2">
                         <h4 className="text-[8px] md:text-[10px] font-bold text-black/30 uppercase tracking-[0.4em] mb-6 md:mb-8">{search.featuredCollection}</h4>
-                        <Link href="/shop" onClick={onClose} className="group relative aspect-[16/9] md:aspect-[16/7] block rounded-2xl md:rounded-3xl overflow-hidden bg-black/5">
-                            <Image src={categories.items[1].image} alt="Featured" fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover group-hover:scale-105 transition-transform duration-1000" />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex flex-col justify-end p-6 md:p-8">
-                               <h3 className="text-xl md:text-2xl font-bold text-white uppercase tracking-tighter heading-font">{search.featuredTitle}</h3>
-                               <div className="flex items-center gap-2 text-white/60 group-hover:text-white transition-colors mt-2">
-                                  <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{search.shopCollection}</span>
-                                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
-                                </div>
-                            </div>
-                        </Link>
+                        {dbCategories.length > 0 ? (
+                          (() => {
+                            const featuredCat = dbCategories[1] || dbCategories[0];
+                            return (
+                              <Link href={`/shop?category=${featuredCat.slug}`} onClick={onClose} className="group relative aspect-[16/9] md:aspect-[16/7] block rounded-2xl md:rounded-3xl overflow-hidden bg-black/5">
+                                  <Image src={featuredCat.image || "/placeholder.jpg"} alt={featuredCat.name} fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover group-hover:scale-105 transition-transform duration-1000" />
+                                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex flex-col justify-end p-6 md:p-8">
+                                     <h3 className="text-xl md:text-2xl font-bold text-white uppercase tracking-tighter heading-font">{featuredCat.name} Collection</h3>
+                                     <div className="flex items-center gap-2 text-white/60 group-hover:text-white transition-colors mt-2">
+                                        <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest">{search.shopCollection}</span>
+                                        <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                                      </div>
+                                  </div>
+                              </Link>
+                            );
+                          })()
+                        ) : (
+                          <div className="aspect-[16/9] md:aspect-[16/7] rounded-3xl border border-dashed border-black/10 flex items-center justify-center text-black/20 font-bold uppercase tracking-widest text-[10px]">No collection available</div>
+                        )}
                       </div>
                   </div>
                 </div>
