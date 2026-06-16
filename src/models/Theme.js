@@ -19,7 +19,7 @@ const ThemeSchema = new mongoose.Schema({
       card: { type: String, default: "#FFFFFF" }
     },
     typography: {
-      headingFont: { type: String, default: "Inter" },
+      headingFont: { type: String, default: "Poppins" },
       bodyFont: { type: String, default: "Inter" },
       headingWeight: { type: String, default: "700" },
       bodyWeight: { type: String, default: "400" },
