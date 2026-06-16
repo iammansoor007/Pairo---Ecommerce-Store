@@ -76,46 +76,42 @@ export default function ProductMainSection({ product }) {
       <div className="lg:col-span-6 space-y-8 md:space-y-12">
         <div className="space-y-4 md:space-y-6">
           <div className="space-y-2">
-            <p className="text-[9px] md:text-[10px] font-bold text-black/20 uppercase tracking-[0.3em]">
+            <p className="text-[9px] md:text-[10px] font-medium text-[#6F655B]/60 uppercase tracking-[0.25em]">
               Pairo Studio — {categoryName}
             </p>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font uppercase tracking-tight leading-[1.05] text-black">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium heading-font tracking-tight leading-[1.2] text-[#1E1B19]">
               {product.name}
             </h1>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(product.rating || 5) ? 'fill-[#FFC633] text-[#FFC633]' : 'fill-black/5 text-black/5'}`} />
-              ))}
-            </div>
-            <span className="text-[10px] font-bold text-black/30 uppercase tracking-widest pl-4 border-l border-black/10">
-              {product.rating || 5}/5 Ratings
-            </span>
+          <div className="flex items-center gap-2 text-[11px] font-normal text-[#6F655B]">
+            <Star className="w-3.5 h-3.5 fill-[#FFC633] text-[#FFC633]" />
+            <span>{(product.rating || 5).toFixed(1)}/5.0</span>
+            <span className="text-black/10">•</span>
+            <span>({product.reviewsCount || 45} Reviews)</span>
           </div>
 
-          <div className="flex items-baseline gap-4">
-            <span className="text-3xl md:text-4xl font-bold heading-font tracking-tighter text-black">${displayPrice}</span>
+          <div className="flex items-center flex-wrap gap-3.5">
+            <span className="text-2xl md:text-2xl font-semibold tracking-tight text-[#1E1B19]">${displayPrice}</span>
             {displayCompareAtPrice > displayPrice && (
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold text-black/10 line-through">${displayCompareAtPrice}</span>
-                <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest bg-red-50 px-2.5 py-1 rounded-full">
-                  -{Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}% OFF
+              <>
+                <span className="text-sm md:text-base font-medium text-[#6F655B]/40 line-through">${displayCompareAtPrice}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#B91C1C] bg-[#FDF2F2] border border-[#FDE8E8] px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                  Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
                 </span>
-              </div>
+              </>
             )}
             {displaySku && (
-              <span className="text-[9px] font-bold text-black/15 uppercase tracking-[0.2em] ml-auto">SKU: {displaySku}</span>
+              <span className="text-[9px] font-normal text-black/30 uppercase tracking-[0.15em] ml-auto">SKU: {displaySku}</span>
             )}
           </div>
         </div>
 
         {product.shortDescription && (
           <div className="relative">
-             <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-black/5 rounded-full" />
-             <p className="text-black/60 text-sm md:text-base leading-relaxed font-medium italic pl-6 py-1">
-               {product.shortDescription}
+             <div className="absolute left-0 top-0 bottom-0 w-[1.5px] bg-[#E3DACB]" />
+             <p className="text-[#6F655B] text-sm md:text-base leading-relaxed font-normal italic pl-6 py-0.5">
+                {product.shortDescription}
              </p>
           </div>
         )}
@@ -128,17 +124,17 @@ export default function ProductMainSection({ product }) {
 
         {/* Stats Block - CMS Driven */}
         {product.stats && product.stats.length > 0 && (
-          <div className="grid grid-cols-2 gap-6 pt-10 border-t border-black/5">
+          <div className="grid grid-cols-2 gap-6 pt-8 border-t border-black/5">
             {product.stats.map((stat, i) => {
               const Icon = ICON_MAP[stat.icon] || Info;
               return (
-                <div key={i} className="flex items-start gap-4 group">
-                  <div className="p-3 bg-[#F9F9F9] rounded-2xl group-hover:bg-black transition-colors duration-300">
-                    <Icon className="w-4 h-4 text-black/40 group-hover:text-white transition-colors" />
+                <div key={i} className="flex items-center gap-3 group">
+                  <div className="p-2.5 bg-white border border-[#E3DACB]/60 rounded-[var(--radius,0px)] transition-colors duration-300 group-hover:bg-[#1E1B19] group-hover:border-[#1E1B19]">
+                    <Icon className="w-3.5 h-3.5 text-[#6F655B] group-hover:text-white transition-colors" />
                   </div>
                   <div className="space-y-0.5">
-                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-black/30">{stat.label}</p>
-                    <p className="text-[11px] font-bold text-black uppercase tracking-wider">{stat.value}</p>
+                    <p className="text-[8px] font-normal uppercase tracking-[0.15em] text-[#6F655B]/60">{stat.label}</p>
+                    <p className="text-[11px] font-normal text-black uppercase tracking-wider">{stat.value}</p>
                   </div>
                 </div>
               );
@@ -148,26 +144,26 @@ export default function ProductMainSection({ product }) {
 
         {/* FAQ Summary Section */}
         {product.faqs && product.faqs.length > 0 && (
-          <div className="pt-10 border-t border-black/5 space-y-6">
+          <div className="pt-8 border-t border-black/5 space-y-4">
             <div className="flex items-center justify-between">
-               <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/30">Frequent Inquiries</h3>
-               <div className="flex items-center gap-2 text-[9px] font-bold text-black/40 uppercase tracking-widest">
-                  <MessageSquare className="w-3 h-3" /> {product.faqs.length} Total
+               <h3 className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#6F655B]/60">Frequent Inquiries</h3>
+               <div className="flex items-center gap-2 text-[9px] font-medium text-black/40 uppercase tracking-widest">
+                  <MessageSquare className="w-3 h-3 text-[#6F655B]/60" /> {product.faqs.length} Total
                </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {product.faqs.slice(0, 2).map((faq, i) => (
-                <div key={i} className="p-5 bg-white border border-black/5 rounded-2xl flex gap-4 hover:border-black/20 transition-all cursor-pointer group shadow-sm">
-                  <div className="shrink-0 w-8 h-8 rounded-full bg-black/5 flex items-center justify-center group-hover:bg-black transition-colors">
-                     <HelpCircle className="w-3.5 h-3.5 text-black/20 group-hover:text-white transition-colors" />
+                <div key={i} className="p-4 bg-white border border-[#E3DACB] rounded-[var(--radius,0px)] flex gap-3.5 hover:border-[#1E1B19]/30 transition-all cursor-pointer group">
+                  <div className="shrink-0 w-7 h-7 bg-white border border-[#E3DACB]/60 rounded-[var(--radius,0px)] flex items-center justify-center group-hover:bg-[#1E1B19] transition-colors">
+                     <HelpCircle className="w-3.5 h-3.5 text-[#6F655B] group-hover:text-white transition-colors" />
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-[11px] font-bold text-black tracking-tight">{faq.question}</p>
-                    <p className="text-[11px] text-black/40 leading-relaxed line-clamp-1">{faq.answer}</p>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-normal text-black tracking-tight">{faq.question}</p>
+                    <p className="text-[11px] text-[#6F655B] leading-relaxed line-clamp-1 font-light">{faq.answer}</p>
                   </div>
                 </div>
               ))}
-              <p className="text-center text-[9px] font-bold text-black/30 uppercase tracking-[0.2em] pt-2">
+              <p className="text-center text-[9px] font-normal text-black/40 uppercase tracking-[0.15em] pt-1.5">
                 View detailed FAQs below
               </p>
             </div>

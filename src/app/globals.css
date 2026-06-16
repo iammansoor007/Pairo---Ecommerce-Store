@@ -29,7 +29,7 @@
   color-scheme: light;
   
   /* --- BRAND PALETTE DEFAULT FALLBACK (Admin & Initial Load) --- */
-  --brand-font: var(--font-space), sans-serif;
+  --brand-font: var(--font-poppins), sans-serif;
   --body-font: var(--font-inter), sans-serif;
   
   --background: #FFFFFF; 

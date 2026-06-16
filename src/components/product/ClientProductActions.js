@@ -116,11 +116,11 @@ export default function ClientProductActions({ product, onVariantChange }) {
         return (
           <div key={attr.name} className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <p className="text-[9px] font-bold text-black/30 uppercase tracking-[0.25em]">
+              <p className="text-[9px] font-medium text-[#6F655B]/60 uppercase tracking-[0.25em]">
                 {attr.name}
               </p>
               {selectedOptions[attr.name] && (
-                <span className="text-[10px] font-bold text-black/60 uppercase tracking-wider">
+                <span className="text-[10px] font-medium text-[#1E1B19] uppercase tracking-wider">
                   {selectedOptions[attr.name]}
                 </span>
               )}
@@ -139,8 +139,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
                       title={option.label}
                       className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${
                         isSelected
-                          ? "ring-2 ring-offset-2 ring-black scale-105 shadow-lg"
-                          : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
+                          ? "ring-1 ring-offset-2 ring-[#1E1B19] scale-105"
+                          : "ring-1 ring-black/10 hover:ring-[#1E1B19]/30 hover:scale-105"
                       }`}
                       style={{
                         backgroundColor: option.hex || "#ddd",
@@ -172,10 +172,10 @@ export default function ClientProductActions({ product, onVariantChange }) {
                     key={option.label}
                     type="button"
                     onClick={() => handleOptionSelect(attr.name, option)}
-                    className={`h-10 px-5 rounded-lg text-[10px] font-bold uppercase tracking-[0.15em] transition-all duration-200 border-2 ${
+                    className={`h-10 px-5 rounded-[var(--radius,0px)] text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-200 border ${
                       isSelected
-                        ? "bg-black text-white border-black shadow-md"
-                        : "bg-[#F9F9F9] text-black/40 border-transparent hover:border-black/10 hover:text-black"
+                        ? "bg-[#1E1B19] text-white border-[#1E1B19]"
+                        : "bg-transparent text-[#6F655B] border-[#E3DACB] hover:border-[#1E1B19] hover:text-[#1E1B19]"
                     }`}
                   >
                     {option.label}
@@ -193,8 +193,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
           if (!product.manageStock) {
             return (
               <>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">In Stock</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                <span className="text-[9px] font-medium uppercase tracking-wider text-emerald-700">In Stock</span>
               </>
             );
           }
@@ -203,22 +203,22 @@ export default function ClientProductActions({ product, onVariantChange }) {
           if (stockNum <= 0) {
             return (
               <>
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                <span className="text-[9px] font-bold uppercase tracking-widest text-red-500">Out of Stock</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
+                <span className="text-[9px] font-medium uppercase tracking-wider text-red-750">Out of Stock</span>
               </>
             );
           } else if (stockNum <= lowThreshold) {
             return (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span className="text-[9px] font-bold uppercase tracking-widest text-amber-600">Low Stock — {stockNum} units remaining</span>
+                <span className="text-[9px] font-medium uppercase tracking-wider text-amber-700">Low Stock — {stockNum} units remaining</span>
               </>
             );
           } else {
             return (
               <>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">In Stock — {stockNum} units</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                <span className="text-[9px] font-medium uppercase tracking-wider text-emerald-700">In Stock — {stockNum} units</span>
               </>
             );
           }
@@ -228,17 +228,17 @@ export default function ClientProductActions({ product, onVariantChange }) {
       {/* Quantity + ATC */}
       <div className="space-y-3">
         <div className="flex gap-3">
-          <div className="flex items-center bg-[#F9F9F9] rounded-xl border border-black/[0.04] px-4 gap-4 h-12 shadow-sm shrink-0">
+          <div className="flex items-center bg-transparent rounded-[var(--radius,0px)] border border-[#E3DACB] px-4 gap-4 h-12 shrink-0">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="text-black/20 hover:text-black transition-colors"
+              className="text-[#6F655B]/40 hover:text-[#1E1B19] transition-colors"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="font-bold text-base w-5 text-center">{quantity}</span>
+            <span className="font-medium text-sm w-5 text-center text-[#1E1B19]">{quantity}</span>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="text-black/20 hover:text-black transition-colors"
+              className="text-[#6F655B]/40 hover:text-[#1E1B19] transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -246,10 +246,10 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
           <button
             onClick={handleAddToCart}
-            className={`flex-1 h-12 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] shadow-xl ${
+            className={`flex-1 h-12 rounded-[var(--radius,0px)] font-medium uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] ${
               addedFeedback
-                ? "bg-emerald-500 text-white shadow-emerald-500/30"
-                : "bg-black text-white hover:bg-black/90 shadow-black/20"
+                ? "bg-emerald-600 text-white"
+                : "bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90"
             }`}
           >
             {addedFeedback ? (
@@ -268,7 +268,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
         <button
           onClick={handleSecureCheckout}
-          className="w-full h-12 border-2 border-black rounded-xl text-black font-bold uppercase tracking-[0.25em] text-[10px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
+          className="w-full h-12 border border-[#1E1B19] rounded-[var(--radius,0px)] text-[#1E1B19] font-medium uppercase tracking-[0.25em] text-[10px] hover:bg-[#1E1B19] hover:text-white transition-all duration-200 active:scale-[0.98]"
         >
           Secure Checkout
         </button>

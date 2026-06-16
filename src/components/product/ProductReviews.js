@@ -33,15 +33,13 @@ const getInitials = (name) => {
 
 // Helper to generate color theme based on name hashing
 const getAvatarColor = (name) => {
-  if (!name) return "bg-neutral-100 text-neutral-400";
+  if (!name) return "bg-[#FAF7F0] text-[#6F655B]/60 border-[#E3DACB]";
   const colors = [
-    "bg-red-50 text-red-700 border-red-200",
-    "bg-blue-50 text-blue-700 border-blue-200",
-    "bg-green-50 text-green-700 border-green-200",
-    "bg-amber-50 text-amber-700 border-amber-200",
-    "bg-purple-50 text-purple-700 border-purple-200",
-    "bg-pink-50 text-pink-700 border-pink-200",
-    "bg-indigo-50 text-indigo-700 border-indigo-200"
+    "bg-[#FAF7F0] text-[#1E1B19] border-[#E3DACB]",
+    "bg-[#F2EBDD] text-[#1E1B19] border-[#C7B9A1]",
+    "bg-[#FAF7F0] text-[#6F655B] border-[#E3DACB]/50",
+    "bg-[#F5EFE6] text-[#43302A] border-[#C7B9A1]/40",
+    "bg-[#EAE3D2] text-[#1E1B19] border-[#C7B9A1]/60"
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -365,29 +363,29 @@ export default function ProductReviews({ productId, productName }) {
   const totalStarVotes = Object.values(stats.ratingBreakdown || {}).reduce((a, b) => a + b, 0);
 
   return (
-    <div className="w-full bg-white border border-black/5 rounded-3xl p-6 md:p-10 font-sans">
+    <div className="w-full bg-white border border-[#E3DACB] rounded-[var(--radius,0px)] p-6 md:p-10 font-sans">
       <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center justify-between border-b border-black/5 pb-8 mb-8">
         <div>
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight uppercase heading-font text-black mb-1">
+          <h2 className="text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
             Ratings & Reviews
           </h2>
-          <p className="text-xs text-black/40 uppercase tracking-widest font-semibold">
+          <p className="text-xs text-[#6F655B]/60 uppercase tracking-widest font-medium">
             Verified purchases from Pairo store
           </p>
         </div>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="flex items-center gap-2 bg-black text-white hover:bg-neutral-800 transition-colors px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-md hover:shadow-lg"
+          className="flex items-center gap-2 bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
           Write a Review
         </button>
       </div>
 
       {/* Ratings Dashboard & Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-center bg-neutral-50 rounded-2xl p-6 border border-neutral-100/50">
-        <div className="text-center md:border-r border-neutral-200/60 py-4">
-          <div className="text-5xl font-black heading-font text-black mb-2 flex items-center justify-center gap-1">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-center bg-white rounded-[var(--radius,0px)] p-6 border border-[#E3DACB]">
+        <div className="text-center md:border-r border-[#E3DACB] py-4">
+          <div className="text-5xl font-light heading-font text-[#1E1B19] mb-2 flex items-center justify-center gap-1">
             {stats.rating.toFixed(1)}
             <span className="text-lg text-neutral-400 font-normal">/5</span>
           </div>
@@ -401,7 +399,7 @@ export default function ProductReviews({ productId, productName }) {
               />
             ))}
           </div>
-          <div className="text-xs font-bold text-black/50 uppercase tracking-wider">
+          <div className="text-xs font-medium text-[#6F655B]/60 uppercase tracking-wider">
             Based on {stats.reviewCount} reviews
           </div>
         </div>
@@ -412,15 +410,15 @@ export default function ProductReviews({ productId, productName }) {
             const count = stats.ratingBreakdown[stars] || 0;
             const percent = totalStarVotes > 0 ? (count / totalStarVotes) * 100 : 0;
             return (
-              <div key={stars} className="flex items-center gap-3 text-xs text-neutral-600">
-                <span className="w-8 font-bold text-right">{stars} Star</span>
-                <div className="flex-1 bg-neutral-200 h-2.5 rounded-full overflow-hidden">
+              <div key={stars} className="flex items-center gap-3 text-xs text-[#6F655B]">
+                <span className="w-12 font-medium text-right whitespace-nowrap">{stars} Star</span>
+                <div className="flex-1 bg-[#E3DACB]/30 h-1.5 rounded-[var(--radius,0px)] overflow-hidden">
                   <div
-                    className="bg-[#FFC633] h-full rounded-full transition-all duration-500"
+                    className="bg-[#FFC633] h-full rounded-[var(--radius,0px)] transition-all duration-500"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
-                <span className="w-8 font-bold text-neutral-400 text-left">{count}</span>
+                <span className="w-6 font-medium text-[#6F655B]/60 text-left">{count}</span>
               </div>
             );
           })}
@@ -840,15 +838,15 @@ export default function ProductReviews({ productId, productName }) {
         </div>
       ) : reviews.length === 0 ? (
         /* Empty state */
-        <div className="py-16 text-center border-2 border-dashed border-neutral-150 rounded-3xl bg-neutral-50/30">
-          <MessageSquare className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
-          <h4 className="text-sm font-bold uppercase tracking-wider text-black mb-2">No reviews yet</h4>
-          <p className="text-xs text-neutral-400 max-w-sm mx-auto leading-relaxed mb-6">
+        <div className="py-16 text-center border border-dashed border-[#E3DACB] rounded-[var(--radius,0px)] bg-[#FAF7F0]/30">
+          <MessageSquare className="w-10 h-10 text-[#6F655B]/40 mx-auto mb-4" />
+          <h4 className="text-sm font-medium uppercase tracking-wider text-[#1E1B19] mb-1">No reviews yet</h4>
+          <p className="text-xs text-[#6F655B]/60 max-w-sm mx-auto leading-relaxed mb-6">
             Be the first to review this product! Share your feedback with other shoppers.
           </p>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="bg-black text-white hover:bg-neutral-800 transition-colors px-6 py-3 rounded-full text-xs font-bold uppercase tracking-[0.2em]"
+            className="bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90 transition-colors px-6 py-3 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
           >
             Review product
           </button>
@@ -886,7 +884,7 @@ export default function ProductReviews({ productId, productName }) {
                     </div>
                     {/* Review Title */}
                     {review.title && (
-                      <h4 className="text-sm font-bold uppercase tracking-wide text-black">
+                      <h4 className="text-sm font-medium uppercase tracking-wide text-[#1E1B19]">
                         {review.title}
                       </h4>
                     )}
@@ -899,38 +897,38 @@ export default function ProductReviews({ productId, productName }) {
 
                 {/* Reviewer Details with circular color-coded initials avatar */}
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-xs font-bold ${getAvatarColor(review.customerName)} shadow-sm shrink-0 select-none`}>
+                  <div className={`w-8 h-8 rounded-[var(--radius,0px)] border flex items-center justify-center text-xs font-medium ${getAvatarColor(review.customerName)} shrink-0 select-none`}>
                     {getInitials(review.customerName)}
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-[10px] text-neutral-500 font-bold uppercase tracking-wider">
-                    <span>{review.customerName}</span>
+                  <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#6F655B]/70 font-medium uppercase tracking-wider">
+                    <span className="text-[#1E1B19]">{review.customerName}</span>
                     {review.verifiedPurchase && (
                       <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded-full border border-green-150 text-[9px] font-black uppercase tracking-wider shadow-sm select-none">
-                          <CheckCircle className="w-2.5 h-2.5 fill-green-700 text-white" />
+                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-[var(--radius,0px)] border border-emerald-100/50 text-[9px] font-medium uppercase tracking-wider select-none">
+                          <CheckCircle className="w-2.5 h-2.5 fill-emerald-600 text-white" />
                           Verified Purchase
                         </span>
-                        <span className="text-[9px] text-neutral-400 font-medium normal-case">
+                        <span className="text-[9px] text-[#6F655B]/50 font-normal normal-case">
                           Purchased on {new Date(review.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </span>
                       </div>
                     )}
                     {review.recommend ? (
-                      <span className="text-neutral-400">| Recommends Product</span>
+                      <span className="text-[#6F655B]/50">| Recommends Product</span>
                     ) : (
-                      <span className="text-neutral-400">| Does Not Recommend</span>
+                      <span className="text-[#6F655B]/50">| Does Not Recommend</span>
                     )}
                   </div>
                 </div>
 
                 {/* Review Message */}
                 {review.comment && (
-                  <div className="text-sm text-neutral-600 leading-relaxed font-medium">
+                  <div className="text-sm text-[#6F655B] leading-relaxed font-normal">
                     <p>{displayComment}</p>
                     {needsTruncation && (
                       <button
                         onClick={() => toggleExpandReview(review._id)}
-                        className="text-xs font-bold text-black hover:underline uppercase tracking-widest mt-2 flex items-center gap-0.5"
+                        className="text-[10px] font-medium text-[#1E1B19] hover:underline uppercase tracking-wider mt-2 flex items-center gap-0.5"
                       >
                         {isExpanded ? (
                           <>Read Less <ChevronUp className="w-3 h-3" /></>
@@ -944,12 +942,12 @@ export default function ProductReviews({ productId, productName }) {
 
                 {/* Admin Replies */}
                 {review.replies && review.replies.length > 0 && (
-                  <div className="bg-neutral-50 border-l-4 border-black p-4 rounded-r-xl space-y-1.5 ml-4">
-                    <div className="flex items-center gap-2 text-[10px] text-black font-black uppercase tracking-wider">
-                      <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                  <div className="bg-[#FAF7F0]/60 border-l-2 border-[#1E1B19] p-4 rounded-[var(--radius,0px)] space-y-1.5 ml-4">
+                    <div className="flex items-center gap-2 text-[9px] text-[#1E1B19] font-medium uppercase tracking-wider">
+                      <div className="w-1 h-1 bg-[#1E1B19] rounded-full" />
                       {review.replies[0].staffName} Response
                     </div>
-                    <p className="text-xs text-neutral-600 leading-relaxed font-medium">
+                    <p className="text-xs text-[#6F655B] leading-relaxed font-normal">
                       {review.replies[0].comment}
                     </p>
                   </div>
@@ -958,15 +956,15 @@ export default function ProductReviews({ productId, productName }) {
                 {/* Helpful, Edit & Report actions */}
                 <div className="flex items-center justify-between pt-2">
                   <div className="flex items-center gap-4">
-                    <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
+                    <span className="text-[10px] text-[#6F655B]/50 font-medium uppercase tracking-widest">
                       Was this helpful?
                     </span>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleVote(review._id, "helpful")}
                         disabled={votingIds[review._id]}
-                        className={`p-1.5 rounded hover:bg-neutral-100 transition-colors flex items-center gap-1.5 text-neutral-500 hover:text-black ${
-                          votedReviews[review._id] === "helpful" ? "text-black bg-neutral-100" : ""
+                        className={`p-1.5 rounded-[var(--radius,0px)] hover:bg-[#FAF7F0] transition-colors flex items-center gap-1.5 text-[#6F655B] hover:text-[#1E1B19] ${
+                          votedReviews[review._id] === "helpful" ? "text-[#1E1B19] bg-[#FAF7F0]" : ""
                         }`}
                       >
                         {votingIds[review._id] && votedReviews[review._id] === "helpful" ? (
@@ -974,13 +972,13 @@ export default function ProductReviews({ productId, productName }) {
                         ) : (
                           <ThumbsUp className="w-3.5 h-3.5" />
                         )}
-                        <span className="text-xs font-bold">{review.helpfulVotes || 0}</span>
+                        <span className="text-xs font-medium">{review.helpfulVotes || 0}</span>
                       </button>
                       <button
                         onClick={() => handleVote(review._id, "unhelpful")}
                         disabled={votingIds[review._id]}
-                        className={`p-1.5 rounded hover:bg-neutral-100 transition-colors flex items-center gap-1.5 text-neutral-500 hover:text-red-600 ${
-                          votedReviews[review._id] === "unhelpful" ? "text-red-600 bg-neutral-100" : ""
+                        className={`p-1.5 rounded-[var(--radius,0px)] hover:bg-[#FAF7F0] transition-colors flex items-center gap-1.5 text-[#6F655B] hover:text-red-600 ${
+                          votedReviews[review._id] === "unhelpful" ? "text-red-600 bg-[#FAF7F0]" : ""
                         }`}
                       >
                         {votingIds[review._id] && votedReviews[review._id] === "unhelpful" ? (
@@ -988,7 +986,7 @@ export default function ProductReviews({ productId, productName }) {
                         ) : (
                           <ThumbsDown className="w-3.5 h-3.5" />
                         )}
-                        <span className="text-xs font-bold">{review.unhelpfulVotes || 0}</span>
+                        <span className="text-xs font-medium">{review.unhelpfulVotes || 0}</span>
                       </button>
                     </div>
                   </div>
@@ -998,18 +996,18 @@ export default function ProductReviews({ productId, productName }) {
                     {(isOwner || !session) && (
                       <button
                         onClick={() => handleOpenEdit(review)}
-                        className="flex items-center gap-1 text-[10px] text-neutral-400 hover:text-black font-bold uppercase tracking-wider"
+                        className="flex items-center gap-1 text-[10px] text-[#6F655B]/60 hover:text-[#1E1B19] font-medium uppercase tracking-wider"
                       >
                         <Edit2 className="w-3 h-3" />
                         Edit Review
                       </button>
                     )}
                     
-                    {(isOwner || !session) && <span className="text-neutral-200 text-xs">|</span>}
+                    {(isOwner || !session) && <span className="text-neutral-250 text-xs">|</span>}
 
                     <button
                       onClick={() => handleReport(review._id)}
-                      className="flex items-center gap-1 text-[10px] text-neutral-400 hover:text-red-600 font-bold uppercase tracking-wider"
+                      className="flex items-center gap-1 text-[10px] text-[#6F655B]/60 hover:text-[#1E1B19] font-medium uppercase tracking-wider"
                     >
                       <Flag className="w-3 h-3" />
                       Report
