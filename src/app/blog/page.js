@@ -107,7 +107,7 @@ export default async function BlogArchive() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                <div className="space-y-4 max-w-3xl">
                   <div className="inline-flex items-center bg-foreground text-background px-3 py-1 rounded-md">
-                     <span className="text-[7px] md:text-[9px] font-bold tracking-[0.3em] uppercase">
+                     <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] uppercase">
                         PAIRO ARCHIVE INDEX
                      </span>
                   </div>

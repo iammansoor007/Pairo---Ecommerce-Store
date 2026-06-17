@@ -51,10 +51,10 @@ export default function FeaturedBanner({
           <div className="max-w-full md:max-w-lg lg:max-w-xl space-y-6 md:space-y-8">
             {/* Minimalist Badges */}
             <div className="flex flex-wrap gap-2">
-              <span className="bg-white/10 backdrop-blur-md text-white text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
+              <span className="bg-white/10 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
                 {bannerData.badge1}
               </span>
-              <span className="bg-[#D4B100] text-black text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
+              <span className="bg-primary text-background text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
                 {bannerData.badge2}
               </span>
             </div>

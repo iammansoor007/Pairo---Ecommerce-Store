@@ -67,7 +67,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
         </div>
         <div className="flex gap-0.5">
           {[...Array(5)].map((_, i) => (
-            <Star key={i} className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-[#FFC633] text-[#FFC633]' : 'text-black/10'}`} />
+            <Star key={i} className={`w-3 h-3 md:w-4 md:h-4 ${i < review.rating ? 'fill-primary text-primary' : 'text-black/10'}`} />
           ))}
         </div>
       </div>
@@ -126,7 +126,7 @@ export default function Testimonials({
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</span>
+              <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</span>
             </div>
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{testimonialsConfig.title}</h2>
           </div>

@@ -394,7 +394,7 @@ export default function ProductReviews({ productId, productName }) {
               <Star
                 key={i}
                 className={`w-5 h-5 ${
-                  i < Math.floor(stats.rating) ? "fill-[#FFC633] text-[#FFC633]" : "fill-neutral-200 text-neutral-200"
+                  i < Math.floor(stats.rating) ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
                 }`}
               />
             ))}
@@ -414,7 +414,7 @@ export default function ProductReviews({ productId, productName }) {
                 <span className="w-12 font-medium text-right whitespace-nowrap">{stars} Star</span>
                 <div className="flex-1 bg-[#E3DACB]/30 h-1.5 rounded-[var(--radius,0px)] overflow-hidden">
                   <div
-                    className="bg-[#FFC633] h-full rounded-[var(--radius,0px)] transition-all duration-500"
+                    className="bg-primary h-full rounded-[var(--radius,0px)] transition-all duration-500"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
@@ -463,7 +463,7 @@ export default function ProductReviews({ productId, productName }) {
                       >
                         <Star
                           className={`w-8 h-8 ${
-                            star <= formData.rating ? "fill-[#FFC633] text-[#FFC633]" : "fill-neutral-200 text-neutral-200"
+                            star <= formData.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       </button>
@@ -675,7 +675,7 @@ export default function ProductReviews({ productId, productName }) {
                       >
                         <Star
                           className={`w-8 h-8 ${
-                            star <= editFormData.rating ? "fill-[#FFC633] text-[#FFC633]" : "fill-neutral-200 text-neutral-200"
+                            star <= editFormData.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       </button>
@@ -877,7 +877,7 @@ export default function ProductReviews({ productId, productName }) {
                         <Star
                           key={i}
                           className={`w-3.5 h-3.5 ${
-                            i < review.rating ? "fill-[#FFC633] text-[#FFC633]" : "fill-neutral-200 text-neutral-200"
+                            i < review.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       ))}

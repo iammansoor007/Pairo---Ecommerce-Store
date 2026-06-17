@@ -300,7 +300,7 @@ export default function Navbar() {
                                 {/* Left Navigation Pane */}
                                 <div className="col-span-4 flex flex-col justify-between border-r border-black/[0.05] pr-8 py-2">
                                   <div>
-                                    <span className="block text-[8px] font-black text-black/60 tracking-[0.3em] uppercase mb-6">Collections</span>
+                                    <span className="block text-[8px] font-black text-black/80 tracking-[0.3em] uppercase mb-6">Collections</span>
                                     <div className="flex flex-col gap-4">
                                       {(item.itemMegaCategories || []).map((cat, catIdx) => (
                                         <Link
@@ -314,7 +314,7 @@ export default function Navbar() {
                                               {cat.name}
                                             </span>
                                             {/* Micro-underline animation */}
-                                            <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-black transition-all duration-300 group-hover/lnk:w-full" />
+                                            <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-black/85 transition-all duration-300 group-hover/lnk:w-full" />
                                           </div>
                                         </Link>
                                       ))}
@@ -322,7 +322,7 @@ export default function Navbar() {
                                   </div>
 
                                   <div className="mt-8 pt-4 border-t border-black/[0.03]">
-                                    <Link href="/shop" className="text-[9px] font-black uppercase tracking-[0.25em] text-black/40 hover:text-black transition-colors flex items-center gap-1.5">
+                                    <Link href="/shop" className="text-[11px]  uppercase tracking-[0.25em] text-black/80 hover:text-black transition-colors flex items-center gap-1.5">
                                       View All Products <span className="translate-y-[-0.5px]">→</span>
                                     </Link>
                                   </div>
@@ -348,7 +348,7 @@ export default function Navbar() {
 
                                       {/* Editorial Content */}
                                       <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col items-start gap-1">
-                                        <span className="text-[7px] font-bold tracking-[0.25em] text-white/50 uppercase">Discover</span>
+                                        <span className="text-[7px] font-bold tracking-[0.25em] text-white/80 uppercase">Discover</span>
                                         <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-white w-full leading-snug">{cat.name}</h4>
                                       </div>
                                     </Link>

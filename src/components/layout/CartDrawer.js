@@ -52,8 +52,8 @@ export default function CartDrawer() {
             {/* Header - Compact */}
             <div className="px-6 py-6 flex items-center justify-between border-b border-black/[0.03]">
               <div className="space-y-0.5">
-                <p className="text-sm font-bold heading-font uppercase tracking-tight">Your Bag</p>
-                <p className="text-[8px] text-black/30 font-bold uppercase tracking-widest">
+                <p className="text-base font-bold heading-font uppercase tracking-tight">Your Bag</p>
+                <p className="text-[10px] text-black/50 font-bold uppercase tracking-widest">
                   {cartItems.reduce((acc, item) => acc + item.quantity, 0)} Items
                 </p>
               </div>
@@ -61,7 +61,7 @@ export default function CartDrawer() {
                 onClick={() => setIsCartOpen(false)}
                 className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/5 transition-all active:scale-90"
               >
-                <X className="w-4 h-4 text-black/40" />
+                <X className="w-4 h-4 text-black/60" />
               </button>
             </div>
 
@@ -71,10 +71,10 @@ export default function CartDrawer() {
               {cartItems.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                   <ShoppingBag className="w-8 h-8 text-black/5" />
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-black/30">Your bag is empty</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-black/50">Your bag is empty</p>
                   <button
                     onClick={() => setIsCartOpen(false)}
-                    className="text-[8px] font-bold uppercase tracking-[0.2em] underline underline-offset-4 hover:text-black/60"
+                    className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4 hover:text-black/60"
                   >
                     Continue Shopping
                   </button>
@@ -102,23 +102,23 @@ export default function CartDrawer() {
                       <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
                         <div className="space-y-1">
                           <div className="flex justify-between items-start gap-2">
-                            <p className="text-[11px] font-bold heading-font uppercase tracking-tight truncate">
+                            <p className="text-xs sm:text-sm font-bold heading-font uppercase tracking-tight truncate">
                               {item.name}
                             </p>
                             <button 
                                onClick={() => removeFromCart(uniqueKey)}
-                               className="text-black/20 hover:text-red-500 transition-colors p-1"
+                               className="text-black/40 hover:text-red-500 transition-colors p-1"
                             >
                                <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-[8px] text-black/40 uppercase tracking-widest font-bold">
+                            <span className="text-[10px] text-black/60 uppercase tracking-widest font-bold">
                               Size: {item.selectedSize}
                             </span>
                             <div className="w-[1px] h-2 bg-black/10" />
                             <div className="flex items-center gap-1.5">
-                               <span className="text-[8px] text-black/40 uppercase tracking-widest font-bold">Color:</span>
+                               <span className="text-[10px] text-black/60 uppercase tracking-widest font-bold">Color:</span>
                                <div 
                                  className="w-2.5 h-2.5 rounded-full border border-black/10" 
                                  style={{ backgroundColor: item.selectedColor }} 
@@ -131,19 +131,19 @@ export default function CartDrawer() {
                           <div className="flex items-center gap-3 bg-[#F9F9F9] border border-black/[0.05] rounded-md px-2 py-1">
                             <button
                               onClick={() => updateQuantity(uniqueKey, -1)}
-                              className="text-black/30 hover:text-black transition-colors"
+                              className="text-black/40 hover:text-black transition-colors"
                             >
                               <Minus className="w-2 h-2" />
                             </button>
-                            <span className="text-[9px] font-bold w-3 text-center">{item.quantity}</span>
+                            <span className="text-xs font-bold w-3 text-center">{item.quantity}</span>
                             <button
                               onClick={() => updateQuantity(uniqueKey, 1)}
-                              className="text-black/30 hover:text-black transition-colors"
+                              className="text-black/40 hover:text-black transition-colors"
                             >
                               <Plus className="w-2 h-2" />
                             </button>
                           </div>
-                          <p className="font-bold text-[11px] heading-font tracking-tight">${(item.price * item.quantity).toFixed(0)}</p>
+                          <p className="font-bold text-xs sm:text-sm heading-font tracking-tight">${(item.price * item.quantity).toFixed(0)}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -157,12 +157,12 @@ export default function CartDrawer() {
               <div className="p-6 space-y-4 bg-white border-t border-black/[0.03]">
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <span className="text-black/30 uppercase tracking-widest font-bold text-[8px]">Subtotal</span>
-                    <span className="text-base font-bold heading-font tracking-tight">${cartSubtotal.toFixed(0)}</span>
+                    <span className="text-black/50 uppercase tracking-widest font-bold text-[10px]">Subtotal</span>
+                    <span className="text-lg font-bold heading-font tracking-tight">${cartSubtotal.toFixed(0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-black/30 uppercase tracking-widest font-bold text-[8px]">Shipping</span>
-                    <span className="text-[8px] font-bold text-black/60 uppercase tracking-widest">
+                    <span className="text-black/50 uppercase tracking-widest font-bold text-[10px]">Shipping</span>
+                    <span className="text-[10px] font-bold text-black/75 uppercase tracking-widest">
                        Calculated next
                     </span>
                   </div>
@@ -172,7 +172,7 @@ export default function CartDrawer() {
                   <Link 
                     href="/checkout"
                     onClick={() => setIsCartOpen(false)}
-                    className="w-full bg-black text-white h-12 rounded-lg font-bold uppercase tracking-[0.2em] text-[9px] flex items-center justify-center gap-2 hover:bg-black/90 active:scale-[0.98] transition-all"
+                    className="w-full bg-black text-white h-12 rounded-lg font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 hover:bg-black/90 active:scale-[0.98] transition-all"
                   >
                     Checkout
                     <ArrowRight className="w-3 h-3" />

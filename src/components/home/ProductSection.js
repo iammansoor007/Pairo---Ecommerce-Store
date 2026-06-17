@@ -25,7 +25,7 @@ export default function ProductSection({
   const scroll = (direction) => {
     if (carouselRef.current) {
       const { scrollLeft, clientWidth } = carouselRef.current;
-      const scrollTo = direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      const scrollTo = direction === "left" ? scrollLeft - clientWidth * 0.75 : scrollLeft + clientWidth * 0.75;
       carouselRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
@@ -51,12 +51,12 @@ export default function ProductSection({
 
   if (!products || products.length === 0) {
     return (
-      <section className="py-2 md:py-4">
-        <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16 text-center">
+      <section className="py-4 md:py-6">
+        <div className="mx-4 md:mx-8 bg-background border border-border/60 rounded-[32px] md:rounded-[40px] shadow-sm py-16 md:py-20 px-6 md:px-16 text-center">
           <div className="max-w-md mx-auto space-y-4">
-            <h2 className="text-xl md:text-2xl font-bold heading-font text-black uppercase tracking-tight">{title}</h2>
-            <div className="w-12 h-[1px] bg-black/10 mx-auto" />
-            <p className="text-[10px] text-black/45 font-bold uppercase tracking-widest leading-relaxed">
+            <p className="text-xl md:text-2xl font-bold heading-font text-foreground uppercase tracking-tight">{title}</p>
+            <div className="w-12 h-[1px] bg-border/60 mx-auto" />
+            <p className="text-[10px] text-foreground/45 font-bold uppercase tracking-widest leading-relaxed">
               No products are currently available in this collection.
             </p>
           </div>
@@ -66,53 +66,63 @@ export default function ProductSection({
   }
 
   return (
-    <section className="py-2 md:py-4">
-      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
-        <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
+    <section className="py-4 md:py-6 bg-background">
+      <div className="mx-4 md:mx-8 bg-background border border-border/60 rounded-[32px] md:rounded-[40px] shadow-sm py-12 md:py-20 px-4 sm:px-6 md:px-16 overflow-hidden">
+
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 md:mb-14 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md"
+              className="inline-flex items-center bg-primary text-background px-3 py-1 rounded-md"
             >
-              <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">
+              <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
                 {productLabels.seriesLabel}
               </span>
             </motion.div>
-            <motion.h2
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none md:max-w-xl"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tight text-foreground uppercase leading-tight md:max-w-xl -mt-1 md:-mt-2"
             >
               {title}
-            </motion.h2>
+            </motion.p>
           </div>
 
-          <div className="flex items-center gap-4 md:gap-8 shrink-0">
+          <div className="flex items-center justify-between lg:justify-end gap-4 md:gap-8 shrink-0 w-full lg:w-auto">
+            {/* CTA Button */}
             <Link
               href="/shop"
-              className="group relative hidden sm:flex items-center gap-4 border border-black/40 px-4 py-3 rounded-full font-bold text-[8px] md:text-[9px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white hover:border-black active:scale-95 shadow-lg shadow-black/5 inline-flex"
+              className="group relative flex items-center gap-2 sm:gap-4 border border-primary/40 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full font-bold text-[11px] sm:text-xs md:text-[13px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-background hover:border-primary active:scale-95 shadow-lg shadow-primary/5 text-foreground"
             >
               <span className="relative z-10">{productLabels.ctaLabel}</span>
               <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
-              <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+              <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1]" />
             </Link>
 
-            <div className="flex gap-2 md:gap-3 sm:border-l border-black/10 sm:pl-8">
+            {/* Carousel Buttons */}
+            <div className="flex gap-2 md:gap-3 lg:border-l border-border/80 lg:pl-8 shrink-0">
               <button
                 onClick={() => scroll("left")}
-                className={`w-9 h-9 md:w-11 md:h-11 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollLeft ? "text-black bg-white hover:bg-black hover:text-white shadow-xl scale-100 active:scale-90" : "text-black/10 cursor-default scale-95"
+                aria-label="Scroll Left"
+                className={`w-9 h-9 md:w-11 md:h-11 rounded-full border border-border/80 flex items-center justify-center transition-all ${canScrollLeft
+                  ? "text-foreground bg-background hover:bg-primary hover:text-background hover:border-primary shadow-md scale-100 active:scale-90"
+                  : "text-foreground/20 cursor-default scale-95 opacity-55"
                   }`}
               >
                 <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
               </button>
               <button
                 onClick={() => scroll("right")}
-                className={`w-9 h-9 md:w-11 md:h-11 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollRight ? "text-black bg-white hover:bg-black hover:text-white shadow-xl scale-100 active:scale-90" : "text-black/10 cursor-default scale-95"
+                aria-label="Scroll Right"
+                className={`w-9 h-9 md:w-11 md:h-11 rounded-full border border-border/80 flex items-center justify-center transition-all ${canScrollRight
+                  ? "text-foreground bg-background hover:bg-primary hover:text-background hover:border-primary shadow-md scale-100 active:scale-90"
+                  : "text-foreground/20 cursor-default scale-95 opacity-55"
                   }`}
               >
                 <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
@@ -121,32 +131,36 @@ export default function ProductSection({
           </div>
         </div>
 
-        <div className="relative -mx-4 md:-mx-12 px-4 md:px-12">
+        {/* Carousel Grid Area - Bleed Edge responsive layout */}
+        <div className="relative -mx-4 sm:-mx-6 md:-mx-16 px-4 sm:px-6 md:px-16">
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.1 }}
             variants={{
               hidden: { opacity: 0 },
               visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
             }}
             ref={carouselRef}
-            className="flex gap-6 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-8"
+            className="flex gap-4 sm:gap-6 md:gap-10 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-6"
           >
             {products.map((product) => (
               <motion.div
                 key={product._id || product.id}
                 variants={{
-                  hidden: { opacity: 0, y: 40, scale: 0.95 },
+                  hidden: { opacity: 0, y: 35, scale: 0.96 },
                   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
                 }}
-                className="w-[85vw] sm:w-[50vw] md:w-[40vw] lg:w-[26vw] shrink-0 snap-start"
+                className="w-[72vw] sm:w-[45vw] md:w-[35vw] lg:w-[23vw] shrink-0 snap-start"
               >
                 <ProductCard product={product} />
               </motion.div>
             ))}
           </motion.div>
         </div>
+
+
+
       </div>
     </section>
   );

@@ -21,7 +21,7 @@ export default function ClientTabSystem({ product }) {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   return (
-    <div className="mt-12 md:mt-20 border-t border-black/5">
+    <div className="mt-6 md:mt-10 border-t border-black/5">
       <div className="flex border-b border-black/5 overflow-x-auto scrollbar-hide snap-x">
          {["Product Details", "Rating & Reviews", "FAQs"].map((tab) => (
             <button 
@@ -34,7 +34,7 @@ export default function ClientTabSystem({ product }) {
          ))}
       </div>
       
-      <div className="py-8 md:py-16 min-h-[300px] md:min-h-[400px]">
+      <div className="py-4 md:py-8">
          <AnimatePresence mode="wait">
             {activeTab === "Product Details" && (
                <motion.div key="details" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-4xl space-y-12">

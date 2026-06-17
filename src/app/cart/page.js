@@ -38,15 +38,15 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[75vh] flex flex-col items-center justify-center space-y-10 px-6 relative overflow-hidden bg-white">
+      <div className="min-h-[75vh] flex flex-col items-center justify-center space-y-10 px-6 relative overflow-hidden bg-background">
         {/* Soft background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/[0.04] rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative group">
           {/* Decorative blur glow */}
-          <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl scale-110 group-hover:scale-125 transition-transform duration-500 ease-out" />
-          <div className="relative w-24 h-24 bg-white border border-border rounded-full flex items-center justify-center shadow-lg transition-transform duration-500 hover:rotate-6">
-            <ShoppingBag className="w-9 h-9 text-primary/60 group-hover:text-primary transition-colors duration-500" />
+          <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl scale-110 group-hover:scale-125 transition-transform duration-500 ease-out" />
+          <div className="relative w-24 h-24 bg-primary rounded-full flex items-center justify-center shadow-lg transition-transform duration-500 hover:rotate-6">
+            <ShoppingBag className="w-9 h-9 text-background" />
           </div>
         </div>
 
@@ -70,7 +70,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 md:px-16 py-12 md:py-20">
         <div className="flex flex-col lg:flex-row gap-16">
           
@@ -180,13 +180,13 @@ export default function CartPage() {
 
           {/* Order Summary Sidebar */}
           <div className="w-full lg:w-[400px] shrink-0">
-            <div className="bg-white border border-black/5 rounded-3xl p-8 sticky top-32 space-y-8 shadow-sm">
+            <div className="bg-background border border-border rounded-3xl p-8 sticky top-32 space-y-8 shadow-sm">
               <p className="text-sm font-bold heading-font uppercase tracking-tight">Order Summary</p>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                  <span className="text-black/40">Subtotal</span>
-                  <span className="text-black">${cartSubtotal.toFixed(0)}</span>
+                  <span className="text-foreground/40">Subtotal</span>
+                  <span className="text-foreground">${cartSubtotal.toFixed(0)}</span>
                 </div>
                 {discountTotal > 0 && (
                   <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-emerald-600">
@@ -195,17 +195,17 @@ export default function CartPage() {
                   </div>
                 )}
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                  <span className="text-black/40">Estimated Shipping</span>
-                  <span className="text-black">
+                  <span className="text-foreground/40">Estimated Shipping</span>
+                  <span className="text-foreground">
                     Calculated next
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                  <span className="text-black/40">Tax</span>
-                  <span className="text-black">Calculated next</span>
+                  <span className="text-foreground/40">Tax</span>
+                  <span className="text-foreground">Calculated next</span>
                 </div>
                 
-                <div className="pt-4 border-t border-black/5 flex justify-between items-end">
+                <div className="pt-4 border-t border-border/80 flex justify-between items-end">
                   <span className="text-[10px] font-bold uppercase tracking-widest">Total</span>
                   <span className="text-3xl font-bold heading-font tracking-tight">
                     ${Math.max(0, cartSubtotal - discountTotal).toFixed(0)}
@@ -214,19 +214,19 @@ export default function CartPage() {
               </div>
 
               {/* Coupon input */}
-              <div className="pt-6 border-t border-black/5 space-y-3">
+              <div className="pt-6 border-t border-border/80 space-y-3">
                  <div className="flex gap-2">
                     <input 
                       type="text" 
                       placeholder="COUPON CODE" 
-                      className="flex-1 bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest outline-none focus:border-black transition-all"
+                      className="flex-1 bg-background border border-border rounded-xl px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest outline-none focus:border-primary transition-all"
                       value={promoCodeInput}
                       onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
                     />
                     <button 
                       onClick={handleApplyPromo}
                       disabled={!promoCodeInput || applying}
-                      className="px-5 py-2.5 bg-black hover:bg-neutral-850 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 shrink-0"
+                      className="px-5 py-2.5 bg-primary text-background hover:bg-primary/95 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 shrink-0"
                     >
                        {applying ? "..." : "Apply"}
                     </button>
@@ -243,7 +243,7 @@ export default function CartPage() {
               <div className="space-y-4">
                 <Link 
                   href="/checkout"
-                  className="w-full bg-black text-white h-16 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 hover:bg-black/90 active:scale-[0.98] transition-all shadow-xl shadow-black/10"
+                  className="w-full bg-primary text-background h-16 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3 hover:bg-primary/90 active:scale-[0.98] transition-all shadow-xl shadow-primary/10"
                 >
                   Proceed to Checkout
                   <ArrowRight className="w-4 h-4" />

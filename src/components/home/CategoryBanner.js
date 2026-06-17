@@ -44,7 +44,7 @@ export default function CategoryBanner({
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3">
              <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-                <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
+                <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
                   {categoriesConfig.label || "The Collection"}
                 </span>
              </div>

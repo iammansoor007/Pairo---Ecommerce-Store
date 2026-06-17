@@ -111,7 +111,7 @@ export default function BlogSection({
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
              <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-                <span className="text-[7px] md:text-[9px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</span>
+                <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</span>
              </div>
              <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{blogsConfig.title}</h2>
           </div>

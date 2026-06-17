@@ -112,7 +112,7 @@ export default async function ProductDetailPage({ params }) {
       stars.push(
         <Star 
           key={i} 
-          className={`${size} ${i < Math.floor(rating || 5) ? 'fill-[#FFC633] text-[#FFC633]' : 'fill-black/5 text-black/5'}`} 
+          className={`${size} ${i < Math.floor(rating || 5) ? 'fill-primary text-primary' : 'fill-black/5 text-black/5'}`} 
         />
       );
     }
@@ -153,7 +153,7 @@ export default async function ProductDetailPage({ params }) {
   });
 
   return (
-    <div className="bg-white min-h-screen font-sans overflow-x-hidden">
+    <div className="bg-white min-h-screen font-sans">
       {structuredData && (
         <script
           type="application/ld+json"
@@ -192,7 +192,7 @@ export default async function ProductDetailPage({ params }) {
         )}
       </div>
 
-      <div className="mt-16 border-t border-black/5 pt-12 md:pt-20">
+      <div className="border-t border-black/5">
         <ProductSection title="Related Products" products={sanitizedRelated} />
       </div>
     </div>

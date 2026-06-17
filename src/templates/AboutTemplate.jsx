@@ -7,7 +7,7 @@ export default function AboutTemplate({ page, sections = [] }) {
   const filtered = sections.filter((s) => s && allowed.includes(s.type));
 
   return (
-    <main className="bg-white about-template" data-template="about">
+    <main className="bg-background about-template" data-template="about">
       <SectionRenderer sections={filtered} />
     </main>
   );

@@ -7,7 +7,7 @@ export default function ContactTemplate({ page, sections = [] }) {
   const filtered = sections.filter((s) => s && allowed.includes(s.type));
 
   return (
-    <main className="bg-white min-h-screen contact-template" data-template="contact">
+    <main className="bg-background min-h-screen contact-template" data-template="contact">
       <SectionRenderer sections={filtered} />
     </main>
   );

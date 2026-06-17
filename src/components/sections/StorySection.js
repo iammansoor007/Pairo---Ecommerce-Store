@@ -33,7 +33,7 @@ export default function StorySection({
 
   return (
     <section className="py-12 md:py-16">
-      <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
+      <div className="mx-4 md:mx-8 bg-background border border-border rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <motion.div 
             initial="hidden"
@@ -44,21 +44,21 @@ export default function StorySection({
           >
             <motion.div variants={itemVariants} className="space-y-4">
               <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-black" />
-                 <span className="text-[10px] font-bold tracking-[0.3em] text-black/30 uppercase">{label}</span>
+                 <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
+                 <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-foreground/80 uppercase">{label}</span>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold heading-font tracking-tighter text-black uppercase leading-[0.9]">
+              <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold heading-font tracking-tighter text-foreground uppercase leading-[0.9]">
                 {title}
               </h2>
             </motion.div>
-            <motion.p variants={itemVariants} className="text-lg md:text-xl text-black/60 leading-relaxed max-w-xl">
+            <motion.p variants={itemVariants} className="text-lg md:text-xl text-foreground/85 leading-relaxed max-w-xl">
               {description}
             </motion.p>
             <motion.div variants={itemVariants} className="grid sm:grid-cols-2 gap-8 pt-6">
               {features.map((feature, i) => (
-                <div key={i} className="p-8 rounded-3xl bg-black/[0.02] border border-black/[0.05] space-y-4 hover:bg-black hover:text-white transition-all duration-500 group">
-                  <h3 className="text-lg font-bold uppercase tracking-tight">{feature.title}</h3>
-                  <p className="text-sm opacity-60 leading-relaxed">{feature.desc}</p>
+                <div key={i} className="p-8 rounded-3xl bg-secondary border border-border space-y-4 hover:bg-primary transition-all duration-500 group">
+                  <h3 className="text-lg font-bold uppercase tracking-tight text-primary group-hover:text-white transition-colors duration-500">{feature.title}</h3>
+                  <p className="text-sm text-foreground group-hover:text-white/95 leading-relaxed transition-colors duration-500">{feature.desc}</p>
                 </div>
               ))}
             </motion.div>

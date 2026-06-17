@@ -5,15 +5,15 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import MarqueeSection from "@/components/home/MarqueeSection";
 
-export default function AboutHero({ 
-  title = "CRAFTING THE FUTURE OF MODERN ELEGANCE", 
-  subtitle = "We bridge the gap between artisanal heritage and contemporary lifestyle, creating pieces that resonate with the spirit of the modern individual.", 
-  label = "EST. 2024", 
-  image = "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&q=80", 
-  buttonText = "Explore Collection", 
-  link = "/shop", 
+export default function AboutHero({
+  title = "CRAFTING THE FUTURE OF MODERN ELEGANCE",
+  subtitle = "We bridge the gap between artisanal heritage and contemporary lifestyle, creating pieces that resonate with the spirit of the modern individual.",
+  label = "EST. 2024",
+  image = "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&q=80",
+  buttonText = "Explore Collection",
+  link = "/shop",
   marqueeEnabled = "true",
-  marqueeItems 
+  marqueeItems
 }) {
   const items = marqueeItems?.length > 0 ? marqueeItems : undefined;
 
@@ -38,24 +38,28 @@ export default function AboutHero({
             className="space-y-6 md:space-y-8"
           >
             <div className="flex items-center gap-3">
-              <div className="h-[1.5px] w-8 bg-white/30" />
-              <span className="text-white/50 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase heading-font">
+              <div className="h-[1.5px] w-8 bg-white/40" />
+              <span className="text-white/85 text-[9px] md:text-[11px] font-bold tracking-[0.3em] uppercase heading-font">
                 {label}
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-white heading-font leading-[0.95] tracking-tighter uppercase">
               {title}
             </h1>
-            <p className="text-white/50 text-sm md:text-xl max-w-xl leading-relaxed font-sans">
+            <p className="text-white/85 text-sm md:text-xl max-w-xl leading-relaxed font-sans">
               {subtitle}
             </p>
             <div className="flex flex-wrap items-center gap-6 pt-4">
-              <a href={link} className="group relative overflow-hidden bg-white text-black px-10 md:px-12 py-4 md:py-5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl active:scale-95 inline-block">
-                <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors duration-500">
+              <a
+                href={link}
+                className="group relative overflow-hidden bg-primary text-white px-10 md:px-12 py-4 md:py-5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all duration-500 shadow-xl border border-primary/20 active:scale-95 inline-block"
+              >
+                <span className="relative z-10 flex items-center gap-3 group-hover:text-primary transition-colors duration-500">
                   {buttonText}
                   <ArrowRight className="w-5 h-5 transition-transform duration-500 group-hover:translate-x-1" />
                 </span>
-                <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+
+                <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1]" />
               </a>
             </div>
           </motion.div>

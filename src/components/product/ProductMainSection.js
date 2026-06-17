@@ -85,7 +85,7 @@ export default function ProductMainSection({ product }) {
           </div>
 
           <div className="flex items-center gap-2 text-xs font-semibold text-primary/80">
-            <Star className="w-3.5 h-3.5 fill-[#FFC633] text-[#FFC633]" />
+            <Star className="w-3.5 h-3.5 fill-primary text-primary" />
             <span>{(product.rating || 5).toFixed(1)}/5.0</span>
             <span className="text-black/10">•</span>
             <span>({product.reviewsCount || 45} Reviews)</span>
