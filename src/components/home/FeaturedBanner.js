@@ -7,11 +7,11 @@ import * as LucideIcons from "lucide-react";
 import { ArrowRight } from "lucide-react";
 import siteData from "@/lib/data.json";
 
-export default function FeaturedBanner({ 
-  title, 
-  description, 
-  badge1, 
-  badge2, 
+export default function FeaturedBanner({
+  title,
+  description,
+  badge1,
+  badge2,
   product: propProduct,
   ctaText,
   linkType,
@@ -51,22 +51,22 @@ export default function FeaturedBanner({
           <div className="max-w-full md:max-w-lg lg:max-w-xl space-y-6 md:space-y-8">
             {/* Minimalist Badges */}
             <div className="flex flex-wrap gap-2">
-               <span className="bg-white/10 backdrop-blur-md text-white text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
-                 {bannerData.badge1}
-               </span>
-               <span className="bg-[#D4B100] text-black text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
-                 {bannerData.badge2}
-               </span>
+              <span className="bg-white/10 backdrop-blur-md text-white text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
+                {bannerData.badge1}
+              </span>
+              <span className="bg-[#D4B100] text-black text-[7px] md:text-[9px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
+                {bannerData.badge2}
+              </span>
             </div>
 
             {/* Scaled Typography */}
             <div className="space-y-2 md:space-y-4">
-               <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
-                 {bannerData.title}
-               </h2>
-               <p className="text-white/40 text-[10px] md:text-sm lg:text-base font-light leading-relaxed max-w-sm md:max-w-md">
-                 {bannerData.description}
-               </p>
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
+                {bannerData.title}
+              </h2>
+              <p className="text-white/80 text-[10px] md:text-sm lg:text-base font-light leading-relaxed max-w-sm md:max-w-md">
+                {bannerData.description}
+              </p>
             </div>
 
             {/* Condensed Features */}
@@ -83,7 +83,7 @@ export default function FeaturedBanner({
                     return (
                       <div key={index} className="flex items-center gap-2">
                         <IconComponent className="w-3.5 h-3.5 text-white/30" />
-                        <span className="text-[8px] md:text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                        <span className="text-[9px] md:text-[11px] font-bold text-white/80 uppercase tracking-widest">
                           {feat.text}
                         </span>
                       </div>
@@ -95,22 +95,22 @@ export default function FeaturedBanner({
 
             {/* Action Area */}
             <div className="pt-2">
-               <Link 
-                 href={
-                   linkType === "product" && productId ? `/product/${productId}` : 
-                   linkType === "collection" && collectionId ? `/shop?category=${collectionId}` : 
-                   "#"
-                 }
-                 className="inline-block"
-               >
-                  <div className="group relative overflow-hidden bg-white text-black px-8 md:px-12 py-3 md:py-4 rounded-full font-bold text-[9px] md:text-xs uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 cursor-pointer">
-                     <span className="relative z-10 flex items-center gap-2 md:gap-3 group-hover:text-white transition-colors duration-500">
-                       {bannerData.ctaText}
-                       <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 group-hover:translate-x-1" />
-                     </span>
-                     <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
-                  </div>
-               </Link>
+              <Link
+                href={
+                  linkType === "product" && productId ? `/product/${productId}` :
+                    linkType === "collection" && collectionId ? `/shop?category=${collectionId}` :
+                      "#"
+                }
+                className="inline-block"
+              >
+                <div className="group relative overflow-hidden bg-white text-black px-8 md:px-12 py-3 md:py-4 rounded-full font-bold text-[9px] md:text-xs uppercase tracking-[0.2em] shadow-2xl border border-black/20 transition-all active:scale-95 cursor-pointer">
+                  <span className="relative z-10 flex items-center gap-2 md:gap-3 group-hover:text-white transition-colors duration-500">
+                    {bannerData.ctaText}
+                    <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 group-hover:translate-x-1" />
+                  </span>
+                  <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1]" />
+                </div>
+              </Link>
             </div>
           </div>
         </div>

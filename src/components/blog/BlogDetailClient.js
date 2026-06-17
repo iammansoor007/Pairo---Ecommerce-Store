@@ -37,9 +37,12 @@ const BlogCard = ({ post }) => (
        </div>
     </div>
     <div className="mt-2.5 space-y-1 px-0.5">
-       <h3 className="text-[11px] md:text-sm font-medium heading-font text-black/80 group-hover:text-black transition-colors uppercase leading-tight">
+       <p 
+          style={{ fontFamily: "var(--brand-font)" }}
+          className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
+       >
           {post.title}
-       </h3>
+       </p>
        <div className="flex items-center justify-between border-t border-black/[0.03] pt-1.5">
           <span className="text-[8px] md:text-[10px] font-bold text-black uppercase tracking-tight">
              {post.date}
@@ -203,7 +206,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                   {post.content && (
                     <section id="general" className="scroll-mt-32">
                        <div 
-                          className="text-sm md:text-base text-black/60 leading-relaxed space-y-4 font-medium blog-content"
+                          className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
                           dangerouslySetInnerHTML={{ __html: post.content }}
                        />
                     </section>
@@ -220,7 +223,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                              </p>
                           )}
                           <div 
-                             className="text-sm md:text-base text-black/60 leading-relaxed space-y-4 font-medium blog-content"
+                             className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
                              dangerouslySetInnerHTML={{ __html: post.heritage }}
                           />
                        </div>
@@ -232,7 +235,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                     <section id="process" className="scroll-mt-32">
                        <SectionHeader number="02" title="Process" />
                        <div 
-                          className="text-sm md:text-base text-black/60 leading-relaxed space-y-4 font-medium blog-content"
+                          className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
                           dangerouslySetInnerHTML={{ __html: post.process }}
                        />
                     </section>
@@ -243,7 +246,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                     <section id="style" className="scroll-mt-32">
                        <SectionHeader number="03" title="Style" />
                        <div 
-                          className="text-sm md:text-base text-black/60 leading-relaxed space-y-4 font-medium blog-content"
+                          className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
                           dangerouslySetInnerHTML={{ __html: post.style }}
                        />
                     </section>

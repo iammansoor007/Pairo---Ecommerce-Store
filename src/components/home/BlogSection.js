@@ -21,7 +21,12 @@ const BlogCard = ({ post, readMoreLabel }) => (
        </div>
     </div>
     <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-       <h3 className="text-xs md:text-base font-medium heading-font text-black/80 group-hover:text-black transition-colors uppercase">{post.title}</h3>
+       <p 
+          style={{ fontFamily: "var(--brand-font)" }}
+          className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
+       >
+          {post.title}
+       </p>
        <div className="flex items-center justify-between border-t border-black/[0.03] pt-2 md:pt-3">
           <span className="text-[10px] md:text-sm font-bold text-black uppercase tracking-tight">{post.date}</span>
           <span className="text-[7px] md:text-[9px] font-bold text-black/40 uppercase tracking-[0.1em]">{readMoreLabel}</span>

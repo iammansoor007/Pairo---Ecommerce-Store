@@ -300,7 +300,7 @@ export default function Navbar() {
                                 {/* Left Navigation Pane */}
                                 <div className="col-span-4 flex flex-col justify-between border-r border-black/[0.05] pr-8 py-2">
                                   <div>
-                                    <span className="block text-[8px] font-black text-black/35 tracking-[0.3em] uppercase mb-6">Collections</span>
+                                    <span className="block text-[8px] font-black text-black/60 tracking-[0.3em] uppercase mb-6">Collections</span>
                                     <div className="flex flex-col gap-4">
                                       {(item.itemMegaCategories || []).map((cat, catIdx) => (
                                         <Link
@@ -308,9 +308,9 @@ export default function Navbar() {
                                           href={`/shop?category=${cat.slug}`}
                                           className="group/lnk flex items-center gap-4 text-left"
                                         >
-                                          <span className="text-[10px] font-mono text-black/30 group-hover/lnk:text-black transition-colors duration-300">0{catIdx + 1}</span>
+                                          <span className="text-[10px] font-mono text-black/50 group-hover/lnk:text-black transition-colors duration-300">0{catIdx + 1}</span>
                                           <div className="relative py-0.5">
-                                            <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-black/60 group-hover/lnk:text-black transition-colors duration-300">
+                                            <span className="text-[12px] font-bold uppercase tracking-[0.2em] text-black/85 group-hover/lnk:text-black transition-colors duration-300">
                                               {cat.name}
                                             </span>
                                             {/* Micro-underline animation */}

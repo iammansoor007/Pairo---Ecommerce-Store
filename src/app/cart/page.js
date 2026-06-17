@@ -22,7 +22,6 @@ export default function CartPage() {
   const [promoCodeInput, setPromoCodeInput] = useState("");
   const [applying, setApplying] = useState(false);
   const [promoError, setPromoError] = useState("");
-  const FREE_SHIPPING_THRESHOLD = 500;
 
   const handleApplyPromo = async () => {
     if (!promoCodeInput) return;
@@ -39,19 +38,32 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center space-y-8 px-6">
-        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center">
-          <ShoppingBag className="w-10 h-10 text-black/10" />
+      <div className="min-h-[75vh] flex flex-col items-center justify-center space-y-10 px-6 relative overflow-hidden bg-white">
+        {/* Soft background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative group">
+          {/* Decorative blur glow */}
+          <div className="absolute inset-0 bg-primary/5 rounded-full blur-xl scale-110 group-hover:scale-125 transition-transform duration-500 ease-out" />
+          <div className="relative w-24 h-24 bg-white border border-border rounded-full flex items-center justify-center shadow-lg transition-transform duration-500 hover:rotate-6">
+            <ShoppingBag className="w-9 h-9 text-primary/40 group-hover:text-primary transition-colors duration-500" />
+          </div>
         </div>
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl font-bold heading-font uppercase tracking-tight">Your Bag is Empty</h1>
-          <p className="text-black/40 text-sm max-w-xs mx-auto">Looks like you haven&apos;t added anything to your collection yet.</p>
+
+        <div className="text-center space-y-4 max-w-sm relative z-10">
+          <p className="text-xl md:text-2xl font-bold heading-font uppercase tracking-tight text-primary">Your Bag is Empty</p>
+          <p className="text-primary/50 text-xs md:text-sm leading-relaxed max-w-xs mx-auto">
+            Looks like you haven&apos;t added any handcrafted shearling jacket to your collection yet.
+          </p>
         </div>
+
         <Link 
           href="/" 
-          className="bg-black text-white px-12 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-black/90 transition-all active:scale-95"
+          className="group relative overflow-hidden bg-primary text-white px-10 py-4 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-xl hover:scale-[1.03] active:scale-95 flex items-center gap-2.5 z-10"
         >
-          Explore Collection
+          <span className="relative z-10">Explore Collection</span>
+          <ArrowRight className="w-3.5 h-3.5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+          <div className="absolute inset-0 bg-primary/95 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
         </Link>
       </div>
     );
@@ -66,7 +78,7 @@ export default function CartPage() {
           <div className="flex-1 space-y-10">
             <div className="flex items-end justify-between border-b border-black/5 pb-8">
               <div className="space-y-1">
-                <h1 className="text-4xl font-bold heading-font uppercase tracking-tight">Shopping Bag</h1>
+                <p className="text-2xl font-bold heading-font uppercase tracking-tight">Shopping Bag</p>
                 <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.2em]">
                   {cartItems.reduce((acc, item) => acc + item.quantity, 0)} Items Selected
                 </p>
@@ -84,10 +96,10 @@ export default function CartPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     key={uniqueKey + idx}
-                    className="flex flex-col sm:flex-row gap-8 py-6 border-b border-black/5 group"
+                    className="flex gap-4 sm:gap-6 py-4 border-b border-black/5 group"
                   >
                     {/* Image */}
-                    <div className="relative w-full sm:w-40 aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-black/5 shrink-0">
+                    <div className="relative w-16 sm:w-24 aspect-[3/4] rounded-xl overflow-hidden bg-gray-50 border border-black/5 shrink-0">
                       <Image 
                         src={item.image} 
                         alt={item.name} 
@@ -97,50 +109,49 @@ export default function CartPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="flex-1 flex flex-col justify-between py-2">
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                            <h3 className="text-xl font-bold heading-font uppercase tracking-tight">{item.name}</h3>
-                            <div className="flex items-center gap-4">
-                              <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Size: {item.selectedSize}</span>
-                              <div className="w-[1px] h-3 bg-black/10" />
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Color:</span>
-                                <div className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: item.selectedColor }} />
+                    <div className="flex-1 flex flex-col justify-start gap-3.5 py-1 min-w-0">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="space-y-0.5">
+                            <p className="text-[13px] md:text-sm font-bold heading-font uppercase tracking-tight">{item.name}</p>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[9px] font-bold text-black/40 uppercase tracking-widest font-sans">Size: {item.selectedSize}</span>
+                              <div className="w-[1px] h-2 bg-black/10" />
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-bold text-black/40 uppercase tracking-widest font-sans">Color:</span>
+                                <div className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: item.selectedColor }} />
                               </div>
                             </div>
                           </div>
                           <button 
                             onClick={() => removeFromCart(uniqueKey)}
-                            className="p-2 text-black/20 hover:text-red-500 transition-colors"
+                            className="p-1 text-black/20 hover:text-red-500 transition-colors shrink-0"
                           >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-8 sm:mt-0">
+                      <div className="flex items-center justify-between mt-3">
                         {/* Quantity Controls */}
-                        <div className="flex items-center gap-6 bg-gray-50 border border-black/5 rounded-xl px-4 py-2">
+                        <div className="flex items-center gap-4 bg-gray-50 border border-black/5 rounded-lg px-3 py-1.5">
                           <button 
                             onClick={() => updateQuantity(uniqueKey, -1)}
                             className="text-black/30 hover:text-black transition-colors"
                           >
-                            <Minus className="w-4 h-4" />
+                            <Minus className="w-3.5 h-3.5" />
                           </button>
-                          <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
+                          <span className="font-bold text-xs w-4 text-center">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(uniqueKey, 1)}
                             className="text-black/30 hover:text-black transition-colors"
                           >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3.5 h-3.5" />
                           </button>
                         </div>
 
                         <div className="text-right">
-                          <p className="text-2xl font-bold heading-font tracking-tight">${(item.price * item.quantity).toFixed(0)}</p>
-                          <p className="text-[9px] font-bold text-black/20 uppercase tracking-widest mt-1">Free Shipping Eligible</p>
+                          <p className="text-lg md:text-xl font-bold heading-font tracking-tight">${(item.price * item.quantity).toFixed(0)}</p>
                         </div>
                       </div>
                     </div>
@@ -170,7 +181,7 @@ export default function CartPage() {
           {/* Order Summary Sidebar */}
           <div className="w-full lg:w-[400px] shrink-0">
             <div className="bg-white border border-black/5 rounded-3xl p-8 sticky top-32 space-y-8 shadow-sm">
-              <h2 className="text-xl font-bold heading-font uppercase tracking-tight">Order Summary</h2>
+              <p className="text-sm font-bold heading-font uppercase tracking-tight">Order Summary</p>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
@@ -185,19 +196,19 @@ export default function CartPage() {
                 )}
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
                   <span className="text-black/40">Estimated Shipping</span>
-                  <span className="text-green-600">
-                    {cartSubtotal >= FREE_SHIPPING_THRESHOLD ? "Complimentary" : "$45.00"}
+                  <span className="text-black">
+                    Calculated next
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
                   <span className="text-black/40">Tax</span>
-                  <span className="text-black">Calculated at checkout</span>
+                  <span className="text-black">Calculated next</span>
                 </div>
                 
                 <div className="pt-4 border-t border-black/5 flex justify-between items-end">
                   <span className="text-[10px] font-bold uppercase tracking-widest">Total</span>
                   <span className="text-3xl font-bold heading-font tracking-tight">
-                    ${Math.max(0, cartSubtotal - discountTotal + (cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 45)).toFixed(0)}
+                    ${Math.max(0, cartSubtotal - discountTotal).toFixed(0)}
                   </span>
                 </div>
               </div>
@@ -244,24 +255,6 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* Shipping Progress inside Summary */}
-              <div className="pt-6 border-t border-black/5 space-y-3">
-                 <div className="flex justify-between items-center text-[8px] font-bold uppercase tracking-widest">
-                    <span className="text-black/40">
-                      {cartSubtotal >= FREE_SHIPPING_THRESHOLD 
-                        ? "Free shipping unlocked" 
-                        : `$${(FREE_SHIPPING_THRESHOLD - cartSubtotal).toFixed(0)} more for free shipping`}
-                    </span>
-                    <span className="text-black">{Math.min((cartSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100).toFixed(0)}%</span>
-                  </div>
-                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min((cartSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100)}%` }}
-                      className="h-full bg-black transition-all duration-1000"
-                    />
-                  </div>
-              </div>
             </div>
           </div>
 

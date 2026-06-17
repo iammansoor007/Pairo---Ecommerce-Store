@@ -7,34 +7,34 @@ const MarqueeItem = ({ item }) => (
   <div className="flex items-center gap-3 md:gap-8 px-5 md:px-12 group cursor-pointer">
     {/* Texture Circle Accent */}
     <div className="w-7 h-7 md:w-11 md:h-11 rounded-full bg-[var(--secondary)] border border-[var(--border)] overflow-hidden flex-shrink-0 relative">
-       <div className="absolute inset-0 bg-black/5 mix-blend-overlay" />
-       <item.icon className="w-3.5 h-3.5 md:w-5 md:h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black/40 group-hover:text-black transition-colors duration-500" />
+      <div className="absolute inset-0 bg-black/5 mix-blend-overlay" />
+      <item.icon className="w-3.5 h-3.5 md:w-5 md:h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black/40 group-hover:text-black transition-colors duration-500" />
     </div>
 
     <div className="flex flex-col">
-       <div className="flex items-center gap-1.5 md:gap-2">
-         <span className="text-sm md:text-2xl font-bold uppercase tracking-tighter heading-font text-black/90 group-hover:text-black transition-all duration-500 whitespace-nowrap">
-           {item.text}
-         </span>
-         <ArrowUpRight className="w-3 h-3 md:w-5 md:h-5 text-black/10 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500" />
-       </div>
-       <span className="text-[7px] md:text-[9px] font-bold uppercase tracking-[0.3em] text-black/30 group-hover:text-black/60 transition-colors duration-500">
-         {item.subText || "PAIRO — 26"}
-       </span>
+      <div className="flex items-center gap-1.5 md:gap-2">
+        <span className="text-sm md:text-2xl font-bold uppercase tracking-tighter heading-font text-black/90 group-hover:text-black transition-all duration-500 whitespace-nowrap">
+          {item.text}
+        </span>
+        <ArrowUpRight className="w-3 h-3 md:w-5 md:h-5 text-black/10 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-500" />
+      </div>
+      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-black/70 group-hover:text-black/60 transition-colors duration-500">
+        {item.subText || "PAIRO — 26"}
+      </span>
     </div>
 
     {/* Beautiful Vertical Divider */}
     <div className="relative flex items-center justify-center ml-5 md:ml-12 h-8 md:h-12 w-4 md:w-6">
-       <div className="h-full w-[1px] bg-black/[0.08]" />
-       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full border border-black/10 bg-white shadow-sm" />
-       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 md:w-1 md:h-1 rounded-full bg-black/20" />
+      <div className="h-full w-[1px] bg-black/[0.08]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full border border-black/10 bg-white shadow-sm" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-0.5 md:w-1 md:h-1 rounded-full bg-black/20" />
     </div>
   </div>
 );
 
-export default function FeatureMarquee({ 
-  items: propItems, 
-  speed: propSpeed 
+export default function FeatureMarquee({
+  items: propItems,
+  speed: propSpeed
 }) {
   const defaultFeatures = [
     { text: "20% Off First" },
@@ -66,7 +66,8 @@ export default function FeatureMarquee({
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .animate-scroll-left {
           animation: scroll-left ${speed}s linear infinite;
         }

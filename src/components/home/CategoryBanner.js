@@ -43,9 +43,8 @@ export default function CategoryBanner({
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3">
-             <div className="flex items-center gap-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-black/40" />
-                <span className="text-[10px] font-bold tracking-[0.4em] text-black/40 uppercase">
+             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
+                <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
                   {categoriesConfig.label || "The Collection"}
                 </span>
              </div>
@@ -92,16 +91,16 @@ export default function CategoryBanner({
                 </div>
                 
                 {/* Overlay for Text Visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-75 group-hover:opacity-90 transition-opacity duration-500" />
 
                 {/* Content Area */}
                 <div className={`absolute inset-0 p-8 md:p-12 flex flex-col justify-end ${isSmall ? 'items-center text-center' : 'items-start text-left'}`}>
                   <div className={`space-y-5 w-full flex flex-col ${isSmall ? 'items-center' : 'items-start'}`}>
                     <div className="space-y-2">
-                       <span className="text-[9px] font-bold text-white/60 uppercase tracking-[0.3em]">
+                       <span className="inline-flex bg-white/10 backdrop-blur-md text-white text-[8px] font-bold px-2.5 py-1 rounded-md tracking-[0.2em] uppercase border border-white/10">
                          DEPARTMENT 0{index + 1}
                        </span>
-                       <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
+                       <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
                          {category.name}
                        </h3>
                     </div>

@@ -9,9 +9,6 @@ import Link from "next/link";
 export default function CartDrawer() {
   const { isCartOpen, setIsCartOpen, cartItems, updateQuantity, removeFromCart, cartSubtotal } = useCart();
 
-  const FREE_SHIPPING_THRESHOLD = 500;
-  const shippingProgress = Math.min((cartSubtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-
   const drawerVariants = {
     hidden: { x: "100%" },
     visible: { 
@@ -55,7 +52,7 @@ export default function CartDrawer() {
             {/* Header - Compact */}
             <div className="px-6 py-6 flex items-center justify-between border-b border-black/[0.03]">
               <div className="space-y-0.5">
-                <h2 className="text-lg font-bold heading-font uppercase tracking-tight">Your Bag</h2>
+                <p className="text-sm font-bold heading-font uppercase tracking-tight">Your Bag</p>
                 <p className="text-[8px] text-black/30 font-bold uppercase tracking-widest">
                   {cartItems.reduce((acc, item) => acc + item.quantity, 0)} Items
                 </p>
@@ -68,28 +65,6 @@ export default function CartDrawer() {
               </button>
             </div>
 
-            {/* Shipping Progress - Minimal */}
-            {cartItems.length > 0 && (
-              <div className="px-6 py-3 bg-black/[0.01] border-b border-black/[0.03]">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center text-[7px] font-bold uppercase tracking-widest">
-                    <span className="text-black/40">
-                      {cartSubtotal >= FREE_SHIPPING_THRESHOLD 
-                        ? "Free shipping unlocked" 
-                        : `$${(FREE_SHIPPING_THRESHOLD - cartSubtotal).toFixed(0)} more for free shipping`}
-                    </span>
-                    <span className="text-black">{shippingProgress.toFixed(0)}%</span>
-                  </div>
-                  <div className="h-0.5 bg-black/[0.05] rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${shippingProgress}%` }}
-                      className="h-full bg-black"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Cart Items - Tight Spacing */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 scrollbar-hide">
@@ -127,9 +102,9 @@ export default function CartDrawer() {
                       <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
                         <div className="space-y-1">
                           <div className="flex justify-between items-start gap-2">
-                            <h3 className="text-[11px] font-bold heading-font uppercase tracking-tight truncate">
+                            <p className="text-[11px] font-bold heading-font uppercase tracking-tight truncate">
                               {item.name}
-                            </h3>
+                            </p>
                             <button 
                                onClick={() => removeFromCart(uniqueKey)}
                                className="text-black/20 hover:text-red-500 transition-colors p-1"
@@ -188,7 +163,7 @@ export default function CartDrawer() {
                   <div className="flex justify-between items-center">
                     <span className="text-black/30 uppercase tracking-widest font-bold text-[8px]">Shipping</span>
                     <span className="text-[8px] font-bold text-black/60 uppercase tracking-widest">
-                       {cartSubtotal >= FREE_SHIPPING_THRESHOLD ? "Complimentary" : "Calculated next"}
+                       Calculated next
                     </span>
                   </div>
                 </div>

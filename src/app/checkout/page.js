@@ -56,8 +56,7 @@ export default function CheckoutPage() {
     customerNote: ""
   });
 
-  const FREE_SHIPPING_THRESHOLD = 500;
-  const shipping = cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 45; 
+  const shipping = 0; 
   const total = cartSubtotal + shipping;
 
   // Debounced email-change promo code validation
@@ -149,7 +148,7 @@ export default function CheckoutPage() {
             <ChevronLeft className="w-3.5 h-3.5" /> Back to Bag
           </Link>
           <div className="flex items-center justify-between border-b border-black/5 pb-6">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight uppercase heading-font">Secure Checkout</h1>
+            <p className="text-2xl font-bold tracking-tight uppercase heading-font">Secure Checkout</p>
             <div className="flex items-center gap-1.5 text-[9px] font-black text-neutral-400 uppercase tracking-widest">
               <Lock className="w-3.5 h-3.5" /> SSL encrypted
             </div>
@@ -169,7 +168,7 @@ export default function CheckoutPage() {
             {/* Contact */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">01. Contact Details</h2>
+                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">01. Contact Details</p>
                  <div className="h-px bg-black/5 flex-1" />
               </div>
               
@@ -196,7 +195,7 @@ export default function CheckoutPage() {
             {/* Shipping */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">02. Shipping Address</h2>
+                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">02. Shipping Address</p>
                  <div className="h-px bg-black/5 flex-1" />
               </div>
               
@@ -223,7 +222,7 @@ export default function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">03. Payment Method</h2>
+                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">03. Payment Method</p>
                  <div className="h-px bg-black/5 flex-1" />
               </div>
               
@@ -261,7 +260,7 @@ export default function CheckoutPage() {
             className="lg:col-span-5"
           >
             <div className="bg-white rounded-[24px] border border-black/5 p-6 md:p-8 space-y-8 sticky top-10">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">Your Selections</h2>
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-black">Your Selections</p>
               
               {/* Selections List */}
               <div className="divide-y divide-black/5 overflow-y-auto max-h-[360px] pr-1">
@@ -275,7 +274,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex-1 space-y-1 min-w-0">
                          {/* Reduced Product Title Size - Premium Shopify Plus style */}
-                         <h3 className="text-[11px] font-bold text-neutral-800 uppercase tracking-wider truncate">{item.name}</h3>
+                         <p className="text-[11px] font-bold text-neutral-800 uppercase tracking-wider truncate">{item.name}</p>
                          <p className="text-[9px] text-neutral-400 font-bold uppercase">
                            Qty {item.quantity} / {item.selectedOptions ? Object.values(item.selectedOptions).join(" / ") : "Standard"}
                          </p>
@@ -329,8 +328,8 @@ export default function CheckoutPage() {
                 )}
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-neutral-450">
                   <span>Shipping</span>
-                  <span className={shipping === 0 ? "text-emerald-600" : "text-black font-semibold"}>
-                    {shipping === 0 ? "Complimentary" : `$${shipping.toFixed(2)}`}
+                  <span className="text-emerald-600 font-semibold">
+                    Free
                   </span>
                 </div>
                 

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Plus, ArrowRight } from "lucide-react";
 import dbConnect from "@/lib/db";
 import Blog from "@/models/Blog";
-import SiteConfig from "@/models/SiteConfig";
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +45,12 @@ const BlogCard = ({ post }) => (
     </div>
 
     <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-       <h3 className="text-xs md:text-lg font-medium heading-font text-black/80 group-hover:text-black transition-colors uppercase">
+       <p 
+          style={{ fontFamily: "var(--brand-font)" }}
+          className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
+       >
           {post.title}
-       </h3>
+       </p>
        
        <div className="flex items-center justify-between border-t border-black/[0.03] pt-2 md:pt-3">
           <span className="text-[10px] md:text-sm font-bold text-black uppercase tracking-tight">
@@ -80,14 +82,7 @@ export default async function BlogArchive() {
     date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   }));
 
-  const config = await SiteConfig.findOne({ key: 'main' }).lean();
-  const rawFeaturedProduct = config?.blogs?.featuredProduct || {
-    id: "default",
-    name: "Archival Piece",
-    image: "/placeholder.jpg",
-    label: "FEATURED"
-  };
-  const featuredProduct = JSON.parse(JSON.stringify(rawFeaturedProduct));
+
 
   const page = await Page.findOne({ slug: "blog", status: "Published" }).lean();
   const { structuredData } = resolveSEOMetadata({
@@ -132,28 +127,6 @@ export default async function BlogArchive() {
                {posts.map((post) => (
                   <BlogCard key={post.id} post={post} />
                ))}
-               
-               <div className="bg-black text-white p-8 rounded-[24px] flex flex-col justify-between relative overflow-hidden group min-h-[300px]">
-                  <div className="relative z-10 space-y-4">
-                     <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.4em]">ARCHIVE SHOP</span>
-                     <h3 className="text-2xl font-bold heading-font uppercase leading-tight">
-                        {featuredProduct.name}
-                     </h3>
-                     <p className="text-white/50 text-[10px] md:text-sm line-clamp-3">
-                        Featured in this season&apos;s archival entries.
-                     </p>
-                  </div>
-                  <Link 
-                    href={`/product/${featuredProduct.id}`}
-                    className="relative z-10 flex items-center justify-center gap-3 w-full bg-white text-black py-4 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#FFC633] transition-all"
-                  >
-                    Shop archive
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                  <div className="absolute -bottom-10 -right-10 w-48 h-48 opacity-20 group-hover:scale-110 transition-transform duration-1000">
-                     <img src={featuredProduct.image} className="w-full h-full object-cover" />
-                  </div>
-               </div>
             </div>
          </div>
       </section>

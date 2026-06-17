@@ -116,11 +116,11 @@ export default function ClientProductActions({ product, onVariantChange }) {
         return (
           <div key={attr.name} className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <p className="text-[9px] font-medium text-[#6F655B]/60 uppercase tracking-[0.25em]">
+              <p className="text-[10px] md:text-[11px] font-bold text-primary/80 uppercase tracking-[0.25em]">
                 {attr.name}
               </p>
               {selectedOptions[attr.name] && (
-                <span className="text-[10px] font-medium text-[#1E1B19] uppercase tracking-wider">
+                <span className="text-[11px] md:text-xs font-bold text-primary uppercase tracking-wider">
                   {selectedOptions[attr.name]}
                 </span>
               )}
@@ -139,8 +139,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
                       title={option.label}
                       className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${
                         isSelected
-                          ? "ring-1 ring-offset-2 ring-[#1E1B19] scale-105"
-                          : "ring-1 ring-black/10 hover:ring-[#1E1B19]/30 hover:scale-105"
+                          ? "ring-1 ring-offset-2 ring-primary scale-105"
+                          : "ring-1 ring-black/10 hover:ring-primary/30 hover:scale-105"
                       }`}
                       style={{
                         backgroundColor: option.hex || "#ddd",
@@ -172,10 +172,10 @@ export default function ClientProductActions({ product, onVariantChange }) {
                     key={option.label}
                     type="button"
                     onClick={() => handleOptionSelect(attr.name, option)}
-                    className={`h-10 px-5 rounded-[var(--radius,0px)] text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-200 border ${
+                    className={`h-10 px-5 rounded-[var(--radius,0px)] text-[11px] md:text-xs font-semibold uppercase tracking-[0.2em] transition-all duration-200 border ${
                       isSelected
-                        ? "bg-[#1E1B19] text-white border-[#1E1B19]"
-                        : "bg-transparent text-[#6F655B] border-[#E3DACB] hover:border-[#1E1B19] hover:text-[#1E1B19]"
+                        ? "bg-primary text-white border-primary"
+                        : "bg-transparent text-primary/70 border-border hover:border-primary hover:text-primary"
                     }`}
                   >
                     {option.label}
@@ -192,34 +192,34 @@ export default function ClientProductActions({ product, onVariantChange }) {
         {(() => {
           if (!product.manageStock) {
             return (
-              <>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                <span className="text-[9px] font-medium uppercase tracking-wider text-emerald-700">In Stock</span>
-              </>
+              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50/80 px-3 py-1 rounded border border-emerald-250">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                In Stock
+              </span>
             );
           }
           const stockNum = Number(product.stock) || 0;
           const lowThreshold = Number(product.lowStockThreshold) || 5;
           if (stockNum <= 0) {
             return (
-              <>
+              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-red-800 bg-red-50/80 px-3 py-1 rounded border border-red-250">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
-                <span className="text-[9px] font-medium uppercase tracking-wider text-red-750">Out of Stock</span>
-              </>
+                Out of Stock
+              </span>
             );
           } else if (stockNum <= lowThreshold) {
             return (
-              <>
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span className="text-[9px] font-medium uppercase tracking-wider text-amber-700">Low Stock — {stockNum} units remaining</span>
-              </>
+              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50/80 px-3 py-1 rounded border border-amber-250">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                Low Stock — {stockNum} units remaining
+              </span>
             );
           } else {
             return (
-              <>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                <span className="text-[9px] font-medium uppercase tracking-wider text-emerald-700">In Stock — {stockNum} units</span>
-              </>
+              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50/80 px-3 py-1 rounded border border-emerald-250">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                In Stock — {stockNum} units
+              </span>
             );
           }
         })()}
@@ -228,17 +228,17 @@ export default function ClientProductActions({ product, onVariantChange }) {
       {/* Quantity + ATC */}
       <div className="space-y-3">
         <div className="flex gap-3">
-          <div className="flex items-center bg-transparent rounded-[var(--radius,0px)] border border-[#E3DACB] px-4 gap-4 h-12 shrink-0">
+          <div className="flex items-center bg-transparent rounded-[var(--radius,0px)] border border-border px-4 gap-4 h-12 shrink-0">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="text-[#6F655B]/40 hover:text-[#1E1B19] transition-colors"
+              className="text-primary/40 hover:text-primary transition-colors"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="font-medium text-sm w-5 text-center text-[#1E1B19]">{quantity}</span>
+            <span className="font-bold text-sm w-5 text-center text-primary">{quantity}</span>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="text-[#6F655B]/40 hover:text-[#1E1B19] transition-colors"
+              className="text-primary/40 hover:text-primary transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -246,10 +246,10 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
           <button
             onClick={handleAddToCart}
-            className={`flex-1 h-12 rounded-[var(--radius,0px)] font-medium uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] ${
+            className={`flex-1 h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] md:text-xs flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] ${
               addedFeedback
                 ? "bg-emerald-600 text-white"
-                : "bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90"
+                : "bg-primary text-white hover:bg-primary/90"
             }`}
           >
             {addedFeedback ? (
@@ -268,7 +268,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
         <button
           onClick={handleSecureCheckout}
-          className="w-full h-12 border border-[#1E1B19] rounded-[var(--radius,0px)] text-[#1E1B19] font-medium uppercase tracking-[0.25em] text-[10px] hover:bg-[#1E1B19] hover:text-white transition-all duration-200 active:scale-[0.98]"
+          className="w-full h-12 border border-primary rounded-[var(--radius,0px)] text-primary font-bold uppercase tracking-[0.25em] text-[11px] md:text-xs hover:bg-primary hover:text-white transition-all duration-200 active:scale-[0.98]"
         >
           Secure Checkout
         </button>

@@ -78,33 +78,27 @@ export default function Hero({
                   {hero.slides[currentSlide].link ? (
                     <Link
                       href={hero.slides[currentSlide].link}
-                      className="group relative overflow-hidden bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm transition-all duration-500 shadow-xl active:scale-95 inline-block"
+                      className="group flex items-center justify-center gap-2 bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-neutral-100 hover:scale-[1.03] active:scale-95 inline-flex shadow-xl"
                     >
-                      <span className="relative z-10 flex items-center gap-2 transition-colors duration-500 group-hover:text-white">
-                        {hero.slides[currentSlide].buttonText}
-                        <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
-                      </span>
-                      <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+                      <span>{hero.slides[currentSlide].buttonText}</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </Link>
                   ) : (
-                    <button className="group relative overflow-hidden bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm transition-all duration-500 shadow-xl active:scale-95">
-                      <span className="relative z-10 flex items-center gap-2 transition-colors duration-500 group-hover:text-white">
-                        {hero.slides[currentSlide].buttonText}
-                        <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
-                      </span>
-                      <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+                    <button className="group flex items-center justify-center gap-2 bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-neutral-100 hover:scale-[1.03] active:scale-95 inline-flex shadow-xl">
+                      <span>{hero.slides[currentSlide].buttonText}</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                   )}
                   {hero.labels.viewCollectionLink ? (
                     <Link
                       href={hero.labels.viewCollectionLink}
-                      className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group"
+                      className="group flex items-center justify-center border border-white/30 bg-transparent text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:scale-[1.03] active:scale-95 inline-flex"
                     >
-                      <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
+                      <span>{hero.labels.viewCollection}</span>
                     </Link>
                   ) : (
-                    <button className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group">
-                      <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
+                    <button className="group flex items-center justify-center border border-white/30 bg-transparent text-white px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:scale-[1.03] active:scale-95 inline-flex">
+                      <span>{hero.labels.viewCollection}</span>
                     </button>
                   )}
                 </div>
