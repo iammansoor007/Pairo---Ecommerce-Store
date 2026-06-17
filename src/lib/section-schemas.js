@@ -14,7 +14,8 @@ export const SECTION_SCHEMAS = {
         { name: "tagline", label: "Tagline", type: "text" }
       ]},
       { name: "labels", label: "Labels", type: "group", fields: [
-        { name: "viewCollection", label: "View Collection Label", type: "text" }
+        { name: "viewCollection", label: "View Collection Label", type: "text" },
+        { name: "viewCollectionLink", label: "View Collection Link", type: "text" }
       ]},
       { name: "marqueeItems", label: "Marquee Items", type: "repeater", fields: [
         { name: "text", label: "Display Text", type: "text" },

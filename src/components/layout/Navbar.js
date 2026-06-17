@@ -75,7 +75,7 @@ export default function Navbar() {
         .sort((a, b) => (a.order || 0) - (b.order || 0))
         .map(item => {
           const isMega = item.type === 'mega_menu';
-          
+
           let itemMegaCategories = [];
           if (isMega) {
             const itemMegaCategoryIds = item.megaCategoryIds || [];
@@ -88,14 +88,14 @@ export default function Navbar() {
 
           let itemDropdownCategories = [];
           if (item.type === 'dropdown_category') {
-             const dropdownCategoryIds = item.dropdownCategoryIds || [];
-             itemDropdownCategories = dropdownCategoryIds.map(slug => dbCategories.find(c => c.slug === slug)).filter(Boolean);
+            const dropdownCategoryIds = item.dropdownCategoryIds || [];
+            itemDropdownCategories = dropdownCategoryIds.map(slug => dbCategories.find(c => c.slug === slug)).filter(Boolean);
           }
 
           let itemDropdownProducts = [];
           if (item.type === 'dropdown_product') {
-             const dropdownProductIds = item.dropdownProductIds || [];
-             itemDropdownProducts = dropdownProductIds.map(id => dbProducts.find(p => p._id === id)).filter(Boolean);
+            const dropdownProductIds = item.dropdownProductIds || [];
+            itemDropdownProducts = dropdownProductIds.map(id => dbProducts.find(p => p._id === id)).filter(Boolean);
           }
 
           return {
@@ -168,9 +168,8 @@ export default function Navbar() {
       </div>
 
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-500 border-b border-black/5 h-20 md:h-24 flex items-center ${
-          scrolled ? "bg-white/90 backdrop-blur-xl shadow-sm" : "bg-white"
-        }`}
+        className={`sticky top-0 z-50 w-full transition-all duration-500 border-b border-black/5 h-20 md:h-24 flex items-center ${scrolled ? "bg-white/90 backdrop-blur-xl shadow-sm" : "bg-white"
+          }`}
       >
         <div className="container mx-auto px-6 md:px-16">
           <nav className="flex items-center justify-between">
@@ -199,7 +198,7 @@ export default function Navbar() {
                       href={item.href}
                       target={item.openInNewTab ? '_blank' : undefined}
                       rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/60 hover:text-black transition-colors flex items-center gap-2"
+                      className="text-[14px] font-semibold uppercase tracking-[0.2em] text-black hover:text-black transition-colors flex items-center gap-2"
                     >
                       {item.name}
                       {hasDropdown && <ChevronDown className="w-3 h-3" />}
@@ -304,9 +303,9 @@ export default function Navbar() {
                                     <span className="block text-[8px] font-black text-black/35 tracking-[0.3em] uppercase mb-6">Collections</span>
                                     <div className="flex flex-col gap-4">
                                       {(item.itemMegaCategories || []).map((cat, catIdx) => (
-                                        <Link 
-                                          key={cat.slug || cat.name} 
-                                          href={`/shop?category=${cat.slug}`} 
+                                        <Link
+                                          key={cat.slug || cat.name}
+                                          href={`/shop?category=${cat.slug}`}
                                           className="group/lnk flex items-center gap-4 text-left"
                                         >
                                           <span className="text-[10px] font-mono text-black/30 group-hover/lnk:text-black transition-colors duration-300">0{catIdx + 1}</span>
@@ -321,7 +320,7 @@ export default function Navbar() {
                                       ))}
                                     </div>
                                   </div>
-                                  
+
                                   <div className="mt-8 pt-4 border-t border-black/[0.03]">
                                     <Link href="/shop" className="text-[9px] font-black uppercase tracking-[0.25em] text-black/40 hover:text-black transition-colors flex items-center gap-1.5">
                                       View All Products <span className="translate-y-[-0.5px]">→</span>
@@ -332,21 +331,21 @@ export default function Navbar() {
                                 {/* Right Visual Pane */}
                                 <div className="col-span-8 flex items-center justify-start gap-6 pl-2">
                                   {(item.itemMegaCategories || []).slice(0, 3).map((cat) => (
-                                    <Link 
-                                      key={`promo-${cat.slug || cat.name}`} 
-                                      href={`/shop?category=${cat.slug}`} 
+                                    <Link
+                                      key={`promo-${cat.slug || cat.name}`}
+                                      href={`/shop?category=${cat.slug}`}
                                       className="group/promo relative flex-1 min-w-[160px] max-w-[210px] aspect-[4/5] rounded-[20px] overflow-hidden bg-black/5 border border-black/5 shadow-sm hover:shadow-md transition-all duration-500"
                                     >
-                                      <Image 
-                                        src={cat.image || '/placeholder.jpg'} 
-                                        alt={cat.name} 
-                                        fill 
+                                      <Image
+                                        src={cat.image || '/placeholder.jpg'}
+                                        alt={cat.name}
+                                        fill
                                         sizes="210px"
-                                        className="object-cover transition-transform duration-1000 ease-out group-hover/promo:scale-105" 
+                                        className="object-cover transition-transform duration-1000 ease-out group-hover/promo:scale-105"
                                       />
                                       {/* Gradient Overlay */}
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity duration-500" />
-                                      
+
                                       {/* Editorial Content */}
                                       <div className="absolute inset-x-0 bottom-0 p-5 flex flex-col items-start gap-1">
                                         <span className="text-[7px] font-bold tracking-[0.25em] text-white/50 uppercase">Discover</span>
@@ -439,7 +438,7 @@ export default function Navbar() {
                             {item.name}
                             <ChevronDown className={`w-5 h-5 transition-transform ${isMobileActive ? "rotate-180" : ""}`} />
                           </button>
-                          
+
                           <AnimatePresence>
                             {isMobileActive && (
                               <motion.div
@@ -463,7 +462,7 @@ export default function Navbar() {
                                     ))}
                                   </div>
                                 )}
-                                
+
                                 {(item.dropdownType === 'mega' || item.type === 'mega_menu') && (
                                   <div className="grid grid-cols-2 gap-4 mt-4">
                                     {item.itemMegaCategories.map((cat) => (

@@ -88,7 +88,7 @@ const SiteConfigSchema = new mongoose.Schema({
     links: [{ name: String, href: String, hasMegaMenu: Boolean }]
   },
   hero: {
-    slides: [{ id: Number, title: String, subtitle: String, image: String, buttonText: String }],
+    slides: [{ id: Number, title: String, subtitle: String, image: String, buttonText: String, link: String }],
     labels: Object,
     stats: [{ value: String, label: String }],
     brands: [String]

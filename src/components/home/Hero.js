@@ -2,19 +2,20 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import MarqueeSection from "./MarqueeSection";
 import { useSiteData } from "@/context/SiteContext";
 
-export default function Hero({ 
-  slides: propSlides, 
-  brand: propBrand, 
+export default function Hero({
+  slides: propSlides,
+  brand: propBrand,
   labels: propLabels,
   marqueeItems: propMarqueeItems
 }) {
   const siteData = useSiteData();
-  
+
   // Use props if available (Page Builder mode), otherwise fallback to SiteContext (Legacy mode)
   const heroData = {
     hero: {
@@ -28,7 +29,7 @@ export default function Hero({
   const { hero, brand } = heroData;
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [direction, setDirection] = useState(0); 
+  const [direction, setDirection] = useState(0);
 
   const nextSlide = () => {
     if (!hero.slides.length) return;
@@ -70,17 +71,42 @@ export default function Hero({
           <div className="container mx-auto px-6 md:px-16 h-full flex items-center relative z-10">
             <div className="max-w-2xl">
               <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }} className="space-y-4 md:space-y-6">
-                <div className="flex items-center gap-3"><div className="h-[1.5px] w-8 bg-white/30" /><span className="text-white/50 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase">{brand.tagline}</span></div>
+                <div className="flex items-center gap-3"><div className="h-[1.5px] w-8 bg-white/30" /><span className="text-white/90 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase">{brand.tagline}</span></div>
                 <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white heading-font leading-[1.05] tracking-tight max-w-[12ch] md:max-w-none">{hero.slides[currentSlide].title}</h1>
-                <p className="text-white/40 text-xs md:text-base lg:text-lg max-w-md leading-relaxed font-sans">{hero.slides[currentSlide].subtitle}</p>
+                <p className="text-white/90 text-xs md:text-base lg:text-lg max-w-md leading-relaxed font-sans">{hero.slides[currentSlide].subtitle}</p>
                 <div className="flex flex-wrap items-center gap-4 pt-4 md:pt-6">
-                  <button className="group relative overflow-hidden bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm transition-all duration-500 shadow-xl active:scale-95">
-                    <span className="relative z-10 flex items-center gap-2 transition-colors duration-500 group-hover:text-white">{hero.slides[currentSlide].buttonText}<ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" /></span>
-                    <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
-                  </button>
-                  <button className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group">
-                    <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
-                  </button>
+                  {hero.slides[currentSlide].link ? (
+                    <Link
+                      href={hero.slides[currentSlide].link}
+                      className="group relative overflow-hidden bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm transition-all duration-500 shadow-xl active:scale-95 inline-block"
+                    >
+                      <span className="relative z-10 flex items-center gap-2 transition-colors duration-500 group-hover:text-white">
+                        {hero.slides[currentSlide].buttonText}
+                        <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
+                      </span>
+                      <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+                    </Link>
+                  ) : (
+                    <button className="group relative overflow-hidden bg-white text-black px-8 md:px-10 py-3.5 md:py-4 rounded-full font-bold text-xs md:text-sm transition-all duration-500 shadow-xl active:scale-95">
+                      <span className="relative z-10 flex items-center gap-2 transition-colors duration-500 group-hover:text-white">
+                        {hero.slides[currentSlide].buttonText}
+                        <ArrowRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
+                      </span>
+                      <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
+                    </button>
+                  )}
+                  {hero.labels.viewCollectionLink ? (
+                    <Link
+                      href={hero.labels.viewCollectionLink}
+                      className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group"
+                    >
+                      <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
+                    </Link>
+                  ) : (
+                    <button className="text-white/40 text-xs md:text-sm font-bold flex items-center gap-2 hover:text-white transition-all group">
+                      <span className="border-b border-white/10 pb-0.5 group-hover:border-white transition-all uppercase tracking-widest">{hero.labels.viewCollection}</span>
+                    </button>
+                  )}
                 </div>
               </motion.div>
             </div>
