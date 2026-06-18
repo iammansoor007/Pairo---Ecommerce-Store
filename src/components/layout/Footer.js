@@ -7,7 +7,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import logo from "../../assets/png-file.png";
+import logo from "../../assets/pairo.webp";
 
 const FacebookIcon = ({ className }) => (
   <svg viewBox="0 0 24 24" className={className} stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -148,11 +148,11 @@ export default function Footer() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: false }} variants={containerVariants} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-white/10">
           <motion.div variants={itemVariants}>
             <Link href="/" className="flex-shrink-0">
-              {footerLogoUrl ? (
-                <Image src={footerLogoUrl} alt="Logo" width={110} height={40} className="object-contain h-10 w-auto" />
-              ) : (
-                <Image src={logo} alt="Pairo Logo" width={110} height={40} className="object-contain h-10 w-auto" />
-              )}
+
+
+
+              <Image src={logo} alt="Pairo Logo" width={110} height={40} className="object-contain h-10 w-auto" />
+
             </Link>
           </motion.div>
           <motion.div variants={itemVariants} className="flex items-center gap-8">
