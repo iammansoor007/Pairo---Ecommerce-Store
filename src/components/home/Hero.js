@@ -89,18 +89,6 @@ export default function Hero({
                       <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                   )}
-                  {hero.labels.viewCollectionLink ? (
-                    <Link
-                      href={hero.labels.viewCollectionLink}
-                      className="group flex items-center justify-center border border-white/30 bg-transparent text-white px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 rounded-full font-bold text-[10px] sm:text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:scale-[1.03] active:scale-95 inline-flex"
-                    >
-                      <span>{hero.labels.viewCollection}</span>
-                    </Link>
-                  ) : (
-                    <button className="group flex items-center justify-center border border-white/30 bg-transparent text-white px-6 sm:px-8 md:px-10 py-3 sm:py-3.5 md:py-4 rounded-full font-bold text-[10px] sm:text-xs md:text-sm tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white hover:scale-[1.03] active:scale-95 inline-flex">
-                      <span>{hero.labels.viewCollection}</span>
-                    </button>
-                  )}
                 </div>
               </motion.div>
             </div>

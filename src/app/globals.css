@@ -262,13 +262,15 @@ img {
 }
 
 .blog-content a {
+  color: #4A3B2F !important;
   text-decoration: underline !important;
   font-weight: 600 !important;
-  transition: opacity 0.2s !important;
+  transition: all 0.2s ease-in-out !important;
 }
 
 .blog-content a:hover {
-  opacity: 0.7 !important;
+  color: #2c221a !important;
+  opacity: 1 !important;
 }
 
 

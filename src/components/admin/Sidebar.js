@@ -204,6 +204,8 @@ export default function AdminSidebar() {
             isOpen={openAccordion === "settings"} onToggle={() => handleToggle("settings")}
           >
             <NavLink href="/admin/settings/site" exact isSubmenu>General</NavLink>
+            <NavLink href="/admin/settings/shipping" exact isSubmenu>Shipping</NavLink>
+            <NavLink href="/admin/settings/tax" exact isSubmenu>Tax</NavLink>
           </AccordionMenu>
 
         </nav>

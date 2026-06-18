@@ -82,6 +82,14 @@ const SiteConfigSchema = new mongoose.Schema({
   // ─── Social Links ──────────────────────────────────────────
   socialLinks: [SocialLinkSchema],
 
+  // ─── Store Commerce Settings ───────────────────────────────────────────────
+  // Global defaults used by the shipping engine, tax service, and checkout
+  commerce: {
+    storeCurrency: { type: String, default: 'PKR' },              // ISO 4217 currency code
+    weightUnit:    { type: String, enum: ['kg', 'lb'], default: 'kg' },
+    dimensionUnit: { type: String, enum: ['cm', 'in'], default: 'cm' }
+  },
+
   // ─── Legacy fields kept for backward compatibility ─────────
   navigation: {
     offers: [String],

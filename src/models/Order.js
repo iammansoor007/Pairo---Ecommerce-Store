@@ -69,7 +69,24 @@ const OrderSchema = new mongoose.Schema({
   idempotencyKey: { type: String, unique: true, sparse: true, index: true },
   customerNote: String,
   adminNotes: [String],
-  
+
+  // ─── Shipping Snapshot ─────────────────────────────────────────────────────
+  // Immutable capture of the shipping choice at order time. Never mutated after
+  // creation — changes to zones/methods do not affect historical orders.
+  shippingSnapshot: {
+    version:    { type: Number, default: 1 },                                    // schema version guard for future migrations
+    zoneId:     { type: mongoose.Schema.Types.ObjectId, ref: 'ShippingZone' },
+    zoneName:   String,
+    methodId:   { type: mongoose.Schema.Types.ObjectId, ref: 'ShippingMethod' },
+    methodName: String,
+    provider:   String,
+    cost:       { type: Number, default: 0 },
+    currency:   String,                                                          // store currency at time of order
+    settings:   mongoose.Schema.Types.Mixed,                                     // full provider settings snapshot
+    conditions: mongoose.Schema.Types.Mixed,                                     // conditions snapshot
+    capturedAt: { type: Date, default: Date.now }
+  },
+
   timeline: [{
     status: String,
     message: String,

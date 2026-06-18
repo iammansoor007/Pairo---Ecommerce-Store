@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ChevronLeft, Lock, CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, User, Mail, Phone, MapPin, Tag, MessageSquare, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
@@ -10,12 +10,16 @@ import { useRouter } from "next/navigation";
 export default function CheckoutPage() {
   const { 
     cartItems, 
-    cartSubtotal, 
+    cartSubtotal,
+    shippingCost,
+    cartTotal,
     clearCart,
     appliedPromo,
     discountTotal,
     applyPromoCode,
-    removePromoCode
+    removePromoCode,
+    selectedShipping,
+    setSelectedShipping
   } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [promoCode, setPromoCode] = useState("");
@@ -30,11 +34,18 @@ export default function CheckoutPage() {
     lastName: "",
     email: "",
     phone: "",
+    country: "Pakistan",
+    state: "",
     street: "",
     city: "",
     zip: "",
     customerNote: ""
   });
+
+  // Shipping rates state
+  const [shippingRates, setShippingRates]         = useState([]);
+  const [loadingRates, setLoadingRates]           = useState(false);
+  const [shippingRatesFetched, setShippingRatesFetched] = useState(false);
 
   useEffect(() => {
     // Generate unique key for this session to prevent double-orders
@@ -56,8 +67,38 @@ export default function CheckoutPage() {
     }
   };
 
-  const shipping = 0; 
-  const total = cartSubtotal + shipping;
+  // Fetch shipping rates when address fields are filled
+  const fetchRates = useCallback(async () => {
+    if (!formData.country) return;
+    setLoadingRates(true);
+    try {
+      const res = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          address: { country: formData.country, state: formData.state, city: formData.city, zip: formData.zip },
+          subtotal: cartSubtotal,
+          items: cartItems
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShippingRates(data.rates || []);
+        setShippingRatesFetched(true);
+        // Auto-select first rate if none selected
+        if (!selectedShipping && data.rates?.length > 0) {
+          setSelectedShipping(data.rates[0]);
+        }
+      }
+    } catch (e) { console.error('Failed to fetch shipping rates', e); }
+    finally { setLoadingRates(false); }
+  }, [formData.country, formData.state, formData.city, formData.zip, cartSubtotal]);
+
+  // Debounce: fetch rates when address changes
+  useEffect(() => {
+    const t = setTimeout(fetchRates, 600);
+    return () => clearTimeout(t);
+  }, [fetchRates]);
 
   // Debounced email-change promo code validation
   useEffect(() => {
@@ -101,16 +142,31 @@ export default function CheckoutPage() {
             fullName: `${formData.firstName} ${formData.lastName}`,
             street: formData.street,
             city: formData.city,
+            state: formData.state,
             zip: formData.zip,
             phone: formData.phone,
-            country: "USA" // Default for now
+            country: formData.country
           },
+          // Build the immutable shippingSnapshot
+          shippingSnapshot: selectedShipping ? {
+            version:    1,
+            zoneId:     selectedShipping.zoneId,
+            zoneName:   selectedShipping.zoneName,
+            methodId:   selectedShipping.methodId,
+            methodName: selectedShipping.methodName,
+            provider:   selectedShipping.provider,
+            cost:       selectedShipping.cost,
+            currency:   selectedShipping.currency,
+            settings:   selectedShipping.settings,
+            conditions: selectedShipping.conditions,
+            capturedAt: new Date().toISOString()
+          } : null,
           financials: {
-            subtotal: cartSubtotal,
-            shippingCost: shipping,
+            subtotal:      cartSubtotal,
+            shippingCost:  shippingCost,
             discountTotal: discountTotal || 0,
-            total: total - (discountTotal || 0),
-            promoCode: appliedPromo?.code || null
+            total:         cartTotal,
+            promoCode:     appliedPromo?.code || null
           }
         })
       });
@@ -205,12 +261,20 @@ export default function CheckoutPage() {
                   <input name="street" onChange={handleInputChange} value={formData.street} type="text" placeholder="123 Luxury Avenue, Apt 4" className={inputClass} required />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">City</label>
-                  <input name="city" onChange={handleInputChange} value={formData.city} type="text" placeholder="New York" className={inputClass} />
+                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Country</label>
+                  <input name="country" onChange={handleInputChange} value={formData.country} type="text" placeholder="Pakistan" className={inputClass} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">ZIP Code</label>
-                  <input name="zip" onChange={handleInputChange} value={formData.zip} type="text" placeholder="10001" className={inputClass} />
+                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">State / Province</label>
+                  <input name="state" onChange={handleInputChange} value={formData.state} type="text" placeholder="Punjab" className={inputClass} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">City</label>
+                  <input name="city" onChange={handleInputChange} value={formData.city} type="text" placeholder="Lahore" className={inputClass} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">ZIP / Postal Code</label>
+                  <input name="zip" onChange={handleInputChange} value={formData.zip} type="text" placeholder="54000" className={inputClass} />
                 </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Order Note (Optional)</label>
@@ -219,10 +283,60 @@ export default function CheckoutPage() {
               </div>
             </section>
 
+            {/* Shipping Method Selector */}
+            <section className="space-y-4">
+              <div className="flex items-center gap-3">
+                <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">03. Shipping Method</p>
+                <div className="h-[1px] bg-border/60 flex-1" />
+              </div>
+              {loadingRates && (
+                <div className="flex items-center gap-2 text-[11px] text-foreground/60">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Calculating shipping rates...
+                </div>
+              )}
+              {!loadingRates && shippingRates.length === 0 && shippingRatesFetched && (
+                <p className="text-[11px] text-foreground/60 italic">No shipping methods available for your address.</p>
+              )}
+              {!loadingRates && !shippingRatesFetched && (
+                <p className="text-[11px] text-foreground/60 italic">Enter your address to see available shipping options.</p>
+              )}
+              {shippingRates.length > 0 && (
+                <div className="space-y-2">
+                  {shippingRates.map(rate => (
+                    <label
+                      key={rate.methodId}
+                      className={`flex items-center justify-between gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
+                        selectedShipping?.methodId === rate.methodId
+                          ? 'border-primary bg-primary/5 shadow-sm'
+                          : 'border-border/60 hover:border-primary/40 bg-secondary/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="radio"
+                          name="shippingMethod"
+                          checked={selectedShipping?.methodId === rate.methodId}
+                          onChange={() => setSelectedShipping(rate)}
+                          className="accent-primary"
+                        />
+                        <div>
+                          <p className="text-[12px] font-bold text-foreground">{rate.methodName}</p>
+                          {rate.description && <p className="text-[10px] text-foreground/60">{rate.description}</p>}
+                        </div>
+                      </div>
+                      <span className="text-[13px] font-bold text-foreground shrink-0">
+                        {rate.cost === 0 ? 'Free' : `${rate.currency ?? ''} ${rate.cost.toLocaleString()}`}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </section>
+
             {/* Payment */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">03. Payment Method</p>
+                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">04. Payment Method</p>
                  <div className="h-[1px] bg-border/60 flex-1" />
               </div>
               
@@ -328,15 +442,17 @@ export default function CheckoutPage() {
                 )}
                 <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-foreground/70">
                   <span>Shipping</span>
-                  <span className="text-emerald-600 font-semibold">
-                    Free
+                  <span className={shippingCost === 0 ? 'text-emerald-600 font-semibold' : 'text-foreground font-semibold'}>
+                    {selectedShipping
+                      ? (shippingCost === 0 ? 'Free' : `${selectedShipping.currency ?? 'Rs.'} ${shippingCost.toLocaleString()}`)
+                      : '— Select method'}
                   </span>
                 </div>
                 
                 {/* Total */}
                 <div className="pt-6 flex justify-between items-end border-t border-border/80">
                    <span className="text-[13px] font-bold uppercase tracking-[0.2em]">Total Amount</span>
-                   <span className="text-3xl font-bold tracking-tight">${Math.max(0, total - discountTotal).toLocaleString()}</span>
+                   <span className="text-3xl font-bold tracking-tight">Rs. {cartTotal.toLocaleString()}</span>
                 </div>
               </div>
             </div>

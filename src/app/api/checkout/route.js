@@ -22,7 +22,7 @@ export async function POST(req) {
   let attempt = 0;
 
   const body = await req.json();
-  const { items, shippingAddress, financials, customerEmail, customerNote, idempotencyKey } = body;
+  const { items, shippingAddress, financials, customerEmail, customerNote, idempotencyKey, shippingSnapshot } = body;
 
   while (attempt < MAX_RETRIES) {
     try {
@@ -175,6 +175,14 @@ export async function POST(req) {
             const count = await Order.countDocuments({ tenantId }, { session });
             const orderNumber = `PAI-${1000 + count + 1}`;
 
+            // 5b. Validate shippingSnapshot cost matches financials.shippingCost (server-side guard)
+            if (shippingSnapshot && typeof shippingSnapshot.cost === 'number') {
+              const declaredShipping = Number(financials.shippingCost ?? 0);
+              if (Math.abs(shippingSnapshot.cost - declaredShipping) > 0.01) {
+                throw new Error(`Shipping cost mismatch: snapshot says ${shippingSnapshot.cost}, financials says ${declaredShipping}.`);
+              }
+            }
+
             const [newOrder] = await Order.create([{
                 tenantId,
                 orderNumber,
@@ -193,6 +201,7 @@ export async function POST(req) {
                     ipAddress: req.headers.get("x-forwarded-for") || "unknown"
                 },
                 shippingAddress,
+                shippingSnapshot: shippingSnapshot ?? null,
                 customerNote
             }], { session });
 

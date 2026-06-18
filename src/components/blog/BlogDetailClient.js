@@ -161,6 +161,18 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
   return (
     <main className="bg-white min-h-screen selection:bg-black selection:text-white">
+      <style dangerouslySetInnerHTML={{__html: `
+        .blog-content a {
+          color: #4A3B2F !important;
+          text-decoration: underline !important;
+          font-weight: 600 !important;
+          transition: all 0.2s ease-in-out !important;
+        }
+        .blog-content a:hover {
+          color: #2c221a !important;
+          opacity: 1 !important;
+        }
+      `}} />
       <motion.div className="fixed top-0 left-0 right-0 h-0.5 bg-black origin-left z-[100]" style={{ scaleX }} />
 
       <div className="container mx-auto px-4 md:px-8 pt-5 pb-2 border-b border-black/5">
@@ -201,7 +213,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                   <img src={post.image} alt={post.imageAlts?.[post.image] || post.title || "Blog Image"} className="w-full h-full object-cover" />
                </div>
 
-               <div className="max-w-2xl space-y-12 md:space-y-16">
+               <div className="w-full space-y-12 md:space-y-16">
                   {/* General Content */}
                   {post.content && (
                     <section id="general" className="scroll-mt-32">

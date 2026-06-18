@@ -38,6 +38,7 @@ export function CartProvider({ children }) {
   }, [cartItems, storageKey]);
 
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [selectedShipping, setSelectedShipping] = useState(null);
 
   // Load promo code from localStorage when storageKey changes
   useEffect(() => {
@@ -127,8 +128,9 @@ export function CartProvider({ children }) {
     );
   };
 
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartCount    = cartItems.reduce((total, item) => total + item.quantity, 0);
   const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const shippingCost = selectedShipping ? (selectedShipping.cost ?? 0) : 0;
 
   // Re-validate coupon code automatically when cart items or subtotal changes
   useEffect(() => {
@@ -171,6 +173,9 @@ export function CartProvider({ children }) {
     }
   })();
 
+  // Grand total = subtotal - discount + shipping
+  const cartTotal = Math.max(0, cartSubtotal - discountTotal + shippingCost);
+
   const applyPromoCode = async (code, email = null) => {
     if (!code) return { success: false, error: "No code provided" };
     try {
@@ -198,6 +203,7 @@ export function CartProvider({ children }) {
   const clearCart = () => {
     setCartItems([]);
     setAppliedPromo(null);
+    setSelectedShipping(null);
   };
 
   return (
@@ -211,11 +217,15 @@ export function CartProvider({ children }) {
         updateQuantity,
         cartCount,
         cartSubtotal,
+        shippingCost,
+        cartTotal,
         clearCart,
         appliedPromo,
         discountTotal,
         applyPromoCode,
-        removePromoCode
+        removePromoCode,
+        selectedShipping,
+        setSelectedShipping
       }}
     >
       {children}
