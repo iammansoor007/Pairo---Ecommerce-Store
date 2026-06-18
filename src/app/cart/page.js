@@ -79,11 +79,11 @@ export default function CartPage() {
             <div className="flex items-end justify-between border-b border-black/5 pb-8">
               <div className="space-y-1">
                 <p className="text-2xl font-bold heading-font uppercase tracking-tight">Shopping Bag</p>
-                <p className="text-[11px] font-bold text-black/60 uppercase tracking-[0.2em]">
+                <p className="text-[12px] font-bold text-black/60 uppercase tracking-[0.2em]">
                   {cartItems.reduce((acc, item) => acc + item.quantity, 0)} Items Selected
                 </p>
               </div>
-              <Link href="/" className="text-[11px] font-bold uppercase tracking-widest text-black/60 hover:text-black border-b border-black/20 hover:border-black transition-all pb-1">
+              <Link href="/" className="text-[12px] font-bold uppercase tracking-widest text-black/60 hover:text-black border-b border-black/20 hover:border-black transition-all pb-1">
                 Continue Shopping
               </Link>
             </div>
@@ -113,12 +113,12 @@ export default function CartPage() {
                       <div className="space-y-2">
                         <div className="flex justify-between items-start gap-2">
                           <div className="space-y-0.5">
-                            <p className="text-[13px] md:text-sm font-bold heading-font uppercase tracking-tight">{item.name}</p>
+                            <p className="text-sm md:text-base font-bold heading-font uppercase tracking-tight">{item.name}</p>
                             <div className="flex items-center gap-3">
-                              <span className="text-[10px] font-bold text-black/60 uppercase tracking-widest font-sans">Size: {item.selectedSize}</span>
+                              <span className="text-[11px] font-bold text-black/60 uppercase tracking-widest font-sans">Size: {item.selectedSize}</span>
                               <div className="w-[1px] h-2 bg-black/20" />
                               <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] font-bold text-black/60 uppercase tracking-widest font-sans">Color:</span>
+                                <span className="text-[11px] font-bold text-black/60 uppercase tracking-widest font-sans">Color:</span>
                                 <div className="w-2.5 h-2.5 rounded-full border border-black/10" style={{ backgroundColor: item.selectedColor }} />
                               </div>
                             </div>
@@ -141,7 +141,7 @@ export default function CartPage() {
                           >
                             <Minus className="w-3.5 h-3.5" />
                           </button>
-                          <span className="font-bold text-xs w-4 text-center">{item.quantity}</span>
+                          <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(uniqueKey, 1)}
                             className="text-black/30 hover:text-black transition-colors"
@@ -170,8 +170,8 @@ export default function CartPage() {
                 <div key={i} className="flex items-center gap-4 p-6 rounded-2xl bg-gray-50 border border-black/5">
                   <prop.icon className="w-6 h-6 text-black/50" />
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest">{prop.title}</p>
-                    <p className="text-[10px] text-black/60 font-bold uppercase tracking-widest">{prop.desc}</p>
+                    <p className="text-[12px] font-bold uppercase tracking-widest">{prop.title}</p>
+                    <p className="text-[11px] text-black/60 font-bold uppercase tracking-widest">{prop.desc}</p>
                   </div>
                 </div>
               ))}
@@ -184,7 +184,7 @@ export default function CartPage() {
               <p className="text-sm font-bold heading-font uppercase tracking-tight">Order Summary</p>
               
               <div className="space-y-4">
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
+                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest">
                   <span className="text-foreground/70">Subtotal</span>
                   <span className="text-foreground">${cartSubtotal.toFixed(0)}</span>
                 </div>
@@ -194,19 +194,19 @@ export default function CartPage() {
                     <span>-${discountTotal.toFixed(0)}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
+                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest">
                   <span className="text-foreground/70">Estimated Shipping</span>
                   <span className="text-foreground">
                     Calculated next
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest">
+                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest">
                   <span className="text-foreground/70">Tax</span>
                   <span className="text-foreground">Calculated next</span>
                 </div>
                 
                 <div className="pt-4 border-t border-border/80 flex justify-between items-end">
-                  <span className="text-[12px] font-bold uppercase tracking-widest">Total</span>
+                  <span className="text-[13px] font-bold uppercase tracking-widest">Total</span>
                   <span className="text-3xl font-bold heading-font tracking-tight">
                     ${Math.max(0, cartSubtotal - discountTotal).toFixed(0)}
                   </span>

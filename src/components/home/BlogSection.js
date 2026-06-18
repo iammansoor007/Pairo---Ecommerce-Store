@@ -9,37 +9,37 @@ import { useSiteData } from "@/context/SiteContext";
 const BlogCard = ({ post, readMoreLabel }) => (
   <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
     <div className="relative aspect-square bg-[#F7F7F7] rounded-[16px] md:rounded-[24px] overflow-hidden border border-black/5">
-       <div className="absolute inset-0">
-          <Image src={post.image || "/placeholder.jpg"} alt={post.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
-       </div>
-       <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
-          <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category || "JOURNAL"}</span>
-       </div>
-       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-       <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black text-white flex items-center justify-center translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
-          <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />
-       </div>
+      <div className="absolute inset-0">
+        <Image src={post.image || "/placeholder.jpg"} alt={post.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+      </div>
+      <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
+        <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category || "JOURNAL"}</span>
+      </div>
+      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black text-white flex items-center justify-center translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
+        <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />
+      </div>
     </div>
     <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-       <p 
-          style={{ fontFamily: "var(--brand-font)" }}
-          className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
-       >
-          {post.title}
-       </p>
-       <div className="flex items-center justify-between border-t border-black/[0.03] pt-2 md:pt-3">
-          <span className="text-[10px] md:text-sm font-bold text-black uppercase tracking-tight">{post.date}</span>
-          <span className="text-[7px] md:text-[9px] font-bold text-black/40 uppercase tracking-[0.1em]">{readMoreLabel}</span>
-       </div>
+      <p
+        style={{ fontFamily: "var(--brand-font)" }}
+        className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
+      >
+        {post.title}
+      </p>
+      <div className="flex items-center justify-between border-t border-black/[0.03] pt-2 md:pt-3">
+        <span className="text-[10px] md:text-sm font-bold text-black uppercase tracking-tight">{post.date}</span>
+        <span className="text-[7px] md:text-[9px] font-bold text-black/40 uppercase tracking-[0.1em]">{readMoreLabel}</span>
+      </div>
     </div>
   </Link>
 );
 
-export default function BlogSection({ 
-  title, 
-  label, 
-  limit, 
-  readMore 
+export default function BlogSection({
+  title,
+  label,
+  limit,
+  readMore
 }) {
   const siteData = useSiteData();
   const carouselRef = useRef(null);
@@ -54,11 +54,11 @@ export default function BlogSection({
     readMore: readMore || siteData?.blogs?.readMore || "READ MORE",
     limit: limit || 6,
     featuredProduct: siteData?.blogs?.featuredProduct || {
-        label: "FEATURED",
-        name: "Collection",
-        description: "Discover our latest additions.",
-        buttonText: "SHOP NOW",
-        image: "/placeholder.jpg"
+      label: "FEATURED",
+      name: "Collection",
+      description: "Discover our latest additions.",
+      buttonText: "SHOP NOW",
+      image: "/placeholder.jpg"
     }
   };
 
@@ -110,16 +110,16 @@ export default function BlogSection({
       <div className="mx-4 md:mx-8 bg-white border border-black/5 rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-20 px-6 md:px-16">
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
-             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-                <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</span>
-             </div>
-             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{blogsConfig.title}</h2>
+            <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
+              <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</span>
+            </div>
+            <p className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{blogsConfig.title}</p>
           </div>
           <div className="flex items-center gap-3 md:gap-6 shrink-0">
-             <div className="flex gap-1.5 md:gap-2">
-                <button onClick={() => scroll("left")} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollLeft ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"}`}><ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /></button>
-                <button onClick={() => scroll("right")} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollRight ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"}`}><ChevronRight className="w-4 h-4 md:w-5 md:h-5" /></button>
-             </div>
+            <div className="flex gap-1.5 md:gap-2">
+              <button onClick={() => scroll("left")} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollLeft ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"}`}><ChevronLeft className="w-4 h-4 md:w-5 md:h-5" /></button>
+              <button onClick={() => scroll("right")} className={`w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 flex items-center justify-center transition-all ${canScrollRight ? "text-black hover:bg-black hover:text-white" : "text-black/30 cursor-default"}`}><ChevronRight className="w-4 h-4 md:w-5 md:h-5" /></button>
+            </div>
           </div>
         </div>
 

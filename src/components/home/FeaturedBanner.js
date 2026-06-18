@@ -61,9 +61,9 @@ export default function FeaturedBanner({
 
             {/* Scaled Typography */}
             <div className="space-y-2 md:space-y-4">
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
+              <p className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
                 {bannerData.title}
-              </h2>
+              </p>
               <p className="text-white/80 text-[10px] md:text-sm lg:text-base font-light leading-relaxed max-w-sm md:max-w-md">
                 {bannerData.description}
               </p>
@@ -77,7 +77,7 @@ export default function FeaturedBanner({
               ];
               const features = propFeatures && propFeatures.length > 0 ? propFeatures : defaultFeatures;
               return (
-                <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-6 pt-4 border-t border-white/25">
                   {features.map((feat, index) => {
                     const IconComponent = LucideIcons[feat.icon] || LucideIcons.ShieldCheck;
                     return (

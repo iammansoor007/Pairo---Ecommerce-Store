@@ -168,7 +168,7 @@ export default function CheckoutPage() {
             {/* Contact */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-foreground">01. Contact Details</p>
+                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">01. Contact Details</p>
                  <div className="h-[1px] bg-border/60 flex-1" />
               </div>
               
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
             {/* Shipping */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-foreground">02. Shipping Address</p>
+                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">02. Shipping Address</p>
                  <div className="h-[1px] bg-border/60 flex-1" />
               </div>
               
@@ -222,14 +222,14 @@ export default function CheckoutPage() {
             {/* Payment */}
             <section className="space-y-6">
               <div className="flex items-center gap-3">
-                 <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-foreground">03. Payment Method</p>
+                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">03. Payment Method</p>
                  <div className="h-[1px] bg-border/60 flex-1" />
               </div>
               
               <div className="p-5 border border-border/80 rounded-xl bg-secondary/40 flex items-center justify-between shadow-sm">
                  <div className="flex items-center gap-3">
                     <CreditCard className="w-4.5 h-4.5 text-foreground/60" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Manual Payment / Cash on Delivery</span>
+                    <span className="text-[12px] font-bold uppercase tracking-widest text-foreground">Manual Payment / Cash on Delivery</span>
                  </div>
                  <div className="w-4 h-4 rounded-full border-[3px] border-primary bg-background" />
               </div>
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
                <button 
                 onClick={handlePayment}
                 disabled={isProcessing || !cartItems || cartItems.length === 0}
-                className="w-full bg-primary text-background hover:bg-primary/95 py-5 rounded-xl font-bold text-[11px] uppercase tracking-[0.25em] transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl shadow-primary/5"
+                className="w-full bg-primary text-background hover:bg-primary/95 py-5 rounded-xl font-bold text-[13px] uppercase tracking-[0.25em] transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl shadow-primary/5"
                >
                 {isProcessing ? (
                   <>Processing <Loader2 className="w-3.5 h-3.5 animate-spin" /></>
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
             className="lg:col-span-5"
           >
             <div className="bg-background rounded-[24px] border border-border p-6 md:p-8 space-y-8 sticky top-10 shadow-sm">
-              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-foreground">Your Selections</p>
+              <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">Your Selections</p>
               
               {/* Selections List */}
               <div className="divide-y divide-border/60 overflow-y-auto max-h-[360px] pr-1">
@@ -274,11 +274,11 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex-1 space-y-1 min-w-0">
                          {/* Reduced Product Title Size - Premium Shopify Plus style */}
-                         <p className="text-xs font-bold text-foreground uppercase tracking-wider truncate">{item.name}</p>
-                         <p className="text-[10px] text-foreground/65 font-bold uppercase">
+                         <p className="text-sm font-bold text-foreground uppercase tracking-wider truncate">{item.name}</p>
+                         <p className="text-[11px] text-foreground/65 font-bold uppercase">
                            Qty {item.quantity} / {item.selectedOptions ? Object.values(item.selectedOptions).join(" / ") : "Standard"}
                          </p>
-                         <p className="text-xs font-bold tracking-tight text-foreground mt-1">
+                         <p className="text-sm font-bold tracking-tight text-foreground mt-1">
                            ${(item.price * item.quantity).toLocaleString()}
                          </p>
                       </div>
@@ -316,7 +316,7 @@ export default function CheckoutPage() {
 
               {/* Totals Breakdown */}
               <div className="space-y-3 pt-6 border-t border-border/80">
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-foreground/70">
+                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-foreground/70">
                   <span>Subtotal</span>
                   <span className="text-foreground font-semibold">${(cartSubtotal || 0).toLocaleString()}</span>
                 </div>
@@ -326,7 +326,7 @@ export default function CheckoutPage() {
                     <span>-${discountTotal.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-widest text-foreground/70">
+                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-foreground/70">
                   <span>Shipping</span>
                   <span className="text-emerald-600 font-semibold">
                     Free
@@ -335,7 +335,7 @@ export default function CheckoutPage() {
                 
                 {/* Total */}
                 <div className="pt-6 flex justify-between items-end border-t border-border/80">
-                   <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Total Amount</span>
+                   <span className="text-[13px] font-bold uppercase tracking-[0.2em]">Total Amount</span>
                    <span className="text-3xl font-bold tracking-tight">${Math.max(0, total - discountTotal).toLocaleString()}</span>
                 </div>
               </div>

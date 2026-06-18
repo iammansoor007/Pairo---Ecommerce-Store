@@ -83,12 +83,12 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels }) => {
   );
 };
 
-export default function Testimonials({ 
-  title, 
-  label, 
-  buttonText, 
-  verifiedLabel, 
-  reviews: propReviews 
+export default function Testimonials({
+  title,
+  label,
+  buttonText,
+  verifiedLabel,
+  reviews: propReviews
 }) {
   const siteData = useSiteData();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -128,7 +128,7 @@ export default function Testimonials({
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
               <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</span>
             </div>
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate">{testimonialsConfig.title}</h2>
+            <p className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">{testimonialsConfig.title}</p>
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => handleSwipe("prev")} className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"><ChevronLeft className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:-translate-x-1" /></button>
