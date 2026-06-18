@@ -88,7 +88,7 @@ export default function ProductSection({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-black uppercase leading-none truncate"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate"
             >
               {title}
             </motion.p>
