@@ -375,7 +375,7 @@ export default function ProductReviews({ productId, productName }) {
         </div>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="flex items-center gap-2 bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
+          className="flex items-center gap-2 bg-accent text-white hover:opacity-90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
         >
           <Plus className="w-3.5 h-3.5" />
           Write a Review
@@ -390,11 +390,11 @@ export default function ProductReviews({ productId, productName }) {
             <span className="text-lg text-neutral-400 font-normal">/5</span>
           </div>
           <div className="flex justify-center gap-1.5 mb-2">
-            {[...Array(5)].map((_, i) => (
+                          {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 className={`w-5 h-5 ${
-                  i < Math.floor(stats.rating) ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
+                  i < Math.floor(stats.rating) ? "fill-accent text-accent" : "fill-neutral-200 text-neutral-200"
                 }`}
               />
             ))}
@@ -414,7 +414,7 @@ export default function ProductReviews({ productId, productName }) {
                 <span className="w-12 font-medium text-right whitespace-nowrap">{stars} Star</span>
                 <div className="flex-1 bg-[#E3DACB]/30 h-1.5 rounded-[var(--radius,0px)] overflow-hidden">
                   <div
-                    className="bg-primary h-full rounded-[var(--radius,0px)] transition-all duration-500"
+                    className="bg-accent h-full rounded-[var(--radius,0px)] transition-all duration-500"
                     style={{ width: `${percent}%` }}
                   />
                 </div>
@@ -463,7 +463,7 @@ export default function ProductReviews({ productId, productName }) {
                       >
                         <Star
                           className={`w-8 h-8 ${
-                            star <= formData.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
+                            star <= formData.rating ? "fill-accent text-accent" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       </button>
@@ -675,7 +675,7 @@ export default function ProductReviews({ productId, productName }) {
                       >
                         <Star
                           className={`w-8 h-8 ${
-                            star <= editFormData.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
+                            star <= editFormData.rating ? "fill-accent text-accent" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       </button>
@@ -846,7 +846,7 @@ export default function ProductReviews({ productId, productName }) {
           </p>
           <button
             onClick={() => setIsFormOpen(true)}
-            className="bg-[#1E1B19] text-white hover:bg-[#1E1B19]/90 transition-colors px-6 py-3 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
+            className="bg-accent text-white hover:opacity-90 transition-colors px-6 py-3 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
           >
             Review product
           </button>
@@ -877,7 +877,7 @@ export default function ProductReviews({ productId, productName }) {
                         <Star
                           key={i}
                           className={`w-3.5 h-3.5 ${
-                            i < review.rating ? "fill-primary text-primary" : "fill-neutral-200 text-neutral-200"
+                            i < review.rating ? "fill-accent text-accent" : "fill-neutral-200 text-neutral-200"
                           }`}
                         />
                       ))}

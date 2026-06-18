@@ -27,7 +27,7 @@ export default function ClientTabSystem({ product }) {
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 min-w-[120px] md:min-w-[200px] py-5 md:py-6 text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all relative snap-center ${activeTab === tab ? "text-primary border-b-2 border-primary" : "text-primary/65 hover:text-primary"}`}
+              className={`flex-1 min-w-[120px] md:min-w-[200px] py-5 md:py-6 text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all relative snap-center ${activeTab === tab ? "text-accent border-b-2 border-accent" : "text-primary/65 hover:text-primary"}`}
             >
               {tab}
             </button>
@@ -76,21 +76,21 @@ export default function ClientTabSystem({ product }) {
                        return (
                          <div 
                            key={index} 
-                           className={`rounded-[var(--radius,0px)] border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-white border-primary/45' : 'bg-transparent border-border hover:border-primary/35'}`}
+                           className={`rounded-[var(--radius,0px)] border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-[var(--accent)]/[0.04] border-accent/40' : 'bg-transparent border-border hover:border-accent/30'}`}
                          >
                             <button 
                               onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
                               className="w-full px-5 py-5 md:px-6 md:py-6 flex items-center justify-between text-left group"
                             >
-                              <div className="flex items-center gap-4">
-                                <div className={`w-8 h-8 rounded-[var(--radius,0px)] flex items-center justify-center transition-colors ${isOpen ? 'bg-primary' : 'bg-white border border-border'}`}>
-                                  <HelpCircle className={`w-3.5 h-3.5 ${isOpen ? 'text-white' : 'text-primary/70'}`} />
-                                </div>
-                                <h4 className="text-xs md:text-sm font-medium uppercase tracking-wider text-primary">
-                                  {faq.question}
-                                </h4>
-                              </div>
-                              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${isOpen ? 'text-primary rotate-180' : 'text-primary/40'}`} />
+                               <div className="flex items-center gap-4">
+                                 <div className={`w-8 h-8 shrink-0 rounded-[var(--radius,0px)] flex items-center justify-center transition-colors ${isOpen ? 'bg-accent' : 'bg-white border border-border'}`}>
+                                   <HelpCircle className={`w-3.5 h-3.5 ${isOpen ? 'text-white' : 'text-primary/50'}`} />
+                                 </div>
+                                 <p className="text-xs md:text-sm font-semibold uppercase tracking-wider text-primary leading-snug">
+                                   {faq.question}
+                                 </p>
+                               </div>
+                               <ChevronDown className={`w-3.5 h-3.5 shrink-0 ml-4 transition-transform duration-300 ${isOpen ? 'text-accent rotate-180' : 'text-primary/40'}`} />
                             </button>
                             
                             <AnimatePresence>
@@ -101,24 +101,24 @@ export default function ClientTabSystem({ product }) {
                                   exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: 0.25, ease: "easeInOut" }}
                                 >
-                                  <div className="px-5 pb-6 pl-17 md:px-6 md:pb-8 md:pl-18 border-t border-border/30 pt-4">
-                                     <p className="text-primary/85 font-normal text-sm md:text-base leading-loose tracking-normal max-w-2xl">
-                                       {faq.answer}
-                                     </p>
-                                  </div>
+                                   <div className="px-5 pb-6 md:px-6 md:pb-8 border-t border-accent/20 pt-4 pl-[52px] md:pl-[56px]">
+                                      <p className="text-primary/90 font-normal text-sm md:text-base leading-loose tracking-normal max-w-2xl">
+                                        {faq.answer}
+                                      </p>
+                                   </div>
                                 </motion.div>
                               )}
                             </AnimatePresence>
                          </div>
                        );
                      })
-                   ) : (
-                     <div className="text-center py-16 bg-white rounded-[var(--radius,0px)] border border-dashed border-border">
-                        <MessageSquareText className="w-8 h-8 text-primary/20 mx-auto mb-4" />
-                        <p className="text-primary/60 font-medium uppercase tracking-widest text-[9px] mb-1">No specific FAQs for this piece</p>
-                        <p className="text-[11px] text-primary/40 font-light">Contact our concierge for specific inquiries.</p>
-                     </div>
-                   )}
+                    ) : (
+                      <div className="text-center py-16 rounded-[var(--radius,0px)] border border-dashed border-accent/40 bg-[var(--accent)]/[0.03]">
+                         <MessageSquareText className="w-10 h-10 text-accent/50 mx-auto mb-4" />
+                         <p className="text-primary font-semibold uppercase tracking-widest text-xs mb-2">No FAQs available for this product</p>
+                         <p className="text-sm text-primary/60 font-normal leading-relaxed max-w-xs mx-auto">Have a question? Contact our team and we'll be happy to help.</p>
+                      </div>
+                    )}
                </motion.div>
             )}
          </AnimatePresence>
