@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { UserPlus, Search, Shield, Mail, Key, UserCheck, UserX, MoreVertical, Lock } from "lucide-react";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import { useRBAC } from "@/hooks/useRBAC";
 
 export default function StaffManagement() {
+  const router = useRouter();
   const { session } = useRBAC();
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -217,7 +219,7 @@ export default function StaffManagement() {
                            </button>
                            <button 
                              title="Edit Member" 
-                             onClick={() => alert("Edit feature coming in next update")}
+                             onClick={() => router.push(`/admin/settings/team/${s._id}`)}
                              className="p-1.5 text-[#646970] hover:text-[#2271b1] hover:bg-[#f0f6fb] rounded"
                            >
                              <MoreVertical className="w-4 h-4" />

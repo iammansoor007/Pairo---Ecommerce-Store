@@ -7,6 +7,24 @@ import { logAction } from "@/lib/audit";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+export async function GET(req, { params }) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    if (!can(session.user, "staff.view")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    const { id } = await params;
+    await dbConnect();
+
+    try {
+        const staff = await Staff.findById(id).select("-password").populate("roleId").lean();
+        if (!staff) return NextResponse.json({ error: "Staff member not found" }, { status: 404 });
+        return NextResponse.json(staff);
+    } catch (error) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
 export async function PUT(req, { params }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.isStaff) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
