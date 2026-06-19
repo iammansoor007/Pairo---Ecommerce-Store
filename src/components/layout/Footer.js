@@ -234,22 +234,30 @@ export default function Footer() {
             <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{footerCustomLinksHeading}</h3>
             <ul className="space-y-3">
               {footerCustomLinks.length > 0 ? (
-                footerCustomLinks.map((link) => (
-                  <li key={link.id || link.label}>
-                    <Link href={link.url || '#'} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))
+                footerCustomLinks.map((link) => {
+                  const href = link.url || '#';
+                  const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
+                  return (
+                    <li key={link.id || link.label}>
+                      <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                        {link.label}
+                      </Link>
+                    </li>
+                  );
+                })
               ) : (
                 // Legacy fallback
-                legacyInfoLinks.map((link) => (
-                  <li key={link.name}>
-                    <Link href={link.href} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                      {link.name}
-                    </Link>
-                  </li>
-                ))
+                legacyInfoLinks.map((link) => {
+                  const href = link.href;
+                  const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
+                  return (
+                    <li key={link.name}>
+                      <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                        {link.name}
+                      </Link>
+                    </li>
+                  );
+                })
               )}
             </ul>
           </motion.div>

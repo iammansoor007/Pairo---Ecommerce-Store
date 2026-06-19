@@ -15,31 +15,37 @@ import { useSiteData } from "@/context/SiteContext";
  * Resolves a nav item href based on its type and value.
  */
 function resolveNavHref(item, dbPages, dbCategories, dbProducts) {
-  switch (item.type) {
-    case 'product': {
-      const product = dbProducts?.find(p => p._id?.toString() === item.value || p.slug === item.value);
-      return product ? `/product/${product.slug}` : (item.href || item.value || '#');
+  const getHref = () => {
+    switch (item.type) {
+      case 'product': {
+        const product = dbProducts?.find(p => p._id?.toString() === item.value || p.slug === item.value);
+        return product ? `/product/${product.slug}` : (item.href || item.value || '#');
+      }
+      case 'page': {
+        // Value is a page slug or _id; find the actual slug
+        const page = dbPages?.find(p => p._id?.toString() === item.value || p.slug === item.value);
+        return page ? `/${page.slug}` : (item.href || item.value || '#');
+      }
+      case 'product_category': {
+        return `/shop/${item.value}`;
+      }
+      case 'blog_list': {
+        return '/blog';
+      }
+      case 'external_url':
+      case 'custom_url':
+      case 'mega_menu':
+      case 'dropdown_category':
+      case 'dropdown_product':
+      default:
+        return item.value || item.href || '#';
     }
-    case 'page': {
-      // Value is a page slug or _id; find the actual slug
-      const page = dbPages?.find(p => p._id?.toString() === item.value || p.slug === item.value);
-      return page ? `/${page.slug}` : (item.href || item.value || '#');
-    }
-    case 'product_category': {
-      return `/shop/${item.value}`;
-    }
-    case 'blog_list': {
-      return '/blog';
-    }
-    case 'external_url':
-    case 'custom_url':
-    case 'mega_menu':
-    case 'dropdown_category':
-    case 'dropdown_product':
-    default:
-      return item.value || item.href || '#';
-  }
+  };
+
+  const href = getHref();
+  return href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
 }
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
