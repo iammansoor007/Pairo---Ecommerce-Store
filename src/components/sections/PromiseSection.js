@@ -22,37 +22,37 @@ export default function PromiseSection({
       <div className="mx-4 md:mx-8">
         <div className="bg-black rounded-[40px] md:rounded-[60px] overflow-hidden relative min-h-[500px] md:min-h-[700px] flex items-center shadow-2xl">
           <div className="absolute inset-0">
-             <Image src={image} alt={title} fill className="object-cover opacity-50" />
-             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
+            <Image src={image} alt={title} fill className="object-cover opacity-50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
           </div>
           <div className="relative z-10 w-full p-8 md:p-20">
-             <div className="max-w-2xl space-y-12">
-                <div className="space-y-4">
-                   <span className="text-[9px] md:text-[11px] font-bold tracking-[0.4em] text-white/80 uppercase">{label}</span>
-                   <p className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font text-white uppercase leading-[0.9] tracking-tighter">
-                      {title}
-                   </p>
-                </div>
-                <p className="text-lg md:text-2xl text-white/85 leading-relaxed font-light">
-                  {description}
+            <div className="max-w-2xl space-y-12">
+              <div className="space-y-4">
+                <span className="text-[9px] md:text-[11px] font-bold tracking-[0.4em] text-white/80 uppercase">{label}</span>
+                <p className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font text-white uppercase leading-[0.9] tracking-tighter">
+                  {title}
                 </p>
-                <div className="grid sm:grid-cols-2 gap-12 pt-12 border-t border-white/20">
-                   {items.map((item, i) => (
-                     <div key={i} className="space-y-4">
-                        <p className="text-xl font-bold uppercase tracking-tight text-white">{item.title}</p>
-                        <p className="text-sm text-white/80 leading-relaxed">{item.desc}</p>
-                     </div>
-                   ))}
-                </div>
-                <div className="flex gap-16 pt-8">
-                   {stats.map((stat, i) => (
-                     <div key={i}>
-                        <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest mb-2">{stat.label}</p>
-                        <p className="text-3xl md:text-4xl font-bold heading-font text-white">{stat.value}</p>
-                     </div>
-                   ))}
-                </div>
-             </div>
+              </div>
+              <p className="text-lg md:text-2xl text-white/85 leading-relaxed font-light">
+                {description}
+              </p>
+              <div className="grid sm:grid-cols-2 gap-12 pt-12 border-t border-white/20">
+                {items.map((item, i) => (
+                  <div key={i} className="space-y-4">
+                    <p className="text-xl font-bold uppercase tracking-tight text-white">{item.title}</p>
+                    <p className="text-sm text-white/80 leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="hidden md:flex gap-16 pt-8">
+                {stats.map((stat, i) => (
+                  <div key={i}>
+                    <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest mb-2">{stat.label}</p>
+                    <p className="text-3xl md:text-4xl font-bold heading-font text-white">{stat.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
