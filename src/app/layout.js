@@ -14,6 +14,7 @@ import ScriptLoader from "@/components/common/ScriptLoader";
 import ThemeStyle from "@/components/common/ThemeStyle";
 import { Toaster } from "react-hot-toast";
 import { cache } from "react";
+import CookieConsent from "@/components/common/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-poppins" });
@@ -186,6 +187,7 @@ export default async function RootLayout({ children }) {
         <ScriptLoader location="body_top" />
         <AuthProvider>
           <Toaster position="top-right" />
+          <CookieConsent />
           <SiteProvider initialData={sanitizedConfig}>
             <CartProvider>
               <LayoutWrapper>
