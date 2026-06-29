@@ -67,12 +67,7 @@ export function getProductUrl(product) {
   if (!product) return '#';
   const productSlug = product.slug || product._id?.toString() || product.id?.toString();
   if (!productSlug) return '#';
-  
-  const categorySlug = getProductPrimaryCategorySlug(product);
-  
-  // Fallback to /shop/product-slug instead of generating invalid URL if category is uncategorized
-  const finalCategorySlug = categorySlug === 'uncategorized' ? 'shop' : categorySlug;
-  return `/${finalCategorySlug}/${productSlug}`;
+  return `/product/${productSlug}`;
 }
 
 export function getCategoryUrl(category) {

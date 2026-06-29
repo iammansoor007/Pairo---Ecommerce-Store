@@ -60,12 +60,9 @@ export async function GET() {
     // Add products
     for (const prod of products) {
       if (prod.slug) {
-        const { getProductPrimaryCategorySlug } = require("@/lib/routes");
-        const categorySlugRaw = getProductPrimaryCategorySlug(prod);
-        const categorySlug = categorySlugRaw === 'uncategorized' ? 'shop' : categorySlugRaw;
         xml += `
   <url>
-    <loc>${siteUrl}/${categorySlug}/${prod.slug}</loc>
+    <loc>${siteUrl}/product/${prod.slug}</loc>
     <lastmod>${prod.updatedAt ? new Date(prod.updatedAt).toISOString() : new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
