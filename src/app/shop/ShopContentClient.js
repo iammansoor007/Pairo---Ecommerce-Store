@@ -50,23 +50,16 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     );
   }, [selectedCategory, dbCategories]);
 
-  }, []);
-
-  // Restore scroll position after category transitions
+  // Enforce manual scroll restoration on mount to prevent Next.js layout jumps on route mutations
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedScroll = sessionStorage.getItem("pairo_shop_scroll");
-      if (savedScroll) {
-        sessionStorage.removeItem("pairo_shop_scroll");
-        const targetScroll = parseInt(savedScroll);
-        setTimeout(() => {
-          window.scrollTo({ top: targetScroll, behavior: "instant" });
-          document.documentElement.scrollTo({ top: targetScroll, behavior: "instant" });
-          document.body.scrollTo({ top: targetScroll, behavior: "instant" });
-        }, 100);
-      }
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      const originalScrollRestoration = window.history.scrollRestoration;
+      window.history.scrollRestoration = "manual";
+      return () => {
+        window.history.scrollRestoration = originalScrollRestoration;
+      };
     }
-  }, [categoryParam]);
+  }, []);
 
   useEffect(() => {
     fetch("/api/products")
@@ -421,53 +414,21 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   );
 
   const toggleColor = (color) => {
-    if (typeof window !== "undefined") {
-      const scrollY = window.scrollY;
-      setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
-      setCurrentPage(1);
-      setTimeout(() => {
-        window.scrollTo(0, scrollY);
-      }, 0);
-    } else {
-      setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
-      setCurrentPage(1);
-    }
+    setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
+    setCurrentPage(1);
   };
 
   const toggleSize = (size) => {
-    if (typeof window !== "undefined") {
-      const scrollY = window.scrollY;
-      setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
-      setCurrentPage(1);
-      setTimeout(() => {
-        window.scrollTo(0, scrollY);
-      }, 0);
-    } else {
-      setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
-      setCurrentPage(1);
-    }
+    setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
+    setCurrentPage(1);
   };
 
   const handleCategorySelect = (catName) => {
     setCurrentPage(1);
     const basePath = catName ? `/collections/${catName.toLowerCase()}` : '/shop';
-    if (typeof window !== "undefined") {
-      const scrollY = window.scrollY;
-      sessionStorage.setItem("pairo_shop_scroll", scrollY.toString());
-      startTransition(() => {
-        router.push(basePath, { scroll: false });
-        let count = 0;
-        const interval = setInterval(() => {
-          window.scrollTo(0, scrollY);
-          count++;
-          if (count > 8) clearInterval(interval);
-        }, 10);
-      });
-    } else {
-      startTransition(() => {
-        router.push(basePath, { scroll: false });
-      });
-    }
+    startTransition(() => {
+      router.push(basePath);
+    });
   };
 
   const toggleType = (type) => {
@@ -516,35 +477,10 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     setSearchQuery("");
     setSortBy("Most Popular");
     setCurrentPage(1);
-    if (typeof window !== "undefined") {
-      const scrollY = window.scrollY;
-      sessionStorage.setItem("pairo_shop_scroll", scrollY.toString());
-      startTransition(() => {
-        router.push('/shop', { scroll: false });
-        let count = 0;
-        const interval = setInterval(() => {
-          window.scrollTo(0, scrollY);
-          count++;
-          if (count > 8) clearInterval(interval);
-        }, 10);
-      });
-    } else {
-      startTransition(() => {
-        router.push('/shop', { scroll: false });
-      });
-    }
+    startTransition(() => {
+      router.push('/shop');
+    });
   };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    try {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
-      document.body.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (e) {
-      window.scrollTo(0, 0);
-    }
-  };
-
 
   const getActiveFilterCount = () => {
     let count = 0;
@@ -762,7 +698,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
 
-              {/* Banner content — all at bottom */}
+              {/* Banner content — all 
+              
+              at bottom */}
               <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 text-white z-10">
                 {/* Breadcrumbs — above category name */}
                 <div className="flex items-center gap-2 text-white/60 text-[9px] font-bold uppercase tracking-widest mb-3">
@@ -918,7 +856,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               <div className="mt-20 flex items-center justify-center gap-12 border-t border-border pt-12">
                 <button
                   type="button"
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
                   className={`text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === 1 ? "opacity-10 cursor-not-allowed" : "text-foreground hover:text-foreground/75"
                     }`}
@@ -930,7 +868,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                     <button
                       key={i + 1}
                       type="button"
-                      onClick={() => handlePageChange(i + 1)}
+                      onClick={() => setCurrentPage(i + 1)}
                       className={`w-8 h-8 text-sm font-bold transition-all rounded-full ${currentPage === i + 1
                         ? "bg-foreground text-background"
                         : "text-foreground/50 hover:text-foreground hover:bg-foreground/10"
@@ -942,7 +880,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 </div>
                 <button
                   type="button"
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
                   className={`text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === totalPages ? "opacity-10 cursor-not-allowed" : "text-foreground hover:text-foreground/75"
                     }`}
