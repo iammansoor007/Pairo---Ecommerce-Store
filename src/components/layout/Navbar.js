@@ -206,7 +206,7 @@ export default function Navbar() {
                 return (
                   <div
                     key={item.id || item.name}
-                    className="relative group h-24 flex items-center"
+                    className={`group h-24 flex items-center ${(item.type === 'mega_menu' || item.dropdownType === 'mega') ? '' : 'relative'}`}
                     onMouseEnter={() => hasDropdown && setActiveDropdownId(item.id || item.name)}
                     onMouseLeave={() => hasDropdown && setActiveDropdownId(null)}
                   >
