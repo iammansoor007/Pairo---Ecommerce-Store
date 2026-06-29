@@ -79,7 +79,7 @@ export default function ProductMainSection({ product }) {
             <p className="text-[10px] md:text-[11px] font-bold text-primary/80 uppercase tracking-[0.25em]">
               Pairo Studio — {categoryName}
             </p>
-            <p className="text-[22px] md:text-[34px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
+            <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
               {product.name}
             </p>
           </div>
