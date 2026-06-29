@@ -85,7 +85,8 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     products.forEach(p => {
       if (p.category) {
         const dbCat = dbCategories.find(dc => dc.name.toLowerCase() === p.category.toLowerCase());
-        if (!dbCat || isActiveCategory(dbCat)) {
+        // Only show category if it exists in DB AND is active (not deleted/draft)
+        if (dbCat && isActiveCategory(dbCat)) {
           cats.add(p.category);
         }
       }
