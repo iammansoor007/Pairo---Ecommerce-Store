@@ -509,7 +509,7 @@ export default function SiteSettingsPage() {
         if (pRes.ok) { const d = await pRes.json(); setDbPages(Array.isArray(d) ? d.filter(p => p.status === 'Published') : []); }
         if (cRes.ok) { const d = await cRes.json(); setDbCategories(Array.isArray(d) ? d.filter(c => c.type === 'product') : []); }
         if (bRes.ok) { const d = await bRes.json(); setDbBlogs(Array.isArray(d) ? d.filter(b => b.status === 'Published') : []); }
-        if (prRes.ok) { const d = await prRes.json(); setDbProducts(Array.isArray(d) ? d.filter(p => p.status === 'Active') : []); }
+        if (prRes.ok) { const d = await prRes.json(); setDbProducts(Array.isArray(d) ? d.filter(p => p.status === 'Published') : (d?.products || [])); }
       } catch { toast.error("Failed to load settings."); }
       finally { setLoading(false); }
     })();

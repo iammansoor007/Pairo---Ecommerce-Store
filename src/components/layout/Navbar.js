@@ -88,16 +88,29 @@ export default function Navbar() {
           if (isMega) {
             const itemMegaCategoryIds = item.megaCategoryIds || [];
             if (itemMegaCategoryIds.length > 0) {
-              itemMegaCategories = itemMegaCategoryIds.map(slug => dbCategories.find(c => c.slug === slug)).filter(Boolean);
-            } else {
-              itemMegaCategories = siteData?.categories?.items || dbCategories.slice(0, 3);
+              // Try slug match first, then _id match as fallback
+              itemMegaCategories = itemMegaCategoryIds
+                .map(val => dbCategories.find(c => c.slug === val || c._id?.toString() === val))
+                .filter(Boolean);
+            }
+            // If no specific categories matched (or none selected), show all available categories
+            if (itemMegaCategories.length === 0) {
+              itemMegaCategories = dbCategories.slice(0, 6);
             }
           }
 
           let itemDropdownCategories = [];
           if (item.type === 'dropdown_category') {
             const dropdownCategoryIds = item.dropdownCategoryIds || [];
-            itemDropdownCategories = dropdownCategoryIds.map(slug => dbCategories.find(c => c.slug === slug)).filter(Boolean);
+            if (dropdownCategoryIds.length > 0) {
+              itemDropdownCategories = dropdownCategoryIds
+                .map(val => dbCategories.find(c => c.slug === val || c._id?.toString() === val))
+                .filter(Boolean);
+            }
+            // If none matched, fall back to all categories
+            if (itemDropdownCategories.length === 0) {
+              itemDropdownCategories = dbCategories;
+            }
           }
 
           let itemDropdownProducts = [];
