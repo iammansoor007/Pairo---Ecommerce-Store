@@ -427,7 +427,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     setCurrentPage(1);
     const basePath = catName ? `/collections/${catName.toLowerCase()}` : '/shop';
     startTransition(() => {
-      router.push(basePath);
+      router.push(basePath, { scroll: false });
     });
   };
 
@@ -478,8 +478,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     setSortBy("Most Popular");
     setCurrentPage(1);
     startTransition(() => {
-      router.push('/shop');
+      router.push('/shop', { scroll: false });
     });
+  };
   const handlePageChange = (page) => {
     setCurrentPage(page);
     try {
