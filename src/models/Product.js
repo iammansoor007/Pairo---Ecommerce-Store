@@ -111,6 +111,7 @@ const ProductSchema = new mongoose.Schema({
 
 // Ensure unique slugs per tenant
 ProductSchema.index({ tenantId: 1, slug: 1 }, { unique: true, sparse: true });
+ProductSchema.index({ tenantId: 1, status: 1, isDeleted: 1, createdAt: -1 });
 
 delete mongoose.models.Product;
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);

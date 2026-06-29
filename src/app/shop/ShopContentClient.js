@@ -25,7 +25,7 @@ const silentReplaceState = (newUrl) => {
   }
 };
 
-export default function ShopContentClient({ initialCategory = null, initialType = null }) {
+export default function ShopContentClient({ initialCategory = null, initialType = null, initialProducts = [] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -34,9 +34,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   const categoryParam = searchParams.get("category") ?? initialCategory;
   const typeParam = searchParams.get("type") ?? initialType;
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialProducts.length === 0);
   const { filters } = siteData;
   const siteContextData = useSiteData();
   const dbCategories = siteContextData?._dbCategories || [];
@@ -62,6 +62,8 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   }, []);
 
   useEffect(() => {
+    if (products.length > 0) return;
+    setLoading(true);
     fetch("/api/products")
       .then(res => res.json())
       .then(data => {
@@ -69,7 +71,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
         setProducts(flatProducts);
         setLoading(false);
       });
-  }, []);
+  }, [products.length]);
 
   // 1. Dynamic Categories from actual product data or dbCategories
   const allCategories = useMemo(() => {

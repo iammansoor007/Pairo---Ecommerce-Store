@@ -59,6 +59,9 @@ export default async function DynamicCategoryCatcherPage({ params, searchParams 
     path: currentPath
   });
 
+  const { getProductsForShop } = await import("@/lib/products-server");
+  const products = await getProductsForShop();
+
   return (
     <>
       {structuredData && (
@@ -76,7 +79,7 @@ export default async function DynamicCategoryCatcherPage({ params, searchParams 
           </div>
         </div>
       }>
-        <ShopContentClient initialCategory={category.slug} initialType={typeSlug} />
+        <ShopContentClient initialCategory={category.slug} initialType={typeSlug} initialProducts={products} />
       </Suspense>
     </>
   );

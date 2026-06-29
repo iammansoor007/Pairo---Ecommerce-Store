@@ -45,6 +45,7 @@ const MediaSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Performance indexes
+MediaSchema.index({ url: 1, isDeleted: 1 });
 MediaSchema.index({ isDeleted: 1, createdAt: -1 });
 MediaSchema.index({ tags: 1 });
 MediaSchema.index({ mimeType: 1 });

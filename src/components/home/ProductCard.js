@@ -98,7 +98,7 @@ export default function ProductCard({ product }) {
       <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
         <p 
           style={{ fontFamily: "var(--brand-font)" }}
-          className="text-lg md:text-xl font-bold uppercase tracking-wider text-foreground/85 group-hover:text-foreground transition-colors truncate"
+          className="text-[12px] md:text-[14px] font-bold uppercase tracking-wider text-foreground/85 group-hover:text-foreground transition-colors truncate"
         >
           {product.name}
         </p>

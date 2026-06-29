@@ -50,6 +50,9 @@ export default async function ShopPage({ searchParams }) {
     permanentRedirect(redirectUrl);
   }
 
+  const { getProductsForShop } = await import("@/lib/products-server");
+  const products = await getProductsForShop();
+
   return (
     <Suspense fallback={
       <div className="container mx-auto px-4 py-40 text-center">
@@ -60,7 +63,7 @@ export default async function ShopPage({ searchParams }) {
         </div>
       </div>
     }>
-      <ShopContentClient initialCategory={null} initialType={typeSlug} />
+      <ShopContentClient initialCategory={null} initialType={typeSlug} initialProducts={products} />
     </Suspense>
   );
 }
