@@ -74,7 +74,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   // 1. Dynamic Categories from actual product data or dbCategories
   const allCategories = useMemo(() => {
     const cats = new Set();
-    
+
     const isActiveCategory = (c) => {
       if (!c) return false;
       if (c.isDeleted === true || c.isDeleted === 'true') return false;
@@ -308,7 +308,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
         const matchesString = pCat.toLowerCase() === selectedCategory.toLowerCase() ||
           (targetDbCat && pCat.toLowerCase() === targetDbCat.name.toLowerCase()) ||
           (targetDbCat && pCat.toLowerCase() === targetDbCat.slug?.toLowerCase());
-        const matchesId = targetDbCat && pCats.some(c => 
+        const matchesId = targetDbCat && pCats.some(c =>
           (typeof c === 'object' && c !== null ? c._id === targetDbCat._id : c === targetDbCat._id)
         );
         return matchesString || matchesId;
@@ -549,7 +549,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                     const pCat = p.category || '';
                     const pCats = p.categories || [];
                     const matchesString = pCat.toLowerCase() === cat.toLowerCase();
-                    const matchesId = dbCat && pCats.some(c => 
+                    const matchesId = dbCat && pCats.some(c =>
                       (typeof c === 'object' && c !== null ? c._id === dbCat._id : c === dbCat._id)
                     );
                     return matchesString || matchesId;
@@ -739,7 +739,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="container mx-auto px-6 md:px-16 py-8 md:py-16">
+      <div className="container mx-auto px-4 md:px-8 py-4 md:py-8">
         {currentDbCategory && currentDbCategory.banner ? (
           <>
             <div className="relative w-full h-[280px] sm:h-[340px] md:h-[400px] mb-12 overflow-hidden rounded-[var(--radius,16px)] group">
