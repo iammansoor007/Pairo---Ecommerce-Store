@@ -38,9 +38,9 @@ export async function generateMetadata() {
         description: config.brand.description || "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
         metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairolifestyle.com"),
         robots: {
-          index: true,
-          follow: true,
-          googleBot: { index: true, follow: true },
+          index: false,
+          follow: false,
+          googleBot: { index: false, follow: false },
         },
       };
 
@@ -68,9 +68,9 @@ export async function generateMetadata() {
     description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairolifestyle.com"),
     robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true },
+      index: false,
+      follow: false,
+      googleBot: { index: false, follow: false },
     },
   };
 }

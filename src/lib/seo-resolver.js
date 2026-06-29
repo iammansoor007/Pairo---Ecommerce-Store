@@ -133,10 +133,9 @@ export function resolveSEOMetadata(options = {}) {
   }
   canonical = normalizeCanonicalUrl(canonical);
 
-  // 3. Robots controls (Draft pages automatically force noindex, nofollow)
-  const isDraft = entity.status === "Draft";
-  const noIndex = seo.noIndex || isDraft;
-  const noFollow = seo.noFollow || isDraft;
+  // 3. Robots controls (Forced noindex, nofollow for complete site)
+  const noIndex = true;
+  const noFollow = true;
 
   // 4. OpenGraph and Twitter image fallback hierarchy:
   // Custom SEO Image -> Entity Featured Image -> Global Site Image
