@@ -941,14 +941,15 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               </div>
             )}
 
-            {/* Category Full Description (content) */}
-            {currentDbCategory && currentDbCategory.content && (
-              <div className="mt-16 border-t border-border pt-12 prose max-w-none text-foreground/75 text-sm leading-relaxed">
-                <div dangerouslySetInnerHTML={{ __html: currentDbCategory.content }} />
-              </div>
-            )}
           </main>
         </div>
+
+        {/* Category Full Description (content) */}
+        {currentDbCategory && currentDbCategory.content && (
+          <div className="mt-16 border-t border-border pt-12 prose max-w-none text-foreground/75 text-sm leading-relaxed">
+            <div dangerouslySetInnerHTML={{ __html: currentDbCategory.content }} />
+          </div>
+        )}
       </div>
 
       {/* Mobile Filter Drawer */}

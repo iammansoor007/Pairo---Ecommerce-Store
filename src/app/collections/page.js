@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
@@ -23,7 +22,7 @@ export default async function CollectionsPage() {
     .sort({ name: 1 })
     .lean();
 
-  // Get product counts per category in one aggregation
+  // Get product counts per category
   const counts = await Product.aggregate([
     { $match: { isDeleted: { $ne: true }, status: "Published" } },
     { $unwind: "$categories" },
@@ -41,87 +40,89 @@ export default async function CollectionsPage() {
   }));
 
   return (
-    <div className="bg-background min-h-screen font-sans">
-      {/* Hero header */}
-      <div className="border-b border-border">
-        <div className="container mx-auto px-6 md:px-16 py-12 md:py-20">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-8">
-            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-foreground/90">Collections</span>
+    <div className="bg-white min-h-screen font-sans text-black">
+      {/* Premium Header/Hero Section */}
+      <div className="border-b border-black/[0.05]">
+        <div className="container mx-auto px-4 sm:px-6 md:px-16 py-12 md:py-20">
+          {/* Breadcrumb (P tags instead of H) */}
+          <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-black/40 mb-6">
+            <Link href="/" className="hover:text-black transition-colors">Home</Link>
+            <ChevronRight className="w-3 h-3 text-black/35" />
+            <span className="text-black">Collections</span>
           </nav>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-foreground/40 mb-3">Pairo</p>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold heading-font tracking-tighter uppercase leading-none text-foreground">
-                Collections
-              </h1>
+            <div className="space-y-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-black/40">Luxury Store</p>
+              <p className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight uppercase leading-none text-black">
+                Our Collections
+              </p>
             </div>
-            <p className="text-sm text-foreground/50 max-w-sm leading-relaxed">
-              Explore our full range of premium leather and shearling collections, each crafted with uncompromising attention to detail.
+            <p className="text-xs sm:text-sm text-black/50 max-w-md leading-relaxed">
+              Explore our meticulously curated collections, featuring premium leather, shearling, and custom-tailored outerwear built to stand the test of time.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Category grid */}
-      <div className="container mx-auto px-6 md:px-16 py-16 md:py-24">
+      {/* Grid Section */}
+      <div className="container mx-auto px-4 sm:px-6 md:px-16 py-12 md:py-20">
         {cats.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-40 text-center">
-            <p className="text-2xl font-bold heading-font uppercase mb-3 text-foreground">No Collections Yet</p>
-            <p className="text-sm text-foreground/50">Check back soon — new collections are on the way.</p>
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            <p className="text-lg font-bold uppercase tracking-widest text-black mb-2">No Collections Found</p>
+            <p className="text-xs text-black/40">We are adding new premium collections shortly. Stay tuned.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 md:gap-12">
             {cats.map((cat) => (
               <Link
                 key={cat._id}
                 href={`/collections/${cat.slug}`}
-                className="group relative flex flex-col overflow-hidden rounded-[var(--radius,16px)] border border-border bg-card hover:border-foreground/20 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1"
+                className="group flex flex-col bg-white overflow-hidden rounded-[24px] border border-black/[0.06] hover:border-black/15 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-1.5"
               >
-                {/* Image */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-foreground/5">
+                {/* Image Wrap */}
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-50 border-b border-black/[0.03]">
                   {cat.image ? (
-                    <Image
+                    <img
                       src={cat.image}
                       alt={cat.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+                      loading="lazy"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-foreground/5">
-                      <span className="text-4xl font-bold heading-font uppercase tracking-tighter text-foreground/10">
+                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-100">
+                      <p className="text-6xl font-black uppercase text-black/5 tracking-tighter">
                         {cat.name.charAt(0)}
-                      </span>
+                      </p>
                     </div>
                   )}
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                  {/* Hover CTA */}
-                  <div className="absolute inset-x-0 bottom-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
-                    <span className="inline-flex items-center gap-1.5 text-white text-[10px] font-bold uppercase tracking-widest">
-                      Shop Now <ArrowRight className="w-3 h-3" />
+                  {/* Elegant Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Hover Button */}
+                  <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                    <span className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-xl">
+                      Explore Collection <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
                 </div>
 
-                {/* Info */}
-                <div className="p-5 flex items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-foreground leading-snug group-hover:text-foreground/70 transition-colors">
+                {/* Content Box */}
+                <div className="p-6 md:p-8 flex flex-col justify-between flex-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <p className="text-sm md:text-base font-extrabold uppercase tracking-[0.15em] text-black group-hover:text-black/75 transition-colors leading-snug">
                       {cat.name}
-                    </h2>
-                    {cat.description && (
-                      <p className="text-xs text-foreground/45 mt-1 line-clamp-1">{cat.description}</p>
-                    )}
+                    </p>
+                    <span className="bg-black/5 text-[9px] font-bold px-2.5 py-1 rounded-full text-black/60 tabular-nums">
+                      {cat.productCount} {cat.productCount === 1 ? 'Item' : 'Items'}
+                    </span>
                   </div>
-                  <span className="shrink-0 text-[11px] font-bold text-foreground/30 tabular-nums mt-0.5">
-                    {cat.productCount}
-                  </span>
+                  {cat.description && (
+                    <p className="text-xs text-black/45 mt-3 leading-relaxed line-clamp-2">
+                      {cat.description}
+                    </p>
+                  )}
                 </div>
               </Link>
             ))}
