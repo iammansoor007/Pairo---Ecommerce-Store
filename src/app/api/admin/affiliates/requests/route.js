@@ -44,7 +44,7 @@ export async function PUT(req) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { applicationId, action, notes, rejectionReason, customCommissionRate } = body;
+    const { applicationId, action, notes, rejectionReason, customCommissionRate, commissionType } = body;
 
     if (!applicationId || !['Approve', 'Reject'].includes(action)) {
       return NextResponse.json({ error: "Invalid action or parameters." }, { status: 400 });
@@ -111,6 +111,7 @@ export async function PUT(req) {
       affiliateId,
       referralCode,
       commissionRate: customCommissionRate ? Number(customCommissionRate) : 5,
+      commissionType: commissionType || 'Percentage',
       balance: 0,
       lifetimeEarnings: 0,
       address: application.address,
@@ -130,7 +131,14 @@ export async function PUT(req) {
 
     // 7. Dispatch approval email with temporary password & referralCode details
     try {
-      await sendAffiliateApplicationApproved(application.email, application.name, referralCode);
+      await sendAffiliateApplicationApproved(
+        application.email,
+        application.name,
+        referralCode,
+        tempPassword,
+        affiliate.commissionType,
+        affiliate.commissionRate
+      );
       console.log(`[AdminAffiliateApproval] Approved affiliate ${referralCode}. Temporary Password sent in email: ${tempPassword}`);
     } catch (mailErr) {
       console.error("Approval mail send error:", mailErr.message);

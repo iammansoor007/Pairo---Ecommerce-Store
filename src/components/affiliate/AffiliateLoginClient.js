@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { Mail, Lock, Loader2, ArrowRight } from "lucide-react";
 
 export default function AffiliateLoginClient() {
   const router = useRouter();
@@ -41,53 +42,62 @@ export default function AffiliateLoginClient() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="space-y-1">
-        <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Email Address</label>
-        <input 
-          type="email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="your@email.com"
-          className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-        />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500 block">Email Address</label>
+        <div className="relative">
+          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="name@company.com"
+            className="w-full pl-10 pr-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+          />
+        </div>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Password</label>
-          <a href="#" className="text-[9px] text-primary/50 uppercase tracking-wider hover:text-black">Forgot?</a>
+          <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500 block">Password</label>
+          <a href="#" className="text-[10px] text-gray-400 uppercase tracking-wider hover:text-black transition-colors">Forgot?</a>
         </div>
-        <input 
-          type="password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          placeholder="••••••••"
-          className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-        />
+        <div className="relative">
+          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input 
+            type="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="••••••••"
+            className="w-full pl-10 pr-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+          />
+        </div>
       </div>
 
       <button 
         type="submit" 
         disabled={loading}
-        className="w-full py-3 rounded-lg bg-black text-white text-[11px] uppercase tracking-wider font-bold hover:bg-black/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+        className="w-full py-3.5 rounded-[3px] bg-black text-white text-[12px] uppercase tracking-widest font-bold hover:bg-neutral-900 active:bg-neutral-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
       >
         {loading ? (
           <>
-            <span className="animate-spin inline-block h-3.5 w-3.5 border-2 border-white/20 border-t-white rounded-full" />
+            <Loader2 className="animate-spin h-4 w-4" />
             Signing in...
           </>
         ) : (
-          "Login to Portal"
+          <>
+            <span>Login to Portal</span>
+            <ArrowRight className="w-4 h-4" />
+          </>
         )}
       </button>
 
-      <div className="text-center pt-2">
-        <p className="text-[10px] text-primary/50 font-light">
-          Want to become an affiliate?{" "}
-          <a href="/become-an-affiliate" className="font-semibold text-black underline uppercase tracking-wider">
+      <div className="text-center pt-4 border-t border-gray-100 mt-6">
+        <p className="text-[11px] text-gray-400 font-light">
+          Want to join the partner program?{" "}
+          <a href="/become-an-affiliate" className="font-bold text-black underline uppercase tracking-wider hover:text-neutral-700 ml-1">
             Apply Now
           </a>
         </p>

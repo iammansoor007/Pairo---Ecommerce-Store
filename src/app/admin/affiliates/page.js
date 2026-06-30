@@ -21,9 +21,5 @@ export default async function AdminAffiliatesPage() {
 
   await dbConnect();
 
-  return (
-    <div className="bg-[#FAF9F6] min-h-screen text-black p-6 md:p-8">
-      <AffiliatesManagerClient userSession={session} />
-    </div>
-  );
+  return <AffiliatesManagerClient userSession={session} />;
 }

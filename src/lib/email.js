@@ -261,9 +261,9 @@ export async function sendAffiliateApplicationReceived(toEmail, affiliateName) {
 /**
  * Send Affiliate Application Approved email
  */
-export async function sendAffiliateApplicationApproved(toEmail, affiliateName, referralCode) {
+export async function sendAffiliateApplicationApproved(toEmail, affiliateName, referralCode, tempPassword, commissionType = 'Percentage', commissionRate = 5) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.log(`[Email Simulation] Affiliate Application Approved → ${toEmail}`);
+    console.log(`[Email Simulation] Affiliate Application Approved → ${toEmail} | Temp Pass: ${tempPassword}`);
     return;
   }
 
@@ -285,10 +285,11 @@ export async function sendAffiliateApplicationApproved(toEmail, affiliateName, r
         
         <div style="background: #f9f9f9; padding: 20px; margin: 20px 0; border-radius: 4px; border-left: 4px solid #1a1a1a;">
           <h4 style="margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Your Account Details</h4>
-          <p style="margin: 4px 0; font-size: 14px;"><strong>Portal Login:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
+          <p style="margin: 4px 0; font-size: 14px;"><strong>Portal Login URL:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
+          <p style="margin: 4px 0; font-size: 14px;"><strong>Login Email Address:</strong> ${toEmail}</p>
+          <p style="margin: 4px 0; font-size: 14px;"><strong>Temporary Password:</strong> <code style="background:#eee; padding:2px 6px; font-weight:bold; font-size:14px; border-radius:3px; font-family:monospace;">${tempPassword}</code></p>
           <p style="margin: 4px 0; font-size: 14px;"><strong>Referral Code:</strong> ${referralCode}</p>
-          <p style="margin: 4px 0; font-size: 14px;"><strong>Commission Rate:</strong> 5% on all delivered orders</p>
-          <p style="margin: 4px 0; font-size: 14px; color: #e11d48; font-weight: 600; margin-top: 8px;">Please use the 'Forgot Password' link on the login page to set your account password.</p>
+          <p style="margin: 4px 0; font-size: 14px;"><strong>Commission rate:</strong> ${commissionType === 'Fixed' ? `$${commissionRate} Fixed per product sold` : `${commissionRate}% on all delivered orders`}</p>
         </div>
 
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0;">

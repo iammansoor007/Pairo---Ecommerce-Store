@@ -54,7 +54,7 @@ export default function CategoryBanner({
             </p>
           </div>
 
-          <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-6 py-2 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
+          <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-8 py-3 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
             <span className="relative z-10">{categoriesConfig.viewAll || "Explore All"}</span>
             <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-500 group-hover:translate-x-1" />
             <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22, 1, 0.36, 1]" />
@@ -98,10 +98,10 @@ export default function CategoryBanner({
                 <div className={`absolute inset-0 p-5 sm:p-8 md:p-12 flex flex-col justify-end items-center text-center ${isSmall ? '' : 'sm:items-start sm:text-left'}`}>
                   <div className={`space-y-3 sm:space-y-5 w-full flex flex-col items-center ${isSmall ? '' : 'sm:items-start'}`}>
                     <div className="space-y-1 sm:space-y-2">
-                      <span className="inline-flex bg-white/10 backdrop-blur-md text-white text-[8px] font-bold px-2.5 py-1 rounded-md tracking-[0.2em] uppercase border border-white/10">
+                      <span className="inline-flex bg-white/50 backdrop-blur-md text-white text-[8px] font-bold px-2.5 py-1 rounded-md tracking-[0.2em] uppercase border border-white/10">
                         DEPARTMENT 0{index + 1}
                       </span>
-                      <p className="text-[18px] sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
+                      <p className="text-[16px] sm:text-xl md:text-2xl lg:text-3xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
                         {category.name}
                       </p>
                     </div>

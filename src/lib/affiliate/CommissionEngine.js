@@ -24,10 +24,18 @@ export class CommissionEngine {
     const rate = affiliate.commissionRate !== undefined && affiliate.commissionRate !== null
       ? affiliate.commissionRate
       : (settings.defaultCommissionRate || 5);
+    const commissionType = affiliate.commissionType || 'Percentage';
 
     // subtotal from order financials
     const subtotal = order.financials?.subtotal || 0;
-    const commissionAmount = Math.round((subtotal * (rate / 100)) * 100) / 100; // Round to 2 decimal places
+    
+    let commissionAmount = 0;
+    if (commissionType === 'Fixed') {
+      const totalQty = (order.items || []).reduce((sum, item) => sum + (item.quantity || 1), 0);
+      commissionAmount = Math.round((totalQty * rate) * 100) / 100;
+    } else {
+      commissionAmount = Math.round((subtotal * (rate / 100)) * 100) / 100; // Round to 2 decimal places
+    }
 
     // Build the snapshot for absolute historical persistence
     const productPrices = (order.items || []).map(item => ({
@@ -43,10 +51,12 @@ export class CommissionEngine {
       orderNumber: order.orderNumber,
       subtotal,
       commissionAmount,
+      commissionType,
       status: 'Pending',
       tenantId: affiliate.tenantId || 'default',
       snapshot: {
         commissionRate: rate,
+        commissionType,
         productPrices,
         discountTotal: order.financials?.discountTotal || 0,
         shippingCost: order.financials?.shippingCost || 0,

@@ -22,7 +22,7 @@ export async function GET(req, { params }) {
     }
 
     const { id } = await params;
-    const order = await Order.findById(id);
+    const order = await Order.findById(id).populate("affiliateId", "name email affiliateId referralCode");
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, order });

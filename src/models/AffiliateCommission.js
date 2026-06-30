@@ -6,6 +6,7 @@ const AffiliateCommissionSchema = new mongoose.Schema({
   orderNumber: { type: String, required: true, index: true },
   subtotal: { type: Number, required: true }, // Order subtotal at purchase
   commissionAmount: { type: Number, required: true }, // Calculated payout amount
+  commissionType: { type: String, enum: ['Percentage', 'Fixed'], default: 'Percentage' },
   status: { 
     type: String, 
     enum: ['Pending', 'Approved', 'Cancelled', 'Reversed'], 
@@ -18,6 +19,7 @@ const AffiliateCommissionSchema = new mongoose.Schema({
   // Snapshot rules to guarantee historical data integrity
   snapshot: {
     commissionRate: { type: Number, required: true },
+    commissionType: { type: String, default: 'Percentage' },
     productPrices: [{
       productId: mongoose.Schema.Types.ObjectId,
       name: String,

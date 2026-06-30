@@ -74,12 +74,12 @@ const InvoiceTemplate = ({ order }) => {
             <span>Subtotal</span>
             <span className="font-bold text-black">${order.financials.subtotal.toLocaleString()}</span>
           </div>
-          {order.financials.discountTotal > 0 && (
+          {order.financials?.discountTotal && Number(order.financials.discountTotal) > 0 ? (
             <div className="flex justify-between text-sm text-green-600 font-bold">
               <span>Discount ({order.financials.promoCode})</span>
-              <span>-${order.financials.discountTotal.toLocaleString()}</span>
+              <span>-${(Number(order.financials.discountTotal)).toLocaleString()}</span>
             </div>
-          )}
+          ) : null}
           <div className="flex justify-between text-sm text-black/40">
             <span>Shipping</span>
             <span className="font-bold text-black">Complimentary</span>

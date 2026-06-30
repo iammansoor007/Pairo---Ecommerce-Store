@@ -8,7 +8,8 @@ const AffiliateSchema = new mongoose.Schema({
   affiliateId: { type: String, required: true, unique: true, index: true },
   referralCode: { type: String, required: true, unique: true, index: true },
   status: { type: String, enum: ['Active', 'Suspended'], default: 'Active', index: true },
-  commissionRate: { type: Number, default: 5 }, // Default commission percentage
+  commissionRate: { type: Number, default: 5 }, // Default commission rate (percentage or fixed value)
+  commissionType: { type: String, enum: ['Percentage', 'Fixed'], default: 'Percentage' },
   balance: { type: Number, default: 0 }, // Available to pay
   lifetimeEarnings: { type: Number, default: 0 }, // Cumulative commissions approved
   couponCode: { type: String, unique: true, sparse: true, index: true }, // Optional direct coupon code

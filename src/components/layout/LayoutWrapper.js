@@ -7,9 +7,9 @@ import CartDrawer from "@/components/layout/CartDrawer";
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login");
+  const isIsolatedRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/affiliate");
 
-  if (isAdminRoute) {
+  if (isIsolatedRoute) {
     return <main>{children}</main>;
   }
 

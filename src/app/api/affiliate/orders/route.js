@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
+import Affiliate from "@/models/Affiliate";
 import AffiliateCommission from "@/models/AffiliateCommission";
 import { NextResponse } from "next/server";
 

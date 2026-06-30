@@ -41,7 +41,7 @@ export async function PUT(req) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { affiliateId, name, email, commissionRate, status, couponCode, password, __v } = body;
+    const { affiliateId, name, email, commissionRate, commissionType, status, couponCode, password, __v } = body;
 
     if (!affiliateId) {
       return NextResponse.json({ error: "Affiliate ID is required." }, { status: 400 });
@@ -63,6 +63,7 @@ export async function PUT(req) {
     if (name) affiliate.name = name;
     if (email) affiliate.email = email.toLowerCase().trim();
     if (commissionRate !== undefined) affiliate.commissionRate = Number(commissionRate);
+    if (commissionType !== undefined) affiliate.commissionType = commissionType;
     if (status) affiliate.status = status;
     
     if (couponCode !== undefined) {

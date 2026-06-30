@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import AdminPageLayout from "@/components/admin/AdminPageLayout";
+import { Users, CheckSquare, Coins, Settings, Eye, X, ExternalLink } from "lucide-react";
 
-export default function AffiliatesManagerClient() {
+export default function AffiliatesManagerClient({ userSession }) {
   const [activeTab, setActiveTab] = useState("requests");
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +31,7 @@ export default function AffiliatesManagerClient() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [notes, setNotes] = useState("");
   const [customCommissionRate, setCustomCommissionRate] = useState(5);
+  const [commissionType, setCommissionType] = useState("Percentage");
   const [submittingReview, setSubmittingReview] = useState(false);
 
   // Edit Affiliate inputs
@@ -36,6 +39,7 @@ export default function AffiliatesManagerClient() {
     name: "",
     email: "",
     commissionRate: 5,
+    commissionType: "Percentage",
     status: "Active",
     couponCode: "",
     password: ""
@@ -91,7 +95,8 @@ export default function AffiliatesManagerClient() {
           action: reviewAction,
           notes,
           rejectionReason,
-          customCommissionRate
+          customCommissionRate,
+          commissionType
         })
       });
 
@@ -114,11 +119,14 @@ export default function AffiliatesManagerClient() {
     e.preventDefault();
     setSubmittingEdit(true);
     try {
+      // Find current affiliate version to enforce Optimistic Concurrency Control (OCC)
+      const currentAff = affiliates.find(a => a._id === selectedAffiliate._id);
       const res = await fetch("/api/admin/affiliates/list", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           affiliateId: selectedAffiliate._id,
+          __v: currentAff?.__v, // Send version key for validation
           ...editForm
         })
       });
@@ -188,115 +196,161 @@ export default function AffiliatesManagerClient() {
     }
   };
 
+  const getDocumentUrl = (doc) => {
+    if (!doc) return "";
+    if (doc.startsWith("http") || doc.startsWith("/") || doc.startsWith("blob:")) return doc;
+    return `/api/admin/affiliates/requests/document?file=${encodeURIComponent(doc)}`;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="space-y-4 text-center">
-          <span className="animate-spin inline-block h-8 w-8 border-2 border-black/20 border-t-black rounded-full" />
-          <p className="text-xs uppercase tracking-widest text-primary/60">Fetching database registers...</p>
+      <AdminPageLayout title="Affiliates" breadcrumbs={[{ label: "Affiliates" }]}>
+        <div className="flex items-center justify-center min-h-[400px] bg-white border border-[#ccd0d4] rounded-[3px] shadow-sm">
+          <div className="space-y-4 text-center">
+            <span className="animate-spin inline-block h-8 w-8 border-2 border-black/20 border-t-black rounded-full" />
+            <p className="text-xs uppercase tracking-widest text-[#646970]">Fetching database registers...</p>
+          </div>
         </div>
-      </div>
+      </AdminPageLayout>
     );
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Top Header */}
-      <div className="flex justify-between items-center pb-6 border-b border-black/5">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-medium heading-font tracking-tight uppercase">Affiliate Management</h1>
-          <p className="text-xs text-primary/50 uppercase tracking-wider mt-1">Review applications, configure commissions, and process withdrawals.</p>
+    <AdminPageLayout
+      title="Affiliate Management"
+      breadcrumbs={[{ label: "Affiliates" }]}
+    >
+      <div className="space-y-6 text-[#2c3338] font-sans">
+        
+        {/* WP style Stats Summary Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
+            <div className="p-3 bg-[#f0f6fb] text-[#2271b1] rounded-full">
+              <Users className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-[#646970] uppercase">Active Partners</p>
+              <p className="text-xl font-bold text-[#1d2327]">{affiliates.length}</p>
+            </div>
+          </div>
+          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
+            <div className="p-3 bg-amber-50 text-amber-700 rounded-full">
+              <CheckSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-[#646970] uppercase">Pending Reviews</p>
+              <p className="text-xl font-bold text-[#1d2327]">{applications.filter(a => a.status === 'Pending').length}</p>
+            </div>
+          </div>
+          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
+            <div className="p-3 bg-green-50 text-green-700 rounded-full">
+              <Coins className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-[#646970] uppercase">Pending Payouts</p>
+              <p className="text-xl font-bold text-[#1d2327]">{payouts.filter(p => p.status === 'Requested').length}</p>
+            </div>
+          </div>
+          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
+            <div className="p-3 bg-blue-50 text-[#2271b1] rounded-full">
+              <Settings className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-[#646970] uppercase">Default Commission</p>
+              <p className="text-xl font-bold text-[#1d2327]">{settings.defaultCommissionRate}%</p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex gap-4 border-b border-black/5 pb-2 text-xs font-semibold uppercase tracking-wider">
-        {[
-          { id: "requests", label: `Applications (${applications.filter(a => a.status === 'Pending').length})` },
-          { id: "list", label: "Active Affiliates" },
-          { id: "payouts", label: `Payout Requests (${payouts.filter(p => p.status === 'Requested').length})` },
-          { id: "settings", label: "Global Settings" }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`pb-3 border-b-2 transition-all ${
-              activeTab === tab.id
-                ? "border-black text-black"
-                : "border-transparent text-primary/55 hover:text-black"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+        {/* WP-Style Subsubsub Navigation */}
+        <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-[#646970] border-b border-[#ccd0d4] pb-2">
+          {[
+            { id: "requests", label: "Applications", count: applications.filter(a => a.status === 'Pending').length },
+            { id: "list", label: "Active Affiliates", count: affiliates.length },
+            { id: "payouts", label: "Payout Requests", count: payouts.filter(p => p.status === 'Requested').length },
+            { id: "settings", label: "Global Settings", count: null }
+          ].map((tab, idx, arr) => (
+            <span key={tab.id} className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`transition-all focus:outline-none ${
+                  activeTab === tab.id
+                    ? "text-[#1d2327] font-bold"
+                    : "text-[#2271b1] hover:text-[#135e96]"
+                }`}
+              >
+                {tab.label}
+              </button>
+              {tab.count !== null && <span className="text-[#8c8f94]">({tab.count})</span>}
+              {idx < arr.length - 1 && <span className="text-[#ccd0d4]">|</span>}
+            </span>
+          ))}
+        </div>
 
-      {/* Tab 1: Requests */}
-      {activeTab === "requests" && (
-        <div className="bg-white border border-black/5 rounded-[24px] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+        {/* Tab 1: Requests */}
+        {activeTab === "requests" && (
+          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+            <table className="w-full text-left border-collapse text-[13px]">
               <thead>
-                <tr className="bg-black/[0.02] border-b border-black/5 text-[9px] uppercase tracking-wider font-semibold text-primary/50 font-mono">
-                  <th className="p-5">Applicant</th>
-                  <th className="p-5">Email & Phone</th>
-                  <th className="p-5">Country</th>
-                  <th className="p-5">Verification Docs</th>
-                  <th className="p-5">Strategy & Reach</th>
-                  <th className="p-5">Status</th>
-                  <th className="p-5 text-right">Actions</th>
+                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Applicant</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Contact details</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Country</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Verification Docs</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Strategy & Reach</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
+                  <th className="px-4 py-3 w-28 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-black/[0.03]">
+              <tbody className="divide-y divide-[#f0f0f1]">
                 {applications.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="p-12 text-center text-primary/50">No applications registered in this queue.</td>
+                    <td colSpan="7" className="p-8 text-center text-gray-400 italic">No applications found in database records.</td>
                   </tr>
                 ) : (
                   applications.map(app => (
-                    <tr key={app._id} className="hover:bg-black/[0.01]">
-                      <td className="p-5">
-                        <p className="font-semibold text-black">{app.name}</p>
-                        <p className="text-[10px] text-primary/50 mt-0.5">Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
+                    <tr key={app._id} className="hover:bg-[#fbfbfb] transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-bold text-[#1d2327]">{app.name}</span>
+                        <div className="text-[11px] text-[#646970] mt-0.5">Applied: {new Date(app.createdAt).toLocaleDateString()}</div>
                       </td>
-                      <td className="p-5 font-mono">
-                        <p>{app.email}</p>
-                        <p className="text-primary/50 mt-0.5">{app.phone}</p>
+                      <td className="px-4 py-3 font-mono text-[12px]">
+                        <div>{app.email}</div>
+                        <div className="text-[#646970] mt-0.5 text-[11px]">{app.phone}</div>
                       </td>
-                      <td className="p-5 font-medium">{app.address?.country}</td>
-                      <td className="p-5 font-mono">
-                        {app.identityDocuments?.map((url, idx) => (
+                      <td className="px-4 py-3">{app.address?.country}</td>
+                      <td className="px-4 py-3 font-mono text-[12px]">
+                        {app.identityDocuments?.map((filename, idx) => (
                           <button
                             key={idx}
-                            onClick={() => setViewingDocUrl(url)}
-                            className="text-black underline mr-2 hover:text-primary/70 inline-block py-0.5"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(filename))}
+                            className="text-[#2271b1] hover:text-[#135e96] underline mr-3 inline-flex items-center gap-1"
                           >
-                            Doc #{idx + 1}
+                            <Eye className="w-3.5 h-3.5" /> Doc #{idx + 1}
                           </button>
                         ))}
                       </td>
-                      <td className="p-5 max-w-xs">
-                        <p className="line-clamp-2 text-primary/70">{app.marketingAnswers?.promotionStrategy}</p>
-                        <p className="text-[10px] text-primary/50 font-semibold mt-0.5 uppercase tracking-wide">
-                          Reach: {app.marketingAnswers?.audienceSize}
-                        </p>
+                      <td className="px-4 py-3 max-w-xs">
+                        <div className="truncate text-gray-600">{app.marketingAnswers?.promotionStrategy}</div>
+                        <div className="text-[10px] text-[#646970] font-bold uppercase tracking-wide mt-0.5">Reach: {app.marketingAnswers?.audienceSize}</div>
                       </td>
-                      <td className="p-5">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono ${
-                          app.status === 'Approved' ? 'bg-green-50 text-green-700' :
-                          app.status === 'Rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
+                          app.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                          app.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
                         }`}>
                           {app.status}
                         </span>
                       </td>
-                      <td className="p-5 text-right">
+                      <td className="px-4 py-3 text-right">
                         {app.status === 'Pending' && (
                           <button
                             onClick={() => {
                               setSelectedApplication(app);
                               setCustomCommissionRate(settings.defaultCommissionRate || 5);
                             }}
-                            className="px-3.5 py-1.5 bg-black text-white text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-black/90 transition-all"
+                            className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f0f6fb] transition-all shadow-sm"
                           >
                             Review
                           </button>
@@ -308,51 +362,51 @@ export default function AffiliatesManagerClient() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Tab 2: Affiliates List */}
-      {activeTab === "list" && (
-        <div className="bg-white border border-black/5 rounded-[24px] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+        {/* Tab 2: Affiliates List */}
+        {activeTab === "list" && (
+          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+            <table className="w-full text-left border-collapse text-[13px]">
               <thead>
-                <tr className="bg-black/[0.02] border-b border-black/5 text-[9px] uppercase tracking-wider font-semibold text-primary/50 font-mono">
-                  <th className="p-5">Affiliate</th>
-                  <th className="p-5">Referral Code</th>
-                  <th className="p-5">Direct Coupon</th>
-                  <th className="p-5">Base Commission</th>
-                  <th className="p-5">Available Balance</th>
-                  <th className="p-5">Lifetime Earnings</th>
-                  <th className="p-5">Status</th>
-                  <th className="p-5 text-right">Actions</th>
+                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Referral Code</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Direct Coupon</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Commission Rate</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Available Balance</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Lifetime Earnings</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
+                  <th className="px-4 py-3 w-28 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-black/[0.03]">
+              <tbody className="divide-y divide-[#f0f0f1]">
                 {affiliates.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="p-12 text-center text-primary/50">No active affiliate accounts found.</td>
+                    <td colSpan="8" className="p-8 text-center text-gray-400 italic">No active affiliates registered.</td>
                   </tr>
                 ) : (
                   affiliates.map(aff => (
-                    <tr key={aff._id} className="hover:bg-black/[0.01]">
-                      <td className="p-5">
-                        <p className="font-semibold text-black">{aff.name}</p>
-                        <p className="text-[10px] text-primary/50 mt-0.5">{aff.email}</p>
+                    <tr key={aff._id} className="hover:bg-[#fbfbfb] transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-bold text-[#1d2327]">{aff.name}</span>
+                        <div className="text-[11px] text-[#646970] mt-0.5">{aff.email}</div>
                       </td>
-                      <td className="p-5 font-mono font-semibold text-black">{aff.referralCode}</td>
-                      <td className="p-5 font-mono text-primary/60">{aff.couponCode || "—"}</td>
-                      <td className="p-5 font-semibold">{aff.commissionRate}%</td>
-                      <td className="p-5 font-semibold">${aff.balance?.toFixed(2)}</td>
-                      <td className="p-5 font-medium text-primary/80">${aff.lifetimeEarnings?.toFixed(2)}</td>
-                      <td className="p-5">
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono ${
-                          aff.status === 'Active' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                      <td className="px-4 py-3 font-mono font-semibold text-black">{aff.referralCode}</td>
+                      <td className="px-4 py-3 font-mono text-primary/60">{aff.couponCode || "—"}</td>
+                      <td className="px-4 py-3 font-bold text-black">
+                        {aff.commissionType === "Fixed" ? `$${aff.commissionRate} (Fixed)` : `${aff.commissionRate}%`}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-[#1d2327]">${aff.balance?.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-[#646970]">${aff.lifetimeEarnings?.toFixed(2)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
+                          aff.status === 'Active' ? 'bg-[#d5e8d4] text-[#274e13]' : 'bg-[#f8cecc] text-[#b85450]'
                         }`}>
                           {aff.status}
                         </span>
                       </td>
-                      <td className="p-5 text-right">
+                      <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => {
                             setSelectedAffiliate(aff);
@@ -360,12 +414,13 @@ export default function AffiliatesManagerClient() {
                               name: aff.name,
                               email: aff.email,
                               commissionRate: aff.commissionRate,
+                              commissionType: aff.commissionType || "Percentage",
                               status: aff.status,
                               couponCode: aff.couponCode || "",
                               password: ""
                             });
                           }}
-                          className="px-3 py-1.5 border border-black/10 text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-black hover:text-white transition-all duration-300"
+                          className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
                         >
                           Modify
                         </button>
@@ -376,57 +431,55 @@ export default function AffiliatesManagerClient() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Tab 3: Payouts */}
-      {activeTab === "payouts" && (
-        <div className="bg-white border border-black/5 rounded-[24px] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+        {/* Tab 3: Payouts */}
+        {activeTab === "payouts" && (
+          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+            <table className="w-full text-left border-collapse text-[13px]">
               <thead>
-                <tr className="bg-black/[0.02] border-b border-black/5 text-[9px] uppercase tracking-wider font-semibold text-primary/50 font-mono">
-                  <th className="p-5">Affiliate</th>
-                  <th className="p-5">Amount</th>
-                  <th className="p-5">Method</th>
-                  <th className="p-5">Date Requested</th>
-                  <th className="p-5">Status</th>
-                  <th className="p-5">Reference ID</th>
-                  <th className="p-5 text-right">Actions</th>
+                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Amount</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-40">Method</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Date</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-28">Status</th>
+                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Reference ID</th>
+                  <th className="px-4 py-3 w-28 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-black/[0.03]">
+              <tbody className="divide-y divide-[#f0f0f1]">
                 {payouts.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="p-12 text-center text-primary/50">No payout requests in the queue.</td>
+                    <td colSpan="7" className="p-8 text-center text-gray-400 italic">No payout requests registered.</td>
                   </tr>
                 ) : (
                   payouts.map(pay => (
-                    <tr key={pay._id} className="hover:bg-black/[0.01]">
-                      <td className="p-5">
-                        <p className="font-semibold text-black">{pay.affiliateId?.name || "Deleted Affiliate"}</p>
-                        <p className="text-[10px] text-primary/50 mt-0.5">Code: {pay.affiliateId?.referralCode || "—"}</p>
+                    <tr key={pay._id} className="hover:bg-[#fbfbfb] transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-bold text-[#1d2327]">{pay.affiliateId?.name || "Deleted Affiliate"}</span>
+                        <div className="text-[11px] text-[#646970] mt-0.5">Code: {pay.affiliateId?.referralCode || "—"}</div>
                       </td>
-                      <td className="p-5 font-bold text-black">${pay.amount?.toFixed(2)}</td>
-                      <td className="p-5 font-mono text-primary/80">{pay.paymentMethod}</td>
-                      <td className="p-5 text-primary/70">{new Date(pay.createdAt).toLocaleDateString()}</td>
-                      <td className="p-5">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono ${
-                          pay.status === 'Paid' ? 'bg-green-50 text-green-700' :
-                          pay.status === 'Rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'
+                      <td className="px-4 py-3 font-bold text-[#1d2327]">${pay.amount?.toFixed(2)}</td>
+                      <td className="px-4 py-3 font-mono text-[#646970]">{pay.paymentMethod}</td>
+                      <td className="px-4 py-3 text-gray-600">{new Date(pay.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
+                          pay.status === 'Paid' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                          pay.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
                         }`}>
                           {pay.status}
                         </span>
                       </td>
-                      <td className="p-5 font-mono text-[10px] text-primary/60">{pay.transactionId || "—"}</td>
-                      <td className="p-5 text-right">
+                      <td className="px-4 py-3 font-mono text-[11px] text-gray-500">{pay.transactionId || "—"}</td>
+                      <td className="px-4 py-3 text-right">
                         {pay.status === 'Requested' && (
                           <button
                             onClick={() => {
                               setSelectedPayout(pay);
                               setPayoutTxId(`TX-${Date.now()}`);
                             }}
-                            className="px-3.5 py-1.5 bg-black text-white text-[10px] font-bold uppercase tracking-wider rounded-lg hover:bg-black/90 transition-all"
+                            className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f0f6fb] transition-all shadow-sm"
                           >
                             Process
                           </button>
@@ -438,405 +491,454 @@ export default function AffiliatesManagerClient() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Tab 4: Settings */}
-      {activeTab === "settings" && (
-        <form onSubmit={handleSettingsSubmit} className="space-y-6 bg-white border border-black/5 rounded-[24px] p-6 md:p-8 max-w-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Default Commission Rate (%) *</label>
-              <input 
-                type="number"
-                min="0"
-                max="100"
-                value={settings.defaultCommissionRate}
-                onChange={(e) => setSettings({ ...settings, defaultCommissionRate: Number(e.target.value) })}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Cookie Window (Days) *</label>
-              <input 
-                type="number"
-                min="1"
-                value={settings.cookieDurationDays}
-                onChange={(e) => setSettings({ ...settings, cookieDurationDays: Number(e.target.value) })}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Minimum Payout ($) *</label>
-              <input 
-                type="number"
-                min="1"
-                value={settings.minimumPayoutAmount}
-                onChange={(e) => setSettings({ ...settings, minimumPayoutAmount: Number(e.target.value) })}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Support Contact Email *</label>
-              <input 
-                type="email"
-                value={settings.supportEmail}
-                onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2 pt-2">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox"
-                  checked={settings.autoApproveApplications}
-                  onChange={(e) => setSettings({ ...settings, autoApproveApplications: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                />
-                <span className="text-xs text-primary/80 font-medium select-none">
-                  Automatically approve applications (Bypass manual reviews)
-                </span>
-              </label>
-            </div>
-          </div>
-
-          <div className="pt-4">
-            <button 
-              type="submit" 
-              disabled={savingSettings}
-              className="px-6 py-2.5 bg-black text-white text-[11px] uppercase tracking-wider font-bold rounded-xl hover:bg-black/95 transition-all disabled:opacity-40"
-            >
-              {savingSettings ? "Saving Settings..." : "Save Settings"}
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* Modal 1: Review Application */}
-      {selectedApplication && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[32px] border border-black/5 shadow-xl max-w-md w-full p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <button 
-              onClick={() => setSelectedApplication(null)}
-              className="absolute top-6 right-6 text-primary/50 hover:text-black text-xl"
-            >
-              ✕
-            </button>
-            <div className="space-y-1">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-primary/50">Application Review</p>
-              <p className="text-lg font-medium tracking-tight uppercase text-black">{selectedApplication.name}</p>
-            </div>
-
-            <form onSubmit={handleApplicationReview} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Action *</label>
-                <select
-                  value={reviewAction}
-                  onChange={(e) => setReviewAction(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs bg-white"
-                >
-                  <option value="Approve">Approve Application</option>
-                  <option value="Reject">Reject Application</option>
-                </select>
-              </div>
-
-              {reviewAction === "Approve" ? (
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Base Commission Rate (%) *</label>
-                  <input 
+        {/* Tab 4: Settings (WordPress form layout) */}
+        {activeTab === "settings" && (
+          <form onSubmit={handleSettingsSubmit} className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] p-6 max-w-3xl space-y-6">
+            <h3 className="text-[15px] font-bold text-[#1d2327] border-b border-[#ccd0d4] pb-2">Global Settings Options</h3>
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 py-2 border-b border-[#f0f0f1]">
+                <label className="text-[13px] font-bold text-[#1d2327] md:w-56">Default Commission Rate (%)</label>
+                <div className="flex-1">
+                  <input
                     type="number"
                     min="0"
                     max="100"
-                    value={customCommissionRate}
-                    onChange={(e) => setCustomCommissionRate(Number(e.target.value))}
+                    value={settings.defaultCommissionRate}
+                    onChange={(e) => setSettings({ ...settings, defaultCommissionRate: Number(e.target.value) })}
                     required
-                    className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
+                    className="border border-[#8c8f94] rounded-[3px] px-3 py-1.5 focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none text-[13px] w-full max-w-[200px]"
                   />
+                  <p className="text-[12px] text-[#646970] mt-1">Default percentage credited to partners per checkout conversion.</p>
                 </div>
-              ) : (
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Rejection Reason *</label>
-                  <textarea 
-                    value={rejectionReason}
-                    onChange={(e) => setRejectionReason(e.target.value)}
-                    required
-                    rows="3"
-                    placeholder="Provide detailed feedback for the applicant..."
-                    className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs resize-none"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Internal Audit Notes</label>
-                <textarea 
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows="2"
-                  placeholder="Notes visible only to admin staff..."
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs resize-none"
-                />
               </div>
 
-              <div className="pt-2 flex gap-3">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 py-2 border-b border-[#f0f0f1]">
+                <label className="text-[13px] font-bold text-[#1d2327] md:w-56">Cookie Window (Days)</label>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    min="1"
+                    value={settings.cookieDurationDays}
+                    onChange={(e) => setSettings({ ...settings, cookieDurationDays: Number(e.target.value) })}
+                    required
+                    className="border border-[#8c8f94] rounded-[3px] px-3 py-1.5 focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none text-[13px] w-full max-w-[200px]"
+                  />
+                  <p className="text-[12px] text-[#646970] mt-1">Number of days tracking referrals remain valid after link visits.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-4 py-2 border-b border-[#f0f0f1]">
+                <label className="text-[13px] font-bold text-[#1d2327] md:w-56">Minimum Withdrawal ($)</label>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    min="1"
+                    value={settings.minimumPayoutAmount}
+                    onChange={(e) => setSettings({ ...settings, minimumPayoutAmount: Number(e.target.value) })}
+                    required
+                    className="border border-[#8c8f94] rounded-[3px] px-3 py-1.5 focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none text-[13px] w-full max-w-[200px]"
+                  />
+                  <p className="text-[12px] text-[#646970] mt-1">Minimum available balance required to request cash withdrawals.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-4 py-2 border-b border-[#f0f0f1]">
+                <label className="text-[13px] font-bold text-[#1d2327] md:w-56">Support Contact Email</label>
+                <div className="flex-1">
+                  <input
+                    type="email"
+                    value={settings.supportEmail}
+                    onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
+                    required
+                    className="border border-[#8c8f94] rounded-[3px] px-3 py-1.5 focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none text-[13px] w-full max-w-[400px]"
+                  />
+                  <p className="text-[12px] text-[#646970] mt-1">Recipient of new partner signup notifications.</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-start gap-4 py-2">
+                <label className="text-[13px] font-bold text-[#1d2327] md:w-56">Auto-Approve Signups</label>
+                <div className="flex-1">
+                  <label className="flex items-center gap-2 cursor-pointer mt-1">
+                    <input
+                      type="checkbox"
+                      checked={settings.autoApproveApplications}
+                      onChange={(e) => setSettings({ ...settings, autoApproveApplications: e.target.checked })}
+                      className="h-4 w-4 rounded border-gray-300 text-[#2271b1] focus:ring-[#2271b1]"
+                    />
+                    <span className="text-[13px] text-[#1d2327]">Automatically approve applications</span>
+                  </label>
+                  <p className="text-[12px] text-[#646970] mt-1">If enabled, registrations automatically bypass staff review and generate partner accounts immediately.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-[#ccd0d4]">
+              <button
+                type="submit"
+                disabled={savingSettings}
+                className="bg-[#2271b1] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] text-white px-4 py-2 text-[13px] font-medium rounded-[3px] disabled:opacity-50 cursor-pointer shadow-sm font-bold uppercase tracking-wider"
+              >
+                {savingSettings ? "Saving Settings..." : "Save Settings"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Modal 1: Review Application */}
+        {selectedApplication && (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
+                <h3 className="text-[14px] font-bold text-[#1d2327]">Review: {selectedApplication.name}</h3>
                 <button
                   type="button"
                   onClick={() => setSelectedApplication(null)}
-                  className="flex-1 py-3 border border-black/15 text-[11px] uppercase tracking-wider font-semibold rounded-xl hover:bg-black/5 transition-all"
+                  className="text-gray-400 hover:text-black focus:outline-none"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingReview}
-                  className="flex-1 py-3 bg-black text-white text-[11px] uppercase tracking-wider font-bold rounded-xl hover:bg-black/90 transition-all flex justify-center items-center gap-2"
-                >
-                  {submittingReview ? "Processing..." : "Confirm Review"}
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
 
-      {/* Modal 2: Modify Affiliate */}
-      {selectedAffiliate && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[32px] border border-black/5 shadow-xl max-w-md w-full p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <button 
-              onClick={() => setSelectedAffiliate(null)}
-              className="absolute top-6 right-6 text-primary/50 hover:text-black text-xl"
-            >
-              ✕
-            </button>
-            <div className="space-y-1">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-primary/50">Edit Affiliate Profile</p>
-              <p className="text-lg font-medium tracking-tight uppercase text-black">{selectedAffiliate.name}</p>
+              <form onSubmit={handleApplicationReview} className="p-6 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Action *</label>
+                  <select
+                    value={reviewAction}
+                    onChange={(e) => setReviewAction(e.target.value)}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  >
+                    <option value="Approve">Approve and Register Account</option>
+                    <option value="Reject">Reject Application</option>
+                  </select>
+                </div>
+
+                {reviewAction === "Approve" ? (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[12px] font-bold text-[#1d2327]">Commission Type *</label>
+                      <select
+                        value={commissionType}
+                        onChange={(e) => {
+                          setCommissionType(e.target.value);
+                          setCustomCommissionRate(e.target.value === "Percentage" ? 5 : 10);
+                        }}
+                        className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                      >
+                        <option value="Percentage">Percentage Commission (%)</option>
+                        <option value="Fixed">Fixed Commission ($)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[12px] font-bold text-[#1d2327]">
+                        {commissionType === "Percentage" ? "Commission Rate (%) *" : "Fixed Commission Amount ($) *"}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max={commissionType === "Percentage" ? 100 : 10000}
+                        value={customCommissionRate}
+                        onChange={(e) => setCustomCommissionRate(Number(e.target.value))}
+                        required
+                        className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-[#1d2327]">Rejection Reason *</label>
+                    <textarea
+                      value={rejectionReason}
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                      required
+                      rows="3"
+                      placeholder="Reason for rejecting the request..."
+                      className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] resize-none"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Internal Audit Notes</label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows="2"
+                    placeholder="Comments visible to staff only..."
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] resize-none"
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end gap-2 border-t border-[#ccd0d4]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedApplication(null)}
+                    className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="bg-[#2271b1] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] text-white px-4 py-2 text-[13px] font-medium rounded-[3px] disabled:opacity-50"
+                  >
+                    {submittingReview ? "Processing..." : "Confirm Review"}
+                  </button>
+                </div>
+              </form>
             </div>
+          </div>
+        )}
 
-            <form onSubmit={handleAffiliateEditSubmit} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Display Name</label>
-                <input 
-                  type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Email Address</label>
-                <input 
-                  type="email"
-                  value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Commission Rate (%)</label>
-                <input 
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={editForm.commissionRate}
-                  onChange={(e) => setEditForm({ ...editForm, commissionRate: Number(e.target.value) })}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Status</label>
-                <select
-                  value={editForm.status}
-                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs bg-white"
-                >
-                  <option value="Active">Active / Approved</option>
-                  <option value="Suspended">Suspended / Deactivated</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Assigned Custom Coupon Code</label>
-                <input 
-                  type="text"
-                  value={editForm.couponCode}
-                  onChange={(e) => setEditForm({ ...editForm, couponCode: e.target.value })}
-                  placeholder="e.g. MOHSIN10"
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Reset Password</label>
-                <input 
-                  type="password"
-                  value={editForm.password}
-                  onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                  placeholder="Leave empty to keep unchanged"
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs"
-                />
-              </div>
-
-              <div className="pt-2 flex gap-3">
+        {/* Modal 2: Modify Affiliate */}
+        {selectedAffiliate && (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
+                <h3 className="text-[14px] font-bold text-[#1d2327]">Edit Affiliate: {selectedAffiliate.name}</h3>
                 <button
                   type="button"
                   onClick={() => setSelectedAffiliate(null)}
-                  className="flex-1 py-3 border border-black/15 text-[11px] uppercase tracking-wider font-semibold rounded-xl hover:bg-black/5 transition-all"
+                  className="text-gray-400 hover:text-black focus:outline-none"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingEdit}
-                  className="flex-1 py-3 bg-black text-white text-[11px] uppercase tracking-wider font-bold rounded-xl hover:bg-black/90 transition-all flex justify-center items-center gap-2"
-                >
-                  {submittingEdit ? "Saving..." : "Save Changes"}
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
 
-      {/* Modal 3: Process Payout */}
-      {selectedPayout && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[32px] border border-black/5 shadow-xl max-w-md w-full p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <button 
-              onClick={() => setSelectedPayout(null)}
-              className="absolute top-6 right-6 text-primary/50 hover:text-black text-xl"
-            >
-              ✕
-            </button>
-            <div className="space-y-1">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-primary/50">Process Withdrawal Request</p>
-              <p className="text-lg font-medium tracking-tight uppercase text-black">
-                Payout: ${selectedPayout.amount?.toFixed(2)}
-              </p>
-              <p className="text-[10px] text-primary/60 uppercase tracking-widest font-mono">
-                Method: {selectedPayout.paymentMethod}
-              </p>
-            </div>
-
-            <form onSubmit={handlePayoutProcess} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Action *</label>
-                <select
-                  value={payoutAction}
-                  onChange={(e) => setPayoutAction(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs bg-white"
-                >
-                  <option value="Approve">Mark Payout as Completed / Paid</option>
-                  <option value="Reject">Reject Request (Refund Balance)</option>
-                </select>
-              </div>
-
-              {payoutAction === "Approve" && (
+              <form onSubmit={handleAffiliateEditSubmit} className="p-6 space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Transaction ID / Reference Number</label>
-                  <input 
+                  <label className="text-[12px] font-bold text-[#1d2327]">Display Name</label>
+                  <input
                     type="text"
-                    value={payoutTxId}
-                    onChange={(e) => setPayoutTxId(e.target.value)}
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                     required
-                    placeholder="e.g. PayPal TxID or Swift Ref"
-                    className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs font-mono"
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
                   />
                 </div>
-              )}
 
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-primary/60">Processor Notes / Feedback</label>
-                <textarea 
-                  value={payoutNotes}
-                  onChange={(e) => setPayoutNotes(e.target.value)}
-                  rows="3"
-                  placeholder="Notes sent in email to affiliate..."
-                  className="w-full px-4 py-3 rounded-lg border border-black/10 focus:border-black focus:outline-none text-xs resize-none"
-                />
-              </div>
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Email Address</label>
+                  <input
+                    type="email"
+                    value={editForm.email}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    required
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  />
+                </div>
 
-              <div className="pt-2 flex gap-3">
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Commission Type</label>
+                  <select
+                    value={editForm.commissionType}
+                    onChange={(e) => setEditForm({ ...editForm, commissionType: e.target.value })}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  >
+                    <option value="Percentage">Percentage Commission (%)</option>
+                    <option value="Fixed">Fixed Commission ($)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">
+                    {editForm.commissionType === "Percentage" ? "Commission Rate (%)" : "Fixed Commission Amount ($)"}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max={editForm.commissionType === "Percentage" ? 100 : 10000}
+                    value={editForm.commissionRate}
+                    onChange={(e) => setEditForm({ ...editForm, commissionRate: Number(e.target.value) })}
+                    required
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Status</label>
+                  <select
+                    value={editForm.status}
+                    onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Suspended">Suspended / Suspended</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Assigned Coupon Code</label>
+                  <input
+                    type="text"
+                    value={editForm.couponCode}
+                    onChange={(e) => setEditForm({ ...editForm, couponCode: e.target.value })}
+                    placeholder="Leave empty for none"
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Reset Password</label>
+                  <input
+                    type="password"
+                    value={editForm.password}
+                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                    placeholder="Leave empty to keep unchanged"
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end gap-2 border-t border-[#ccd0d4]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAffiliate(null)}
+                    className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingEdit}
+                    className="bg-[#2271b1] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] text-white px-4 py-2 text-[13px] font-medium rounded-[3px] disabled:opacity-50"
+                  >
+                    {submittingEdit ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal 3: Process Payout */}
+        {selectedPayout && (
+          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full overflow-hidden">
+              <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
+                <h3 className="text-[14px] font-bold text-[#1d2327]">Process Payout: ${selectedPayout.amount?.toFixed(2)}</h3>
                 <button
                   type="button"
                   onClick={() => setSelectedPayout(null)}
-                  className="flex-1 py-3 border border-black/15 text-[11px] uppercase tracking-wider font-semibold rounded-xl hover:bg-black/5 transition-all"
+                  className="text-gray-400 hover:text-black focus:outline-none"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingPayout}
-                  className="flex-1 py-3 bg-black text-white text-[11px] uppercase tracking-wider font-bold rounded-xl hover:bg-black/90 transition-all flex justify-center items-center gap-2"
-                >
-                  {submittingPayout ? "Processing..." : "Confirm Payout"}
+                  <X className="w-4 h-4" />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handlePayoutProcess} className="p-6 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Action *</label>
+                  <select
+                    value={payoutAction}
+                    onChange={(e) => setPayoutAction(e.target.value)}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  >
+                    <option value="Approve">Mark Payout as Paid</option>
+                    <option value="Reject">Reject Request (Refund Balance)</option>
+                  </select>
+                </div>
+
+                {payoutAction === "Approve" && (
+                  <div className="space-y-1">
+                    <label className="text-[12px] font-bold text-[#1d2327]">Transaction ID / Reference *</label>
+                    <input
+                      type="text"
+                      value={payoutTxId}
+                      onChange={(e) => setPayoutTxId(e.target.value)}
+                      required
+                      placeholder="e.g. PayPal TxID or bank trace ref"
+                      className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Feedback Notes</label>
+                  <textarea
+                    value={payoutNotes}
+                    onChange={(e) => setPayoutNotes(e.target.value)}
+                    rows="3"
+                    placeholder="Sent in notification email to partner..."
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] resize-none"
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end gap-2 border-t border-[#ccd0d4]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPayout(null)}
+                    className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submittingPayout}
+                    className="bg-[#2271b1] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] text-white px-4 py-2 text-[13px] font-medium rounded-[3px] disabled:opacity-50"
+                  >
+                    {submittingPayout ? "Processing..." : "Confirm"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal 4: Secure Document Viewer */}
-      {viewingDocUrl && (
-        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-[32px] border border-black/5 shadow-2xl max-w-4xl w-full p-6 space-y-4 relative max-h-[95vh] flex flex-col justify-between">
-            <button 
-              onClick={() => setViewingDocUrl(null)}
-              className="absolute top-6 right-6 text-primary/50 hover:text-black text-2xl z-10"
-            >
-              ✕
-            </button>
-            <div className="space-y-1 pb-2 border-b border-black/5">
-              <p className="text-[10px] uppercase tracking-wider font-semibold text-primary/50">KYC Secure Document Viewer</p>
-            </div>
+        {/* Modal 4: Secure Document Viewer */}
+        {viewingDocUrl && (
+          <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
+                <h3 className="text-[14px] font-bold text-[#1d2327]">KYC Document Viewer</h3>
+                <button
+                  type="button"
+                  onClick={() => setViewingDocUrl(null)}
+                  className="text-gray-400 hover:text-black focus:outline-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-            <div className="flex-1 overflow-auto bg-slate-100 rounded-xl p-4 flex items-center justify-center min-h-[300px]">
-              {viewingDocUrl.toLowerCase().endsWith(".pdf") ? (
-                <iframe 
-                  src={viewingDocUrl} 
-                  title="Document PDF"
-                  className="w-full h-[60vh] border-0"
-                />
-              ) : (
-                <img 
-                  src={viewingDocUrl} 
-                  alt="KYC Document Preview" 
-                  className="max-h-[60vh] object-contain rounded-lg border shadow-sm"
-                />
-              )}
-            </div>
+              <div className="flex-1 overflow-auto bg-[#f0f0f1] p-4 flex items-center justify-center min-h-[300px]">
+                {viewingDocUrl.toLowerCase().includes("file=") && viewingDocUrl.toLowerCase().endsWith(".pdf") ? (
+                  <iframe
+                    src={viewingDocUrl}
+                    title="Document PDF"
+                    className="w-full h-[60vh] border-0 bg-white"
+                  />
+                ) : (
+                  <img
+                    src={viewingDocUrl}
+                    alt="KYC Document Preview"
+                    className="max-h-[60vh] object-contain border shadow-sm bg-white"
+                  />
+                )}
+              </div>
 
-            <div className="pt-2 flex justify-end gap-3">
-              <a
-                href={viewingDocUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="px-6 py-2.5 bg-black text-white text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-black/90 transition-all text-center"
-              >
-                Open in new window
-              </a>
-              <button
-                onClick={() => setViewingDocUrl(null)}
-                className="px-6 py-2.5 border border-black/15 text-[10px] font-bold uppercase tracking-wider rounded-xl hover:bg-black/5 transition-all"
-              >
-                Close Preview
-              </button>
+              <div className="p-4 border-t border-[#ccd0d4] flex justify-end gap-2 bg-[#f6f7f7]">
+                <a
+                  href={viewingDocUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-[#2271b1] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] text-white px-4 py-2 text-[13px] font-medium rounded-[3px] text-center inline-flex items-center gap-1.5 font-bold uppercase tracking-wider"
+                >
+                  <ExternalLink className="w-4 h-4" /> Open in New Tab
+                </a>
+                <button
+                  onClick={() => setViewingDocUrl(null)}
+                  className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+      </div>
+    </AdminPageLayout>
   );
 }

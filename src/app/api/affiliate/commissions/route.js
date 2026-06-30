@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import AffiliateCommission from "@/models/AffiliateCommission";
+import Affiliate from "@/models/Affiliate";
 import { NextResponse } from "next/server";
 
 export async function GET(req) {
