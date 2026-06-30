@@ -65,6 +65,8 @@ export default function AffiliateDashboardClient({ userSession }) {
     routingNumber: "",
     paypalEmail: ""
   });
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [bankDocFile, setBankDocFile] = useState(null);
   const [updatingSettings, setUpdatingSettings] = useState(false);
 
   // Fetch metrics & profile details
@@ -178,16 +180,30 @@ export default function AffiliateDashboardClient({ userSession }) {
     e.preventDefault();
     setUpdatingSettings(true);
     try {
+      const formData = new FormData();
+      // Append all text settings form fields
+      Object.keys(settingsForm).forEach(key => {
+        formData.append(key, settingsForm[key]);
+      });
+      // Append files if selected
+      if (avatarFile) {
+        formData.append("profilePhoto", avatarFile);
+      }
+      if (bankDocFile) {
+        formData.append("bankVerificationDocument", bankDocFile);
+      }
+
       const res = await fetch("/api/affiliate/profile", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settingsForm)
+        body: formData // Let the browser set Content-Type header with boundaries automatically
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save profile details.");
 
       toast.success("Profile saved successfully.");
+      setAvatarFile(null);
+      setBankDocFile(null);
       fetchDashboardData();
     } catch (err) {
       toast.error(err.message);
@@ -672,7 +688,13 @@ export default function AffiliateDashboardClient({ userSession }) {
               </h3>
               <div className="flex flex-col sm:flex-row items-center gap-5">
                 <div className="shrink-0">
-                  {profile?.profilePhoto ? (
+                  {avatarFile ? (
+                    <img
+                      src={URL.createObjectURL(avatarFile)}
+                      alt="Avatar Preview"
+                      className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500 shadow-sm bg-neutral-50"
+                    />
+                  ) : profile?.profilePhoto ? (
                     <img
                       src={profile.profilePhoto.startsWith("http") || profile.profilePhoto.startsWith("/") ? profile.profilePhoto : `/api/admin/affiliates/requests/document?file=${encodeURIComponent(profile.profilePhoto)}`}
                       alt="Avatar"
@@ -685,15 +707,17 @@ export default function AffiliateDashboardClient({ userSession }) {
                   )}
                 </div>
                 <div className="space-y-1 flex-1 w-full">
-                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Avatar Image URL</label>
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Upload New Profile Photo</label>
                   <input
-                    type="text"
-                    value={settingsForm.profilePhoto}
-                    onChange={(e) => setSettingsForm({ ...settingsForm, profilePhoto: e.target.value })}
-                    placeholder="https://example.com/avatar.jpg"
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/jpg"
+                    onChange={(e) => setAvatarFile(e.target.files[0] || null)}
+                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 file:text-black hover:file:bg-neutral-200 cursor-pointer"
                   />
-                  <p className="text-[10px] text-gray-400">Paste an image URL to update your profile photo avatar.</p>
+                  {avatarFile && (
+                    <p className="text-[11px] font-semibold text-emerald-600">Selected: {avatarFile.name} (Ready to upload)</p>
+                  )}
+                  <p className="text-[10px] text-gray-400">Accepted formats: JPG, PNG, WEBP. Max size: 3MB.</p>
                 </div>
               </div>
             </div>
@@ -922,7 +946,7 @@ export default function AffiliateDashboardClient({ userSession }) {
               </div>
             </div>
 
-            {/* 7. Verification Documents (Read-Only) */}
+            {/* 7. Verification Documents */}
             <div className="space-y-4 border-t border-neutral-100 pt-6">
               <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
                 Verification Documents
@@ -931,20 +955,34 @@ export default function AffiliateDashboardClient({ userSession }) {
                 {profile?.identityDocuments?.length > 0 ? (
                   profile.identityDocuments.map((filename, idx) => (
                     <div key={idx} className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
-                      <span className="font-mono text-neutral-600">{filename}</span>
+                      <span className="font-mono text-neutral-600 truncate max-w-[200px]" title={filename}>{filename}</span>
                       <span className="text-[10px] font-bold uppercase text-gray-400">Identity Document</span>
                     </div>
                   ))
                 ) : null}
                 {profile?.bankVerificationDocument ? (
                   <div className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
-                    <span className="font-mono text-neutral-600">{profile.bankVerificationDocument}</span>
+                    <span className="font-mono text-neutral-600 truncate max-w-[200px]" title={profile.bankVerificationDocument}>{profile.bankVerificationDocument}</span>
                     <span className="text-[10px] font-bold uppercase text-gray-400">Bank Verification</span>
                   </div>
                 ) : null}
                 {(!profile?.identityDocuments || profile.identityDocuments.length === 0) && !profile?.bankVerificationDocument && (
                   <p className="text-xs text-neutral-400 italic">No KYC verification documents uploaded yet.</p>
                 )}
+
+                <div className="space-y-1.5 mt-4 pt-4 border-t border-neutral-100/50">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Upload New Bank Statement / Certification Document</label>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,application/pdf"
+                    onChange={(e) => setBankDocFile(e.target.files[0] || null)}
+                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-neutral-100 file:text-black hover:file:bg-neutral-200 cursor-pointer"
+                  />
+                  {bankDocFile && (
+                    <p className="text-[11px] font-semibold text-emerald-600">Selected: {bankDocFile.name} (Ready to upload)</p>
+                  )}
+                  <p className="text-[10px] text-gray-400">Supported formats: PDF, PNG, JPG. Max size: 5MB.</p>
+                </div>
               </div>
             </div>
 

@@ -152,6 +152,10 @@ export async function PUT(req) {
       businessInfo: application.businessInfo,
       marketingAnswers: application.marketingAnswers,
       profilePhoto: application.profilePhoto || null,
+      phone: application.phone || "",
+      dob: application.dob || null,
+      identityDocuments: application.identityDocuments || [],
+      bankVerificationDocument: application.bankVerificationDocument || null,
     });
 
     // 5. Update Application status

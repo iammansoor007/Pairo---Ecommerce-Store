@@ -3,6 +3,37 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Affiliate from "@/models/Affiliate";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+
+// Validates and saves a single uploaded file, returns the saved filename or throws
+async function validateAndSaveFile(file, allowedMimes, maxSize, privateDir) {
+  if (!allowedMimes.includes(file.type)) {
+    throw new Error(`File type "${file.type}" not allowed. Accepted: ${allowedMimes.join(", ")}`);
+  }
+  if (file.size > maxSize) {
+    throw new Error(`File "${file.name}" exceeds the ${Math.round(maxSize / 1024 / 1024)}MB size limit.`);
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const magicHex = buffer.slice(0, 4).toString('hex').toUpperCase();
+  let isValidMagic = false;
+
+  if (magicHex.startsWith('89504E47')) isValidMagic = true; // PNG
+  else if (magicHex.startsWith('FFD8FF')) isValidMagic = true;  // JPEG/JPG
+  else if (magicHex.startsWith('25504446')) isValidMagic = true; // PDF
+  else if (magicHex.startsWith('52494646') || magicHex.startsWith('57454250')) isValidMagic = true; // WebP (RIFF/WEBP)
+
+  if (!isValidMagic) {
+    throw new Error(`Security rejection: "${file.name}" failed magic-bytes validation.`);
+  }
+
+  const uniqueFilename = `${crypto.randomUUID()}-${path.basename(file.name)}`;
+  const filePath = path.resolve(privateDir, uniqueFilename);
+  await fs.promises.writeFile(filePath, buffer);
+  return uniqueFilename;
+}
 
 export async function PUT(req) {
   await dbConnect();
@@ -17,7 +48,27 @@ export async function PUT(req) {
       return NextResponse.json({ error: "Unauthorized: Account suspended or inactive" }, { status: 403 });
     }
 
-    const body = await req.json().catch(() => ({}));
+    const contentType = req.headers.get("content-type") || "";
+    let body = {};
+    let profilePhotoFile = null;
+    let bankVerificationDocFile = null;
+
+    if (contentType.includes("multipart/form-data")) {
+      const formData = await req.formData();
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          if (key === "profilePhoto") {
+            profilePhotoFile = value;
+          } else if (key === "bankVerificationDocument") {
+            bankVerificationDocFile = value;
+          }
+        } else {
+          body[key] = value;
+        }
+      }
+    } else {
+      body = await req.json().catch(() => ({}));
+    }
     
     // Build partial update — only include fields that are explicitly provided
     const setFields = {};
@@ -25,7 +76,40 @@ export async function PUT(req) {
     if (body.name !== undefined) setFields.name = body.name;
     if (body.phone !== undefined) setFields.phone = body.phone;
     if (body.dob !== undefined) setFields.dob = body.dob;
-    if (body.profilePhoto !== undefined) setFields.profilePhoto = body.profilePhoto;
+
+    // Handle files if uploaded
+    if ((profilePhotoFile && profilePhotoFile.size > 0) || (bankVerificationDocFile && bankVerificationDocFile.size > 0)) {
+      const privateDir = path.resolve(process.cwd(), "private", "kyc");
+      if (!fs.existsSync(privateDir)) {
+        fs.mkdirSync(privateDir, { recursive: true });
+      }
+
+      const PHOTO_ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+      const KYC_ALLOWED_MIME = ['image/jpeg', 'image/png', 'application/pdf'];
+      const MAX_DOC_SIZE = 5 * 1024 * 1024;
+      const MAX_PHOTO_SIZE = 3 * 1024 * 1024;
+
+      if (profilePhotoFile && profilePhotoFile.size > 0) {
+        try {
+          const profilePhotoFilename = await validateAndSaveFile(profilePhotoFile, PHOTO_ALLOWED_MIME, MAX_PHOTO_SIZE, privateDir);
+          setFields.profilePhoto = profilePhotoFilename;
+        } catch (err) {
+          return NextResponse.json({ error: `Profile Photo upload error: ${err.message}` }, { status: 400 });
+        }
+      }
+
+      if (bankVerificationDocFile && bankVerificationDocFile.size > 0) {
+        try {
+          const bankDocFilename = await validateAndSaveFile(bankVerificationDocFile, KYC_ALLOWED_MIME, MAX_DOC_SIZE, privateDir);
+          setFields.bankVerificationDocument = bankDocFilename;
+        } catch (err) {
+          return NextResponse.json({ error: `Bank Verification upload error: ${err.message}` }, { status: 400 });
+        }
+      }
+    } else if (body.profilePhoto !== undefined) {
+      // Fallback for direct photo filename/URL strings
+      setFields.profilePhoto = body.profilePhoto;
+    }
     
     if (body.companyName !== undefined || body.website !== undefined) {
       const existing = await Affiliate.findById(session.user.id).select("businessInfo").lean();

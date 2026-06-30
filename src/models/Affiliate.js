@@ -52,6 +52,10 @@ const AffiliateSchema = new mongoose.Schema({
   
   ipAddress: String,
   deviceInfo: String,
+  phone: String,
+  dob: Date,
+  identityDocuments: [String],
+  bankVerificationDocument: String,
   profilePhoto: String, // Profile photo filename (copied from application on approval)
   resetPasswordToken: String, // Used for forgot-password flow
   resetPasswordExpires: Date   // Token expiry (1 hour from generation)
