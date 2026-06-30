@@ -63,7 +63,7 @@ export default function AffiliatesManagerClient({ userSession }) {
 
   // Document Modal Viewer
   const [viewingDocUrl, setViewingDocUrl] = useState(null);
-  
+
   // Viewing Application Details Modal
   const [viewingApplication, setViewingApplication] = useState(null);
 
@@ -280,7 +280,7 @@ export default function AffiliatesManagerClient({ userSession }) {
       breadcrumbs={[{ label: "Affiliates" }]}
     >
       <div className="space-y-6 text-[#2c3338] font-sans">
-        
+
         {/* WP style Stats Summary Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
@@ -339,11 +339,10 @@ export default function AffiliatesManagerClient({ userSession }) {
               <button
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`transition-all focus:outline-none ${
-                  activeTab === tab.id
-                    ? "text-[#1d2327] font-bold"
-                    : "text-[#2271b1] hover:text-[#135e96]"
-                }`}
+                className={`transition-all focus:outline-none ${activeTab === tab.id
+                  ? "text-[#1d2327] font-bold"
+                  : "text-[#2271b1] hover:text-[#135e96]"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -594,10 +593,9 @@ export default function AffiliatesManagerClient({ userSession }) {
                     <td className="px-4 py-2.5">{c.commissionType === 'Fixed' ? `$${c.commissionRate}` : `${c.commissionRate}%`}</td>
                     <td className="px-4 py-2.5 text-right font-bold text-[#1d2327]">${(c.commissionAmount ?? 0).toFixed(2)}</td>
                     <td className="px-4 py-2.5">
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase ${
-                        c.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase ${c.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
                         c.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-amber-700'
-                      }`}>{c.status}</span>
+                        }`}>{c.status}</span>
                     </td>
                     <td className="px-4 py-2.5 text-[#646970]">{new Date(c.createdAt).toLocaleDateString()}</td>
                   </tr>
@@ -641,7 +639,7 @@ export default function AffiliatesManagerClient({ userSession }) {
                           <td className="py-2 font-medium">{row.month}</td>
                           <td className="py-2 text-right">{row.clicks}</td>
                           <td className="py-2 text-right">{row.orders}</td>
-                          <td className="py-2 text-right">{row.clicks > 0 ? `${((row.orders/row.clicks)*100).toFixed(1)}%` : '0%'}</td>
+                          <td className="py-2 text-right">{row.clicks > 0 ? `${((row.orders / row.clicks) * 100).toFixed(1)}%` : '0%'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -706,10 +704,9 @@ export default function AffiliatesManagerClient({ userSession }) {
                         <div className="text-[10px] text-[#646970] font-bold uppercase tracking-wide mt-0.5">Reach: {app.marketingAnswers?.audienceSize}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
-                          app.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${app.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
                           app.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
-                        }`}>
+                          }`}>
                           {app.status}
                         </span>
                       </td>
@@ -777,9 +774,8 @@ export default function AffiliatesManagerClient({ userSession }) {
                       <td className="px-4 py-3 font-bold text-[#1d2327]">${aff.balance?.toFixed(2)}</td>
                       <td className="px-4 py-3 text-[#646970]">${aff.lifetimeEarnings?.toFixed(2)}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
-                          aff.status === 'Active' ? 'bg-[#d5e8d4] text-[#274e13]' : 'bg-[#f8cecc] text-[#b85450]'
-                        }`}>
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${aff.status === 'Active' ? 'bg-[#d5e8d4] text-[#274e13]' : 'bg-[#f8cecc] text-[#b85450]'
+                          }`}>
                           {aff.status}
                         </span>
                       </td>
@@ -861,10 +857,9 @@ export default function AffiliatesManagerClient({ userSession }) {
                       <td className="px-4 py-3 font-mono text-[#646970]">{pay.paymentMethod}</td>
                       <td className="px-4 py-3 text-gray-600">{new Date(pay.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
-                          pay.status === 'Paid' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${pay.status === 'Paid' ? 'bg-[#d5e8d4] text-[#274e13]' :
                           pay.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
-                        }`}>
+                          }`}>
                           {pay.status}
                         </span>
                       </td>
@@ -1041,8 +1036,8 @@ export default function AffiliatesManagerClient({ userSession }) {
 
         {/* Modal 0: View Application Details */}
         {viewingApplication && (
-          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto p-4 flex justify-center items-start md:py-8">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-2xl w-full flex flex-col">
               <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between flex-shrink-0">
                 <h3 className="text-[14px] font-bold text-[#1d2327]">Application Details: {viewingApplication.name}</h3>
                 <button
@@ -1054,11 +1049,11 @@ export default function AffiliatesManagerClient({ userSession }) {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto space-y-6 text-[13px] text-gray-700">
+              <div className="p-6 space-y-6 text-[13px] text-gray-700">
                 {/* 1. General Profile */}
                 <div className="space-y-2">
                   <h4 className="font-bold text-[12px] uppercase tracking-wider text-[#1d2327] border-b border-[#ccd0d4] pb-1">General Contact Profile</h4>
-                  
+
                   {viewingApplication.profilePhoto && (
                     <div className="flex items-center gap-3 pb-3">
                       <img
@@ -1094,10 +1089,9 @@ export default function AffiliatesManagerClient({ userSession }) {
                     </div>
                     <div>
                       <span className="text-[#646970] font-semibold">Status:</span>{" "}
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
-                        viewingApplication.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${viewingApplication.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
                         viewingApplication.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
-                      }`}>
+                        }`}>
                         {viewingApplication.status}
                       </span>
                     </div>
@@ -1254,8 +1248,8 @@ export default function AffiliatesManagerClient({ userSession }) {
 
         {/* Modal 1: Review Application */}
         {selectedApplication && (
-          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full overflow-hidden">
+          <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto p-4 flex justify-center items-start md:py-8">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full">
               <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
                 <h3 className="text-[14px] font-bold text-[#1d2327]">Review: {selectedApplication.name}</h3>
                 <button
@@ -1365,7 +1359,7 @@ export default function AffiliatesManagerClient({ userSession }) {
                           type="button"
                           onClick={() => {
                             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                            setReviewReferralCode(Array.from({length: 8}, () => chars[Math.floor(Math.random() * chars.length)]).join(""));
+                            setReviewReferralCode(Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join(""));
                           }}
                           className="shrink-0 bg-[#f6f7f7] border border-[#ccd0d4] text-[#2c3338] hover:bg-[#e0e0e0] px-3 py-1.5 rounded-[3px] text-[12px] font-bold transition-all"
                           title="Generate a random referral code"
@@ -1426,8 +1420,8 @@ export default function AffiliatesManagerClient({ userSession }) {
 
         {/* Modal 2: Modify Affiliate */}
         {selectedAffiliate && (
-          <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full overflow-hidden">
+          <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto p-4 flex justify-center items-start md:py-8">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-2xl w-full">
               <div className="p-4 border-b border-[#ccd0d4] bg-[#f6f7f7] flex items-center justify-between">
                 <h3 className="text-[14px] font-bold text-[#1d2327]">Edit Affiliate: {selectedAffiliate.name}</h3>
                 <button
@@ -1562,7 +1556,7 @@ export default function AffiliatesManagerClient({ userSession }) {
                       type="button"
                       onClick={() => {
                         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                        setEditReferralCode(Array.from({length: 8}, () => chars[Math.floor(Math.random() * chars.length)]).join(""));
+                        setEditReferralCode(Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join(""));
                       }}
                       className="shrink-0 bg-[#f6f7f7] border border-[#ccd0d4] text-[#2c3338] hover:bg-[#e0e0e0] px-3 py-1.5 rounded-[3px] text-[12px] font-bold"
                       title="Generate a random referral code"
@@ -1590,23 +1584,23 @@ export default function AffiliatesManagerClient({ userSession }) {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="col-span-2 space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Street</label>
-                      <input type="text" value={editForm.street} onChange={e => setEditForm({...editForm, street: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" placeholder="Street address" />
+                      <input type="text" value={editForm.street} onChange={e => setEditForm({ ...editForm, street: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" placeholder="Street address" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">City</label>
-                      <input type="text" value={editForm.city} onChange={e => setEditForm({...editForm, city: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.city} onChange={e => setEditForm({ ...editForm, city: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">State / Province</label>
-                      <input type="text" value={editForm.state} onChange={e => setEditForm({...editForm, state: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.state} onChange={e => setEditForm({ ...editForm, state: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Zip / Postal Code</label>
-                      <input type="text" value={editForm.zipCode} onChange={e => setEditForm({...editForm, zipCode: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.zipCode} onChange={e => setEditForm({ ...editForm, zipCode: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Country</label>
-                      <input type="text" value={editForm.country} onChange={e => setEditForm({...editForm, country: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.country} onChange={e => setEditForm({ ...editForm, country: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                   </div>
                 </div>
@@ -1617,31 +1611,31 @@ export default function AffiliatesManagerClient({ userSession }) {
                   <div className="grid grid-cols-2 gap-2">
                     <div className="col-span-2 space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Account Holder Name</label>
-                      <input type="text" value={editForm.accountHolder} onChange={e => setEditForm({...editForm, accountHolder: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.accountHolder} onChange={e => setEditForm({ ...editForm, accountHolder: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Bank Name</label>
-                      <input type="text" value={editForm.bankName} onChange={e => setEditForm({...editForm, bankName: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="text" value={editForm.bankName} onChange={e => setEditForm({ ...editForm, bankName: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Account Number</label>
-                      <input type="text" value={editForm.accountNumber} onChange={e => setEditForm({...editForm, accountNumber: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
+                      <input type="text" value={editForm.accountNumber} onChange={e => setEditForm({ ...editForm, accountNumber: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">IBAN</label>
-                      <input type="text" value={editForm.iban} onChange={e => setEditForm({...editForm, iban: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
+                      <input type="text" value={editForm.iban} onChange={e => setEditForm({ ...editForm, iban: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">SWIFT / BIC</label>
-                      <input type="text" value={editForm.swiftCode} onChange={e => setEditForm({...editForm, swiftCode: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
+                      <input type="text" value={editForm.swiftCode} onChange={e => setEditForm({ ...editForm, swiftCode: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">Routing Number</label>
-                      <input type="text" value={editForm.routingNumber} onChange={e => setEditForm({...editForm, routingNumber: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
+                      <input type="text" value={editForm.routingNumber} onChange={e => setEditForm({ ...editForm, routingNumber: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px] font-mono" />
                     </div>
                     <div className="col-span-2 space-y-1">
                       <label className="text-[11px] font-bold text-[#1d2327]">PayPal Email</label>
-                      <input type="email" value={editForm.paypalEmail} onChange={e => setEditForm({...editForm, paypalEmail: e.target.value})} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
+                      <input type="email" value={editForm.paypalEmail} onChange={e => setEditForm({ ...editForm, paypalEmail: e.target.value })} className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]" />
                     </div>
                   </div>
                 </div>

@@ -45,6 +45,13 @@ export default function AffiliateDashboardClient({ userSession }) {
 
   // Settings / Bank update inputs
   const [settingsForm, setSettingsForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    dob: "",
+    profilePhoto: "",
+    companyName: "",
+    website: "",
     street: "",
     city: "",
     state: "",
@@ -72,6 +79,13 @@ export default function AffiliateDashboardClient({ userSession }) {
         
         // Sync settings form
         setSettingsForm({
+          name: data.profile.name || "",
+          email: data.profile.email || "",
+          phone: data.profile.phone || "",
+          dob: data.profile.dob ? new Date(data.profile.dob).toISOString().split('T')[0] : "",
+          profilePhoto: data.profile.profilePhoto || "",
+          companyName: data.profile.businessInfo?.companyName || "",
+          website: data.profile.businessInfo?.website || "",
           street: data.profile.address?.street || "",
           city: data.profile.address?.city || "",
           state: data.profile.address?.state || "",
@@ -197,37 +211,40 @@ export default function AffiliateDashboardClient({ userSession }) {
     <div className="flex flex-col md:flex-row bg-[#FAF9F6] text-black font-sans min-h-screen md:h-screen md:overflow-hidden">
       
       {/* Sidebar Navigation */}
-      <aside className="w-full md:w-64 border-r border-neutral-200 bg-neutral-900 text-neutral-300 p-6 md:p-8 space-y-8 flex-shrink-0 flex flex-col justify-between md:h-screen md:sticky md:top-0 md:overflow-y-auto">
-        <div className="space-y-8">
-          <div className="space-y-2 pb-6 border-b border-neutral-800">
-            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-[0.25em]">Pairo Partners</p>
-            <p className="text-md font-bold tracking-tight text-white uppercase truncate">{profile?.name}</p>
-            <div className="inline-flex px-2 py-0.5 rounded-[3px] bg-neutral-800 text-[9px] font-mono text-neutral-300 uppercase">
+      <aside className="w-full md:w-60 border-r border-neutral-800 bg-neutral-950 text-neutral-300 p-4 md:p-5 flex-shrink-0 flex flex-col justify-between md:h-screen md:sticky md:top-0 md:overflow-y-auto select-none">
+        <div className="space-y-5">
+          {/* Header Profile info */}
+          <div className="space-y-1 pb-4 border-b border-neutral-800/80">
+            <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-[0.3em]">Pairo Partner</p>
+            <p className="text-sm font-bold tracking-tight text-white uppercase truncate">{profile?.name}</p>
+            <div className="inline-flex px-1.5 py-0.5 rounded bg-neutral-800 text-[9px] font-mono text-neutral-400 uppercase">
               ID: {profile?.referralCode}
             </div>
           </div>
 
+          {/* Navigation Links */}
           <nav className="space-y-1">
             {[
               { id: "overview", label: "Performance Overview", icon: LayoutDashboard },
               { id: "products", label: "Product Explorer", icon: Package },
-              { id: "conversions", label: "Referral & Conversions", icon: RefreshCw },
-              { id: "payouts", label: "Payouts & Withdrawals", icon: Landmark },
+              { id: "conversions", label: "Referral Logs", icon: RefreshCw },
+              { id: "payouts", label: "Payouts & Balances", icon: Landmark },
               { id: "assets", label: "Marketing Assets", icon: FileText },
-              { id: "settings", label: "Profile & Bank Details", icon: Settings2 },
+              { id: "settings", label: "Account & Banking", icon: Settings2 },
             ].map((tab) => {
               const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-[3px] text-left text-xs uppercase tracking-wider font-bold transition-all ${
-                    activeTab === tab.id
-                      ? "bg-white text-black font-bold"
-                      : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-xs uppercase tracking-wider font-semibold transition-all ${
+                    isActive
+                      ? "bg-white text-black shadow-md font-bold"
+                      : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-black" : "text-neutral-500"}`} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -235,10 +252,11 @@ export default function AffiliateDashboardClient({ userSession }) {
           </nav>
         </div>
 
-        <div className="pt-8 border-t border-neutral-800">
+        {/* Logout Button */}
+        <div className="pt-4 border-t border-neutral-800/80">
           <button
             onClick={() => signOut({ callbackUrl: "/affiliate-login" })}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-[3px] border border-neutral-800 hover:border-neutral-500 hover:bg-neutral-800 text-xs font-bold uppercase tracking-wider text-center transition-all duration-300"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900 text-xs font-semibold uppercase tracking-wider text-center text-neutral-400 hover:text-white transition-all duration-200"
           >
             <LogOut className="w-3.5 h-3.5" />
             Logout
@@ -645,9 +663,150 @@ export default function AffiliateDashboardClient({ userSession }) {
 
         {/* Tab 6: Profile & Bank Details */}
         {activeTab === "settings" && (
-          <form onSubmit={handleSettingsSubmit} className="space-y-8 bg-white border border-neutral-200 rounded-[3px] p-6 md:p-8 shadow-sm">
-            {/* Address */}
+          <form onSubmit={handleSettingsSubmit} className="space-y-8 bg-white border border-neutral-200 rounded-lg p-6 md:p-8 shadow-sm max-w-4xl">
+            
+            {/* 1. Profile Photo */}
             <div className="space-y-4">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
+                Profile Photo
+              </h3>
+              <div className="flex flex-col sm:flex-row items-center gap-5">
+                <div className="shrink-0">
+                  {profile?.profilePhoto ? (
+                    <img
+                      src={profile.profilePhoto.startsWith("http") || profile.profilePhoto.startsWith("/") ? profile.profilePhoto : `/api/admin/affiliates/requests/document?file=${encodeURIComponent(profile.profilePhoto)}`}
+                      alt="Avatar"
+                      className="w-20 h-20 rounded-full object-cover border border-neutral-200 shadow-sm bg-neutral-50"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-neutral-900 text-white font-bold text-lg flex items-center justify-center border border-neutral-800">
+                      {profile?.name?.charAt(0).toUpperCase() || "P"}
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-1 flex-1 w-full">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Avatar Image URL</label>
+                  <input
+                    type="text"
+                    value={settingsForm.profilePhoto}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, profilePhoto: e.target.value })}
+                    placeholder="https://example.com/avatar.jpg"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                  />
+                  <p className="text-[10px] text-gray-400">Paste an image URL to update your profile photo avatar.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Personal Information */}
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
+                Personal Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Full Legal Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={settingsForm.name}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all font-semibold"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Email Address (Read-only)</label>
+                  <input
+                    type="email"
+                    disabled
+                    value={settingsForm.email}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-neutral-50 text-gray-500 text-[13px] font-mono select-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={settingsForm.phone}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={settingsForm.dob}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, dob: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Business Information */}
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
+                Business & Marketing Reach
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Company / Brand Name</label>
+                  <input
+                    type="text"
+                    value={settingsForm.companyName}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, companyName: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Website URL</label>
+                  <input
+                    type="url"
+                    value={settingsForm.website}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, website: e.target.value })}
+                    placeholder="https://example.com"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Referral Code & Rates (Read-Only) */}
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
+                Referral & Commission Rates (Read-only)
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400">Referral Code</p>
+                  <p className="text-sm font-bold text-black font-mono mt-0.5">{profile?.referralCode || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400">Direct Coupon</p>
+                  <p className="text-sm font-bold text-black font-mono mt-0.5">{profile?.couponCode || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400">Commission Rate</p>
+                  <p className="text-sm font-bold text-black mt-0.5">
+                    {profile?.commissionType === "Fixed" ? `$${profile?.commissionRate}` : `${profile?.commissionRate || 5}%`}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-gray-400">Customer Discount</p>
+                  <p className="text-sm font-bold text-emerald-700 mt-0.5">
+                    {profile?.customerDiscountType === "None" || !profile?.customerDiscountValue
+                      ? "None"
+                      : profile?.customerDiscountType === "Percentage"
+                      ? `${profile.customerDiscountValue}% Off`
+                      : `$${profile.customerDiscountValue} Off`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Address */}
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
               <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
                 Address Profile Information
               </h3>
@@ -658,7 +817,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.street} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, street: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -667,7 +826,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.city} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, city: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -676,7 +835,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.state} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, state: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -685,7 +844,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.zipCode} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, zipCode: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1 md:col-span-3">
@@ -694,13 +853,13 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.country} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, country: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Banking */}
+            {/* 6. Banking */}
             <div className="space-y-4 border-t border-neutral-100 pt-6">
               <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
                 Banking & Payout Profile
@@ -712,7 +871,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.accountHolder} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, accountHolder: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -721,7 +880,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.bankName} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, bankName: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -730,7 +889,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.accountNumber} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, accountNumber: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all font-mono"
                   />
                 </div>
                 <div className="space-y-1">
@@ -739,7 +898,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.swiftCode} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, swiftCode: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all font-mono"
                   />
                 </div>
                 <div className="space-y-1">
@@ -748,7 +907,7 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="text" 
                     value={settingsForm.routingNumber} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, routingNumber: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all font-mono"
                   />
                 </div>
                 <div className="space-y-1">
@@ -757,19 +916,47 @@ export default function AffiliateDashboardClient({ userSession }) {
                     type="email" 
                     value={settingsForm.paypalEmail} 
                     onChange={(e) => setSettingsForm({ ...settingsForm, paypalEmail: e.target.value })}
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={updatingSettings}
-              className="px-6 py-3 bg-black text-white text-[11px] uppercase tracking-widest font-bold rounded-[3px] hover:bg-neutral-900 transition-all disabled:opacity-40"
-            >
-              {updatingSettings ? "Saving Settings..." : "Save Settings"}
-            </button>
+            {/* 7. Verification Documents (Read-Only) */}
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2">
+                Verification Documents
+              </h3>
+              <div className="space-y-2">
+                {profile?.identityDocuments?.length > 0 ? (
+                  profile.identityDocuments.map((filename, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
+                      <span className="font-mono text-neutral-600">{filename}</span>
+                      <span className="text-[10px] font-bold uppercase text-gray-400">Identity Document</span>
+                    </div>
+                  ))
+                ) : null}
+                {profile?.bankVerificationDocument ? (
+                  <div className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
+                    <span className="font-mono text-neutral-600">{profile.bankVerificationDocument}</span>
+                    <span className="text-[10px] font-bold uppercase text-gray-400">Bank Verification</span>
+                  </div>
+                ) : null}
+                {(!profile?.identityDocuments || profile.identityDocuments.length === 0) && !profile?.bankVerificationDocument && (
+                  <p className="text-xs text-neutral-400 italic">No KYC verification documents uploaded yet.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-neutral-100 flex justify-end">
+              <button 
+                type="submit" 
+                disabled={updatingSettings}
+                className="px-6 py-3 bg-black text-white text-xs uppercase tracking-widest font-bold rounded-lg hover:bg-neutral-900 transition-all disabled:opacity-40 shadow-md cursor-pointer"
+              >
+                {updatingSettings ? "Saving Settings..." : "Save Settings"}
+              </button>
+            </div>
           </form>
         )}
       </main>

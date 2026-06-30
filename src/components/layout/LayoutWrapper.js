@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/layout/CartDrawer";
-import AffiliateDiscountBanner from "@/components/common/AffiliateDiscountBanner";
 import ReferralDiscountPopup from "@/components/common/ReferralDiscountPopup";
 
 export default function LayoutWrapper({ children }) {
@@ -18,7 +17,6 @@ export default function LayoutWrapper({ children }) {
   return (
     <>
       <Navbar />
-      <AffiliateDiscountBanner />
       <ReferralDiscountPopup />
       <CartDrawer />
       <main>{children}</main>
@@ -26,4 +24,5 @@ export default function LayoutWrapper({ children }) {
     </>
   );
 }
+
 

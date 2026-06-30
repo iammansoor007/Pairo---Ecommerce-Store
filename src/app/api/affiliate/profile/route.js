@@ -21,6 +21,19 @@ export async function PUT(req) {
     
     // Build partial update — only include fields that are explicitly provided
     const setFields = {};
+
+    if (body.name !== undefined) setFields.name = body.name;
+    if (body.phone !== undefined) setFields.phone = body.phone;
+    if (body.dob !== undefined) setFields.dob = body.dob;
+    if (body.profilePhoto !== undefined) setFields.profilePhoto = body.profilePhoto;
+    
+    if (body.companyName !== undefined || body.website !== undefined) {
+      const existing = await Affiliate.findById(session.user.id).select("businessInfo").lean();
+      setFields.businessInfo = {
+        companyName: body.companyName !== undefined ? body.companyName : (existing?.businessInfo?.companyName || ""),
+        website: body.website !== undefined ? body.website : (existing?.businessInfo?.website || "")
+      };
+    }
     
     if (body.street !== undefined || body.city !== undefined || body.state !== undefined || body.zipCode !== undefined || body.country !== undefined) {
       // Fetch existing address to merge
