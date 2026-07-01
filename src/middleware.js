@@ -19,7 +19,12 @@ export async function middleware(req) {
 
     // 1. API Admin Protection
     if (path.startsWith("/api/admin")) {
-        if (!token || !token?.isStaff) {
+        // Allow affiliates to view/download their own verification files through the requests document API route
+        if (path === "/api/admin/affiliates/requests/document") {
+            if (!token || (!token?.isStaff && !token?.isAffiliate)) {
+                return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            }
+        } else if (!token || !token?.isStaff) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         return NextResponse.next();

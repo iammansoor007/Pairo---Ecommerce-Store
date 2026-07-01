@@ -2,12 +2,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Affiliate from "@/models/Affiliate";
+import AffiliateClick from "@/models/AffiliateClick";
+import AffiliateCommission from "@/models/AffiliateCommission";
+import AffiliateLedger from "@/models/AffiliateLedger";
+import AffiliatePayout from "@/models/AffiliatePayout";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
 import { can } from "@/lib/rbac";
 import { decryptAffiliate } from "@/models/Affiliate";
-
 // List all active/suspended affiliates
 export async function GET(req) {
   await dbConnect();
@@ -44,7 +47,7 @@ export async function PUT(req) {
     const { 
       affiliateId, name, email, commissionRate, commissionType, status, 
       couponCode, password, referralCode, customerDiscountType, customerDiscountValue, 
-      address, bankingInfo, companyName, website, createdAt, __v 
+      address, bankingInfo, companyName, website, createdAt, phone, dob, __v 
     } = body;
 
     if (!affiliateId) {
@@ -66,6 +69,8 @@ export async function PUT(req) {
     // Set fields
     if (name) affiliate.name = name;
     if (email) affiliate.email = email.toLowerCase().trim();
+    if (phone !== undefined) affiliate.phone = phone;
+    if (dob !== undefined) affiliate.dob = dob ? new Date(dob) : undefined;
     if (commissionRate !== undefined) affiliate.commissionRate = Number(commissionRate);
     if (commissionType !== undefined) affiliate.commissionType = commissionType;
     if (customerDiscountType !== undefined) affiliate.customerDiscountType = customerDiscountType;
@@ -76,7 +81,6 @@ export async function PUT(req) {
     if (couponCode !== undefined) {
       affiliate.couponCode = couponCode ? couponCode.toUpperCase().trim() : undefined;
     }
-
     // Address merge/override
     if (address) {
       affiliate.address = {
@@ -131,13 +135,64 @@ export async function PUT(req) {
     console.log(`[AdminAffiliateUpdate] Updated settings for affiliate: ${affiliate.referralCode}. New version: ${affiliate.__v}`);
 
     return NextResponse.json({ success: true, affiliate });
-
   } catch (error) {
     console.error("[AdminAffiliatesList PUT Error]", error);
     // Handle duplicate key errors cleanly (e.g. couponCode already registered)
     if (error.code === 11000) {
       return NextResponse.json({ error: "Email or Coupon Code is already in use by another affiliate." }, { status: 400 });
     }
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// Delete affiliate and related data
+export async function DELETE(req) {
+  await dbConnect();
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.isStaff || !can(session.user, "affiliates.manage")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const affiliateId = searchParams.get("id");
+
+    if (!affiliateId) {
+      return NextResponse.json({ error: "Affiliate ID is required." }, { status: 400 });
+    }
+
+    const affiliate = await Affiliate.findById(affiliateId);
+    if (!affiliate || affiliate.isDeleted) {
+      return NextResponse.json({ error: "Affiliate not found." }, { status: 404 });
+    }
+
+    const originalReferralCode = affiliate.referralCode;
+
+    // Suffix unique key fields to prevent future registration conflicts
+    const timestamp = Date.now();
+    affiliate.isDeleted = true;
+    affiliate.email = `${affiliate.email}-deleted-${timestamp}`;
+    affiliate.referralCode = `${originalReferralCode}-DELETED-${timestamp}`;
+    if (affiliate.couponCode) {
+      affiliate.couponCode = `${affiliate.couponCode}-DELETED-${timestamp}`;
+    }
+
+    await affiliate.save();
+
+    // Clean up associated records
+    if (originalReferralCode) {
+      await AffiliateClick.deleteMany({ referralCode: originalReferralCode });
+    }
+    await AffiliateCommission.deleteMany({ affiliateId: affiliate._id });
+    await AffiliateLedger.deleteMany({ affiliateId: affiliate._id });
+    await AffiliatePayout.deleteMany({ affiliateId: affiliate._id });
+
+    console.log(`[AdminAffiliateDelete] Soft-deleted affiliate: ${originalReferralCode} and cleaned up associated data.`);
+
+    return NextResponse.json({ success: true, message: "Affiliate deleted successfully." });
+
+  } catch (error) {
+    console.error("[AdminAffiliatesList DELETE Error]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

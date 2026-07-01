@@ -75,9 +75,12 @@ export function CartProvider({ children }) {
   useEffect(() => {
     readAffiliateCookie();
     window.addEventListener('storage', readAffiliateCookie);
-    return () => window.removeEventListener('storage', readAffiliateCookie);
+    window.addEventListener('pairo_ref_updated', readAffiliateCookie);
+    return () => {
+      window.removeEventListener('storage', readAffiliateCookie);
+      window.removeEventListener('pairo_ref_updated', readAffiliateCookie);
+    };
   }, [readAffiliateCookie]);
-
   // Load promo code from localStorage when storageKey changes
   useEffect(() => {
     const savedPromo = localStorage.getItem(`pairo-promo-${storageKey}`);

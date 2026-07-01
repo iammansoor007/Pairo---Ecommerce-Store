@@ -62,6 +62,8 @@ export default function AffiliateTracker() {
             // Set LocalStorage fallback
             localStorage.setItem("pairo_ref", JSON.stringify(payload));
 
+            // Instantly notify CartContext in the current tab/window
+            window.dispatchEvent(new Event("pairo_ref_updated"));
             console.log(`[AffiliateTracker] Active attribution registered: ${data.referralCode}. Cookies set for ${durationDays} days.`);
           }
         }

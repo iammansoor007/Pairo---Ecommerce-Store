@@ -27,20 +27,21 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
     const tenantId = searchParams.get("tenantId") || "DEFAULT_STORE";
-
+    
     // Base query must include tenantId
     let query = { tenantId };
-
     // Filter by status if not "all"
     if (status && status !== "all") {
-      query.status = status;
+      if (status === "Affiliate") {
+        query.affiliateReferralCode = { $exists: true, $ne: null, $ne: "" };
+      } else {
+        query.status = status;
+      }
     }
-
     // Filter by affiliate if affiliateOnly is requested
     if (affiliateOnly) {
       query.affiliateReferralCode = { $exists: true, $ne: null, $ne: "" };
     }
-
     // Search logic
     if (search) {
       query.$or = [

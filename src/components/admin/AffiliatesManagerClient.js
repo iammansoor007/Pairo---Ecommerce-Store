@@ -27,7 +27,8 @@ export default function AffiliatesManagerClient({ userSession }) {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [selectedAffiliate, setSelectedAffiliate] = useState(null);
   const [selectedPayout, setSelectedPayout] = useState(null);
-
+  const [confirmDeleteAffiliate, setConfirmDeleteAffiliate] = useState(null);
+  const [deletingAffiliateId, setDeletingAffiliateId] = useState(null);
   // Review Application inputs
   const [reviewAction, setReviewAction] = useState("Approve");
   const [rejectionReason, setRejectionReason] = useState("");
@@ -35,7 +36,7 @@ export default function AffiliatesManagerClient({ userSession }) {
   const [customCommissionRate, setCustomCommissionRate] = useState(5);
   const [commissionType, setCommissionType] = useState("Percentage");
   const [reviewDiscountType, setReviewDiscountType] = useState("None");
-  const [reviewDiscountValue, setReviewDiscountValue] = useState(0);
+  const [reviewDiscountValue, setReviewDiscountValue] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
 
   // Edit Affiliate inputs
@@ -67,6 +68,10 @@ export default function AffiliatesManagerClient({ userSession }) {
 
   // Viewing Application Details Modal
   const [viewingApplication, setViewingApplication] = useState(null);
+
+  // Applications filter
+  const [appStatusFilter, setAppStatusFilter] = useState("All");
+  const [appSearchQuery, setAppSearchQuery] = useState("");
 
   // Referral Code states for review/edit modals
   const [reviewReferralCode, setReviewReferralCode] = useState("");
@@ -130,7 +135,7 @@ export default function AffiliatesManagerClient({ userSession }) {
           customCommissionRate,
           commissionType,
           customerDiscountType: reviewAction === "Approve" ? reviewDiscountType : undefined,
-          customerDiscountValue: reviewAction === "Approve" ? reviewDiscountValue : undefined,
+          customerDiscountValue: reviewAction === "Approve" ? Number(reviewDiscountValue) || 0 : undefined,
           referralCode: reviewReferralCode || undefined
         })
       });
@@ -164,14 +169,18 @@ export default function AffiliatesManagerClient({ userSession }) {
           __v: currentAff?.__v,
           name: editForm.name,
           email: editForm.email,
+          phone: editForm.phone,
+          dob: editForm.dob || undefined,
           commissionRate: editForm.commissionRate,
           commissionType: editForm.commissionType,
           customerDiscountType: editForm.customerDiscountType,
-          customerDiscountValue: editForm.customerDiscountValue,
+          customerDiscountValue: Number(editForm.customerDiscountValue) || 0,
           status: editForm.status,
           couponCode: editForm.couponCode,
           password: editForm.password,
           referralCode: editReferralCode || undefined,
+          companyName: editForm.companyName,
+          website: editForm.website,
           address: {
             street: editForm.street,
             city: editForm.city,
@@ -179,19 +188,18 @@ export default function AffiliatesManagerClient({ userSession }) {
             zipCode: editForm.zipCode,
             country: editForm.country,
           },
-            bankingInfo: {
-              accountHolder: editForm.accountHolder,
-              bankName: editForm.bankName,
-              accountNumber: editForm.accountNumber,
-              iban: editForm.iban,
-              swiftCode: editForm.swiftCode,
-              routingNumber: editForm.routingNumber,
-              paypalEmail: editForm.paypalEmail,
-            },
-            createdAt: editForm.createdAt ? new Date(editForm.createdAt).toISOString() : undefined,
-          })
-        });
-
+          bankingInfo: {
+            accountHolder: editForm.accountHolder,
+            bankName: editForm.bankName,
+            accountNumber: editForm.accountNumber,
+            iban: editForm.iban,
+            swiftCode: editForm.swiftCode,
+            routingNumber: editForm.routingNumber,
+            paypalEmail: editForm.paypalEmail,
+          },
+          createdAt: editForm.createdAt ? new Date(editForm.createdAt).toISOString() : undefined,
+        })
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save affiliate settings.");
 
@@ -201,7 +209,24 @@ export default function AffiliatesManagerClient({ userSession }) {
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setSubmittingEdit(false);
+      setSubmittingEdit(false);    }
+  };
+  const handleDeleteAffiliate = async (affiliateId) => {
+    setDeletingAffiliateId(affiliateId);
+    try {
+      const res = await fetch(`/api/admin/affiliates/list?id=${affiliateId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete affiliate.");
+
+      toast.success("Affiliate and all associated records deleted successfully.");
+      setConfirmDeleteAffiliate(null);
+      loadData();
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setDeletingAffiliateId(null);
     }
   };
 
@@ -659,86 +684,141 @@ export default function AffiliatesManagerClient({ userSession }) {
         )}
 
         {/* Tab 1: Requests */}
-        {activeTab === "requests" && (
-          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Applicant</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Contact details</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Country</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Verification Docs</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Strategy & Reach</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
-                  <th className="px-4 py-3 w-28 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f0f1]">
-                {applications.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" className="p-8 text-center text-gray-400 italic">No applications found in database records.</td>
-                  </tr>
-                ) : (
-                  applications.map(app => (
-                    <tr key={app._id} className="hover:bg-[#fbfbfb] transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="font-bold text-[#1d2327]">{app.name}</span>
-                        <div className="text-[11px] text-[#646970] mt-0.5">Applied: {new Date(app.createdAt).toLocaleDateString()}</div>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-[12px]">
-                        <div>{app.email}</div>
-                        <div className="text-[#646970] mt-0.5 text-[11px]">{app.phone}</div>
-                      </td>
-                      <td className="px-4 py-3">{app.address?.country}</td>
-                      <td className="px-4 py-3 font-mono text-[12px]">
-                        {app.identityDocuments?.map((filename, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setViewingDocUrl(getDocumentUrl(filename))}
-                            className="text-[#2271b1] hover:text-[#135e96] underline mr-3 inline-flex items-center gap-1"
-                          >
-                            <Eye className="w-3.5 h-3.5" /> Doc #{idx + 1}
-                          </button>
-                        ))}
-                      </td>
-                      <td className="px-4 py-3 max-w-xs">
-                        <div className="truncate text-gray-600">{app.marketingAnswers?.promotionStrategy}</div>
-                        <div className="text-[10px] text-[#646970] font-bold uppercase tracking-wide mt-0.5">Reach: {app.marketingAnswers?.audienceSize}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${app.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
-                          app.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
-                          }`}>
-                          {app.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
-                        <button
-                          onClick={() => setViewingApplication(app)}
-                          className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
-                        >
-                          View Details
-                        </button>
-                        {app.status === 'Pending' && (
-                          <button
-                            onClick={() => {
-                              setSelectedApplication(app);
-                              setCustomCommissionRate(settings.defaultCommissionRate || 5);
-                              setReviewReferralCode(app.referralCode || ""); // Pre-fill with applicant's chosen code
-                            }}
-                            className="bg-[#2271b1] border border-[#2271b1] text-white px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#135e96] hover:border-[#135e96] transition-all shadow-sm"
-                          >
-                            Review
-                          </button>
-                        )}
-                      </td>
+        {activeTab === "requests" && (() => {
+          const filteredApps = applications.filter(app => {
+            const matchesStatus = appStatusFilter === "All" || app.status === appStatusFilter;
+            const q = appSearchQuery.trim().toLowerCase();
+            const matchesSearch = !q ||
+              app.name?.toLowerCase().includes(q) ||
+              app.email?.toLowerCase().includes(q) ||
+              app.phone?.toLowerCase().includes(q) ||
+              app.address?.country?.toLowerCase().includes(q);
+            return matchesStatus && matchesSearch;
+          });
+          const counts = {
+            All: applications.length,
+            Pending: applications.filter(a => a.status === "Pending").length,
+            Approved: applications.filter(a => a.status === "Approved").length,
+            Rejected: applications.filter(a => a.status === "Rejected").length,
+          };
+          return (
+            <div className="space-y-3">
+              {/* Filter Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                {/* Status Tabs */}
+                <div className="flex items-center gap-1 bg-white border border-[#ccd0d4] rounded-[3px] p-1 shadow-sm">
+                  {["All", "Pending", "Approved", "Rejected"].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setAppStatusFilter(status)}
+                      className={`px-3 py-1.5 text-[12px] font-medium rounded-[2px] transition-all ${
+                        appStatusFilter === status
+                          ? status === "Pending" ? "bg-[#fff2cc] text-[#d6b656] font-bold"
+                            : status === "Approved" ? "bg-[#d5e8d4] text-[#274e13] font-bold"
+                            : status === "Rejected" ? "bg-[#f8cecc] text-[#b85450] font-bold"
+                            : "bg-[#1d2327] text-white font-bold"
+                          : "text-[#646970] hover:bg-[#f6f7f7]"
+                      }`}
+                    >
+                      {status} <span className="ml-1 opacity-70">({counts[status]})</span>
+                    </button>
+                  ))}
+                </div>
+                {/* Search */}
+                <input
+                  type="text"
+                  value={appSearchQuery}
+                  onChange={e => setAppSearchQuery(e.target.value)}
+                  placeholder="Search by name, email, phone, country…"
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-72 focus:outline-none focus:border-[#2271b1] shadow-sm"
+                />
+              </div>
+              {/* Table */}
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <table className="w-full text-left border-collapse text-[13px]">
+                  <thead>
+                    <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Applicant</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Contact details</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Country</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Verification Docs</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-64">Strategy &amp; Reach</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
+                      <th className="px-4 py-3 w-28 text-right"></th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredApps.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="p-8 text-center text-gray-400 italic">
+                          {appSearchQuery || appStatusFilter !== "All" ? "No applications match your filter." : "No applications found in database records."}
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredApps.map(app => (
+                        <tr key={app._id} className="hover:bg-[#fbfbfb] transition-colors">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-[#1d2327]">{app.name}</span>
+                            <div className="text-[11px] text-[#646970] mt-0.5">Applied: {new Date(app.createdAt).toLocaleDateString()}</div>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-[12px]">
+                            <div>{app.email}</div>
+                            <div className="text-[#646970] mt-0.5 text-[11px]">{app.phone}</div>
+                          </td>
+                          <td className="px-4 py-3">{app.address?.country}</td>
+                          <td className="px-4 py-3 font-mono text-[12px]">
+                            {app.identityDocuments?.map((filename, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => setViewingDocUrl(getDocumentUrl(filename))}
+                                className="text-[#2271b1] hover:text-[#135e96] underline mr-3 inline-flex items-center gap-1"
+                              >
+                                <Eye className="w-3.5 h-3.5" /> Doc #{idx + 1}
+                              </button>
+                            ))}
+                          </td>
+                          <td className="px-4 py-3 max-w-xs">
+                            <div className="truncate text-gray-600">{app.marketingAnswers?.promotionStrategy}</div>
+                            <div className="text-[10px] text-[#646970] font-bold uppercase tracking-wide mt-0.5">Reach: {app.marketingAnswers?.audienceSize}</div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${
+                              app.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                              app.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
+                            }`}>
+                              {app.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                            <button
+                              onClick={() => setViewingApplication(app)}
+                              className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
+                            >
+                              View Details
+                            </button>
+                            {app.status === 'Pending' && (
+                              <button
+                                onClick={() => {
+                                  setSelectedApplication(app);
+                                  setCustomCommissionRate(settings.defaultCommissionRate || 5);
+                                  setReviewReferralCode(app.referralCode || "");
+                                }}
+                                className="bg-[#2271b1] border border-[#2271b1] text-white px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#135e96] hover:border-[#135e96] transition-all shadow-sm"
+                              >
+                                Review
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab 2: Affiliates List */}
         {activeTab === "list" && (
@@ -789,6 +869,8 @@ export default function AffiliatesManagerClient({ userSession }) {
                             setEditForm({
                               name: aff.name || "",
                               email: aff.email || "",
+                              phone: aff.phone || "",
+                              dob: aff.dob ? new Date(aff.dob).toISOString().split('T')[0] : "",
                               commissionRate: aff.commissionRate ?? 5,
                               commissionType: aff.commissionType || "Percentage",
                               customerDiscountType: aff.customerDiscountType || "None",
@@ -819,6 +901,12 @@ export default function AffiliatesManagerClient({ userSession }) {
                           className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
                         >
                           Modify
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteAffiliate(aff)}
+                          className="border border-[#b85450] text-[#b85450] bg-white px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f8cecc] transition-all shadow-sm ml-2"
+                        >
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -1318,7 +1406,7 @@ export default function AffiliatesManagerClient({ userSession }) {
                           value={reviewDiscountType}
                           onChange={(e) => {
                             setReviewDiscountType(e.target.value);
-                            setReviewDiscountValue(0);
+                            setReviewDiscountValue("");
                           }}
                           className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
                         >
@@ -1337,8 +1425,8 @@ export default function AffiliatesManagerClient({ userSession }) {
                             min="0"
                             max={reviewDiscountType === "Percentage" ? 100 : 10000}
                             value={reviewDiscountValue}
-                            onChange={(e) => setReviewDiscountValue(Number(e.target.value))}
-                            placeholder={reviewDiscountType === "Percentage" ? "e.g. 10" : "e.g. 5"}
+                            onChange={(e) => setReviewDiscountValue(e.target.value)}
+                            placeholder={reviewDiscountType === "Percentage" ? "Enter percentage (e.g. 10)" : "Enter fixed amount (e.g. 5)"}
                             className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
                           />
                           <p className="text-[11px] text-[#646970]">
@@ -1476,6 +1564,25 @@ export default function AffiliatesManagerClient({ userSession }) {
                 </div>
 
                 <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Phone Number</label>
+                  <input
+                    type="text"
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[12px] font-bold text-[#1d2327]">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={editForm.dob}
+                    onChange={(e) => setEditForm({ ...editForm, dob: e.target.value })}
+                    className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="text-[12px] font-bold text-[#1d2327]">Commission Type</label>
                   <select
                     value={editForm.commissionType}
@@ -1509,7 +1616,7 @@ export default function AffiliatesManagerClient({ userSession }) {
                     <label className="text-[12px] font-bold text-[#1d2327]">Discount Type</label>
                     <select
                       value={editForm.customerDiscountType}
-                      onChange={(e) => setEditForm({ ...editForm, customerDiscountType: e.target.value, customerDiscountValue: 0 })}
+                      onChange={(e) => setEditForm({ ...editForm, customerDiscountType: e.target.value, customerDiscountValue: "" })}
                       className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
                     >
                       <option value="None">None — No customer discount</option>
@@ -1526,9 +1633,9 @@ export default function AffiliatesManagerClient({ userSession }) {
                         type="number"
                         min="0"
                         max={editForm.customerDiscountType === "Percentage" ? 100 : 10000}
-                        value={editForm.customerDiscountValue}
-                        onChange={(e) => setEditForm({ ...editForm, customerDiscountValue: Number(e.target.value) })}
-                        placeholder={editForm.customerDiscountType === "Percentage" ? "e.g. 10" : "e.g. 5"}
+                        value={editForm.customerDiscountValue === 0 ? "" : editForm.customerDiscountValue}
+                        onChange={(e) => setEditForm({ ...editForm, customerDiscountValue: e.target.value })}
+                        placeholder={editForm.customerDiscountType === "Percentage" ? "Enter percentage (e.g. 10)" : "Enter fixed amount (e.g. 5)"}
                         className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
                       />
                       <p className="text-[11px] text-[#646970]">
@@ -1597,6 +1704,33 @@ export default function AffiliatesManagerClient({ userSession }) {
                   />
                 </div>
 
+                {/* Business Info Section */}
+                <div className="border-t border-[#eee] pt-4 space-y-3">
+                  <p className="text-[11px] font-bold text-[#646970] uppercase tracking-widest">Business Info</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#1d2327]">Company / Brand Name</label>
+                      <input
+                        type="text"
+                        value={editForm.companyName}
+                        onChange={(e) => setEditForm({ ...editForm, companyName: e.target.value })}
+                        className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                        placeholder="Company name"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#1d2327]">Website URL</label>
+                      <input
+                        type="text"
+                        value={editForm.website}
+                        onChange={(e) => setEditForm({ ...editForm, website: e.target.value })}
+                        className="w-full border border-[#8c8f94] rounded-[3px] px-3 py-1.5 outline-none text-[13px]"
+                        placeholder="https://example.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Address Section */}
                 <div className="border-t border-[#eee] pt-4 space-y-3">
                   <p className="text-[11px] font-bold text-[#646970] uppercase tracking-widest">Address</p>
@@ -1658,16 +1792,88 @@ export default function AffiliatesManagerClient({ userSession }) {
                     </div>
                   </div>
                 </div>
+                {/* Documents & Photos */}
+                {(selectedAffiliate?.profilePhoto || selectedAffiliate?.identityDocuments?.length > 0 || selectedAffiliate?.bankVerificationDocument) && (
+                  <div className="border-t border-[#eee] pt-4 space-y-4">
+                    <p className="text-[11px] font-bold text-[#646970] uppercase tracking-widest">Verification & Documents</p>
+                    
+                    {selectedAffiliate?.profilePhoto && (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={getDocumentUrl(selectedAffiliate.profilePhoto)}
+                          alt="Profile avatar"
+                          className="w-16 h-16 rounded-full object-cover border border-[#ccd0d4] bg-neutral-100"
+                        />
+                        <div>
+                          <p className="text-[11px] font-bold text-[#646970] uppercase">Uploaded Profile Photo</p>
+                          <button
+                            type="button"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.profilePhoto))}
+                            className="text-[#2271b1] hover:underline text-[12px] font-medium"
+                          >
+                            View Full Photo
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
-                {/* Profile photo display (read-only) */}
-                {selectedAffiliate?.profilePhoto && (
-                  <div className="border-t border-[#eee] pt-4 space-y-2">
-                    <p className="text-[11px] font-bold text-[#646970] uppercase tracking-widest">Profile Photo</p>
-                    <img
-                      src={getDocumentUrl(selectedAffiliate.profilePhoto)}
-                      alt="Profile"
-                      className="w-16 h-16 rounded-full object-cover border border-[#ccd0d4]"
-                    />
+                    {selectedAffiliate?.identityDocuments?.length > 0 && (
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#646970] uppercase">Identity Documents</p>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedAffiliate.identityDocuments.map((filename, idx) => (
+                            <div key={`id-doc-${idx}`} className="border border-[#ccd0d4] p-2.5 rounded-[3px] bg-[#f6f7f7] flex items-center justify-between gap-4 text-xs">
+                              <span className="font-mono truncate max-w-[150px]" title={filename}>{filename}</span>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingDocUrl(getDocumentUrl(filename))}
+                                  className="text-[#2271b1] hover:text-[#135e96] hover:underline font-bold text-[10px] uppercase cursor-pointer"
+                                >
+                                  Preview
+                                </button>
+                                <a
+                                  href={getDocumentUrl(filename)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-gray-600 hover:text-black hover:underline font-bold text-[10px] uppercase inline-flex items-center gap-0.5"
+                                >
+                                  Download <ExternalLink className="w-3 h-3" />
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedAffiliate?.bankVerificationDocument && (
+                      <div className="space-y-1">
+                        <p className="text-[11px] font-bold text-[#646970] uppercase">Bank Verification Statement</p>
+                        <div className="border border-[#ccd0d4] p-2.5 rounded-[3px] bg-amber-50/50 flex items-center justify-between gap-4 text-xs">
+                          <span className="font-mono truncate max-w-[150px]" title={selectedAffiliate.bankVerificationDocument}>
+                            {selectedAffiliate.bankVerificationDocument}
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.bankVerificationDocument))}
+                              className="text-amber-700 hover:text-amber-900 hover:underline font-bold text-[10px] uppercase cursor-pointer"
+                            >
+                              Preview
+                            </button>
+                            <a
+                              href={getDocumentUrl(selectedAffiliate.bankVerificationDocument)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-gray-600 hover:text-black hover:underline font-bold text-[10px] uppercase inline-flex items-center gap-0.5"
+                            >
+                              Download <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1811,6 +2017,43 @@ export default function AffiliatesManagerClient({ userSession }) {
                   className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Affiliate Confirmation Modal */}
+        {confirmDeleteAffiliate && (
+          <div className="fixed inset-0 z-50 bg-black/40 overflow-y-auto p-4 flex justify-center items-center">
+            <div className="bg-white rounded-[3px] border border-[#ccd0d4] shadow-2xl max-w-md w-full p-6 space-y-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <h3 className="text-[14px] font-bold text-red-600">Delete Affiliate Account?</h3>
+                  <p className="text-[13px] text-gray-600 leading-relaxed">
+                    Are you sure you want to permanently delete <strong>{confirmDeleteAffiliate.name}</strong> ({confirmDeleteAffiliate.referralCode})?
+                  </p>
+                  <p className="text-[11px] text-gray-500">
+                    This action will permanently delete all associated clicks, payouts, ledger entries, and commissions. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteAffiliate(null)}
+                  className="border border-[#ccd0d4] bg-white text-[#2c3338] hover:bg-[#f6f7f7] px-4 py-2 text-[13px] font-medium rounded-[3px]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteAffiliate(confirmDeleteAffiliate._id)}
+                  disabled={deletingAffiliateId === confirmDeleteAffiliate._id}
+                  className="bg-red-600 border border-red-600 hover:bg-red-700 text-white px-4 py-2 text-[13px] font-medium rounded-[3px] disabled:opacity-50"
+                >
+                  {deletingAffiliateId === confirmDeleteAffiliate._id ? "Deleting..." : "Delete Permanently"}
                 </button>
               </div>
             </div>
