@@ -51,15 +51,15 @@ class ShippingService {
 
   /**
    * Fetch the store currency from SiteConfig.
-   * Falls back to 'PKR' if not configured.
+   * Falls back to 'USD' if not configured.
    * @private
    */
   async #getStoreCurrency(tenantId) {
     try {
       const config = await SiteConfig.findOne({ key: 'main' }).select('commerce').lean();
-      return config?.commerce?.storeCurrency ?? 'PKR';
+      return config?.commerce?.storeCurrency ?? 'USD';
     } catch {
-      return 'PKR';
+      return 'USD';
     }
   }
 
@@ -95,13 +95,13 @@ class ShippingService {
       .lean();
 
     if (!zones.length) {
-      return { zone: null, rates: [], currency: 'PKR', cacheHit: false };
+      return { zone: null, rates: [], currency: 'USD', cacheHit: false };
     }
 
     // ── 3. Match best zone ────────────────────────────────────────────────────
     const matchedZone = matchZone(zones, address);
     if (!matchedZone) {
-      return { zone: null, rates: [], currency: 'PKR', cacheHit: false };
+      return { zone: null, rates: [], currency: 'USD', cacheHit: false };
     }
 
     // ── 4. Load methods for matched zone ──────────────────────────────────────

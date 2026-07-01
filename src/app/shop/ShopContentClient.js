@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import siteData from "@/lib/data.json";
 import ProductCard from "@/components/home/ProductCard";
 import { useSiteData } from "@/context/SiteContext";
+import { getSwatchBackground } from "@/lib/swatchRenderer";
 
 const ITEMS_PER_PAGE = 24;
 
@@ -135,12 +136,24 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                   colorsMap.set(normalized.toLowerCase(), {
                     label: normalized,
                     hex: v.hex || null,
-                    image: v.image || null
+                    image: v.image || null,
+                    colorMode: v.colorMode || "single",
+                    hex2: v.hex2 || null,
+                    hex3: v.hex3 || null,
+                    hex4: v.hex4 || null,
+                    texture: v.texture || null,
+                    swatchType: v.swatchType || "color"
                   });
                 } else {
                   const existing = colorsMap.get(normalized.toLowerCase());
                   if (!existing.hex && v.hex) existing.hex = v.hex;
                   if (!existing.image && v.image) existing.image = v.image;
+                  if (!existing.colorMode && v.colorMode) existing.colorMode = v.colorMode;
+                  if (!existing.hex2 && v.hex2) existing.hex2 = v.hex2;
+                  if (!existing.hex3 && v.hex3) existing.hex3 = v.hex3;
+                  if (!existing.hex4 && v.hex4) existing.hex4 = v.hex4;
+                  if (!existing.texture && v.texture) existing.texture = v.texture;
+                  if (!existing.swatchType && v.swatchType) existing.swatchType = v.swatchType;
                 }
               }
             });
@@ -612,7 +625,17 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               "Green": "#2F4F2F"
             };
 
-            const backgroundColor = hex || colorMapFallback[color] || color.toLowerCase();
+            const swatchVal = {
+              hex: hex || colorMapFallback[color] || color.toLowerCase(),
+              colorMode: colorObj.colorMode || "single",
+              hex2: colorObj.hex2,
+              hex3: colorObj.hex3,
+              hex4: colorObj.hex4,
+              texture: colorObj.texture,
+              swatchType: colorObj.swatchType || (image ? "image" : "color"),
+              image: image
+            };
+            const swatchBg = getSwatchBackground(swatchVal);
 
             return (
               <button
@@ -628,8 +651,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                     : "border-border hover:scale-110"
                     }`}
                   style={{
-                    backgroundColor: image ? 'transparent' : backgroundColor,
-                    backgroundImage: image ? `url(${image})` : 'none',
+                    background: swatchBg,
                     backgroundSize: 'cover'
                   }}
                 >

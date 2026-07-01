@@ -1,0 +1,26 @@
+/* src/styles/designTokens.css */
+:root {
+  /* Border radius */
+  --radius-input: 12px;
+  --radius-card: 16px;
+  --radius-container: 20px;
+
+  /* Soft shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+/* Apply to common elements */
+input, textarea, select, button {
+  border-radius: var(--radius-input) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.card, .modal, .panel {
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.container, .section {
+  border-radius: var(--radius-container) !important;
+}

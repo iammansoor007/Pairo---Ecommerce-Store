@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Minus, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import SwatchBubble from "@/components/common/SwatchBubble";
 
 export default function ClientProductActions({ product, onVariantChange }) {
   const [selectedOptions, setSelectedOptions] = useState({});
@@ -21,8 +22,14 @@ export default function ClientProductActions({ product, onVariantChange }) {
         label: val.name || val,
         value: val.name || val,
         hex: val.hex || "",
+        colorMode: val.colorMode || "single",
+        hex2: val.hex2 || "",
+        hex3: val.hex3 || "",
+        hex4: val.hex4 || "",
+        texture: val.texture || "",
         image: val.image || "",
-        variantImage: "",
+        swatchType: val.swatchType || "color",
+        variantImage: val.variantImage || "",
       })),
     })) ||
     [];
@@ -132,38 +139,13 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
                 if (isColor) {
                   return (
-                    <button
+                    <SwatchBubble
                       key={option.label}
-                      type="button"
+                      value={option}
+                      selected={isSelected}
                       onClick={() => handleOptionSelect(attr.name, option)}
-                      title={option.label}
-                      className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${
-                        isSelected
-                          ? "ring-1 ring-offset-2 ring-primary scale-105"
-                          : "ring-1 ring-black/10 hover:ring-primary/30 hover:scale-105"
-                      }`}
-                      style={{
-                        backgroundColor: option.hex || "#ddd",
-                        backgroundImage: option.image
-                          ? `url(${option.image})`
-                          : "none",
-                        backgroundSize: "cover",
-                      }}
-                    >
-                      {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10">
-                          <Check
-                            className={`w-3 h-3 ${
-                              option.hex === "#FFFFFF" ||
-                              option.hex === "#ffffff"
-                                ? "text-black"
-                                : "text-white"
-                            }`}
-                            strokeWidth={3}
-                          />
-                        </div>
-                      )}
-                    </button>
+                      size="w-9 h-9 md:w-10 md:h-10"
+                    />
                   );
                 }
 

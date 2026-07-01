@@ -31,6 +31,7 @@ import SEOConfigPanel from "./SEOConfigPanel";
 import MediaPickerModal from "./MediaPickerModal";
 import GallerySorter from "./GallerySorter";
 import AdminPageLayout from "./AdminPageLayout";
+import { getSwatchBackground } from "@/lib/swatchRenderer";
 
 // Tiny inline image button — opens MediaPickerModal without the full MediaPicker drop-zone UI
 function InlinePick({ value, onChange, label = "+ Image", doneLabel = "✓ Change", title = "Pick image" }) {
@@ -255,6 +256,11 @@ export default function ProductForm({ productId = null }) {
          label,
          value: label,
          hex: type === "color" ? "#000000" : "",
+         colorMode: "single",
+         hex2: "",
+         hex3: "",
+         hex4: "",
+         texture: "",
          image: "",
          swatchType: "color", // "color" | "image"
          variantImage: ""
@@ -302,11 +308,11 @@ export default function ProductForm({ productId = null }) {
             name: "Color",
             type: "color",
             values: [
-               { label: "Black", value: "Black", hex: "#000000", image: "", swatchType: "color", variantImage: "" },
-               { label: "White", value: "White", hex: "#FFFFFF", image: "", swatchType: "color", variantImage: "" },
-               { label: "Navy", value: "Navy", hex: "#000080", image: "", swatchType: "color", variantImage: "" },
-               { label: "Gray", value: "Gray", hex: "#808080", image: "", swatchType: "color", variantImage: "" },
-               { label: "Red", value: "Red", hex: "#FF0000", image: "", swatchType: "color", variantImage: "" }
+               { label: "Black", value: "Black", hex: "#000000", colorMode: "single", hex2: "", hex3: "", hex4: "", texture: "", image: "", swatchType: "color", variantImage: "" },
+               { label: "White", value: "White", hex: "#FFFFFF", colorMode: "single", hex2: "", hex3: "", hex4: "", texture: "", image: "", swatchType: "color", variantImage: "" },
+               { label: "Navy", value: "Navy", hex: "#000080", colorMode: "single", hex2: "", hex3: "", hex4: "", texture: "", image: "", swatchType: "color", variantImage: "" },
+               { label: "Gray", value: "Gray", hex: "#808080", colorMode: "single", hex2: "", hex3: "", hex4: "", texture: "", image: "", swatchType: "color", variantImage: "" },
+               { label: "Red", value: "Red", hex: "#FF0000", colorMode: "single", hex2: "", hex3: "", hex4: "", texture: "", image: "", swatchType: "color", variantImage: "" }
             ]
          },
          material: {
@@ -688,23 +694,89 @@ export default function ProductForm({ productId = null }) {
                                                              </div>
                                                              {/* Swatch preview + picker */}
                                                              {swatchType==="color" ? (
-                                                                <div className="flex items-center gap-1.5">
-                                                                   <div
-                                                                      className="w-7 h-7 rounded-full border-2 border-white shadow ring-1 ring-gray-200 shrink-0"
-                                                                      style={{ background: val.hex || "#000000" }}
-                                                                   />
-                                                                   <input
-                                                                      type="color"
-                                                                      value={val.hex || "#000000"}
-                                                                      onChange={e=>updateVal(vIdx,"hex",e.target.value)}
-                                                                      className="w-7 h-7 p-0 border-none rounded cursor-pointer opacity-0 absolute"
-                                                                      style={{ marginLeft: "-28px" }}
-                                                                      title="Pick color"
-                                                                   />
-                                                                   <span className="text-[10px] font-mono text-gray-400">{val.hex || "#000000"}</span>
+                                                                <div className="flex flex-col gap-2 bg-gray-50 p-2 rounded border border-gray-100 shrink-0 min-w-[160px]">
+                                                                   <div className="flex items-center gap-2">
+                                                                      {/* Final preview bubble */}
+                                                                      <div
+                                                                         className="w-8 h-8 rounded-full border-2 border-white shadow ring-1 ring-gray-200 shrink-0"
+                                                                         style={{
+                                                                            background: getSwatchBackground(val),
+                                                                            backgroundSize: "cover"
+                                                                         }}
+                                                                         title="Combined Swatch Preview"
+                                                                      />
+                                                                      {/* Controls */}
+                                                                      <div className="flex flex-col gap-1">
+                                                                         <div className="flex items-center gap-1">
+                                                                            <span className="text-[9px] text-gray-400 font-bold uppercase w-10">Mode</span>
+                                                                            <select
+                                                                               value={val.colorMode || "single"}
+                                                                               onChange={e=>updateVal(vIdx,"colorMode",e.target.value)}
+                                                                               className="border border-gray-200 rounded px-1 py-0.5 text-[9px] bg-white outline-none focus:border-[#2271b1] w-20 font-medium"
+                                                                            >
+                                                                               <option value="single">Single</option>
+                                                                               <option value="dual">Dual</option>
+                                                                               <option value="triple">Triple</option>
+                                                                               <option value="quad">Quad</option>
+                                                                            </select>
+                                                                         </div>
+                                                                         <div className="flex items-center gap-1">
+                                                                            <span className="text-[9px] text-gray-400 font-bold uppercase w-10">Texture</span>
+                                                                            <select
+                                                                               value={val.texture || ""}
+                                                                               onChange={e=>updateVal(vIdx,"texture",e.target.value)}
+                                                                               className="border border-gray-200 rounded px-1 py-0.5 text-[9px] bg-white outline-none focus:border-[#2271b1] w-20 font-medium"
+                                                                            >
+                                                                               <option value="">No Texture</option>
+                                                                               <option value="leather-smooth">Leather S</option>
+                                                                               <option value="leather-full-grain">Leather F</option>
+                                                                               <option value="denim-classic">Denim</option>
+                                                                               <option value="cotton-brushed">Cotton</option>
+                                                                               <option value="wool-tweed">Wool</option>
+                                                                               <option value="fleece-polar">Fleece</option>
+                                                                               <option value="puffer-quilted">Puffer</option>
+                                                                               <option value="technical-softshell">Softshell</option>
+                                                                               <option value="luxury-velvet">Velvet</option>
+                                                                               <option value="knit-cable">Cable</option>
+                                                                            </select>
+                                                                         </div>
+                                                                      </div>
+                                                                   </div>
+                                                                   {/* Individual Color pickers */}
+                                                                   <div className="flex items-center gap-1.5 flex-wrap">
+                                                                      {/* Color 1 */}
+                                                                      <div className="relative flex items-center justify-center">
+                                                                         <div className="w-5 h-5 rounded-full border border-gray-300 shadow cursor-pointer shrink-0" style={{ backgroundColor: val.hex || "#000000" }} title="Color 1" />
+                                                                         <input type="color" value={val.hex || "#000000"} onChange={e=>updateVal(vIdx,"hex",e.target.value)} className="w-5 h-5 opacity-0 absolute inset-0 cursor-pointer" />
+                                                                      </div>
+                                                                      
+                                                                      {/* Color 2 */}
+                                                                      {(val.colorMode === "dual" || val.colorMode === "triple" || val.colorMode === "quad") && (
+                                                                         <div className="relative flex items-center justify-center">
+                                                                            <div className="w-5 h-5 rounded-full border border-gray-300 shadow cursor-pointer shrink-0" style={{ backgroundColor: val.hex2 || "#ffffff" }} title="Color 2" />
+                                                                            <input type="color" value={val.hex2 || "#ffffff"} onChange={e=>updateVal(vIdx,"hex2",e.target.value)} className="w-5 h-5 opacity-0 absolute inset-0 cursor-pointer" />
+                                                                         </div>
+                                                                      )}
+
+                                                                      {/* Color 3 */}
+                                                                      {(val.colorMode === "triple" || val.colorMode === "quad") && (
+                                                                         <div className="relative flex items-center justify-center">
+                                                                            <div className="w-5 h-5 rounded-full border border-gray-300 shadow cursor-pointer shrink-0" style={{ backgroundColor: val.hex3 || "#ffffff" }} title="Color 3" />
+                                                                            <input type="color" value={val.hex3 || "#ffffff"} onChange={e=>updateVal(vIdx,"hex3",e.target.value)} className="w-5 h-5 opacity-0 absolute inset-0 cursor-pointer" />
+                                                                         </div>
+                                                                      )}
+
+                                                                      {/* Color 4 */}
+                                                                      {(val.colorMode === "quad") && (
+                                                                         <div className="relative flex items-center justify-center">
+                                                                            <div className="w-5 h-5 rounded-full border border-gray-300 shadow cursor-pointer shrink-0" style={{ backgroundColor: val.hex4 || "#ffffff" }} title="Color 4" />
+                                                                            <input type="color" value={val.hex4 || "#ffffff"} onChange={e=>updateVal(vIdx,"hex4",e.target.value)} className="w-5 h-5 opacity-0 absolute inset-0 cursor-pointer" />
+                                                                         </div>
+                                                                      )}
+                                                                   </div>
                                                                 </div>
                                                              ) : (
-                                                                <div className="flex items-center gap-1.5">
+                                                                <div className="flex items-center gap-1.5 shrink-0">
                                                                    {val.image ? (
                                                                       <img src={val.image} alt="swatch" className="w-7 h-7 rounded-full object-cover border border-gray-200 shadow" />
                                                                    ) : (

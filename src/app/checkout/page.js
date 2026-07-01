@@ -8,8 +8,8 @@ import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const { 
-    cartItems, 
+  const {
+    cartItems,
     cartSubtotal,
     shippingCost,
     cartTotal,
@@ -45,8 +45,8 @@ export default function CheckoutPage() {
   });
 
   // Shipping rates state
-  const [shippingRates, setShippingRates]         = useState([]);
-  const [loadingRates, setLoadingRates]           = useState(false);
+  const [shippingRates, setShippingRates] = useState([]);
+  const [loadingRates, setLoadingRates] = useState(false);
   const [shippingRatesFetched, setShippingRatesFetched] = useState(false);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
     }
 
     setIsProcessing(true);
-    
+
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -151,15 +151,15 @@ export default function CheckoutPage() {
           },
           // Build the immutable shippingSnapshot
           shippingSnapshot: selectedShipping ? {
-            version:    1,
-            zoneId:     selectedShipping.zoneId,
-            zoneName:   selectedShipping.zoneName,
-            methodId:   selectedShipping.methodId,
+            version: 1,
+            zoneId: selectedShipping.zoneId,
+            zoneName: selectedShipping.zoneName,
+            methodId: selectedShipping.methodId,
             methodName: selectedShipping.methodName,
-            provider:   selectedShipping.provider,
-            cost:       selectedShipping.cost,
-            currency:   selectedShipping.currency,
-            settings:   selectedShipping.settings,
+            provider: selectedShipping.provider,
+            cost: selectedShipping.cost,
+            currency: selectedShipping.currency,
+            settings: selectedShipping.settings,
             conditions: selectedShipping.conditions,
             capturedAt: new Date().toISOString()
           } : null,
@@ -175,15 +175,15 @@ export default function CheckoutPage() {
                 const parsed = JSON.parse(stored);
                 if (parsed && parsed.expiresAt > Date.now()) return parsed.code;
               }
-            } catch (e) {}
+            } catch (e) { }
             return null;
           })(),
           financials: {
-            subtotal:      cartSubtotal,
-            shippingCost:  shippingCost,
+            subtotal: cartSubtotal,
+            shippingCost: shippingCost,
             discountTotal: discountTotal || 0,
-            total:         cartTotal,
-            promoCode:     appliedPromo?.code || null
+            total: cartTotal,
+            promoCode: appliedPromo?.code || null
           }
         })
       });
@@ -223,7 +223,7 @@ export default function CheckoutPage() {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-        
+
         {/* Left Column: Checkout Forms */}
         <div className="lg:col-span-7 bg-white p-6 md:p-12 lg:pr-16 space-y-10 border-r border-neutral-200">
           {/* Logo / Header */}
@@ -391,9 +391,8 @@ export default function CheckoutPage() {
                   {shippingRates.map((rate) => (
                     <label
                       key={rate.methodId}
-                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50 transition-colors ${
-                        selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/50" : ""
-                      }`}
+                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50 transition-colors ${selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/50" : ""
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <input
@@ -519,7 +518,7 @@ export default function CheckoutPage() {
               <span>Subtotal</span>
               <span className="text-black font-semibold font-mono">Rs. {(cartSubtotal || 0).toLocaleString()}</span>
             </div>
-            
+
             {discountTotal > 0 && (
               <div className="flex justify-between items-center text-emerald-700 font-semibold">
                 <span>Discount</span>
