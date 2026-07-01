@@ -32,13 +32,14 @@ export async function GET(req) {
     // Affiliate self access check
     if (!isAuthorized && session.user?.isAffiliate) {
       const affiliate = await Affiliate.findById(session.user.id)
-        .select("profilePhoto bankVerificationDocument identityDocuments")
+        .select("profilePhoto bankVerificationDocument identityDocuments liveSelfie")
         .lean();
       if (affiliate) {
         const isProfilePhoto = affiliate.profilePhoto === filename;
         const isBankDoc = affiliate.bankVerificationDocument === filename;
         const isIdentityDoc = affiliate.identityDocuments?.includes(filename);
-        if (isProfilePhoto || isBankDoc || isIdentityDoc) {
+        const isLiveSelfie = affiliate.liveSelfie === filename;
+        if (isProfilePhoto || isBankDoc || isIdentityDoc || isLiveSelfie) {
           isAuthorized = true;
         }
       }

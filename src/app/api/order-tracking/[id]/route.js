@@ -22,6 +22,7 @@ export async function GET(req, { params }) {
       items: order.items,
       financials: order.financials,
       shippingAddress: order.shippingAddress,
+      payment: order.payment,
       timeline: order.timeline,
       createdAt: order.createdAt
     };

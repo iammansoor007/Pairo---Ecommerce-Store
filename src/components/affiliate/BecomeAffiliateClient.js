@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { User, MapPin, Globe, Award, Upload, ArrowRight, ArrowLeft, Loader2, Check } from "lucide-react";
+import { User, MapPin, Globe, Award, Upload, ArrowRight, ArrowLeft, Loader2, Check, Camera, RefreshCw } from "lucide-react";
 
 export default function BecomeAffiliateClient() {
   const [step, setStep] = useState(1);
@@ -45,6 +45,83 @@ export default function BecomeAffiliateClient() {
   const [bankDocFile, setBankDocFile] = useState(null);
   const [checkingCode, setCheckingCode] = useState(false);
   const [codeAvailable, setCodeAvailable] = useState(null); // null | true | false
+
+  // Selfie Verification States
+  const [selfieFile, setSelfieFile] = useState(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState("");
+  const videoRef = useRef(null);
+
+  const startCamera = async () => {
+    setCameraError("");
+    setIsCameraActive(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 400 }, height: { ideal: 400 } },
+        audio: false
+      });
+      setCameraStream(stream);
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      }, 50);
+    } catch (err) {
+      console.error("Camera access error:", err);
+      setCameraError("Unable to access camera. Please check camera permissions or try another device.");
+      setIsCameraActive(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraActive(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [cameraStream]);
+
+  useEffect(() => {
+    if (step !== 4 && cameraStream) {
+      stopCamera();
+    }
+  }, [step]);
+
+  const dataURLtoFile = (dataurl, filename) => {
+    const arr = dataurl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 400;
+      canvas.height = video.videoHeight || 400;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+      const file = dataURLtoFile(dataUrl, "live-selfie.jpg");
+      setSelfieFile(file);
+      stopCamera();
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -92,6 +169,11 @@ export default function BecomeAffiliateClient() {
         toast.error("Please fill in your primary bank account details.");
         return;
       }
+    } else if (step === 4) {
+      if (!selfieFile) {
+        toast.error("Please capture your live selfie to verify your identity.");
+        return;
+      }
     }
     setStep((prev) => prev + 1);
   };
@@ -108,6 +190,10 @@ export default function BecomeAffiliateClient() {
       toast.error("Please upload your identity verification document (PDF, JPG or PNG).");
       return;
     }
+    if (!selfieFile) {
+      toast.error("Please capture your live selfie to verify your identity.");
+      return;
+    }
 
     setLoading(true);
     const dataToSend = new FormData();
@@ -122,9 +208,10 @@ export default function BecomeAffiliateClient() {
       dataToSend.append("identityDocuments", file);
     });
     
-    // Append profile photo and bank doc
+    // Append profile photo, bank doc and selfie
     if (profilePhotoFile) dataToSend.append("profilePhoto", profilePhotoFile);
     if (bankDocFile) dataToSend.append("bankVerificationDocument", bankDocFile);
+    if (selfieFile) dataToSend.append("liveSelfie", selfieFile);
 
 
     try {
@@ -166,18 +253,19 @@ export default function BecomeAffiliateClient() {
       {/* Progress Bar & Indicators */}
       <div className="space-y-4">
         <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-neutral-400 font-bold">
-          <span>Step {step} of 4</span>
+          <span>Step {step} of 5</span>
           <span>
             {step === 1 && "Personal details"}
             {step === 2 && "Payout & Address details"}
             {step === 3 && "Business & Social links"}
-            {step === 4 && "Strategy & KYC Upload"}
+            {step === 4 && "Live Selfie Verification"}
+            {step === 5 && "Strategy & KYC Upload"}
           </span>
         </div>
         <div className="w-full h-[2px] bg-neutral-100 rounded-full overflow-hidden">
           <div 
             className="h-full bg-black transition-all duration-300"
-            style={{ width: `${(step / 4) * 100}%` }}
+            style={{ width: `${(step / 5) * 100}%` }}
           />
         </div>
       </div>
@@ -441,8 +529,96 @@ export default function BecomeAffiliateClient() {
           </div>
         )}
 
-        {/* Step 4: Strategy, Docs Upload & KYC */}
+        {/* Step 4: Live Selfie Verification */}
         {step === 4 && (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2 flex items-center gap-2">
+                <Camera className="w-4 h-4 text-neutral-400" /> Live Selfie Verification
+              </h3>
+              <p className="text-xs text-neutral-500 max-w-lg leading-relaxed">
+                To prevent fraud and verify your identity, please capture a live selfie. Make sure your face is clearly visible, well-lit, and fits inside the preview frame.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center justify-center bg-neutral-50 border border-neutral-200 rounded-lg p-6 min-h-[320px] max-w-md mx-auto space-y-4">
+              {selfieFile ? (
+                // Captured Selfie Preview
+                <div className="space-y-4 text-center w-full">
+                  <img
+                    src={URL.createObjectURL(selfieFile)}
+                    alt="Selfie Preview"
+                    className="w-48 h-48 rounded-full object-cover border-2 border-emerald-500 shadow-md mx-auto bg-neutral-100"
+                  />
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider flex items-center justify-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> Selfie Captured Successfully
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setSelfieFile(null); startCamera(); }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 border border-neutral-300 rounded-[3px] text-xs font-bold uppercase tracking-wider bg-white hover:border-black transition-colors"
+                    >
+                      <RefreshCw className="w-3 h-3" /> Retake Photo
+                    </button>
+                  </div>
+                </div>
+              ) : isCameraActive ? (
+                // Active Camera Stream
+                <div className="space-y-4 text-center w-full">
+                  <div className="relative w-64 h-64 rounded-full overflow-hidden border border-neutral-300 bg-black mx-auto shadow-inner">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover scale-x-[-1]"
+                    />
+                  </div>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={capturePhoto}
+                      className="px-5 py-2.5 bg-black text-white text-[11px] uppercase tracking-widest font-bold rounded-[3px] hover:bg-neutral-900 transition-all flex items-center gap-1.5 shadow-md"
+                    >
+                      <Camera className="w-3.5 h-3.5" /> Capture Selfie
+                    </button>
+                    <button
+                      type="button"
+                      onClick={stopCamera}
+                      className="px-4 py-2.5 border border-neutral-300 text-neutral-600 hover:text-black text-[11px] uppercase tracking-widest font-bold rounded-[3px] bg-white hover:border-[#8c8f94] transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // Camera Inactive / Trigger Button
+                <div className="space-y-4 text-center py-6 w-full">
+                  <div className="w-16 h-16 bg-neutral-200 text-neutral-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <Camera className="w-8 h-8" />
+                  </div>
+                  {cameraError && (
+                    <p className="text-xs font-semibold text-red-600 max-w-xs mx-auto leading-relaxed mb-2">{cameraError}</p>
+                  )}
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={startCamera}
+                      className="px-6 py-3 bg-black text-white text-[11px] uppercase tracking-widest font-bold rounded-[3px] hover:bg-neutral-900 transition-all flex items-center gap-2 mx-auto shadow-md"
+                    >
+                      <Camera className="w-4 h-4" /> Start Device Camera
+                    </button>
+                    <p className="text-[10px] text-neutral-400">We request secure, temporary browser access to your webcam.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Step 5: Strategy, Docs Upload & KYC */}
+        {step === 5 && (
           <div className="space-y-6">
             <div className="space-y-4">
               <h3 className="text-[13px] font-bold uppercase tracking-wider text-black border-b border-neutral-100 pb-2 flex items-center gap-2">
@@ -545,7 +721,7 @@ export default function BecomeAffiliateClient() {
             <div />
           )}
 
-          {step < 4 ? (
+          {step < 5 ? (
             <button 
               type="button" 
               onClick={nextStep}

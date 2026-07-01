@@ -1248,6 +1248,76 @@ export default function AffiliatesManagerClient({ userSession }) {
                   </div>
                 </div>
 
+                {/* Verification Comparison Panel */}
+                <div className="bg-[#f0f6fa] border border-[#ccd0d4] p-4 rounded-[3px] space-y-3">
+                  <p className="text-[10px] font-bold text-[#2271b1] uppercase tracking-wider">Identity & Verification Comparison Panel</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Profile Photo</p>
+                      {viewingApplication.profilePhoto ? (
+                        <div 
+                          className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                          onClick={() => setViewingDocUrl(getDocumentUrl(viewingApplication.profilePhoto))}
+                        >
+                          <img 
+                            src={getDocumentUrl(viewingApplication.profilePhoto)} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Photo</div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Live Selfie</p>
+                      {viewingApplication.liveSelfie ? (
+                        <div 
+                          className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                          onClick={() => setViewingDocUrl(getDocumentUrl(viewingApplication.liveSelfie))}
+                        >
+                          <img 
+                            src={getDocumentUrl(viewingApplication.liveSelfie)} 
+                            alt="Live Selfie" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Selfie</div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Bank Document</p>
+                      {viewingApplication.bankVerificationDocument ? (
+                        viewingApplication.bankVerificationDocument.toLowerCase().endsWith('.pdf') ? (
+                          <div 
+                            className="border border-[#ccd0d4] rounded-[3px] bg-white aspect-square flex flex-col items-center justify-center cursor-pointer hover:border-black transition-all p-2 text-center"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(viewingApplication.bankVerificationDocument))}
+                          >
+                            <ShoppingCart className="w-8 h-8 text-neutral-400 mb-1" />
+                            <span className="text-[8px] font-mono text-neutral-600 truncate w-full">{viewingApplication.bankVerificationDocument}</span>
+                          </div>
+                        ) : (
+                          <div 
+                            className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(viewingApplication.bankVerificationDocument))}
+                          >
+                            <img 
+                              src={getDocumentUrl(viewingApplication.bankVerificationDocument)} 
+                              alt="Bank Verification" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Bank Doc</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* 5. Documents */}
                 <div className="space-y-2">
                   <h4 className="font-bold text-[12px] uppercase tracking-wider text-[#1d2327] border-b border-[#ccd0d4] pb-1">KYC / Identity & Bank Verification Documents</h4>
@@ -1792,6 +1862,79 @@ export default function AffiliatesManagerClient({ userSession }) {
                     </div>
                   </div>
                 </div>
+                {/* Verification Comparison Panel */}
+                <div className="bg-[#f0f6fa] border border-[#ccd0d4] p-4 rounded-[3px] space-y-3">
+                  <p className="text-[10px] font-bold text-[#2271b1] uppercase tracking-wider">Identity & Verification Comparison Panel</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Profile Photo</p>
+                      {selectedAffiliate.profilePhoto ? (
+                        <div 
+                          className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                          type="button"
+                          onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.profilePhoto))}
+                        >
+                          <img 
+                            src={getDocumentUrl(selectedAffiliate.profilePhoto)} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Photo</div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Live Selfie</p>
+                      {selectedAffiliate.liveSelfie ? (
+                        <div 
+                          className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                          type="button"
+                          onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.liveSelfie))}
+                        >
+                          <img 
+                            src={getDocumentUrl(selectedAffiliate.liveSelfie)} 
+                            alt="Live Selfie" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Selfie</div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 text-center">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Bank Document</p>
+                      {selectedAffiliate.bankVerificationDocument ? (
+                        selectedAffiliate.bankVerificationDocument.toLowerCase().endsWith('.pdf') ? (
+                          <div 
+                            className="border border-[#ccd0d4] rounded-[3px] bg-white aspect-square flex flex-col items-center justify-center cursor-pointer hover:border-black transition-all p-2 text-center"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.bankVerificationDocument))}
+                          >
+                            <ShoppingCart className="w-8 h-8 text-neutral-400 mb-1" />
+                            <span className="text-[8px] font-mono text-neutral-600 truncate w-full">{selectedAffiliate.bankVerificationDocument}</span>
+                          </div>
+                        ) : (
+                          <div 
+                            className="relative border border-[#ccd0d4] rounded-[3px] overflow-hidden bg-white aspect-square cursor-pointer hover:border-black transition-all"
+                            type="button"
+                            onClick={() => setViewingDocUrl(getDocumentUrl(selectedAffiliate.bankVerificationDocument))}
+                          >
+                            <img 
+                              src={getDocumentUrl(selectedAffiliate.bankVerificationDocument)} 
+                              alt="Bank Verification" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        <div className="border border-dashed border-neutral-300 rounded-[3px] aspect-square flex items-center justify-center text-[11px] text-gray-400 italic">No Bank Doc</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Documents & Photos */}
                 {(selectedAffiliate?.profilePhoto || selectedAffiliate?.identityDocuments?.length > 0 || selectedAffiliate?.bankVerificationDocument) && (
                   <div className="border-t border-[#eee] pt-4 space-y-4">

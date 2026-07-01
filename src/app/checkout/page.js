@@ -209,123 +209,190 @@ export default function CheckoutPage() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   };
 
-  const inputClass = "w-full bg-secondary/50 backdrop-blur-sm border border-border/60 rounded-xl px-5 py-3.5 text-[13px] font-medium placeholder:text-foreground/50 focus:bg-background focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all duration-300 shadow-sm text-foreground";
+  const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-4 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
 
   return (
-    <div className="bg-background min-h-screen text-foreground font-sans selection:bg-primary selection:text-background pb-32">
-      <div className="container mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16 max-w-7xl">
+    <div className="bg-[#FAF9F6] min-h-screen text-black font-sans selection:bg-black selection:text-white">
+      {/* Loading Overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center space-y-4">
+          <Loader2 className="w-10 h-10 animate-spin text-black" />
+          <p className="text-xs uppercase tracking-widest font-bold text-neutral-600">Processing Your Order...</p>
+        </div>
+      )}
+
+      {/* Main Container */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-screen">
         
-        {/* Top Header */}
-        <div className="flex flex-col gap-4 mb-12">
-          <Link href="/cart" className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60 hover:text-primary transition-colors">
-            <ChevronLeft className="w-3.5 h-3.5" /> Back to Bag
-          </Link>
-          <div className="flex items-center justify-between border-b border-border/80 pb-6">
-            <p className="text-2xl font-bold tracking-tight uppercase heading-font text-foreground">Secure Checkout</p>
-            <div className="flex items-center gap-1.5 text-[9px] font-black text-foreground/45 uppercase tracking-widest">
-              <Lock className="w-3.5 h-3.5 text-primary" /> SSL encrypted
+        {/* Left Column: Checkout Forms */}
+        <div className="lg:col-span-7 bg-white p-6 md:p-12 lg:pr-16 space-y-10 border-r border-neutral-200">
+          {/* Logo / Header */}
+          <div className="flex flex-col gap-2 pb-6 border-b border-neutral-100">
+            <Link href="/" className="text-xl font-black uppercase tracking-[0.25em] text-black">
+              PAIRO LIFESTYLE
+            </Link>
+            <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 uppercase tracking-widest">
+              <Link href="/cart" className="hover:underline text-neutral-600">Cart</Link>
+              <span>/</span>
+              <span className="text-black font-semibold">Information</span>
+              <span>/</span>
+              <span className="text-neutral-400">Payment</span>
             </div>
           </div>
-        </div>
 
-        {/* Responsive Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-start">
-          
-          {/* Left Side: Contact, Shipping, Payment Forms */}
-          <motion.div 
-            variants={containerVariants} 
-            initial="hidden" 
-            animate="visible" 
-            className="lg:col-span-7 bg-background rounded-[24px] border border-border p-6 md:p-10 space-y-12 shadow-sm"
-          >
-            {/* Contact */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">01. Contact Details</p>
-                 <div className="h-[1px] bg-border/60 flex-1" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">First Name</label>
-                  <input name="firstName" onChange={handleInputChange} value={formData.firstName} type="text" placeholder="e.g. John" className={inputClass} />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Last Name</label>
-                  <input name="lastName" onChange={handleInputChange} value={formData.lastName} type="text" placeholder="e.g. Doe" className={inputClass} />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Email Address <span className="text-red-500">*</span></label>
-                  <input name="email" onChange={handleInputChange} value={formData.email} type="email" placeholder="john@example.com" className={inputClass} required />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Phone Number</label>
-                  <input name="phone" onChange={handleInputChange} value={formData.phone} type="tel" placeholder="+1 (555) 000-0000" className={inputClass} />
-                </div>
-              </div>
-            </section>
-
-            {/* Shipping */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">02. Shipping Address</p>
-                 <div className="h-[1px] bg-border/60 flex-1" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Street Address <span className="text-red-500">*</span></label>
-                  <input name="street" onChange={handleInputChange} value={formData.street} type="text" placeholder="123 Luxury Avenue, Apt 4" className={inputClass} required />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Country</label>
-                  <input name="country" onChange={handleInputChange} value={formData.country} type="text" placeholder="Pakistan" className={inputClass} />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">State / Province</label>
-                  <input name="state" onChange={handleInputChange} value={formData.state} type="text" placeholder="Punjab" className={inputClass} />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">City</label>
-                  <input name="city" onChange={handleInputChange} value={formData.city} type="text" placeholder="Lahore" className={inputClass} />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">ZIP / Postal Code</label>
-                  <input name="zip" onChange={handleInputChange} value={formData.zip} type="text" placeholder="54000" className={inputClass} />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-foreground/60 ml-1">Order Note (Optional)</label>
-                  <textarea name="customerNote" onChange={handleInputChange} value={formData.customerNote} placeholder="Specific instructions for delivery..." className={`${inputClass} min-h-[90px] resize-y`} />
-                </div>
-              </div>
-            </section>
-
-            {/* Shipping Method Selector */}
+          <div className="space-y-8">
+            {/* 1. Contact Information */}
             <section className="space-y-4">
-              <div className="flex items-center gap-3">
-                <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">03. Shipping Method</p>
-                <div className="h-[1px] bg-border/60 flex-1" />
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-black">Contact Information</h3>
               </div>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Email Address *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="email@example.com"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Phone Number (for shipping updates) *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="e.g. +92 300 1234567"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* 2. Shipping Address */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Shipping Address</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">First Name *</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Last Name *</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Street Address *</label>
+                  <input
+                    type="text"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleInputChange}
+                    placeholder="Apartment, suite, unit, street address"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                    className={inputClass}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">State / Province</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    placeholder="State / Province"
+                    className={inputClass}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Postal / ZIP Code</label>
+                  <input
+                    type="text"
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    placeholder="ZIP / Postal Code"
+                    className={inputClass}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Country</label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    placeholder="Country"
+                    className={inputClass}
+                    readOnly
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Order Notes (Optional)</label>
+                  <textarea
+                    name="customerNote"
+                    value={formData.customerNote}
+                    onChange={handleInputChange}
+                    placeholder="Notes about your order (e.g. delivery instructions)"
+                    rows={2}
+                    className={`${inputClass} resize-none`}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* 3. Shipping Method */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Shipping Method</h3>
               {loadingRates && (
-                <div className="flex items-center gap-2 text-[11px] text-foreground/60">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Calculating shipping rates...
+                <div className="flex items-center gap-2 py-4 text-xs text-neutral-500">
+                  <Loader2 className="w-4 h-4 animate-spin text-black" />
+                  <span>Calculating shipping rates...</span>
                 </div>
               )}
-              {!loadingRates && shippingRates.length === 0 && shippingRatesFetched && (
-                <p className="text-[11px] text-foreground/60 italic">No shipping methods available for your address.</p>
-              )}
-              {!loadingRates && !shippingRatesFetched && (
-                <p className="text-[11px] text-foreground/60 italic">Enter your address to see available shipping options.</p>
+              {!loadingRates && shippingRates.length === 0 && (
+                <p className="text-xs text-neutral-400 italic">Please fill out your street address and city to calculate shipping options.</p>
               )}
               {shippingRates.length > 0 && (
-                <div className="space-y-2">
-                  {shippingRates.map(rate => (
+                <div className="border border-neutral-200 rounded-[4px] divide-y divide-neutral-200 overflow-hidden">
+                  {shippingRates.map((rate) => (
                     <label
                       key={rate.methodId}
-                      className={`flex items-center justify-between gap-4 p-4 border rounded-xl cursor-pointer transition-all ${
-                        selectedShipping?.methodId === rate.methodId
-                          ? 'border-primary bg-primary/5 shadow-sm'
-                          : 'border-border/60 hover:border-primary/40 bg-secondary/30'
+                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50 transition-colors ${
+                        selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/50" : ""
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -334,15 +401,15 @@ export default function CheckoutPage() {
                           name="shippingMethod"
                           checked={selectedShipping?.methodId === rate.methodId}
                           onChange={() => setSelectedShipping(rate)}
-                          className="accent-primary"
+                          className="accent-black w-4 h-4"
                         />
                         <div>
-                          <p className="text-[12px] font-bold text-foreground">{rate.methodName}</p>
-                          {rate.description && <p className="text-[10px] text-foreground/60">{rate.description}</p>}
+                          <p className="text-[13px] font-semibold text-black">{rate.methodName}</p>
+                          {rate.description && <p className="text-[11px] text-neutral-500">{rate.description}</p>}
                         </div>
                       </div>
-                      <span className="text-[13px] font-bold text-foreground shrink-0">
-                        {rate.cost === 0 ? 'Free' : `${rate.currency ?? ''} ${rate.cost.toLocaleString()}`}
+                      <span className="text-[13px] font-bold text-black font-mono">
+                        {rate.cost === 0 ? "Free" : `Rs. ${rate.cost.toLocaleString()}`}
                       </span>
                     </label>
                   ))}
@@ -350,141 +417,157 @@ export default function CheckoutPage() {
               )}
             </section>
 
-            {/* Payment */}
-            <section className="space-y-6">
-              <div className="flex items-center gap-3">
-                 <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">04. Payment Method</p>
-                 <div className="h-[1px] bg-border/60 flex-1" />
-              </div>
-              
-              <div className="p-5 border border-border/80 rounded-xl bg-secondary/40 flex items-center justify-between shadow-sm">
-                 <div className="flex items-center gap-3">
-                    <CreditCard className="w-4.5 h-4.5 text-foreground/60" />
-                    <span className="text-[12px] font-bold uppercase tracking-widest text-foreground">Manual Payment / Cash on Delivery</span>
-                 </div>
-                 <div className="w-4 h-4 rounded-full border-[3px] border-primary bg-background" />
+            {/* 4. Payment Method */}
+            <section className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Payment Method</h3>
+              <div className="border border-neutral-200 rounded-[4px] p-4 bg-neutral-50/30 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="w-5 h-5 text-neutral-600" />
+                  <span className="text-[13px] font-semibold text-black">Cash on Delivery (COD)</span>
+                </div>
+                <div className="w-4 h-4 rounded-full border-4 border-black bg-white" />
               </div>
             </section>
 
-            {/* Action */}
+            {/* Submit Action */}
             <div className="pt-4">
-               <button 
+              <button
+                type="button"
                 onClick={handlePayment}
                 disabled={isProcessing || !cartItems || cartItems.length === 0}
-                className="w-full bg-primary text-background hover:bg-primary/95 py-5 rounded-xl font-bold text-[13px] uppercase tracking-[0.25em] transition-all active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl shadow-primary/5"
-               >
-                {isProcessing ? (
-                  <>Processing <Loader2 className="w-3.5 h-3.5 animate-spin" /></>
-                ) : (
-                  <>Complete Acquisition <ArrowRight className="w-3.5 h-3.5" /></>
-                )}
-               </button>
+                className="w-full bg-black text-white hover:bg-neutral-900 py-4 rounded-[4px] text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+              >
+                <span>Complete Order</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
-          </motion.div>
-
-          {/* Right Side: Order Summary */}
-          <motion.aside 
-            variants={containerVariants} 
-            initial="hidden" 
-            animate="visible" 
-            transition={{ delay: 0.1 }} 
-            className="lg:col-span-5"
-          >
-            <div className="bg-background rounded-[24px] border border-border p-6 md:p-8 space-y-8 sticky top-10 shadow-sm">
-              <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-foreground">Your Selections</p>
-              
-              {/* Selections List */}
-              <div className="divide-y divide-border/60 overflow-y-auto max-h-[360px] pr-1">
-                {(cartItems || []).map((item, index) => {
-                  const itemImage = item.image || (Array.isArray(item.images) && item.images[0]) || "/placeholder.jpg";
-                  const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
-                  return (
-                    <div key={itemKey} className="flex gap-4 items-center py-4 first:pt-0 last:pb-0">
-                      <div className="w-14 h-18 bg-secondary/40 rounded-lg overflow-hidden border border-border/60 shrink-0">
-                        <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 space-y-1 min-w-0">
-                         {/* Reduced Product Title Size - Premium Shopify Plus style */}
-                         <p className="text-sm font-bold text-foreground uppercase tracking-wider truncate">{item.name}</p>
-                         <p className="text-[11px] text-foreground/65 font-bold uppercase">
-                           Qty {item.quantity} / {item.selectedOptions ? Object.values(item.selectedOptions).join(" / ") : "Standard"}
-                         </p>
-                         <p className="text-sm font-bold tracking-tight text-foreground mt-1">
-                           ${(item.price * item.quantity).toLocaleString()}
-                         </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Promo Form */}
-              <div className="pt-6 border-t border-border/80 space-y-3">
-                  <div className="flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="PROMO CODE" 
-                      className="flex-1 bg-background border border-border rounded-xl px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest outline-none focus:border-primary placeholder:text-foreground/50 text-foreground transition-all"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                    />
-                    <button 
-                      onClick={handleApplyPromo}
-                      disabled={!promoCode || applyingPromo}
-                      className="px-5 py-2.5 bg-primary text-background hover:bg-primary/95 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-50 shrink-0"
-                    >
-                       {applyingPromo ? "..." : "Apply"}
-                    </button>
-                 </div>
-                 {promoError && <p className="text-[9px] text-red-500 font-bold ml-1 uppercase tracking-widest">{promoError}</p>}
-                 {appliedPromo && (
-                   <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 rounded-lg border border-emerald-100">
-                      <span className="text-[9px] font-bold text-emerald-700 uppercase tracking-widest">Code {appliedPromo.code} Applied</span>
-                      <button onClick={removePromoCode} className="text-[9px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-widest">Remove</button>
-                   </div>
-                 )}
-              </div>
-
-              {/* Totals Breakdown */}
-              <div className="space-y-3 pt-6 border-t border-border/80">
-                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-foreground/70">
-                  <span>Subtotal</span>
-                  <span className="text-foreground font-semibold">${(cartSubtotal || 0).toLocaleString()}</span>
-                </div>
-                {discountTotal > 0 && (
-                   <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-emerald-600">
-                    <span>Discount ({(appliedPromo?.type === 'percentage' || appliedPromo?.type === 'percentage_discount') ? `${appliedPromo?.value}%` : 'Fixed'})</span>
-                    <span>-${discountTotal.toLocaleString()}</span>
-                  </div>
-                )}
-                {affiliateDiscount?.type !== 'None' && affiliateDiscountAmount > 0 && (
-                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-emerald-600">
-                    <span>
-                      Referral Discount
-                      {affiliateDiscount.type === 'Percentage' ? ` (${affiliateDiscount.value}%)` : ''}
-                    </span>
-                    <span>-${affiliateDiscountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-widest text-foreground/70">
-                  <span>Shipping</span>
-                  <span className={shippingCost === 0 ? 'text-emerald-600 font-semibold' : 'text-foreground font-semibold'}>
-                    {selectedShipping
-                      ? (shippingCost === 0 ? 'Free' : `${selectedShipping.currency ?? 'Rs.'} ${shippingCost.toLocaleString()}`)
-                      : '— Select method'}
-                  </span>
-                </div>
-                
-                {/* Total */}
-                <div className="pt-6 flex justify-between items-end border-t border-border/80">
-                   <span className="text-[13px] font-bold uppercase tracking-[0.2em]">Total Amount</span>
-                   <span className="text-3xl font-bold tracking-tight">Rs. {cartTotal.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-          </motion.aside>
-
+          </div>
         </div>
+
+        {/* Right Column: Order Summary (Sticky) */}
+        <div className="lg:col-span-5 bg-[#FAF9F6] p-6 md:p-12 lg:pl-16 space-y-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-black lg:hidden">Order Summary</h3>
+
+          {/* Cart Products List */}
+          <div className="divide-y divide-neutral-200/80 max-h-[320px] lg:max-h-[420px] overflow-y-auto pr-2">
+            {(cartItems || []).map((item, index) => {
+              const itemImage = item.image || (Array.isArray(item.images) && item.images[0]) || "/placeholder.jpg";
+              const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
+              return (
+                <div key={itemKey} className="flex gap-4 items-center py-4 first:pt-0 last:pb-0">
+                  <div className="relative w-14 h-16 bg-neutral-100 rounded-[3px] border border-neutral-200 overflow-hidden shrink-0">
+                    <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                    <span className="absolute -top-1.5 -right-1.5 bg-neutral-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
+                      {item.quantity}
+                    </span>
+                  </div>
+                  <div className="flex-1 space-y-0.5 min-w-0">
+                    <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
+                    {item.selectedOptions && (
+                      <p className="text-[11px] text-neutral-500 font-medium uppercase">
+                        {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
+                      </p>
+                    )}
+                    <p className="text-[12px] font-bold text-black font-mono mt-1">
+                      Rs. {(item.price * item.quantity).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Coupon Code Input */}
+          <div className="pt-6 border-t border-neutral-200/85 space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Discount Code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                className="flex-1 bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider outline-none focus:border-black placeholder:text-neutral-400 text-black transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleApplyPromo}
+                disabled={!promoCode || applyingPromo}
+                className="px-5 py-2.5 bg-neutral-800 text-white hover:bg-black rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shrink-0"
+              >
+                {applyingPromo ? "..." : "Apply"}
+              </button>
+            </div>
+            {promoError && <p className="text-[10px] text-red-600 font-bold ml-1 uppercase tracking-wider">{promoError}</p>}
+            {appliedPromo && (
+              <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-[3px]">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+                  Discount Code ({appliedPromo.code}) Applied
+                </span>
+                <button
+                  type="button"
+                  onClick={removePromoCode}
+                  className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-wider"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Pricing Summary */}
+          <div className="space-y-3 pt-6 border-t border-neutral-200/85 text-[13px] text-neutral-600">
+            <div className="flex justify-between items-center">
+              <span>Subtotal</span>
+              <span className="text-black font-semibold font-mono">Rs. {(cartSubtotal || 0).toLocaleString()}</span>
+            </div>
+            
+            {discountTotal > 0 && (
+              <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                <span>Discount</span>
+                <span className="font-mono">-Rs. {discountTotal.toLocaleString()}</span>
+              </div>
+            )}
+
+            {affiliateDiscount?.type !== "None" && affiliateDiscountAmount > 0 && (
+              <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                <span>Referral Discount</span>
+                <span className="font-mono">-Rs. {affiliateDiscountAmount.toLocaleString()}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center">
+              <span>Shipping</span>
+              <span className="text-black font-semibold font-mono">
+                {selectedShipping
+                  ? (shippingCost === 0 ? "Free" : `Rs. ${shippingCost.toLocaleString()}`)
+                  : "Calculated at next step"}
+              </span>
+            </div>
+
+            <div className="pt-6 flex justify-between items-end border-t border-neutral-200/85">
+              <span className="text-sm font-bold uppercase tracking-wider text-black">Total</span>
+              <span className="text-2xl font-black text-black font-mono">Rs. {cartTotal.toLocaleString()}</span>
+            </div>
+          </div>
+
+          {/* Security & Trust Badges */}
+          <div className="pt-6 border-t border-neutral-200/85 space-y-4">
+            <div className="flex items-center gap-3 text-neutral-500">
+              <ShieldCheck className="w-5 h-5 shrink-0 text-black" />
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-black">Secure Checkout Guarantee</p>
+                <p className="text-[10px] text-neutral-400">Your details are fully protected and processed securely.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-neutral-500">
+              <Truck className="w-5 h-5 shrink-0 text-black" />
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-black">Reliable Home Delivery</p>
+                <p className="text-[10px] text-neutral-400">Orders are packed with care and shipped via trusted couriers.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

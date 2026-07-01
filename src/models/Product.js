@@ -5,6 +5,7 @@ const ProductSchema = new mongoose.Schema({
   // Core Info
   name: { type: String, required: true },
   slug: { type: String, index: true },
+  slugManuallyEdited: { type: Boolean, default: false },
   shortDescription: { type: String },
   description: { type: String }, // Long Description (Rich Text)
   status: { type: String, enum: ['Draft', 'Published'], default: 'Draft' },

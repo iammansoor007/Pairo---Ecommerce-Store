@@ -18,7 +18,11 @@ import {
    List,
    HelpCircle,
    Activity,
-   Check
+   Check,
+   Pencil,
+   Lock,
+   Unlock,
+   Loader2
 } from "lucide-react";
 
 const TiptapEditor = dynamic(() => import('./TiptapEditor'), { ssr: false });
@@ -70,7 +74,12 @@ export default function ProductForm({ productId = null }) {
    const [saving, setSaving] = useState(false);
    const [activeTab, setActiveTab] = useState("general");
    const [activeFormTab, setActiveFormTab] = useState("content");
-   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!productId);
+   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+   // slugLocked: true = read-only display; false = editable input active
+   const [slugLocked, setSlugLocked] = useState(true);
+   // slugCheckState: null | "checking" | "unique" | "taken"
+   const [slugCheckState, setSlugCheckState] = useState(null);
+   const [slugDraftValue, setSlugDraftValue] = useState("");
    const [categories, setCategories] = useState([]);
 
    const getPreviewCategorySlug = () => {
@@ -140,6 +149,7 @@ export default function ProductForm({ productId = null }) {
                   throw new Error("Failed to fetch product details.");
                }
                const prodData = await prodRes.json();
+               setSlugManuallyEdited(!!prodData.slugManuallyEdited);
                setFormData({
                   ...prodData,
                   productType: prodData.productType || "simple",
@@ -201,6 +211,7 @@ export default function ProductForm({ productId = null }) {
       const normalizedData = { 
          ...formData, 
          slug: finalSlug,
+         slugManuallyEdited,
          variantCombinations: updatedCombinations
       };
       try {
@@ -375,20 +386,83 @@ export default function ProductForm({ productId = null }) {
                          }));
                       }}
                   />
-                  <div className="text-[12px] text-gray-500 px-1 mt-1 flex items-center gap-1">
-                     Permalink: <span className="text-gray-400">pairolifestyle.com/{getPreviewCategorySlug()}/</span>
-                      <input
-                         className="border-none bg-transparent outline-none text-[#2271b1] font-mono w-fit min-w-[50px]"
-                         value={formData.slug}
-                         onChange={(e) => {
-                            setSlugManuallyEdited(true);
-                            setFormData({ ...formData, slug: toSlug(e.target.value) });
-                         }}
-                         title="URL slug — auto-generated from title unless manually set"
-                      />
-                      {!slugManuallyEdited && formData.slug && (
-                         <span className="text-[10px] text-gray-300 ml-1">(auto)</span>
-                      )}
+                  {/* Permalink / Slug Row */}
+                  <div className="text-[12px] text-gray-500 px-1 mt-1 flex flex-wrap items-center gap-1.5">
+                     <span>Permalink:</span>
+                     <span className="text-gray-400 font-mono">pairolifestyle.com/{getPreviewCategorySlug()}/</span>
+
+                     {slugLocked ? (
+                        // Read-only view with pencil edit button
+                        <>
+                           <span className="font-mono text-[#2271b1] font-semibold">{formData.slug || <span className="text-gray-300 italic">auto-generated</span>}</span>
+                           <button
+                              type="button"
+                              title="Edit permalink"
+                              onClick={() => {
+                                 setSlugDraftValue(formData.slug);
+                                 setSlugCheckState(null);
+                                 setSlugLocked(false);
+                              }}
+                              className="ml-1 p-0.5 rounded hover:bg-gray-100 transition text-gray-400 hover:text-[#2271b1]"
+                           >
+                              <Pencil className="w-3.5 h-3.5" />
+                           </button>
+                           {!slugManuallyEdited && formData.slug && (
+                              <span className="text-[10px] text-gray-300">(auto)</span>
+                           )}
+                        </>
+                     ) : (
+                        // Edit mode: input + check status + update/cancel buttons
+                        <>
+                           <input
+                              autoFocus
+                              className="border border-[#2271b1] bg-white rounded-[3px] outline-none px-2 py-0.5 text-[#2271b1] font-mono min-w-[120px] focus:ring-1 focus:ring-[#2271b1]/30"
+                              value={slugDraftValue}
+                              onChange={async (e) => {
+                                 const raw = toSlug(e.target.value);
+                                 setSlugDraftValue(raw);
+                                 if (!raw) { setSlugCheckState(null); return; }
+                                 setSlugCheckState("checking");
+                                 try {
+                                    const qs = new URLSearchParams({ slug: raw });
+                                    if (productId) qs.set("excludeId", productId);
+                                    const r = await fetch(`/api/admin/products/check-slug?${qs}`);
+                                    const d = await r.json();
+                                    setSlugCheckState(d.unique ? "unique" : "taken");
+                                 } catch { setSlugCheckState(null); }
+                              }}
+                              placeholder="url-slug"
+                           />
+                           {/* Uniqueness indicator */}
+                           {slugCheckState === "checking" && <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />}
+                           {slugCheckState === "unique" && <span className="text-emerald-600 text-[10px] font-bold flex items-center gap-0.5"><Check className="w-3 h-3" /> Available</span>}
+                           {slugCheckState === "taken" && <span className="text-red-500 text-[10px] font-bold">Taken</span>}
+
+                           {/* Update (lock) button */}
+                           <button
+                              type="button"
+                              disabled={slugCheckState === "taken" || slugCheckState === "checking" || !slugDraftValue}
+                              onClick={() => {
+                                 setFormData(prev => ({ ...prev, slug: slugDraftValue }));
+                                 setSlugManuallyEdited(true);
+                                 setSlugLocked(true);
+                                 setSlugCheckState(null);
+                              }}
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-[#2271b1] text-white text-[10px] font-bold hover:bg-[#135e96] disabled:opacity-40 disabled:cursor-not-allowed transition"
+                           >
+                              <Lock className="w-3 h-3" /> Update
+                           </button>
+
+                           {/* Cancel button */}
+                           <button
+                              type="button"
+                              onClick={() => { setSlugLocked(true); setSlugCheckState(null); }}
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-[3px] border border-gray-300 text-gray-600 text-[10px] font-bold hover:bg-gray-50 transition"
+                           >
+                              Cancel
+                           </button>
+                        </>
+                     )}
                   </div>
                </div>
 

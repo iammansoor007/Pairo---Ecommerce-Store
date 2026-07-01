@@ -63,7 +63,8 @@ export default function AffiliateDashboardClient({ userSession }) {
     iban: "",
     swiftCode: "",
     routingNumber: "",
-    paypalEmail: ""
+    paypalEmail: "",
+    socialLinks: ""
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [bankDocFile, setBankDocFile] = useState(null);
@@ -99,7 +100,8 @@ export default function AffiliateDashboardClient({ userSession }) {
           iban: data.profile.bankingInfo?.iban || "",
           swiftCode: data.profile.bankingInfo?.swiftCode || "",
           routingNumber: data.profile.bankingInfo?.routingNumber || "",
-          paypalEmail: data.profile.bankingInfo?.paypalEmail || ""
+          paypalEmail: data.profile.bankingInfo?.paypalEmail || "",
+          socialLinks: data.profile.businessInfo?.socialLinks ? data.profile.businessInfo.socialLinks.join(", ") : ""
         });
       }
     } catch (err) {
@@ -793,6 +795,16 @@ export default function AffiliateDashboardClient({ userSession }) {
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
+                <div className="space-y-1 md:col-span-2">
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Social Media Profile Links (Comma separated)</label>
+                  <textarea
+                    value={settingsForm.socialLinks}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, socialLinks: e.target.value })}
+                    placeholder="instagram.com/profile, youtube.com/channel"
+                    rows={2}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all resize-none"
+                  />
+                </div>
               </div>
             </div>
 
@@ -960,17 +972,28 @@ export default function AffiliateDashboardClient({ userSession }) {
               <div className="space-y-2">
                 {profile?.identityDocuments?.length > 0 ? (
                   profile.identityDocuments.map((filename, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
+                    <a
+                      key={idx}
+                      href={`/api/admin/affiliates/requests/document?file=${encodeURIComponent(filename)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs hover:border-black transition-colors"
+                    >
                       <span className="font-mono text-neutral-600 truncate max-w-[200px]" title={filename}>{filename}</span>
-                      <span className="text-[10px] font-bold uppercase text-gray-400">Identity Document</span>
-                    </div>
+                      <span className="text-[10px] font-bold uppercase text-[#2271b1]">Identity Document (Click to View)</span>
+                    </a>
                   ))
                 ) : null}
                 {profile?.bankVerificationDocument ? (
-                  <div className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs">
+                  <a
+                    href={`/api/admin/affiliates/requests/document?file=${encodeURIComponent(profile.bankVerificationDocument)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between bg-neutral-50 px-4 py-3 rounded-lg border border-neutral-200 text-xs hover:border-black transition-colors"
+                  >
                     <span className="font-mono text-neutral-600 truncate max-w-[200px]" title={profile.bankVerificationDocument}>{profile.bankVerificationDocument}</span>
-                    <span className="text-[10px] font-bold uppercase text-gray-400">Bank Verification</span>
-                  </div>
+                    <span className="text-[10px] font-bold uppercase text-[#2271b1]">Bank Verification (Click to View)</span>
+                  </a>
                 ) : null}
                 {(!profile?.identityDocuments || profile.identityDocuments.length === 0) && !profile?.bankVerificationDocument && (
                   <p className="text-xs text-neutral-400 italic">No KYC verification documents uploaded yet.</p>

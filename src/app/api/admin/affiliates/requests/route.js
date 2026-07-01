@@ -156,6 +156,7 @@ export async function PUT(req) {
       dob: application.dob || null,
       identityDocuments: application.identityDocuments || [],
       bankVerificationDocument: application.bankVerificationDocument || null,
+      liveSelfie: application.liveSelfie || null,
     });
 
     // 5. Update Application status

@@ -158,6 +158,21 @@ export async function POST(req) {
       }
     }
 
+    // 9b. Live Selfie (required for identity verification)
+    const liveSelfieFile = formData.get("liveSelfie");
+    let liveSelfieFilename = null;
+    if (liveSelfieFile && typeof liveSelfieFile !== 'string' && liveSelfieFile.size > 0) {
+      try {
+        liveSelfieFilename = await validateAndSaveFile(liveSelfieFile, PHOTO_ALLOWED_MIME, MAX_PHOTO_SIZE, privateDir);
+      } catch (err) {
+        return NextResponse.json({ error: `Live selfie: ${err.message}` }, { status: 400 });
+      }
+    }
+
+    if (!liveSelfieFilename) {
+      return NextResponse.json({ error: "Live selfie verification photo is required." }, { status: 400 });
+    }
+
     // 10. Bank Verification Document (optional but recommended)
     const bankDocFile = formData.get("bankVerificationDocument");
     let bankDocFilename = null;
@@ -199,6 +214,7 @@ export async function POST(req) {
       referralCode,
       identityDocuments: uploadedDocs,
       profilePhoto: profilePhotoFilename,
+      liveSelfie: liveSelfieFilename,
       bankVerificationDocument: bankDocFilename,
       status: 'Pending',
       tenantId

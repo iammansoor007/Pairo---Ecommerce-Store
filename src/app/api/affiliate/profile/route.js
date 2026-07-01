@@ -111,11 +111,14 @@ export async function PUT(req) {
       setFields.profilePhoto = body.profilePhoto;
     }
     
-    if (body.companyName !== undefined || body.website !== undefined) {
+    if (body.companyName !== undefined || body.website !== undefined || body.socialLinks !== undefined) {
       const existing = await Affiliate.findById(session.user.id).select("businessInfo").lean();
       setFields.businessInfo = {
         companyName: body.companyName !== undefined ? body.companyName : (existing?.businessInfo?.companyName || ""),
-        website: body.website !== undefined ? body.website : (existing?.businessInfo?.website || "")
+        website: body.website !== undefined ? body.website : (existing?.businessInfo?.website || ""),
+        socialLinks: body.socialLinks !== undefined
+          ? body.socialLinks.split(",").map(link => link.trim()).filter(Boolean)
+          : (existing?.businessInfo?.socialLinks || [])
       };
     }
     

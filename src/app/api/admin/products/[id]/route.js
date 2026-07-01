@@ -43,9 +43,10 @@ export async function PUT(req, { params }) {
     const oldProduct = await Product.findById(id).populate('categories').populate('primaryCategory');
     if (!oldProduct) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // Auto-generate slug if it's being updated or missing
+    // Resolve slug: if manually edited by admin keep as-is; otherwise auto-generate from name
     let slug = data.slug;
-    if (data.name && (!slug || slug === "")) {
+    const slugManuallyEdited = data.slugManuallyEdited === true;
+    if (!slugManuallyEdited && data.name && (!slug || slug === "")) {
       slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
     if (!slug) slug = oldProduct.slug || "product";

@@ -300,7 +300,7 @@ export async function POST(req) {
         if (checkoutResult) {
             log.info({ orderNumber: checkoutResult.orderNumber }, "Checkout success");
             pairoEvents.dispatch('ORDER_CREATED', checkoutResult);
-            return NextResponse.json({ success: true, orderNumber: checkoutResult.orderNumber });
+            return NextResponse.json({ success: true, orderNumber: checkoutResult.orderNumber, orderId: checkoutResult._id });
         }
 
     } catch (error) {

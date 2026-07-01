@@ -140,10 +140,23 @@ export async function GET(req) {
       profile: {
         name: affiliate.name,
         email: affiliate.email,
+        phone: affiliate.phone || "",
+        dob: affiliate.dob ? new Date(affiliate.dob).toISOString().split('T')[0] : "",
+        profilePhoto: affiliate.profilePhoto || null,
         referralCode: affiliate.referralCode,
         couponCode: affiliate.couponCode || null,
         balance: affiliate.balance,
-        lifetimeEarnings: affiliate.lifetimeEarnings
+        lifetimeEarnings: affiliate.lifetimeEarnings,
+        commissionRate: affiliate.commissionRate,
+        commissionType: affiliate.commissionType,
+        customerDiscountType: affiliate.customerDiscountType,
+        customerDiscountValue: affiliate.customerDiscountValue,
+        createdAt: affiliate.createdAt,
+        address: affiliate.address || {},
+        bankingInfo: affiliate.bankingInfo || {},
+        businessInfo: affiliate.businessInfo || {},
+        identityDocuments: affiliate.identityDocuments || [],
+        bankVerificationDocument: affiliate.bankVerificationDocument || null
       },
       metrics: {
         clicks: clicksCount,
