@@ -7,21 +7,21 @@ import {
   Loader2, User, Mail, Phone, AlertCircle, Scissors,
 } from "lucide-react";
 
-const LEATHER_COLORS  = ["None", "Black", "Brown", "Blue", "Other"];
-const LEATHER_TYPES   = ["None", "Sheepskin", "Goatskin", "Cowhide", "Calfhide", "Other"];
-const INNER_LININGS   = ["None", "Non Quilted (Polyester)", "Change Color (Quilted)", "Change Color (Non-Quilted)", "Synthetic Fur", "Other"];
+const LEATHER_COLORS = ["None", "Black", "Brown", "Blue", "Other"];
+const LEATHER_TYPES = ["None", "Sheepskin", "Goatskin", "Cowhide", "Calfhide", "Other"];
+const INNER_LININGS = ["None", "Non Quilted (Polyester)", "Change Color (Quilted)", "Change Color (Non-Quilted)", "Synthetic Fur", "Other"];
 const HARDWARE_COLORS = ["None", "Silver", "Brass", "Black", "Other"];
-const FUR_TYPES       = ["None", "Faux Fur", "Shearling", "Rabbit", "Fox", "Mink", "Wool", "Other"];
-const FUR_COLORS      = ["White", "Black", "Brown", "Grey", "Cream", "Beige", "Custom"];
-const FUR_PLACEMENTS  = ["Collar", "Hood", "Sleeves", "Cuffs", "Front", "Back"];
-const FUR_DENSITIES   = ["Light", "Medium", "Heavy"];
-const ARTWORK_SLOTS   = [
-  { key: "leftChest",  label: "Left Chest" },
+const FUR_TYPES = ["None", "Faux Fur", "Shearling", "Rabbit", "Fox", "Mink", "Wool", "Other"];
+const FUR_COLORS = ["White", "Black", "Brown", "Grey", "Cream", "Beige", "Custom"];
+const FUR_PLACEMENTS = ["Collar", "Hood", "Sleeves", "Cuffs", "Front", "Back"];
+const FUR_DENSITIES = ["Light", "Medium", "Heavy"];
+const ARTWORK_SLOTS = [
+  { key: "leftChest", label: "Left Chest" },
   { key: "rightChest", label: "Right Chest" },
-  { key: "leftArm",   label: "Left Arm" },
-  { key: "rightArm",  label: "Right Arm" },
-  { key: "back",      label: "Back" },
-  { key: "other",     label: "Other Placement" },
+  { key: "leftArm", label: "Left Arm" },
+  { key: "rightArm", label: "Right Arm" },
+  { key: "back", label: "Back" },
+  { key: "other", label: "Other Placement" },
 ];
 const ACCEPTED_FORMATS = ".png,.jpg,.jpeg,.svg,.pdf,.ai,.eps,.webp";
 
@@ -37,11 +37,10 @@ function PillSelect({ options, value, onChange }) {
           key={opt}
           type="button"
           onClick={() => onChange(opt)}
-          className={`px-3 py-1.5 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider border transition-all ${
-            value === opt
-              ? "bg-black text-white border-black"
-              : "bg-white text-black border-black/30 hover:border-black"
-          }`}
+          className={`px-3 py-1.5 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider border transition-all ${value === opt
+            ? "bg-black text-white border-black"
+            : "bg-white text-black border-black/30 hover:border-black"
+            }`}
         >
           {opt}
         </button>
@@ -61,11 +60,10 @@ function MultiPillSelect({ options, values, onChange }) {
           key={opt}
           type="button"
           onClick={() => toggle(opt)}
-          className={`px-3 py-1.5 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider border transition-all flex items-center gap-1 ${
-            values.includes(opt)
-              ? "bg-black text-white border-black"
-              : "bg-white text-black border-black/30 hover:border-black"
-          }`}
+          className={`px-3 py-1.5 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider border transition-all flex items-center gap-1 ${values.includes(opt)
+            ? "bg-black text-white border-black"
+            : "bg-white text-black border-black/30 hover:border-black"
+            }`}
         >
           {values.includes(opt) && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
           {opt}
@@ -276,12 +274,12 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full h-full max-w-none max-h-none bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-cp-up rounded-[var(--radius,0px)]">
+      <div className="relative w-full max-w-xl max-h-[92dvh] bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-cp-up rounded-[var(--radius,0px)]">
 
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-black shrink-0">
@@ -354,9 +352,9 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 </p>
                 <div className="space-y-2.5">
                   {[
-                    { key: "name",  icon: User,  type: "text",  placeholder: "Full Name" },
-                    { key: "email", icon: Mail,  type: "email", placeholder: "your@email.com" },
-                    { key: "phone", icon: Phone, type: "tel",   placeholder: "Phone Number (Optional)" },
+                    { key: "name", icon: User, type: "text", placeholder: "Full Name" },
+                    { key: "email", icon: Mail, type: "email", placeholder: "your@email.com" },
+                    { key: "phone", icon: Phone, type: "tel", placeholder: "Phone Number (Optional)" },
                   ].map((f) => (
                     <div key={f.key} className="relative">
                       <f.icon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/50" />

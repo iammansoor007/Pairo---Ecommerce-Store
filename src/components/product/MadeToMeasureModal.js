@@ -4,19 +4,19 @@ import { useState, useEffect } from "react";
 import { X, Info, Check, Ruler } from "lucide-react";
 
 const UPPER_BODY_FIELDS = [
-  { key: "chest",       label: "Chest",         hint: "Measure around the fullest part of your chest, keeping the tape horizontal." },
-  { key: "neck",        label: "Neck",          hint: "Measure around the base of your neck where the collar sits." },
-  { key: "shoulder",    label: "Shoulder",      hint: "Measure from one shoulder point to the other across the back." },
-  { key: "sleeveLength",label: "Sleeve Length", hint: "From shoulder point to end of wrist, arm slightly bent." },
-  { key: "bicep",       label: "Bicep",         hint: "Measure around the fullest part of your upper arm." },
-  { key: "wrist",       label: "Wrist",         hint: "Measure around your wrist just below the wrist bone." },
+  { key: "chest", label: "Chest", hint: "Measure around the fullest part of your chest, keeping the tape horizontal." },
+  { key: "neck", label: "Neck", hint: "Measure around the base of your neck where the collar sits." },
+  { key: "shoulder", label: "Shoulder", hint: "Measure from one shoulder point to the other across the back." },
+  { key: "sleeveLength", label: "Sleeve Length", hint: "From shoulder point to end of wrist, arm slightly bent." },
+  { key: "bicep", label: "Bicep", hint: "Measure around the fullest part of your upper arm." },
+  { key: "wrist", label: "Wrist", hint: "Measure around your wrist just below the wrist bone." },
 ];
 
 const LOWER_BODY_FIELDS = [
-  { key: "waist",       label: "Waist",         hint: "Measure around your natural waistline, the narrowest part of your torso." },
-  { key: "lowerWaist",  label: "Lower Waist",   hint: "Measure around your hips at the widest point, ~8\" below your natural waist." },
-  { key: "hips",        label: "Hips",          hint: "Measure around the fullest part of your hips." },
-  { key: "jacketLength",label: "Jacket Length", hint: "From the back of your neck down to where you want the jacket to end." },
+  { key: "waist", label: "Waist", hint: "Measure around your natural waistline, the narrowest part of your torso." },
+  { key: "lowerWaist", label: "Lower Waist", hint: "Measure around your hips at the widest point, ~8\" below your natural waist." },
+  { key: "hips", label: "Hips", hint: "Measure around the fullest part of your hips." },
+  { key: "jacketLength", label: "Jacket Length", hint: "From the back of your neck down to where you want the jacket to end." },
 ];
 
 const PHYSICAL_PROFILE_FIELDS = [
@@ -121,12 +121,12 @@ export default function MadeToMeasureModal({ product, isOpen, onClose, onAddToCa
   );
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full h-full max-w-none max-h-none bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-m2m-up rounded-[var(--radius,0px)]">
+      <div className="relative w-full max-w-xl max-h-[92dvh] bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-m2m-up rounded-[var(--radius,0px)]">
 
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-black shrink-0">
@@ -157,11 +157,10 @@ export default function MadeToMeasureModal({ product, isOpen, onClose, onAddToCa
                 key={u}
                 type="button"
                 onClick={() => setUnit(u)}
-                className={`h-8 px-4 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 border ${
-                  unit === u
+                className={`h-8 px-4 rounded-[var(--radius,0px)] text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 border ${unit === u
                     ? "bg-black text-white border-black"
                     : "bg-white text-black border-black/30 hover:border-black"
-                }`}
+                  }`}
               >
                 {u}
               </button>
@@ -209,11 +208,10 @@ export default function MadeToMeasureModal({ product, isOpen, onClose, onAddToCa
             type="button"
             onClick={handleAdd}
             disabled={adding || added}
-            className={`w-full h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[13px] flex items-center justify-center gap-2.5 transition-all duration-300 border ${
-              added
+            className={`w-full h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[13px] flex items-center justify-center gap-2.5 transition-all duration-300 border ${added
                 ? "bg-emerald-600 border-emerald-600 text-white"
                 : "bg-black border-black text-white hover:bg-black/90 active:scale-[0.98] disabled:opacity-60"
-            }`}
+              }`}
           >
             {added ? (
               <><Check className="w-4 h-4" strokeWidth={2.5} /> Added to Cart!</>
