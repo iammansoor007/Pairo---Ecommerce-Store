@@ -65,7 +65,10 @@ function MegaMenuContent({ item }) {
   return (
     <div className="grid grid-cols-12 gap-8">
       {/* Left Navigation Pane */}
-      <div className={`${leftSpan} flex flex-col justify-between border-r border-black/[0.05] pr-8 py-2`}>
+      <div 
+        className={`${leftSpan} flex flex-col justify-between border-r border-black/[0.05] pr-8 py-2`}
+        onMouseLeave={() => setHoveredImage(null)}
+      >
         <div>
           <span className="block text-[8px] font-black text-black/80 tracking-[0.3em] uppercase mb-6">Collections</span>
           <div className={useTwoCols ? "grid grid-cols-2 gap-x-8 gap-y-4" : "flex flex-col gap-4"}>
@@ -75,7 +78,6 @@ function MegaMenuContent({ item }) {
                 href={getCategoryUrl(cat)}
                 className="group/lnk flex items-center gap-4 text-left"
                 onMouseEnter={() => setHoveredImage(cat.image)}
-                onMouseLeave={() => setHoveredImage(null)}
               >
                 <span className="text-[10px] font-mono text-black/50 group-hover/lnk:text-black transition-colors duration-300">
                   {catIdx + 1 < 10 ? `0${catIdx + 1}` : catIdx + 1}
@@ -312,7 +314,6 @@ export default function Navbar() {
                   <div
                     key={item.id || item.name}
                     className={`group h-24 flex items-center ${(item.type === 'mega_menu' || item.dropdownType === 'mega') ? '' : 'relative'}`}
-                    onMouseEnter={() => hasDropdown && setActiveDropdownId(item.id || item.name)}
                     onMouseLeave={() => hasDropdown && setActiveDropdownId(null)}
                   >
                     <Link
@@ -320,6 +321,7 @@ export default function Navbar() {
                       target={item.openInNewTab ? '_blank' : undefined}
                       rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
                       className="text-[14px] font-semibold uppercase tracking-[0.2em] text-black hover:text-black transition-colors flex items-center gap-2"
+                      onMouseEnter={() => hasDropdown && setActiveDropdownId(item.id || item.name)}
                     >
                       {item.name}
                       {hasDropdown && <ChevronDown className="w-3 h-3" />}
