@@ -21,6 +21,14 @@ const OrderSchema = new mongoose.Schema({
     selectedVariant: {
       title: String,
       options: mongoose.Schema.Types.Mixed // e.g., { Size: 'M', Color: 'Black' }
+    },
+    // Made to Measure customization data
+    madeToMeasure: {
+      enabled: { type: Boolean, default: false },
+      surcharge: { type: Number, default: 25 },
+      unit: { type: String, enum: ['inches', 'cm'], default: 'inches' },
+      measurements: { type: mongoose.Schema.Types.Mixed }, // all 12 fields
+      notes: { type: String }
     }
   }],
 

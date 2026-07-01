@@ -461,11 +461,28 @@ export default function CheckoutPage() {
                     </span>
                   </div>
                   <div className="flex-1 space-y-0.5 min-w-0">
-                    <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
+                     <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
                     {item.selectedOptions && (
                       <p className="text-[11px] text-neutral-500 font-medium uppercase">
                         {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
                       </p>
+                    )}
+                    {/* Made to Measure Badge */}
+                    {item.madeToMeasure?.enabled && (
+                      <div className="mt-1">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wide">
+                          ✦ Made to Measure
+                        </span>
+                        <details className="mt-1">
+                          <summary className="text-[10px] text-neutral-400 cursor-pointer hover:text-neutral-600 transition-colors select-none">View measurements</summary>
+                          <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-neutral-500">
+                            {Object.entries(item.madeToMeasure.measurements || {}).map(([k, v]) => v ? (
+                              <span key={k}><span className="font-semibold capitalize">{k.replace(/([A-Z])/g, ' $1')}</span>: {v} {item.madeToMeasure.unit}</span>
+                            ) : null)}
+                            {item.madeToMeasure.notes && <span className="col-span-2 italic">Note: {item.madeToMeasure.notes}</span>}
+                          </div>
+                        </details>
+                      </div>
                     )}
                     <p className="text-[12px] font-bold text-black font-mono mt-1">
                       Rs. {(item.price * item.quantity).toLocaleString()}
@@ -475,6 +492,7 @@ export default function CheckoutPage() {
               );
             })}
           </div>
+
 
           {/* Coupon Code Input */}
           <div className="pt-6 border-t border-neutral-200/85 space-y-2">

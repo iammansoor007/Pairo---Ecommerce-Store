@@ -227,6 +227,30 @@ export default function OrderDetailPage() {
                               SKU: {item.sku || "—"}
                             </p>
                           </div>
+                          {/* Made to Measure */}
+                          {item.madeToMeasure?.enabled && (
+                            <div className="mt-2">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wide">
+                                ✦ Made to Measure
+                              </span>
+                              {Object.keys(item.madeToMeasure.measurements || {}).length > 0 && (
+                                <details className="mt-1.5">
+                                  <summary className="text-[11px] text-[#2271b1] cursor-pointer hover:underline select-none">View measurements ({item.madeToMeasure.unit})</summary>
+                                  <div className="mt-2 grid grid-cols-3 gap-x-4 gap-y-1 text-[11px] text-[#1d2327]">
+                                    {Object.entries(item.madeToMeasure.measurements).map(([k, v]) => v ? (
+                                      <div key={k}>
+                                        <span className="font-semibold capitalize text-[#646970]">{k.replace(/([A-Z])/g, ' $1')}: </span>
+                                        {v} {item.madeToMeasure.unit}
+                                      </div>
+                                    ) : null)}
+                                  </div>
+                                  {item.madeToMeasure.notes && (
+                                    <p className="mt-2 text-[11px] italic text-[#646970]">Note: {item.madeToMeasure.notes}</p>
+                                  )}
+                                </details>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">

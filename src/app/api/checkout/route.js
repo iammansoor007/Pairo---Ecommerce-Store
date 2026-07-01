@@ -169,7 +169,9 @@ export async function POST(req) {
                     sku: product.sku,
                     image: item.image || product.images?.[0] || product.image,
                     priceAtPurchase: item.price,
-                    quantity: item.quantity
+                    quantity: item.quantity,
+                    // Persist Made to Measure data when present
+                    ...(item.madeToMeasure?.enabled ? { madeToMeasure: item.madeToMeasure } : {})
                 });
             }
 

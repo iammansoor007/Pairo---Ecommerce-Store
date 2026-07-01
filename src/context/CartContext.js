@@ -122,23 +122,31 @@ export function CartProvider({ children }) {
       image: product.image || (product.images && product.images[0]) || "/placeholder.jpg",
     };
 
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (item) => 
-          item.id === normalizedProduct.id && 
-          item.selectedSize === normalizedProduct.selectedSize && 
-          item.selectedColor === normalizedProduct.selectedColor
-      );
+    // Items with madeToMeasure are always unique (never merged)
+    const isM2M = !!normalizedProduct.madeToMeasure?.enabled;
 
-      if (existingItem) {
-        return prevItems.map((item) =>
-          (item.id === normalizedProduct.id && 
-           item.selectedSize === normalizedProduct.selectedSize && 
-           item.selectedColor === normalizedProduct.selectedColor)
-            ? { ...item, quantity: item.quantity + 1 } 
-            : item
+    setCartItems((prevItems) => {
+      if (!isM2M) {
+        const existingItem = prevItems.find(
+          (item) =>
+            item.id === normalizedProduct.id &&
+            item.selectedSize === normalizedProduct.selectedSize &&
+            item.selectedColor === normalizedProduct.selectedColor &&
+            !item.madeToMeasure?.enabled
         );
+
+        if (existingItem) {
+          return prevItems.map((item) =>
+            (item.id === normalizedProduct.id &&
+             item.selectedSize === normalizedProduct.selectedSize &&
+             item.selectedColor === normalizedProduct.selectedColor &&
+             !item.madeToMeasure?.enabled)
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
       }
+
       return [...prevItems, { ...normalizedProduct, quantity: 1 }];
     });
     if (openDrawer) {

@@ -1,15 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Minus, ShoppingBag, Check } from "lucide-react";
+import { Plus, Minus, ShoppingBag, Check, Ruler, Palette } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import SwatchBubble from "@/components/common/SwatchBubble";
+import MadeToMeasureModal from "@/components/product/MadeToMeasureModal";
+import CustomizeProductModal from "@/components/product/CustomizeProductModal";
 
 export default function ClientProductActions({ product, onVariantChange }) {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [m2mOpen, setM2mOpen] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -115,7 +119,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
   };
 
   return (
-    <div className="space-y-6 pt-6 border-t border-black/5">
+    <>
+      <div className="space-y-6 pt-6 border-t border-black/5">
       {product.productType === "variable" && attributes.map((attr) => {
         const isColor =
           attr.type === "color" || attr.name.toLowerCase().includes("color");
@@ -254,7 +259,55 @@ export default function ClientProductActions({ product, onVariantChange }) {
         >
           Secure Checkout
         </button>
+
+        {/* ─── Premium Feature Buttons ──────────────────────────── */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* Made to Measure */}
+          <button
+            type="button"
+            onClick={() => setM2mOpen(true)}
+            className="group relative h-12 flex items-center justify-center gap-2 border-2 border-primary/20 rounded-[var(--radius,0px)] text-primary/70 font-bold text-[11px] uppercase tracking-[0.15em] hover:border-primary hover:text-primary hover:bg-primary/[0.04] transition-all duration-250 overflow-hidden"
+          >
+            {/* shimmer */}
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
+            <Ruler className="w-3.5 h-3.5 shrink-0" />
+            <span className="leading-tight text-center">
+              Made to Measure
+              <span className="block text-[9px] font-semibold text-emerald-600 normal-case tracking-normal">+$25.00</span>
+            </span>
+          </button>
+
+          {/* Customize Product */}
+          <button
+            type="button"
+            onClick={() => setCustomizeOpen(true)}
+            className="group relative h-12 flex items-center justify-center gap-2 border-2 border-primary/20 rounded-[var(--radius,0px)] text-primary/70 font-bold text-[11px] uppercase tracking-[0.15em] hover:border-primary hover:text-primary hover:bg-primary/[0.04] transition-all duration-250 overflow-hidden"
+          >
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
+            <Palette className="w-3.5 h-3.5 shrink-0" />
+            <span className="leading-tight text-center">
+              Customize
+              <span className="block text-[9px] font-semibold text-primary/40 normal-case tracking-normal">Design Request</span>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
+
+      {/* ─── Modals ─────────────────────────────────────────────── */}
+      <MadeToMeasureModal
+        product={product}
+        isOpen={m2mOpen}
+        onClose={() => setM2mOpen(false)}
+        onAddToCart={(cartItem) => {
+          addToCart(cartItem, true);
+        }}
+      />
+      <CustomizeProductModal
+        product={product}
+        isOpen={customizeOpen}
+        onClose={() => setCustomizeOpen(false)}
+      />
+    </>
   );
 }
