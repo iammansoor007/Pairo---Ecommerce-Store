@@ -212,74 +212,86 @@ export default function ClientProductActions({ product, onVariantChange }) {
         </div>
 
         {/* Quantity + ATC */}
-        <div className="space-y-3">
-          <div className="flex gap-3">
-            <div className="flex items-center bg-transparent rounded-[var(--radius,0px)] border border-border px-4 gap-4 h-12 shrink-0">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+            {/* Quantity Selector */}
+            <div className="flex items-center justify-between sm:justify-center bg-white border-2 border-gray-300 rounded-lg px-3 sm:px-4 h-11 sm:h-12 shrink-0 hover:border-gray-400 transition-colors">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="text-primary/40 hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-gray-900 transition-colors p-1"
+                aria-label="Decrease quantity"
               >
-                <Minus className="w-4 h-4" />
+                <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <span className="font-bold text-sm w-5 text-center text-primary">{quantity}</span>
+              <span className="font-bold text-sm sm:text-base w-8 sm:w-10 text-center text-gray-900 select-none">
+                {quantity}
+              </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="text-primary/40 hover:text-primary transition-colors"
+                className="text-gray-700 hover:text-gray-900 transition-colors p-1"
+                aria-label="Increase quantity"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
+            {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className={`flex-1 h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[13px] flex items-center justify-center gap-2.5 transition-all duration-300 active:scale-[0.98] ${addedFeedback
-                ? "bg-emerald-600 text-white"
-                : "bg-primary text-white hover:bg-primary/90"
-                }`}
+              disabled={addedFeedback}
+              className={`flex-1 h-11 sm:h-12 rounded-lg font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 shadow-lg hover:shadow-xl ${addedFeedback
+                ? "bg-green-600 text-white border-2 border-green-600"
+                : "bg-gray-900 text-white border-2 border-gray-900 hover:bg-gray-800 hover:border-gray-800 active:scale-[0.98]"
+                } disabled:opacity-90 disabled:cursor-not-allowed`}
             >
               {addedFeedback ? (
                 <>
-                  <Check className="w-4 h-4" strokeWidth={2.5} />
-                  Added!
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
+                  <span>Added to Bag!</span>
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-4 h-4" />
-                  Add to Bag
+                  <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Add to Bag</span>
                 </>
               )}
             </button>
           </div>
 
+          {/* Secure Checkout Button */}
           <button
             onClick={handleSecureCheckout}
-            className="w-full h-12 border border-primary rounded-[var(--radius,0px)] text-primary font-bold uppercase tracking-[0.25em] text-[12px] md:text-[13px] hover:bg-primary hover:text-white transition-all duration-200 active:scale-[0.98]"
+            className="w-full h-11 sm:h-12 rounded-lg font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[11px] sm:text-xs md:text-sm flex items-center justify-center gap-2 sm:gap-2.5 bg-white text-gray-900 border-2 border-gray-300 hover:border-gray-900 hover:text-gray-900 hover:bg-gray-50 transition-all duration-300 shadow-sm hover:shadow-md active:scale-[0.98]"
           >
-            Secure Checkout
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Secure Checkout</span>
           </button>
 
           {/* ─── Premium Feature Buttons ──────────────────────────── */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2.5 sm:gap-3 pt-1">
             {/* Made to Measure */}
             <button
               type="button"
               onClick={() => setM2mOpen(true)}
-              className="h-12 border border-primary/20 hover:border-primary text-primary font-bold uppercase tracking-[0.2em] text-[10px] sm:text-[11px] hover:bg-primary hover:text-white transition-all duration-350 active:scale-[0.98] rounded-[var(--radius,0px)] flex flex-col items-center justify-center gap-0.5 leading-tight"
+              className="h-11 sm:h-12 rounded-lg font-bold uppercase tracking-[0.1em] sm:tracking-[0.15em] text-[10px] sm:text-xs flex items-center justify-center gap-2 px-3 sm:px-4 bg-white text-gray-900 border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-50 hover:shadow-md transition-all duration-300 active:scale-[0.98] group"
             >
-              <span>Made to Measure ( +$25 )</span>
-
+              <Ruler className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 group-hover:text-gray-900 transition-colors" />
+              <span className="whitespace-nowrap">Made to Measure</span>
+              <span className="text-[9px] sm:text-[10px] text-green-600 font-bold whitespace-nowrap">+$25</span>
             </button>
 
             {/* Customize Product */}
             <button
               type="button"
               onClick={() => setCustomizeOpen(true)}
-              className="h-12 border border-primary/20 hover:border-primary text-primary font-bold uppercase tracking-[0.2em] text-[10px] sm:text-[11px] hover:bg-primary hover:text-white transition-all duration-350 active:scale-[0.98] rounded-[var(--radius,0px)] flex flex-col items-center justify-center gap-0.5 leading-tight"
+              className="h-11 sm:h-12 rounded-lg font-bold uppercase tracking-[0.1em] sm:tracking-[0.15em] text-[10px] sm:text-xs flex items-center justify-center gap-2 px-3 sm:px-4 bg-white text-gray-900 border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-50 hover:shadow-md transition-all duration-300 active:scale-[0.98] group"
             >
-              <span>Customize Product</span>
-
+              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 group-hover:text-gray-900 transition-colors" />
+              <span className="whitespace-nowrap">Customize Product</span>
             </button>
           </div>
+
+
         </div>
       </div>
 
