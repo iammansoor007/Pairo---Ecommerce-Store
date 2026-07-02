@@ -65,19 +65,16 @@ export default function ClientProductActions({ product, onVariantChange }) {
     const newOptions = { ...selectedOptions, [attrName]: option.label };
     setSelectedOptions(newOptions);
 
-    // Find the attribute type
     const attr = attributes.find((a) => a.name === attrName);
     const isColor =
       attr?.type === "color" || attrName.toLowerCase().includes("color");
 
     if (isColor && onVariantChange) {
-      // Always emit — even if no variantImage (empty string = reset to product default)
       onVariantChange({ image: option.variantImage || "", isPartial: true });
     } else if (option.variantImage && onVariantChange) {
       onVariantChange({ image: option.variantImage, isPartial: true });
     }
 
-    // Full combination match (price/stock/sku)
     if (product.variantCombinations?.length) {
       const selectedStr = Object.values(newOptions).join(" / ");
       const match = product.variantCombinations.find(
@@ -172,7 +169,6 @@ export default function ClientProductActions({ product, onVariantChange }) {
                 )}
               </div>
 
-              {/* Size buttons - 4 per row, equal size */}
               {attr.name.toLowerCase() === "size" ? (
                 <div className="grid grid-cols-4 gap-2">
                   {(attr.values || []).map((option) => {
@@ -193,7 +189,6 @@ export default function ClientProductActions({ product, onVariantChange }) {
                   })}
                 </div>
               ) : (
-                /* Other attributes (like color) - flex wrap */
                 <div className="flex flex-wrap gap-2">
                   {(attr.values || []).map((option) => {
                     const isSelected = selectedOptions[attr.name] === option.label;
@@ -253,7 +248,6 @@ export default function ClientProductActions({ product, onVariantChange }) {
           );
         })}
 
-        {/* Stock */}
         <div className="flex items-center gap-2">
           {(() => {
             if (!product.manageStock) {
@@ -291,12 +285,9 @@ export default function ClientProductActions({ product, onVariantChange }) {
           })()}
         </div>
 
-        {/* Action Buttons */}
         <div className="space-y-2.5 pt-1">
-          {/* Row 1: Quantity + Add to Bag + Checkout - all equal height */}
           <div className="flex gap-2 items-stretch">
-            {/* Quantity Selector - compact but same height */}
-            <div className="flex items-center justify-center bg-transparent rounded-[var(--radius,0px)] border border-black gap-2 h-11 min-w-[100px] shrink-0">
+            <div className="flex items-center justify-center bg-transparent rounded-[var(--radius,0px)] border border-black/30 gap-2 h-11 min-w-[100px] shrink-0">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 className="text-black hover:text-black/70 transition-colors p-1"
@@ -314,12 +305,11 @@ export default function ClientProductActions({ product, onVariantChange }) {
               </button>
             </div>
 
-            {/* Add to Bag - equal size to checkout */}
             <button
               onClick={handleAddToCart}
-              className={`flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] ${addedFeedback
-                  ? "bg-emerald-600 text-white"
-                  : "bg-black text-white hover:bg-black/90"
+              className={`flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] border ${addedFeedback
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "bg-black text-white border-black hover:bg-black/90"
                 }`}
             >
               {addedFeedback ? (
@@ -335,22 +325,20 @@ export default function ClientProductActions({ product, onVariantChange }) {
               )}
             </button>
 
-            {/* Checkout - same height as Add to Bag */}
             <button
               onClick={handleSecureCheckout}
-              className="flex-1 h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="flex-1 h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <Shield className="w-4 h-4" />
               Checkout
             </button>
           </div>
 
-          {/* Row 2: Measure + Customize - equal size, same style */}
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setM2mOpen(true)}
-              className="w-full h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <Ruler className="w-4 h-4" />
               Measure (+$25)
@@ -358,7 +346,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
             <button
               type="button"
               onClick={handleCustomizeClick}
-              className="w-full h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <Settings className="w-4 h-4" />
               Customize
@@ -367,7 +355,6 @@ export default function ClientProductActions({ product, onVariantChange }) {
         </div>
       </div>
 
-      {/* ─── Modals ─────────────────────────────────────────────── */}
       {mounted && typeof document !== "undefined" && createPortal(
         <>
           <MadeToMeasureModal
