@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { ChevronLeft, Lock, CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, User, Mail, Phone, MapPin, Tag, MessageSquare, ChevronDown } from "lucide-react";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { ChevronLeft, Lock, CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, User, Mail, Phone, MapPin, Tag, MessageSquare, ChevronDown, ShoppingBag } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/context/CartContext";
+import { useSiteData } from "@/context/SiteContext";
 import { useRouter } from "next/navigation";
+import logo from "@/assets/pairo.webp";
 
 export default function CheckoutPage() {
+  const siteData = useSiteData();
   const {
     cartItems,
     cartSubtotal,
@@ -94,7 +98,7 @@ export default function CheckoutPage() {
       }
     } catch (e) { console.error('Failed to fetch shipping rates', e); }
     finally { setLoadingRates(false); }
-  }, [formData.country, formData.state, formData.city, formData.zip, cartSubtotal]);
+  }, [formData.country, formData.state, formData.city, formData.zip, cartSubtotal, cartItems, selectedShipping, setSelectedShipping]);
 
   // Debounce: fetch rates when address changes
   useEffect(() => {
@@ -117,15 +121,15 @@ export default function CheckoutPage() {
       }, 500);
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [formData.email, appliedPromo?.code]);
+  }, [formData.email, appliedPromo?.code, applyPromoCode]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handlePayment = async () => {
-    if (!formData.email || !formData.street) {
-      alert("Please fill in the required fields (Email and Street Address)");
+    if (!formData.email || !formData.street || !formData.city || !formData.phone) {
+      alert("Please fill in all required fields (Email, Phone, Street Address, and City)");
       return;
     }
 
@@ -149,7 +153,6 @@ export default function CheckoutPage() {
             phone: formData.phone,
             country: formData.country
           },
-          // Build the immutable shippingSnapshot
           shippingSnapshot: selectedShipping ? {
             version: 1,
             zoneId: selectedShipping.zoneId,
@@ -204,15 +207,14 @@ export default function CheckoutPage() {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
-  };
+  // Header logo from site settings
+  const headerLogoUrl = siteData?.headerConfig?.logoUrl;
+  const cartCount = useMemo(() => cartItems.reduce((acc, curr) => acc + curr.quantity, 0), [cartItems]);
 
-  const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-4 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
+  const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen text-black font-sans selection:bg-black selection:text-white">
+    <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white overflow-x-hidden">
       {/* Loading Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center space-y-4">
@@ -221,101 +223,142 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-
-        {/* Left Column: Checkout Forms */}
-        <div className="lg:col-span-7 bg-white p-6 md:p-12 lg:pr-16 space-y-10 border-r border-neutral-200">
-          {/* Logo / Header */}
-          <div className="flex flex-col gap-2 pb-6 border-b border-neutral-100">
-            <Link href="/" className="text-xl font-black uppercase tracking-[0.25em] text-black">
-              PAIRO LIFESTYLE
+      {/* Dynamic Header matching site container margins */}
+      <header className="border-b border-black/5 bg-white py-6">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 flex items-center justify-between">
+          <Link href="/cart" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors">
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </Link>
+          
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center justify-center">
+              {headerLogoUrl ? (
+                <img src={headerLogoUrl} alt="Logo" className="object-contain h-9 w-auto" />
+              ) : (
+                <Image src={logo} alt="Pairo Logo" width={90} height={32} className="object-contain h-8 w-auto" priority />
+              )}
             </Link>
-            <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 uppercase tracking-widest">
-              <Link href="/cart" className="hover:underline text-neutral-600">Cart</Link>
-              <span>/</span>
-              <span className="text-black font-semibold">Information</span>
-              <span>/</span>
-              <span className="text-neutral-400">Payment</span>
-            </div>
           </div>
 
-          <div className="space-y-8">
-            {/* 1. Contact Information */}
+          <Link href="/cart" className="relative p-1 text-black/70 hover:text-black transition-colors">
+            <ShoppingBag className="w-5 h-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Container - Matches site margins/padding */}
+      <main className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          {/* Left Column: Checkout Forms (60% / 7 Cols) */}
+          <div className="lg:col-span-7 space-y-8">
+            
+            {/* Express Checkout */}
             <section className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-black">Contact Information</h3>
+              <p className="text-center text-[11px] font-bold text-neutral-500 uppercase tracking-widest">Express checkout</p>
+              <div className="grid grid-cols-3 gap-3">
+                <button type="button" className="bg-[#5A31F4] hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-white font-bold text-[14px] shadow-sm transition-opacity">
+                  <span className="italic font-extrabold tracking-tighter">shop</span><span className="font-semibold text-white/90">pay</span>
+                </button>
+                <button type="button" className="bg-[#FFC439] hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-blue-900 font-extrabold text-[14px] shadow-sm transition-opacity">
+                  <span className="italic font-black text-[#003087]">Pay</span><span className="italic font-black text-[#0079C1]">Pal</span>
+                </button>
+                <button type="button" className="bg-black hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-white font-bold text-[14px] shadow-sm transition-opacity">
+                  <span className="font-mono text-base tracking-tighter">G Pay</span>
+                </button>
               </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="email@example.com"
-                    className={inputClass}
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Phone Number (for shipping updates) *</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="e.g. +92 300 1234567"
-                    className={inputClass}
-                    required
-                  />
-                </div>
+              <div className="relative flex py-4 items-center">
+                <div className="flex-grow border-t border-neutral-200"></div>
+                <span className="flex-shrink mx-4 text-xs text-neutral-400 font-semibold tracking-wider uppercase">OR</span>
+                <div className="flex-grow border-t border-neutral-200"></div>
               </div>
             </section>
 
-            {/* 2. Shipping Address */}
+            {/* 1. Contact Info */}
             <section className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Shipping Address</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">First Name *</label>
+              <div className="flex justify-between items-baseline">
+                <h3 className="text-base font-bold uppercase tracking-wider text-black">Contact</h3>
+                <Link href="/login" className="text-xs font-bold text-neutral-600 hover:text-black underline tracking-wide">Sign in</Link>
+              </div>
+              <div className="space-y-3">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  className={inputClass}
+                  required
+                />
+                <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="w-4 h-4 accent-black rounded border-neutral-300"
+                  />
+                  <span className="text-[12px] text-neutral-600 font-medium leading-none">Email me with news and offers</span>
+                </label>
+              </div>
+            </section>
+
+            {/* 2. Delivery Info */}
+            <section className="space-y-4">
+              <h3 className="text-base font-bold uppercase tracking-wider text-black">Delivery</h3>
+              
+              <div className="space-y-3">
+                {/* Country Selection */}
+                <div className="relative">
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-3 text-[13px] text-black focus:border-black outline-none appearance-none font-medium"
+                  >
+                    <option value="Pakistan">Pakistan</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+
+                {/* Names */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <input
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="First Name"
+                    placeholder="First name (optional)"
                     className={inputClass}
-                    required
                   />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Last Name *</label>
                   <input
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    placeholder="Last Name"
+                    placeholder="Last name"
                     className={inputClass}
                     required
                   />
                 </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Street Address *</label>
-                  <input
-                    type="text"
-                    name="street"
-                    value={formData.street}
-                    onChange={handleInputChange}
-                    placeholder="Apartment, suite, unit, street address"
-                    className={inputClass}
-                    required
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">City *</label>
+
+                {/* Address */}
+                <input
+                  type="text"
+                  name="street"
+                  value={formData.street}
+                  onChange={handleInputChange}
+                  placeholder="Address"
+                  className={inputClass}
+                  required
+                />
+
+                {/* City, State, ZIP */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <input
                     type="text"
                     name="city"
@@ -325,9 +368,6 @@ export default function CheckoutPage() {
                     className={inputClass}
                     required
                   />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">State / Province</label>
                   <input
                     type="text"
                     name="state"
@@ -336,63 +376,59 @@ export default function CheckoutPage() {
                     placeholder="State / Province"
                     className={inputClass}
                   />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Postal / ZIP Code</label>
                   <input
                     type="text"
                     name="zip"
                     value={formData.zip}
                     onChange={handleInputChange}
-                    placeholder="ZIP / Postal Code"
+                    placeholder="Postal code / ZIP"
                     className={inputClass}
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Country</label>
-                  <input
-                    type="text"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    placeholder="Country"
-                    className={inputClass}
-                    readOnly
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">Order Notes (Optional)</label>
-                  <textarea
-                    name="customerNote"
-                    value={formData.customerNote}
-                    onChange={handleInputChange}
-                    placeholder="Notes about your order (e.g. delivery instructions)"
-                    rows={2}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
+
+                {/* Phone */}
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Phone"
+                  className={inputClass}
+                  required
+                />
+
+                {/* Customer Note */}
+                <textarea
+                  name="customerNote"
+                  value={formData.customerNote}
+                  onChange={handleInputChange}
+                  placeholder="Order notes (optional)"
+                  rows={2}
+                  className={`${inputClass} resize-none`}
+                />
               </div>
             </section>
 
             {/* 3. Shipping Method */}
             <section className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Shipping Method</h3>
+              <h3 className="text-base font-bold uppercase tracking-wider text-black">Shipping Method</h3>
               {loadingRates && (
-                <div className="flex items-center gap-2 py-4 text-xs text-neutral-500">
+                <div className="flex items-center gap-2 py-3 text-xs text-neutral-500">
                   <Loader2 className="w-4 h-4 animate-spin text-black" />
                   <span>Calculating shipping rates...</span>
                 </div>
               )}
               {!loadingRates && shippingRates.length === 0 && (
-                <p className="text-xs text-neutral-400 italic">Please fill out your street address and city to calculate shipping options.</p>
+                <p className="text-xs text-neutral-400 italic">Enter your shipping details above to calculate rates.</p>
               )}
               {shippingRates.length > 0 && (
-                <div className="border border-neutral-200 rounded-[4px] divide-y divide-neutral-200 overflow-hidden">
+                <div className="border border-neutral-200 rounded-[4px] divide-y divide-neutral-200 overflow-hidden bg-white">
                   {shippingRates.map((rate) => (
                     <label
                       key={rate.methodId}
-                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50 transition-colors ${selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/50" : ""
-                        }`}
+                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50/50 transition-colors ${
+                        selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/30" : ""
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <input
@@ -418,8 +454,8 @@ export default function CheckoutPage() {
 
             {/* 4. Payment Method */}
             <section className="space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-black">Payment Method</h3>
-              <div className="border border-neutral-200 rounded-[4px] p-4 bg-neutral-50/30 flex items-center justify-between">
+              <h3 className="text-base font-bold uppercase tracking-wider text-black">Payment</h3>
+              <div className="border border-neutral-200 rounded-[4px] p-4 bg-[#FAF9F6]/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-5 h-5 text-neutral-600" />
                   <span className="text-[13px] font-semibold text-black">Cash on Delivery (COD)</span>
@@ -441,152 +477,153 @@ export default function CheckoutPage() {
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Order Summary (Sticky) */}
-        <div className="lg:col-span-5 bg-[#FAF9F6] p-6 md:p-12 lg:pl-16 space-y-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-black lg:hidden">Order Summary</h3>
+          {/* Right Column: Order Summary (40% / 5 Cols) */}
+          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-28">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-black">Order Summary</h3>
 
-          {/* Cart Products List */}
-          <div className="divide-y divide-neutral-200/80 max-h-[320px] lg:max-h-[420px] overflow-y-auto pr-2">
-            {(cartItems || []).map((item, index) => {
-              const itemImage = item.image || (Array.isArray(item.images) && item.images[0]) || "/placeholder.jpg";
-              const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
-              return (
-                <div key={itemKey} className="flex gap-4 items-center py-4 first:pt-0 last:pb-0">
-                  <div className="relative w-14 h-16 bg-neutral-100 rounded-[3px] border border-neutral-200 overflow-hidden shrink-0">
-                    <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
-                    <span className="absolute -top-1.5 -right-1.5 bg-neutral-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">
-                      {item.quantity}
-                    </span>
-                  </div>
-                  <div className="flex-1 space-y-0.5 min-w-0">
-                     <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
-                    {item.selectedOptions && (
-                      <p className="text-[11px] text-neutral-500 font-medium uppercase">
-                        {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
+            {/* Cart Products List */}
+            <div className="divide-y divide-neutral-200/80 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
+              {(cartItems || []).map((item, index) => {
+                const itemImage = item.image || (Array.isArray(item.images) && item.images[0]) || "/placeholder.jpg";
+                const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
+                return (
+                  <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
+                    <div className="relative w-16 h-20 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden shrink-0">
+                      <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm">
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="flex-1 space-y-0.5 min-w-0">
+                      <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
+                      
+                      {item.selectedOptions && (
+                        <p className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider">
+                          {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
+                        </p>
+                      )}
+
+                      {/* Made to Measure Badge */}
+                      {item.madeToMeasure?.enabled && (
+                        <div className="mt-1">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wide">
+                            ✦ Made to Measure
+                          </span>
+                          <details className="mt-1">
+                            <summary className="text-[9px] text-neutral-400 cursor-pointer hover:text-neutral-600 transition-colors select-none">View measurements</summary>
+                            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-neutral-500">
+                              {Object.entries(item.madeToMeasure.measurements || {}).map(([k, v]) => v ? (
+                                <span key={k}><span className="font-semibold capitalize">{k.replace(/([A-Z])/g, ' $1')}</span>: {v} {item.madeToMeasure.unit}</span>
+                              ) : null)}
+                              {item.madeToMeasure.notes && <span className="col-span-2 italic">Note: {item.madeToMeasure.notes}</span>}
+                            </div>
+                          </details>
+                        </div>
+                      )}
+                      
+                      <p className="text-[12px] font-bold text-black font-mono mt-1">
+                        ${(item.price * item.quantity).toLocaleString()}
                       </p>
-                    )}
-                    {/* Made to Measure Badge */}
-                    {item.madeToMeasure?.enabled && (
-                      <div className="mt-1">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 rounded text-[9px] font-bold uppercase tracking-wide">
-                          âœ¦ Made to Measure
-                        </span>
-                        <details className="mt-1">
-                          <summary className="text-[10px] text-neutral-400 cursor-pointer hover:text-neutral-600 transition-colors select-none">View measurements</summary>
-                          <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px] text-neutral-500">
-                            {Object.entries(item.madeToMeasure.measurements || {}).map(([k, v]) => v ? (
-                              <span key={k}><span className="font-semibold capitalize">{k.replace(/([A-Z])/g, ' $1')}</span>: {v} {item.madeToMeasure.unit}</span>
-                            ) : null)}
-                            {item.madeToMeasure.notes && <span className="col-span-2 italic">Note: {item.madeToMeasure.notes}</span>}
-                          </div>
-                        </details>
-                      </div>
-                    )}
-                    <p className="text-[12px] font-bold text-black font-mono mt-1">
-                      ${(item.price * item.quantity).toLocaleString()}
-                    </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-
-
-          {/* Coupon Code Input */}
-          <div className="pt-6 border-t border-neutral-200/85 space-y-2">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Discount Code"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                className="flex-1 bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider outline-none focus:border-black placeholder:text-neutral-400 text-black transition-all"
-              />
-              <button
-                type="button"
-                onClick={handleApplyPromo}
-                disabled={!promoCode || applyingPromo}
-                className="px-5 py-2.5 bg-neutral-800 text-white hover:bg-black rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shrink-0"
-              >
-                {applyingPromo ? "..." : "Apply"}
-              </button>
+                );
+              })}
             </div>
-            {promoError && <p className="text-[10px] text-red-600 font-bold ml-1 uppercase tracking-wider">{promoError}</p>}
-            {appliedPromo && (
-              <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-[3px]">
-                <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
-                  Discount Code ({appliedPromo.code}) Applied
-                </span>
+
+            {/* Coupon Code Input */}
+            <div className="pt-5 border-t border-neutral-200/80 space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Discount code"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  className="flex-1 bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider outline-none focus:border-black placeholder:text-neutral-400 text-black transition-all"
+                />
                 <button
                   type="button"
-                  onClick={removePromoCode}
-                  className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-wider"
+                  onClick={handleApplyPromo}
+                  disabled={!promoCode || applyingPromo}
+                  className="px-5 py-2.5 bg-neutral-800 text-white hover:bg-black rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shrink-0"
                 >
-                  Remove
+                  {applyingPromo ? "..." : "Apply"}
                 </button>
               </div>
-            )}
+              {promoError && <p className="text-[10px] text-red-600 font-bold ml-1 uppercase tracking-wider">{promoError}</p>}
+              {appliedPromo && (
+                <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-[3px]">
+                  <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+                    Discount ({appliedPromo.code}) Applied
+                  </span>
+                  <button
+                    type="button"
+                    onClick={removePromoCode}
+                    className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-wider"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Pricing Summary */}
+            <div className="space-y-3 pt-5 border-t border-neutral-200/80 text-[13px] text-neutral-600">
+              <div className="flex justify-between items-center">
+                <span>Subtotal</span>
+                <span className="text-black font-semibold font-mono">${(cartSubtotal || 0).toLocaleString()}</span>
+              </div>
+
+              {discountTotal > 0 && (
+                <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                  <span>Discount</span>
+                  <span className="font-mono">-${discountTotal.toLocaleString()}</span>
+                </div>
+              )}
+
+              {affiliateDiscount?.type !== "None" && affiliateDiscountAmount > 0 && (
+                <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                  <span>Referral Discount</span>
+                  <span className="font-mono">-${affiliateDiscountAmount.toLocaleString()}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center">
+                <span>Shipping</span>
+                <span className="text-black font-semibold font-mono">
+                  {selectedShipping
+                    ? (shippingCost === 0 ? "Free" : `$${shippingCost.toLocaleString()}`)
+                    : "Calculated at next step"}
+                </span>
+              </div>
+
+              <div className="pt-5 flex justify-between items-end border-t border-neutral-200/80">
+                <span className="text-sm font-bold uppercase tracking-wider text-black">Total</span>
+                <span className="text-2xl font-black text-black font-mono">${cartTotal.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Security & Trust Badges */}
+            <div className="pt-5 border-t border-neutral-200/80 space-y-4">
+              <div className="flex items-center gap-3 text-neutral-500">
+                <ShieldCheck className="w-5 h-5 shrink-0 text-black" />
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-black">Secure Checkout Guarantee</p>
+                  <p className="text-[10px] text-neutral-400">Your details are fully protected and processed securely.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 text-neutral-500">
+                <Truck className="w-5 h-5 shrink-0 text-black" />
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-black">Reliable Home Delivery</p>
+                  <p className="text-[10px] text-neutral-400">Orders are packed with care and shipped via trusted carriers.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Pricing Summary */}
-          <div className="space-y-3 pt-6 border-t border-neutral-200/85 text-[13px] text-neutral-600">
-            <div className="flex justify-between items-center">
-              <span>Subtotal</span>
-              <span className="text-black font-semibold font-mono">${(cartSubtotal || 0).toLocaleString()}</span>
-            </div>
-
-            {discountTotal > 0 && (
-              <div className="flex justify-between items-center text-emerald-700 font-semibold">
-                <span>Discount</span>
-                <span className="font-mono">-${discountTotal.toLocaleString()}</span>
-              </div>
-            )}
-
-            {affiliateDiscount?.type !== "None" && affiliateDiscountAmount > 0 && (
-              <div className="flex justify-between items-center text-emerald-700 font-semibold">
-                <span>Referral Discount</span>
-                <span className="font-mono">-${affiliateDiscountAmount.toLocaleString()}</span>
-              </div>
-            )}
-
-            <div className="flex justify-between items-center">
-              <span>Shipping</span>
-              <span className="text-black font-semibold font-mono">
-                {selectedShipping
-                  ? (shippingCost === 0 ? "Free" : `$${shippingCost.toLocaleString()}`)
-                  : "Calculated at next step"}
-              </span>
-            </div>
-
-            <div className="pt-6 flex justify-between items-end border-t border-neutral-200/85">
-              <span className="text-sm font-bold uppercase tracking-wider text-black">Total</span>
-              <span className="text-2xl font-black text-black font-mono">${cartTotal.toLocaleString()}</span>
-            </div>
-          </div>
-
-          {/* Security & Trust Badges */}
-          <div className="pt-6 border-t border-neutral-200/85 space-y-4">
-            <div className="flex items-center gap-3 text-neutral-500">
-              <ShieldCheck className="w-5 h-5 shrink-0 text-black" />
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-black">Secure Checkout Guarantee</p>
-                <p className="text-[10px] text-neutral-400">Your details are fully protected and processed securely.</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 text-neutral-500">
-              <Truck className="w-5 h-5 shrink-0 text-black" />
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-black">Reliable Home Delivery</p>
-                <p className="text-[10px] text-neutral-400">Orders are packed with care and shipped via trusted courie$</p>
-              </div>
-            </div>
-          </div>
         </div>
-
-      </div>
+      </main>
     </div>
   );
 }
-
