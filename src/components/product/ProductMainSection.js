@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import ProductGallery from "./ProductGallery";
 import ClientProductActions from "./ClientProductActions";
@@ -35,9 +35,36 @@ const ICON_MAP = {
   Refresh: RefreshCw
 };
 
+function getDeliveryRange() {
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(start.getDate() + 15);
+  const end = new Date(now);
+  end.setDate(end.getDate() + 20);
+
+  const fmt = (d) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  const startStr = fmt(start);
+  const endStr = fmt(end);
+
+  // Show year only if end date is in a different year than today
+  const yearSuffix =
+    end.getFullYear() !== now.getFullYear()
+      ? ` ${end.getFullYear()}`
+      : "";
+
+  return `${startStr} – ${endStr}${yearSuffix}`;
+}
+
 export default function ProductMainSection({ product }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedVariantImage, setSelectedVariantImage] = useState("");
+  const [deliveryRange, setDeliveryRange] = useState("");
+
+  useEffect(() => {
+    setDeliveryRange(getDeliveryRange());
+  }, []);
 
   const handleVariantChange = (variant) => {
     if (variant.isPartial) {
@@ -103,12 +130,24 @@ export default function ProductMainSection({ product }) {
             </p>
           </div>
 
-          <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
-            <Star className="w-3.5 h-3.5 fill-primary text-primary" />
-            <span>{(product.rating || 0).toFixed(1)}/5.0</span>
-            <span className="text-black/10">•</span>
-            <span>({product.reviewCount || 0} Reviews)</span>
-          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
+              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <span>{(product.rating || 0).toFixed(1)}/5.0</span>
+              <span className="text-black/10">•</span>
+              <span>({product.reviewCount || 0} Reviews)</span>
+            </p>
+
+            {deliveryRange && (
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
+                style={{ backdropFilter: "blur(6px)" }}
+              >
+                <Truck className="w-3 h-3 text-black/50 shrink-0" />
+                Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
+              </span>
+            )}
+          </div>
 
           <div className="flex items-center flex-wrap gap-3.5">
             {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (

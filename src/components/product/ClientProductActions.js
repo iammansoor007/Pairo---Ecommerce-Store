@@ -179,8 +179,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
                         type="button"
                         onClick={() => handleOptionSelect(attr.name, option)}
                         className={`w-full h-10 rounded-[var(--radius,0px)] text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-200 border ${isSelected
-                            ? "bg-black text-white border-black"
-                            : "bg-transparent text-black border-black/30 hover:border-black"
+                          ? "bg-black text-white border-black"
+                          : "bg-transparent text-black border-black/30 hover:border-black"
                           }`}
                       >
                         {option.label}
@@ -201,8 +201,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
                           onClick={() => handleOptionSelect(attr.name, option)}
                           title={option.label}
                           className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${isSelected
-                              ? "ring-1 ring-offset-2 ring-black scale-105"
-                              : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
+                            ? "ring-1 ring-offset-2 ring-black scale-105"
+                            : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
                             }`}
                           style={{
                             backgroundColor: option.hex || "#ddd",
@@ -216,9 +216,9 @@ export default function ClientProductActions({ product, onVariantChange }) {
                             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10">
                               <Check
                                 className={`w-3 h-3 ${option.hex === "#FFFFFF" ||
-                                    option.hex === "#ffffff"
-                                    ? "text-black"
-                                    : "text-white"
+                                  option.hex === "#ffffff"
+                                  ? "text-black"
+                                  : "text-white"
                                   }`}
                                 strokeWidth={3}
                               />
@@ -234,8 +234,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
                         type="button"
                         onClick={() => handleOptionSelect(attr.name, option)}
                         className={`h-9 min-w-[2.75rem] px-3 rounded-[var(--radius,0px)] text-[10px] font-medium uppercase tracking-[0.15em] transition-all duration-200 border ${isSelected
-                            ? "bg-black text-white border-black"
-                            : "bg-transparent text-black border-black/30 hover:border-black"
+                          ? "bg-black text-white border-black"
+                          : "bg-transparent text-black border-black/30 hover:border-black"
                           }`}
                       >
                         {option.label}
@@ -308,8 +308,8 @@ export default function ClientProductActions({ product, onVariantChange }) {
             <button
               onClick={handleAddToCart}
               className={`flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] border ${addedFeedback
-                  ? "bg-emerald-600 text-white border-emerald-600"
-                  : "bg-black text-white border-black hover:bg-black/90"
+                ? "bg-emerald-600 text-white border-emerald-600"
+                : "bg-black text-white border-black hover:bg-black/90"
                 }`}
             >
               {addedFeedback ? (
