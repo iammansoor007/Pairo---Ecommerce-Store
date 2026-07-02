@@ -108,7 +108,7 @@ export default function ProductMainSection({ product }) {
 
   return (
     <div className="">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-16 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 lg:gap-8 items-start">
         {/* LEFT SIDE: STICKY GALLERY - 60% */}
         <div className="lg:col-span-3 self-start sticky top-24">
           <ProductGallery
