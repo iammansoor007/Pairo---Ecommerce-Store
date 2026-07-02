@@ -123,9 +123,7 @@ export default function ProductMainSection({ product }) {
         <div className="lg:col-span-2 space-y-8 md:space-y-12">
           <div className="space-y-4 md:space-y-6">
             <div className="space-y-2">
-              <p className="text-[11px] md:text-[12px] font-bold text-primary/80 uppercase tracking-[0.25em]">
-                Pairo Studio — {categoryName}
-              </p>
+
               <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
                 {product.name}
               </p>
