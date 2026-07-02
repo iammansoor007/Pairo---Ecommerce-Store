@@ -940,21 +940,23 @@ export default function ProductForm({ productId = null }) {
 
                                      {formData.sizeGuide?.enabled && (
                                         <div className="space-y-6">
-                                           {/* Diagram & Video */}
+                                           {/* Size Name & Video */}
                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded">
-                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase mb-2">Size Chart Diagram</label>
-                                                 <MediaPicker
-                                                    value={formData.sizeGuide?.chartImage}
-                                                    onChange={(url) => setFormData({
+                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3">
+                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase">Size Column Name</label>
+                                                 <input
+                                                    className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
+                                                    placeholder="e.g. Jacket Size, Waist Size, Dress Size"
+                                                    value={formData.sizeGuide?.sizeName || ""}
+                                                    onChange={(e) => setFormData({
                                                        ...formData,
                                                        sizeGuide: {
                                                           ...(formData.sizeGuide || {}),
-                                                          chartImage: url
+                                                          sizeName: e.target.value
                                                        }
                                                     })}
                                                  />
-                                                 <p className="text-[11px] text-gray-400 mt-2">Diagram showing how to measure.</p>
+                                                 <p className="text-[11px] text-gray-400">Label shown as the first column header in the size table (e.g. "Jacket Size").</p>
                                               </div>
                                               <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3">
                                                  <label className="block text-[12px] font-bold text-gray-400 uppercase">YouTube Video Link</label>

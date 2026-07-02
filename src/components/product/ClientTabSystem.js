@@ -40,7 +40,7 @@ export default function ClientTabSystem({ product }) {
                <motion.div key="details" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-4xl space-y-12">
                   <div>
                      <div 
-                         className="text-primary/85 text-base md:text-lg leading-loose font-normal prose-custom max-w-none"
+                         className="text-black text-base md:text-lg leading-loose font-normal prose-custom max-w-none"
                          dangerouslySetInnerHTML={{ __html: product.description || "Detailed overview coming soon..." }}
                        />
                   </div>

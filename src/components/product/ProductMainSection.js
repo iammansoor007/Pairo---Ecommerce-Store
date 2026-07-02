@@ -125,23 +125,21 @@ export default function ProductMainSection({ product }) {
                 {displayCompareAtPrice > displayPrice && (
                   <>
                     <span className="text-sm font-medium text-primary/40 line-through">${displayCompareAtPrice}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-red-700 bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
                       Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
                     </span>
                   </>
                 )}
               </>
             )}
-            {displaySku && (
-              <span className="text-[11px] md:text-[12px] font-semibold text-primary/60 uppercase tracking-[0.15em] ml-auto">SKU: {displaySku}</span>
-            )}
+
           </div>
         </div>
 
         {product.shortDescription && (
           <div className="relative">
-            <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary/20" />
-            <p className="text-primary/85 text-sm md:text-base leading-relaxed font-normal italic pl-6 py-0.5">
+            <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-black/20" />
+            <p className="text-black text-sm md:text-base leading-relaxed font-normal italic pl-6 py-0.5">
               {product.shortDescription}
             </p>
           </div>

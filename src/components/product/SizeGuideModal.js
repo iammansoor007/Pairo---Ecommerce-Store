@@ -47,7 +47,7 @@ function getYoutubeEmbedUrl(url) {
 }
 
 export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
-  const [unit, setUnit] = useState("cm"); // cm or in
+  const [unit, setUnit] = useState("cm");
   const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
@@ -57,10 +57,15 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
     };
   }, [isOpen]);
 
+  // Reset video state when modal closes
+  useEffect(() => {
+    if (!isOpen) setShowVideo(false);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  // Resolve config based on custom settings or default fallbacks
   const isCustomEnabled = !!sizeGuide?.enabled;
+
   const tableData = unit === "cm"
     ? (isCustomEnabled && sizeGuide?.sizesCm?.length > 0 ? sizeGuide.sizesCm : SIZES_CM)
     : (isCustomEnabled && sizeGuide?.sizesIn?.length > 0 ? sizeGuide.sizesIn : SIZES_IN);
@@ -69,23 +74,24 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
     ? sizeGuide.instructions
     : DEFAULT_INSTRUCTIONS;
 
-  const chartImage = isCustomEnabled && sizeGuide?.chartImage
-    ? sizeGuide.chartImage
-    : "/images/size-guide-diagram.png";
+  // Dynamic size column name — falls back to "Size" if not set
+  const sizeColumnLabel = (isCustomEnabled && sizeGuide?.sizeName?.trim())
+    ? sizeGuide.sizeName.trim()
+    : "Size";
 
   const rawVideoUrl = isCustomEnabled && sizeGuide?.videoUrl
     ? sizeGuide.videoUrl
     : "https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1";
-  
+
   const embedVideoUrl = getYoutubeEmbedUrl(rawVideoUrl);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Panel */}
-      <div className="relative w-full h-full max-w-none max-h-none bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-sg-up rounded-[var(--radius,0px)]">
+      {/* Centered Panel */}
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-white flex flex-col overflow-hidden shadow-2xl border border-black rounded-[var(--radius,0px)] animate-sg-in">
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-black shrink-0">
@@ -103,39 +109,36 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8 min-h-0">
 
-          {/* Table Area */}
+          {/* Size Table */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-black">
-                Pairo
+                Size Chart
               </h3>
               {/* Unit Toggle */}
               <div className="flex border border-black rounded-[var(--radius,0px)] overflow-hidden shrink-0">
                 <button
                   type="button"
                   onClick={() => setUnit("cm")}
-                  className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${unit === "cm" ? "bg-black text-white" : "bg-white text-black hover:bg-black/5"
-                    }`}
+                  className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all ${unit === "cm" ? "bg-black text-white" : "bg-white text-black hover:bg-black/5"}`}
                 >
                   CM
                 </button>
                 <button
                   type="button"
                   onClick={() => setUnit("in")}
-                  className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all border-l border-black ${unit === "in" ? "bg-black text-white" : "bg-white text-black hover:bg-black/5"
-                    }`}
+                  className={`px-3 py-1 text-[10px] font-semibold uppercase tracking-wider transition-all border-l border-black ${unit === "in" ? "bg-black text-white" : "bg-white text-black hover:bg-black/5"}`}
                 >
                   IN
                 </button>
               </div>
             </div>
 
-            {/* Table wrapper */}
             <div className="w-full overflow-x-auto border border-black rounded-[var(--radius,0px)]">
               <table className="w-full text-left border-collapse text-[11px] sm:text-[12px]">
                 <thead>
                   <tr className="bg-black/5 border-b border-black">
-                    <th className="px-3 py-2.5 font-bold uppercase text-black">Jacket Size</th>
+                    <th className="px-3 py-2.5 font-bold uppercase text-black whitespace-nowrap">{sizeColumnLabel}</th>
                     <th className="px-3 py-2.5 font-bold uppercase text-black">US Size</th>
                     <th className="px-3 py-2.5 font-bold uppercase text-black">EU Size</th>
                     <th className="px-3 py-2.5 font-bold uppercase text-black">Chest</th>
@@ -157,17 +160,17 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
             </div>
           </div>
 
-          {/* How to Measure Section */}
+          {/* How to Measure */}
           <div className="space-y-4">
             <h3 className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-black text-center">
               How To Measure
             </h3>
 
-            {/* Responsive Video Container */}
+            {/* Video */}
             <div className="w-full aspect-video border border-black rounded-[var(--radius,0px)] bg-black overflow-hidden relative group">
               {!showVideo ? (
                 <div
-                  className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 cursor-pointer bg-neutral-900 transition-opacity hover:opacity-95"
+                  className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 cursor-pointer bg-neutral-900 hover:opacity-95 transition-opacity"
                   onClick={() => setShowVideo(true)}
                 >
                   <div className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 duration-300">
@@ -188,43 +191,26 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
               )}
             </div>
 
-            {/* Measurement Guide Image & Explanations */}
-            <div className="space-y-6 pt-2">
-              {/* Image Frame */}
-              <div className="w-full flex justify-center border border-black/10 rounded-[var(--radius,0px)] bg-black/[0.02] p-4">
-                <img
-                  src={chartImage}
-                  alt="Size Guide Diagram"
-                  className="max-w-full h-auto object-contain"
-                  onError={(e) => {
-                    // Gracefully hide the image frame if image loading fails
-                    e.target.parentNode.style.display = "none";
-                  }}
-                />
-              </div>
-
-              {/* Descriptions */}
-              <div className="space-y-4 text-black">
-                {instructions.map((item, idx) => (
-                  <div key={item.title || idx} className="text-[11px] sm:text-[12px] leading-relaxed">
-                    <p className="font-bold uppercase tracking-wider">{item.title}</p>
-                    <p className="text-black/80">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
+            {/* Measurement Instructions */}
+            <div className="space-y-4 text-black pt-2">
+              {instructions.map((item, idx) => (
+                <div key={item.title || idx} className="text-[11px] sm:text-[12px] leading-relaxed">
+                  <p className="font-bold uppercase tracking-wider">{item.title}</p>
+                  <p className="text-black/80">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
 
         </div>
-
       </div>
 
       <style>{`
-        @keyframes sgUp {
-          from { opacity: 0; scale: 0.96; transform: translateY(12px); }
-          to   { opacity: 1; scale: 1; transform: translateY(0); }
+        @keyframes sgIn {
+          from { opacity: 0; transform: scale(0.96) translateY(10px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
         }
-        .animate-sg-up { animation: sgUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-sg-in { animation: sgIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
       `}</style>
     </div>
   );

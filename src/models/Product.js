@@ -119,6 +119,7 @@ const ProductSchema = new mongoose.Schema({
   id: { type: Number }, // Legacy numeric ID
   sizeGuide: {
     enabled: { type: Boolean, default: false },
+    sizeName: { type: String, default: "" }, // e.g. "Jacket Size", "Waist Size"
     chartImage: { type: String, default: "" },
     videoUrl: { type: String, default: "" },
     sizesCm: [{
