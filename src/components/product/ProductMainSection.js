@@ -121,7 +121,7 @@ export default function ProductMainSection({ product }) {
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
         <div className="lg:col-span-2 space-y-4 min-w-0 overflow-hidden">
-          <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
+          <p className="text-[20px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
             {product.name}
           </p>
 
