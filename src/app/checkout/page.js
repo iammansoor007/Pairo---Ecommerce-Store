@@ -2,13 +2,10 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronLeft, Lock, CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, User, Mail, Phone, MapPin, Tag, MessageSquare, ChevronDown, ShoppingBag } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, ChevronDown } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useSiteData } from "@/context/SiteContext";
 import { useRouter } from "next/navigation";
-import logo from "@/assets/pairo.webp";
 
 export default function CheckoutPage() {
   const siteData = useSiteData();
@@ -207,11 +204,9 @@ export default function CheckoutPage() {
     }
   };
 
-  // Header logo from site settings
-  const headerLogoUrl = siteData?.headerConfig?.logoUrl;
-  const cartCount = useMemo(() => cartItems.reduce((acc, curr) => acc + curr.quantity, 0), [cartItems]);
-
+  const brandName = siteData?.siteSettings?.general?.brandName || "PAIRO LIFESTYLE";
   const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
+  const labelClass = "block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1";
 
   return (
     <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white overflow-x-hidden">
@@ -223,32 +218,12 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      {/* Dynamic Header matching site container margins */}
+      {/* Shopify-style Text Header */}
       <header className="border-b border-black/5 bg-white py-6">
-        <div className="container mx-auto px-2 sm:px-4 md:px-8 flex items-center justify-between">
-          <Link href="/cart" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-black/50 hover:text-black transition-colors">
-            <ChevronLeft className="w-4 h-4" />
-            Back
-          </Link>
-          
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center justify-center">
-              {headerLogoUrl ? (
-                <img src={headerLogoUrl} alt="Logo" className="object-contain h-9 w-auto" />
-              ) : (
-                <Image src={logo} alt="Pairo Logo" width={90} height={32} className="object-contain h-8 w-auto" priority />
-              )}
-            </Link>
-          </div>
-
-          <Link href="/cart" className="relative p-1 text-black/70 hover:text-black transition-colors">
-            <ShoppingBag className="w-5 h-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center">
+          <span className="text-xl font-black uppercase tracking-[0.25em] text-black">
+            {brandName}
+          </span>
         </div>
       </header>
 
@@ -259,43 +234,25 @@ export default function CheckoutPage() {
           {/* Left Column: Checkout Forms (60% / 7 Cols) */}
           <div className="lg:col-span-7 space-y-8">
             
-            {/* Express Checkout */}
-            <section className="space-y-4">
-              <p className="text-center text-[11px] font-bold text-neutral-500 uppercase tracking-widest">Express checkout</p>
-              <div className="grid grid-cols-3 gap-3">
-                <button type="button" className="bg-[#5A31F4] hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-white font-bold text-[14px] shadow-sm transition-opacity">
-                  <span className="italic font-extrabold tracking-tighter">shop</span><span className="font-semibold text-white/90">pay</span>
-                </button>
-                <button type="button" className="bg-[#FFC439] hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-blue-900 font-extrabold text-[14px] shadow-sm transition-opacity">
-                  <span className="italic font-black text-[#003087]">Pay</span><span className="italic font-black text-[#0079C1]">Pal</span>
-                </button>
-                <button type="button" className="bg-black hover:opacity-90 py-3 rounded-lg flex items-center justify-center text-white font-bold text-[14px] shadow-sm transition-opacity">
-                  <span className="font-mono text-base tracking-tighter">G Pay</span>
-                </button>
-              </div>
-              <div className="relative flex py-4 items-center">
-                <div className="flex-grow border-t border-neutral-200"></div>
-                <span className="flex-shrink mx-4 text-xs text-neutral-400 font-semibold tracking-wider uppercase">OR</span>
-                <div className="flex-grow border-t border-neutral-200"></div>
-              </div>
-            </section>
-
             {/* 1. Contact Info */}
             <section className="space-y-4">
               <div className="flex justify-between items-baseline">
-                <h3 className="text-base font-bold uppercase tracking-wider text-black">Contact</h3>
-                <Link href="/login" className="text-xs font-bold text-neutral-600 hover:text-black underline tracking-wide">Sign in</Link>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-black">Contact</h3>
+                <Link href="/login" className="text-xs font-bold text-neutral-600 hover:text-black underline tracking-wide">Log in</Link>
               </div>
               <div className="space-y-3">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Email"
-                  className={inputClass}
-                  required
-                />
+                <div className="space-y-1">
+                  <label className={labelClass}>Email Address *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Email"
+                    className={inputClass}
+                    required
+                  />
+                </div>
                 <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
                   <input
                     type="checkbox"
@@ -309,109 +266,136 @@ export default function CheckoutPage() {
 
             {/* 2. Delivery Info */}
             <section className="space-y-4">
-              <h3 className="text-base font-bold uppercase tracking-wider text-black">Delivery</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Delivery</h3>
               
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {/* Country Selection */}
-                <div className="relative">
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-3 text-[13px] text-black focus:border-black outline-none appearance-none font-medium"
-                  >
-                    <option value="Pakistan">Pakistan</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <div className="space-y-1">
+                  <label className={labelClass}>Country/Region</label>
+                  <div className="relative">
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-3 text-[13px] text-black focus:border-black outline-none appearance-none font-medium"
+                    >
+                      <option value="Pakistan">Pakistan</option>
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                 </div>
 
                 {/* Names */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="First name (optional)"
-                    className={inputClass}
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Last name"
-                    className={inputClass}
-                    required
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1">
+                    <label className={labelClass}>First name (optional)</label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="First name"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelClass}>Last name *</label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Last name"
+                      className={inputClass}
+                      required
+                    />
+                  </div>
                 </div>
 
                 {/* Address */}
-                <input
-                  type="text"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleInputChange}
-                  placeholder="Address"
-                  className={inputClass}
-                  required
-                />
-
-                {/* City, State, ZIP */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className={labelClass}>Street Address *</label>
                   <input
                     type="text"
-                    name="city"
-                    value={formData.city}
+                    name="street"
+                    value={formData.street}
                     onChange={handleInputChange}
-                    placeholder="City"
+                    placeholder="Address"
                     className={inputClass}
                     required
                   />
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="State / Province"
-                    className={inputClass}
-                  />
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    placeholder="Postal code / ZIP"
-                    className={inputClass}
-                  />
+                </div>
+
+                {/* City, State, ZIP */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div className="space-y-1">
+                    <label className={labelClass}>City *</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleInputChange}
+                      placeholder="City"
+                      className={inputClass}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelClass}>State / Province</label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      placeholder="State / Province"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelClass}>Postal code / ZIP</label>
+                    <input
+                      type="text"
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      placeholder="Postal code"
+                      className={inputClass}
+                    />
+                  </div>
                 </div>
 
                 {/* Phone */}
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Phone"
-                  className={inputClass}
-                  required
-                />
+                <div className="space-y-1">
+                  <label className={labelClass}>Phone *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="Phone"
+                    className={inputClass}
+                    required
+                  />
+                </div>
 
                 {/* Customer Note */}
-                <textarea
-                  name="customerNote"
-                  value={formData.customerNote}
-                  onChange={handleInputChange}
-                  placeholder="Order notes (optional)"
-                  rows={2}
-                  className={`${inputClass} resize-none`}
-                />
+                <div className="space-y-1">
+                  <label className={labelClass}>Order notes (optional)</label>
+                  <textarea
+                    name="customerNote"
+                    value={formData.customerNote}
+                    onChange={handleInputChange}
+                    placeholder="Notes about your order..."
+                    rows={2}
+                    className={`${inputClass} resize-none`}
+                  />
+                </div>
               </div>
             </section>
 
             {/* 3. Shipping Method */}
             <section className="space-y-4">
-              <h3 className="text-base font-bold uppercase tracking-wider text-black">Shipping Method</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Shipping Method</h3>
               {loadingRates && (
                 <div className="flex items-center gap-2 py-3 text-xs text-neutral-500">
                   <Loader2 className="w-4 h-4 animate-spin text-black" />
@@ -454,7 +438,7 @@ export default function CheckoutPage() {
 
             {/* 4. Payment Method */}
             <section className="space-y-4">
-              <h3 className="text-base font-bold uppercase tracking-wider text-black">Payment</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Payment</h3>
               <div className="border border-neutral-200 rounded-[4px] p-4 bg-[#FAF9F6]/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-5 h-5 text-neutral-600" />
@@ -470,7 +454,7 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={handlePayment}
                 disabled={isProcessing || !cartItems || cartItems.length === 0}
-                className="w-full bg-black text-white hover:bg-neutral-900 py-4 rounded-[4px] text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                className="w-full bg-black text-white hover:bg-neutral-900 py-4 rounded-[4px] text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <span>Complete Order</span>
                 <ArrowRight className="w-4 h-4" />
@@ -478,9 +462,9 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Right Column: Order Summary (40% / 5 Cols) */}
-          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-28">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-black">Order Summary</h3>
+          {/* Right Column: Order Summary (40% / 5 Cols) - STICKY */}
+          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-6 self-start">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
 
             {/* Cart Products List */}
             <div className="divide-y divide-neutral-200/80 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
@@ -545,7 +529,7 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={handleApplyPromo}
                   disabled={!promoCode || applyingPromo}
-                  className="px-5 py-2.5 bg-neutral-800 text-white hover:bg-black rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shrink-0"
+                  className="px-5 py-2.5 bg-neutral-800 text-white hover:bg-black rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shrink-0 cursor-pointer"
                 >
                   {applyingPromo ? "..." : "Apply"}
                 </button>
