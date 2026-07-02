@@ -176,7 +176,7 @@ export default function ProductMainSection({ product }) {
 
           {product.shortDescription && (
             <div
-              className="short-description-prose text-black text-sm md:text-base leading-relaxed pl-6 py-0.5"
+              className="short-description-prose text-black text-sm md:text-base leading-relaxed "
               dangerouslySetInnerHTML={{ __html: product.shortDescription }}
             />
           )}

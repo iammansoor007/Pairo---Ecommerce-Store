@@ -248,42 +248,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
           );
         })}
 
-        <div className="flex items-center gap-2">
-          {(() => {
-            if (!product.manageStock) {
-              return (
-                <span className="inline-flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50/80 px-3 py-1 rounded border border-emerald-250">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  In Stock
-                </span>
-              );
-            }
-            const stockNum = Number(product.stock) || 0;
-            const lowThreshold = Number(product.lowStockThreshold) || 5;
-            if (stockNum <= 0) {
-              return (
-                <span className="inline-flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-red-800 bg-red-50/80 px-3 py-1 rounded border border-red-250">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
-                  Out of Stock
-                </span>
-              );
-            } else if (stockNum <= lowThreshold) {
-              return (
-                <span className="inline-flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50/80 px-3 py-1 rounded border border-amber-250">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  Low Stock — {stockNum} units remaining
-                </span>
-              );
-            } else {
-              return (
-                <span className="inline-flex items-center gap-1.5 text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50/80 px-3 py-1 rounded border border-emerald-250">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  In Stock — {stockNum} units
-                </span>
-              );
-            }
-          })()}
-        </div>
+
 
         <div className="space-y-2.5 pt-1">
           <div className="flex gap-2 items-stretch">
