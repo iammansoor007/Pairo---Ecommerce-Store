@@ -218,6 +218,8 @@ export default function AdminSidebar() {
             <NavLink href="/admin/products" exact isSubmenu>All Products</NavLink>
             <NavLink href="/admin/products/new" exact isSubmenu>Add New</NavLink>
             <NavLink href="/admin/categories" exact isSubmenu>Categories</NavLink>
+            <NavLink href="/admin/products/process" exact isSubmenu>Product Process</NavLink>
+            <NavLink href="/admin/products/questions" exact isSubmenu>Product Questions</NavLink>
           </AccordionMenu>
 
           <div className="my-1.5 bg-[#ffffff1a] h-[1px] w-full" />

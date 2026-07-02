@@ -644,3 +644,171 @@ export async function sendAdminCustomOrderNotification(order) {
   }
 }
 
+/**
+ * Send Question Submission Confirmation Email to Customer
+ */
+export async function sendQuestionConfirmationEmail({ customerEmail, customerName, productName }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`[Email Simulation] Q&A Confirmation → ${customerEmail}`);
+    return;
+  }
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: auto; color: #1a1a1a; padding: 20px; border: 1px solid #eaeaea;">
+      <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eaeaea;">
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 2px;">PAIRO</h1>
+      </div>
+      <div style="padding: 30px 10px;">
+        <p style="font-size: 15px; line-height: 1.6;">Dear ${customerName || 'Customer'},</p>
+        <p style="font-size: 15px; line-height: 1.6;">Thank you for your question.</p>
+        <p style="font-size: 15px; line-height: 1.6;">We have received your question regarding <strong>${productName}</strong>.</p>
+        <p style="font-size: 15px; line-height: 1.6; color: #666;">Our team will review it and get back to you shortly.</p>
+      </div>
+      <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+        <p style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+          PAIRO Store • Customer Experience Team
+        </p>
+      </div>
+    </div>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"PAIRO Store" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: customerEmail,
+      subject: `We have received your question regarding ${productName}`,
+      html,
+    });
+    console.log(`[Email] ✅ Q&A confirmation sent to ${customerEmail} | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send Q&A confirmation:', err.message);
+  }
+}
+
+/**
+ * Send Admin Notification for a New Customer Question
+ */
+export async function sendAdminQuestionNotification({ customerName, customerEmail, productName, questionText }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`[Email Simulation] Admin notified of new question by ${customerName}`);
+    return;
+  }
+
+  let adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) {
+    try {
+      await dbConnect();
+      const superAdminRole = await Role.findOne({ slug: 'super-admin' });
+      if (superAdminRole) {
+        const superAdmin = await Staff.findOne({ roleId: superAdminRole._id });
+        if (superAdmin) adminEmail = superAdmin.email;
+      }
+    } catch (e) {
+      console.error("Failed to fetch super admin for email fallback:", e.message);
+    }
+  }
+
+  if (!adminEmail) {
+    console.warn('[Email] ADMIN_EMAIL and Super Admin not found — skipping admin Q&A notification.');
+    return;
+  }
+
+  const dateStr = new Date().toLocaleString();
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 500px; margin: auto; color: #1a1a1a;">
+      <div style="background: #1a1a1a; padding: 20px 30px; text-align: center;">
+        <h2 style="color: #fff; margin: 0; font-size: 18px; letter-spacing: 1px;">❓ New Product Question</h2>
+      </div>
+      <div style="padding: 30px; background: #f9f9f9; border: 1px solid #eee; border-top: none;">
+        <table style="width: 100%; font-size: 14px; border-collapse: collapse; margin-bottom: 20px;">
+          <tr><td style="padding: 6px 0; color: #666;">Customer Name</td><td style="padding: 6px 0; font-weight: 700;">${customerName}</td></tr>
+          <tr><td style="padding: 6px 0; color: #666;">Customer Email</td><td style="padding: 6px 0;">${customerEmail}</td></tr>
+          <tr><td style="padding: 6px 0; color: #666;">Product Name</td><td style="padding: 6px 0; font-weight: 700;">${productName}</td></tr>
+          <tr><td style="padding: 6px 0; color: #666;">Submitted Date</td><td style="padding: 6px 0;">${dateStr}</td></tr>
+        </table>
+        <div style="background: #fff; padding: 15px; border: 1px solid #eee; border-radius:3px;">
+          <h4 style="margin:0 0 10px; font-size:11px; text-transform:uppercase; color:#888;">Submitted Question</h4>
+          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #1a1a1a; font-style: italic;">"${questionText}"</p>
+        </div>
+        <div style="margin-top: 24px; text-align: center;">
+          <a href="${process.env.NEXTAUTH_URL || 'https://pairolifestyle.com'}/admin/products/questions"
+             style="display:inline-block; background: #1a1a1a; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 3px; font-size: 12px; font-weight: 700; text-transform:uppercase; letter-spacing:1px;">
+            Moderate Questions & Answers →
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"PAIRO Store System" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: adminEmail,
+      subject: `❓ New Q&A Question on ${productName} by ${customerName}`,
+      html,
+    });
+    console.log(`[Email] ✅ Admin notified of new question | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send admin Q&A notification:', err.message);
+  }
+}
+
+/**
+ * Send Question Reply Email to Customer
+ */
+export async function sendQuestionReplyEmail({ customerEmail, customerName, originalQuestion, replyText, productName, productSlug }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`[Email Simulation] Reply Email → ${customerEmail}`);
+    return;
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://pairolifestyle.com';
+  const productLink = `${siteUrl}/product/${productSlug}`;
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: auto; color: #1a1a1a; padding: 20px; border: 1px solid #eaeaea;">
+      <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eaeaea;">
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 2px;">PAIRO</h1>
+      </div>
+      <div style="padding: 30px 10px;">
+        <p style="font-size: 15px; line-height: 1.6;">Dear ${customerName || 'Customer'},</p>
+        <p style="font-size: 15px; line-height: 1.6;">We have answered your question regarding <strong>${productName}</strong>.</p>
+        
+        <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 3px solid #ccc; font-style: italic;">
+          <p style="margin: 0 0 5px 0; font-size: 12px; color: #888; text-transform: uppercase;">Your Question:</p>
+          <p style="margin: 0; font-size: 14px; color: #555;">"${originalQuestion}"</p>
+        </div>
+
+        <div style="margin: 20px 0; padding: 15px; background-color: #f0f7ff; border-left: 3px solid #0070f3;">
+          <p style="margin: 0 0 5px 0; font-size: 12px; color: #0070f3; text-transform: uppercase; font-weight: bold;">PAIRO Store Reply:</p>
+          <p style="margin: 0; font-size: 14px; color: #111; font-weight: 500;">${replyText}</p>
+        </div>
+
+        <p style="font-size: 14px; margin-top: 30px;">
+          You can view this Q&A directly on the product detail page here: <br/>
+          <a href="${productLink}" style="color: #0070f3; text-decoration: underline; font-weight: bold;">${productName} Page</a>
+        </p>
+      </div>
+      <div style="border-top: 1px solid #eaeaea; padding-top: 20px; text-align: center;">
+        <p style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+          PAIRO Store • Customer Experience Team
+        </p>
+      </div>
+    </div>
+  `;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"PAIRO Support" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: customerEmail,
+      subject: `Answered: Your question regarding ${productName}`,
+      html,
+    });
+    console.log(`[Email] ✅ Q&A reply email sent to ${customerEmail} | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send Q&A reply email:', err.message);
+  }
+}
+
+

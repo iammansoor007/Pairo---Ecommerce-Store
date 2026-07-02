@@ -16,6 +16,16 @@ const ProductReviews = dynamic(() => import("./ProductReviews"), {
   )
 });
 
+const ProductQuestionsAnswers = dynamic(() => import("./ProductQuestionsAnswers"), {
+  ssr: false,
+  loading: () => (
+    <div className="py-20 flex flex-col items-center justify-center gap-4">
+      <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <span className="text-[10px] font-bold uppercase tracking-widest text-black/30 animate-pulse">Loading Q&A Engine...</span>
+    </div>
+  )
+});
+
 export default function ClientTabSystem({ product }) {
   const [activeTab, setActiveTab] = useState("Product Details");
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
@@ -23,7 +33,7 @@ export default function ClientTabSystem({ product }) {
   return (
     <div className="mt-6 md:mt-10 border-t border-black/5">
       <div className="flex border-b border-black/5 overflow-x-auto scrollbar-hide snap-x">
-         {["Product Details", "Rating & Reviews", "FAQs"].map((tab) => (
+         {["Product Details", "Rating & Reviews", "Questions & Answers"].map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -49,61 +59,13 @@ export default function ClientTabSystem({ product }) {
 
             {activeTab === "Rating & Reviews" && (
                <motion.div key="reviews" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                 <ProductReviews productId={product._id} productName={product.name} />
+                  <ProductReviews productId={product._id} productName={product.name} />
                </motion.div>
             )}
 
-            {activeTab === "FAQs" && (
-               <motion.div key="faqs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-3xl mx-auto space-y-3">
-                   {(product.faqs && product.faqs.length > 0) ? (
-                     product.faqs.map((faq, index) => {
-                       const isOpen = openFaqIndex === index;
-                       return (
-                         <div 
-                           key={index} 
-                           className={`rounded-[var(--radius,0px)] border transition-all duration-300 overflow-hidden ${isOpen ? 'bg-[var(--accent)]/[0.04] border-accent/40' : 'bg-transparent border-border hover:border-accent/30'}`}
-                         >
-                            <button 
-                              onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
-                              className="w-full px-5 py-5 md:px-6 md:py-6 flex items-center justify-between text-left group"
-                            >
-                               <div className="flex items-center gap-4">
-                                 <div className={`w-8 h-8 shrink-0 rounded-[var(--radius,0px)] flex items-center justify-center transition-colors ${isOpen ? 'bg-accent' : 'bg-white border border-border'}`}>
-                                   <HelpCircle className={`w-3.5 h-3.5 ${isOpen ? 'text-white' : 'text-primary/50'}`} />
-                                 </div>
-                                 <p className="text-xs md:text-sm font-semibold uppercase tracking-wider text-primary leading-snug">
-                                   {faq.question}
-                                 </p>
-                               </div>
-                               <ChevronDown className={`w-3.5 h-3.5 shrink-0 ml-4 transition-transform duration-300 ${isOpen ? 'text-accent rotate-180' : 'text-primary/40'}`} />
-                            </button>
-                            
-                            <AnimatePresence>
-                              {isOpen && (
-                                <motion.div 
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: "auto", opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                                >
-                                   <div className="px-5 pb-6 md:px-6 md:pb-8 border-t border-accent/20 pt-4 pl-[52px] md:pl-[56px]">
-                                      <p className="text-primary/90 font-normal text-sm md:text-base leading-loose tracking-normal max-w-2xl">
-                                        {faq.answer}
-                                      </p>
-                                   </div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                         </div>
-                       );
-                     })
-                    ) : (
-                      <div className="text-center py-16 rounded-[var(--radius,0px)] border border-dashed border-accent/40 bg-[var(--accent)]/[0.03]">
-                         <MessageSquareText className="w-10 h-10 text-accent/50 mx-auto mb-4" />
-                         <p className="text-primary font-semibold uppercase tracking-widest text-xs mb-2">No FAQs available for this product</p>
-                         <p className="text-sm text-primary/60 font-normal leading-relaxed max-w-xs mx-auto">Have a question? Contact our team and we'll be happy to help.</p>
-                      </div>
-                    )}
+            {activeTab === "Questions & Answers" && (
+               <motion.div key="qnas" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                 <ProductQuestionsAnswers productId={product._id} productName={product.name} />
                </motion.div>
             )}
          </AnimatePresence>

@@ -446,7 +446,7 @@ export default function Navbar() {
 
               <Link
                 href={mounted && session ? "/profile" : "/login"}
-                className="hidden lg:flex items-center gap-3 p-2 pr-4 hover:bg-black/5 rounded-full transition-all group"
+                className={`hidden lg:flex items-center gap-3 p-2 hover:bg-black/5 rounded-full transition-all group ${mounted && session ? "pr-2 -mr-2" : "pr-4 -mr-4"}`}
               >
                 <div className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center">
                   {mounted && session ? (
@@ -458,7 +458,7 @@ export default function Navbar() {
                 {mounted && !session && <span className="text-[10px] font-bold uppercase tracking-widest text-black/60 group-hover:text-black">Login</span>}
               </Link>
 
-              <button className="lg:hidden p-3 hover:bg-black/5 rounded-full" onClick={() => setIsOpen(true)}>
+              <button className="lg:hidden p-3 -mr-3 hover:bg-black/5 rounded-full" onClick={() => setIsOpen(true)}>
                 <Menu className="w-6 h-6" />
               </button>
             </div>

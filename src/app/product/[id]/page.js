@@ -8,6 +8,7 @@ import Link from "next/link";
 import ClientProductActions from "@/components/product/ClientProductActions";
 import ClientTabSystem from "@/components/product/ClientTabSystem";
 import ProductMainSection from "@/components/product/ProductMainSection";
+import ProductProcessSection from "@/components/product/ProductProcessSection";
 import { checkAndApplyRedirect } from "@/lib/redirect-resolver";
 import { resolveSEOMetadata, escapeJsonLd } from "@/lib/seo-resolver";
 import Review from "@/models/Review";
@@ -173,6 +174,8 @@ export default async function ProductDetailPage({ params, searchParams }) {
         <ProductMainSection product={sanitizedProduct} />
 
         <ClientTabSystem product={sanitizedProduct} />
+
+        <ProductProcessSection />
 
         {/* Narrative Section */}
         {product.narrative?.content && (
