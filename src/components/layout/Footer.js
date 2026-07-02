@@ -210,8 +210,8 @@ export default function Footer() {
   // ── Brand section ──
   const footerBrandName = brand?.footerBrandName || 'PAIRO';
   const copyrightText = brand?.copyrightText || 'PAIRO — ALL RIGHTS RESERVED © 2026.';
-  const privacyUrl = brand?.privacyUrl || '#';
-  const termsUrl = brand?.termsUrl || '#';
+  const privacyUrl = brand?.privacyUrl || '/privacy';
+  const termsUrl = brand?.termsUrl || '/terms';
 
   // ── Footer Logo ──
   const footerLogoUrl = fc.logoUrl;
@@ -260,13 +260,13 @@ export default function Footer() {
   // Grid class based on column count
   const gridColsClass = useDynamicColumns
     ? {
-        1: 'grid-cols-1',
-        2: 'grid-cols-1 sm:grid-cols-2',
-        3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-        4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-        5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5',
-        6: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-6',
-      }[Math.min(footerColumns.length, 6)] || 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+      1: 'grid-cols-1',
+      2: 'grid-cols-1 sm:grid-cols-2',
+      3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+      4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+      5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5',
+      6: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-6',
+    }[Math.min(footerColumns.length, 6)] || 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
     : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
 
   return (

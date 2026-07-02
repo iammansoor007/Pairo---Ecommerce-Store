@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import MediaPicker from "@/components/admin/MediaPicker";
-import { ArrowUp, ArrowDown, Trash2, Plus, Edit2, Check, X, Move } from "lucide-react";
+import { ArrowUp, ArrowDown, Trash2, Plus, Edit2, Check, X, Move, ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function AdminProductProcessPage() {
