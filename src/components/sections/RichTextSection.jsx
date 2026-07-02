@@ -79,19 +79,21 @@ export default function RichTextSection({ title = "", content = "" }) {
         }
       `}</style>
 
-      <section className="py-12 md:py-20 bg-white min-h-[50vh]">
-        <div className="max-w-2xl mx-auto px-5 sm:px-8">
-          {title && (
-            <h1 className="text-[16px] sm:text-[20px] font-black uppercase tracking-[0.06em] text-black mb-8 pb-4 border-b-2 border-black">
-              {title}
-            </h1>
-          )}
-          {content && (
-            <div
-              className="rich-text-body"
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
-          )}
+      <section className="py-10 md:py-16 bg-white min-h-[50vh]">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8">
+          <div className="max-w-3xl mx-auto">
+            {title && (
+              <h1 className="text-[16px] sm:text-[20px] font-black uppercase tracking-[0.06em] text-black mb-8 pb-4 border-b-2 border-black">
+                {title}
+              </h1>
+            )}
+            {content && (
+              <div
+                className="rich-text-body"
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            )}
+          </div>
         </div>
       </section>
     </>
