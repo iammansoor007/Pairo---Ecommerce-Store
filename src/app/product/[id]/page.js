@@ -175,8 +175,6 @@ export default async function ProductDetailPage({ params, searchParams }) {
 
         <ClientTabSystem product={sanitizedProduct} />
 
-        <ProductProcessSection />
-
         {/* Narrative Section */}
         {product.narrative?.content && (
           <div className="mt-16 md:mt-24 bg-white border border-border rounded-[var(--radius,0px)] p-8 md:p-16 overflow-hidden relative group">
@@ -194,6 +192,8 @@ export default async function ProductDetailPage({ params, searchParams }) {
             </div>
           </div>
         )}
+
+        <ProductProcessSection />
       </div>
 
       <div className="border-t border-black/5">

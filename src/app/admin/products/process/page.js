@@ -26,7 +26,7 @@ export default function AdminProductProcessPage() {
 
   const fetchProcess = async () => {
     try {
-      const res = await fetch("/api/admin/products/process");
+      const res = await fetch("/api/admin/product-process");
       if (!res.ok) throw new Error("Failed to fetch product process");
       const data = await res.json();
       setTitle(data.title);
@@ -43,7 +43,7 @@ export default function AdminProductProcessPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/products/process", {
+      const res = await fetch("/api/admin/product-process", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, subtitle, steps })

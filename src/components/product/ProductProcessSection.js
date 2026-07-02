@@ -10,7 +10,7 @@ export default function ProductProcessSection() {
   useEffect(() => {
     async function loadProcess() {
       try {
-        const res = await fetch("/api/products/process");
+        const res = await fetch("/api/product-process");
         if (res.ok) {
           const data = await res.json();
           if (data && data.steps && data.steps.length > 0) {

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MessageSquare, HelpCircle, ChevronDown, Check, X, ArrowUpRight, Loader } from "lucide-react";
+import { MessageSquare, HelpCircle, Plus, X, ArrowUpRight, Loader, HelpCircle as QuestionIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 
@@ -13,12 +13,30 @@ const getInitials = (name) => {
   return name.substring(0, 2).toUpperCase();
 };
 
+// Helper to generate color theme based on name hashing (matches ProductReviews avatar theme)
+const getAvatarColor = (name) => {
+  if (!name) return "bg-[#FAF7F0] text-[#6F655B]/60 border-[#E3DACB]";
+  const colors = [
+    "bg-[#FAF7F0] text-[#1E1B19] border-[#E3DACB]",
+    "bg-[#F2EBDD] text-[#1E1B19] border-[#C7B9A1]",
+    "bg-[#FAF7F0] text-[#6F655B] border-[#E3DACB]/50",
+    "bg-[#F5EFE6] text-[#43302A] border-[#C7B9A1]/40",
+    "bg-[#EAE3D2] text-[#1E1B19] border-[#C7B9A1]/60"
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
+
 export default function ProductQuestionsAnswers({ productId, productName }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openIndex, setOpenIndex] = useState(0);
+  const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0, totalPages: 1 });
   
-  // Submit Question Modal State
+  // Submit Question Drawer State (now matching Reviews right-side drawer)
   const [modalOpen, setModalOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -26,16 +44,17 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchQuestions();
+    fetchQuestions(1);
   }, [productId]);
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (pageNumber = 1) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/products/${productId}/questions`);
+      const res = await fetch(`/api/products/${productId}/questions?page=${pageNumber}&limit=5`);
       if (!res.ok) throw new Error("Failed to fetch questions");
       const data = await res.json();
       setQuestions(data.questions || []);
+      setPagination(data.pagination || { page: 1, limit: 5, total: 0, totalPages: 1 });
     } catch (err) {
       console.error(err);
     } finally {
@@ -69,6 +88,7 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
       setCustomerName("");
       setCustomerEmail("");
       setQuestionText("");
+      fetchQuestions(1);
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Something went wrong. Please try again.");
@@ -78,44 +98,70 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
   };
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="w-full bg-white border border-[#E3DACB] rounded-[var(--radius,0px)] p-6 md:p-10 font-sans">
       
-      {/* Header with Ask button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-black/5">
+      {/* Header section matching Reviews tab */}
+      <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center justify-between border-b border-black/5 pb-8 mb-8">
         <div>
-          <h3 className="text-[16px] font-bold text-black uppercase tracking-[0.2em] mb-1">
+          <p className="text-lg sm:text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
             Questions & Answers
-          </h3>
-          <p className="text-[11px] text-black/50 uppercase tracking-widest font-semibold">
+          </p>
+          <p className="text-xs text-[#6F655B]/60 uppercase tracking-widest font-medium">
             Ask our team about materials, sizing, and styling details.
           </p>
         </div>
         
         <button
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 bg-black text-white hover:bg-black/90 px-5 py-3 rounded-[var(--radius,0px)] font-bold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] transition-all cursor-pointer shadow-sm active:scale-95 border border-black shrink-0"
+          className="flex items-center gap-2 bg-accent text-white hover:opacity-90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em] cursor-pointer active:scale-95"
         >
-          <HelpCircle className="w-3.5 h-3.5" />
+          <Plus className="w-3.5 h-3.5" />
           Ask a Question
         </button>
       </div>
 
       {loading ? (
-        <div className="py-16 flex flex-col items-center justify-center gap-3">
-          <Loader className="w-6 h-6 animate-spin text-black/35" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-black/35">Loading Q&A Engine...</span>
+        /* Loading Skeletons matching Reviews */
+        <div className="space-y-6">
+          {[...Array(3)].map((_, idx) => (
+            <div key={idx} className="border-b border-black/5 pb-8 last:border-0 space-y-4 animate-pulse">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2 w-1/3">
+                  <div className="h-4 bg-neutral-200 rounded w-2/3" />
+                  <div className="h-3 bg-neutral-100 rounded w-1/2" />
+                </div>
+                <div className="h-3 bg-neutral-150 rounded w-16" />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-neutral-200" />
+                <div className="h-3.5 bg-neutral-100 rounded w-24" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3.5 bg-neutral-100 rounded w-full" />
+                <div className="h-3.5 bg-neutral-100 rounded w-5/6" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : questions.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-black/10 rounded-[var(--radius,0px)] bg-black/[0.01] px-4">
-          <MessageSquare className="w-10 h-10 text-black/20 mx-auto mb-4" />
-          <p className="text-xs text-black/45 font-bold uppercase tracking-widest leading-relaxed">
-            No questions have been asked about this product yet.
+        /* Empty state matching Reviews styling */
+        <div className="py-16 text-center border border-dashed border-[#E3DACB] rounded-[var(--radius,0px)] bg-[#FAF7F0]/30">
+          <MessageSquare className="w-10 h-10 text-[#6F655B]/40 mx-auto mb-4" />
+          <p className="text-xs sm:text-sm font-medium uppercase tracking-wider text-[#1E1B19] mb-1">No questions yet</p>
+          <p className="text-xs text-[#6F655B]/60 max-w-sm mx-auto leading-relaxed mb-6">
+            Be the first to ask a question about this product! Share your queries with our team.
           </p>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="bg-accent text-white hover:opacity-90 transition-colors px-6 py-3 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em]"
+          >
+            Ask a question
+          </button>
         </div>
       ) : (
-        <div className="space-y-4">
-          {questions.map((q, idx) => {
-            const isOpen = openIndex === idx;
+        /* Questions List matching Reviews layout */
+        <div className="space-y-8">
+          {questions.map((q) => {
             const initials = getInitials(q.customerName);
             const dateStr = new Date(q.createdAt).toLocaleDateString("en-US", {
               year: "numeric",
@@ -125,107 +171,109 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
             const reply = q.replies?.[0];
 
             return (
-              <div
-                key={q._id}
-                className={`rounded-[var(--radius,0px)] border transition-all duration-300 overflow-hidden ${
-                  isOpen ? "bg-black/[0.01] border-black/20" : "bg-transparent border-black/5 hover:border-black/25"
-                }`}
-              >
-                {/* Question Trigger */}
-                <button
-                  onClick={() => setOpenIndex(isOpen ? -1 : idx)}
-                  className="w-full px-5 py-5 md:px-6 md:py-6 flex items-start justify-between text-left group"
-                >
-                  <div className="flex gap-4">
-                    <div className="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shrink-0 select-none">
-                      {initials}
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center flex-wrap gap-2 text-[10px] font-bold text-black/40 uppercase tracking-widest">
-                        <span>{q.customerName}</span>
-                        <span>•</span>
-                        <span>{dateStr}</span>
-                      </div>
-                      <p className="text-[13px] md:text-sm font-semibold uppercase tracking-wider text-black leading-snug">
-                        {q.question}
-                      </p>
-                    </div>
+              <div key={q._id} className="border-b border-black/5 pb-8 last:border-0 last:pb-0 space-y-4">
+                
+                {/* Topic & Date Row */}
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-accent bg-accent/5 px-2 py-0.5 rounded-[var(--radius,0px)] border border-accent/20 text-xs uppercase tracking-wider">
+                      Product Question
+                    </span>
                   </div>
-                  <ChevronDown className={`w-4 h-4 shrink-0 ml-4 transition-transform duration-300 ${isOpen ? "rotate-180 text-black" : "text-black/40"}`} />
-                </button>
+                  <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
+                    {dateStr}
+                  </span>
+                </div>
 
-                {/* Collapsible Answer */}
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                    >
-                      <div className="px-5 pb-6 md:px-6 md:pb-8 border-t border-black/5 pt-5 pl-[52px] md:pl-[60px] space-y-4">
-                        {reply ? (
-                          <div className="space-y-1.5">
-                            <span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-emerald-800 bg-emerald-50/80 px-2 py-0.5 rounded uppercase tracking-widest border border-emerald-200">
-                              <span className="w-1 h-1 rounded-full bg-emerald-600" />
-                              Official Answer
-                            </span>
-                            <p className="text-black text-sm md:text-base leading-loose font-normal tracking-wide text-justify">
-                              {reply.answer}
-                            </p>
-                            <span className="block text-[10px] text-black/40 font-bold uppercase tracking-wider">
-                              Answered by {reply.staffName}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="text-black/40 text-xs italic font-semibold">
-                            Question is being reviewed by our master tailors.
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Author Info Row */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-[var(--radius,0px)] border flex items-center justify-center text-xs font-medium ${getAvatarColor(q.customerName)} shrink-0 select-none`}>
+                    {initials}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#6F655B]/70 font-medium uppercase tracking-wider">
+                    <span className="text-[#1E1B19]">{q.customerName}</span>
+                  </div>
+                </div>
+
+                {/* Question Comment block */}
+                <div className="text-sm text-[#6F655B] leading-relaxed font-normal">
+                  <p className="font-semibold text-black italic">"{q.question}"</p>
+                </div>
+
+                {/* Store Reply matching Reviews admin comment block */}
+                {reply && (
+                  <div className="bg-[#FAF7F0]/60 border-l-2 border-[#1E1B19] p-4 rounded-[var(--radius,0px)] space-y-1.5 ml-4">
+                    <div className="flex items-center gap-2 text-[9px] text-[#1E1B19] font-medium uppercase tracking-wider">
+                      <div className="w-1 h-1 bg-[#1E1B19] rounded-full" />
+                      {reply.staffName} Response
+                    </div>
+                    <p className="text-xs text-[#6F655B] leading-relaxed font-normal">
+                      {reply.answer}
+                    </p>
+                  </div>
+                )}
               </div>
             );
           })}
+
+          {/* Pagination matching Reviews */}
+          {pagination.totalPages > 1 && (
+            <div className="flex justify-center items-center gap-4 pt-6 border-t border-black/5">
+              <button
+                disabled={pagination.page <= 1}
+                onClick={() => fetchQuestions(pagination.page - 1)}
+                className="px-5 py-2.5 border border-neutral-200 hover:border-black disabled:border-neutral-100 disabled:text-neutral-300 rounded-full text-xs font-bold uppercase tracking-widest transition-all"
+              >
+                Prev
+              </button>
+              <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">
+                Page {pagination.page} of {pagination.totalPages}
+              </span>
+              <button
+                disabled={pagination.page >= pagination.totalPages}
+                onClick={() => fetchQuestions(pagination.page + 1)}
+                className="px-5 py-2.5 border border-neutral-200 hover:border-black disabled:border-neutral-100 disabled:text-neutral-300 rounded-full text-xs font-bold uppercase tracking-widest transition-all"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Ask Question Modal */}
+      {/* Ask Question Drawer — now matching the premium Slide-Over form of Reviews */}
       <AnimatePresence>
         {modalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-end transition-opacity duration-300">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white border border-black/10 rounded-[var(--radius,0px)] shadow-2xl max-w-lg w-full overflow-hidden"
+              initial={{ x: "100%", opacity: 0.8 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0.8 }}
+              transition={{ type: "tween", duration: 0.35, ease: "easeInOut" }}
+              className="w-full max-w-xl bg-white h-full shadow-2xl p-6 md:p-8 flex flex-col justify-between overflow-y-auto"
             >
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-5 border-b border-black/5">
-                <div>
-                  <h3 className="text-xs font-bold text-black uppercase tracking-[0.25em]">
-                    Ask a Question
-                  </h3>
-                  <p className="text-[10px] text-black/50 uppercase tracking-widest mt-0.5">
-                    {productName}
-                  </p>
+              <div>
+                <div className="flex justify-between items-center border-b border-neutral-100 pb-4 mb-6">
+                  <div>
+                    <h3 className="text-lg font-black heading-font uppercase text-black">
+                      Ask a Question
+                    </h3>
+                    <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-0.5">
+                      For {productName}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-neutral-500" />
+                  </button>
                 </div>
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="text-black/40 hover:text-black p-1 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
 
-              {/* Form Content */}
-              <form onSubmit={handleAskQuestion}>
-                <div className="p-6 space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black">
+                <form onSubmit={handleAskQuestion} className="space-y-6">
+                  {/* Name field */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest block">
                       Full Name
                     </label>
                     <input
@@ -234,12 +282,13 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="e.g. Mansoor Ahmed"
-                      className="w-full bg-[#fcfcfc] border border-black/15 px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-black focus:bg-white transition-all rounded-[var(--radius,0px)]"
+                      className="w-full border border-neutral-200 rounded-lg p-3 text-xs outline-none focus:border-black transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black">
+                  {/* Email field */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest block">
                       Email Address
                     </label>
                     <input
@@ -248,12 +297,13 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
                       placeholder="e.g. mansoor@example.com"
-                      className="w-full bg-[#fcfcfc] border border-black/15 px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-black focus:bg-white transition-all rounded-[var(--radius,0px)]"
+                      className="w-full border border-neutral-200 rounded-lg p-3 text-xs outline-none focus:border-black transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-black">
+                  {/* Question textarea */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest block">
                       Your Question
                     </label>
                     <textarea
@@ -261,40 +311,40 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
                       rows={5}
                       value={questionText}
                       onChange={(e) => setQuestionText(e.target.value)}
-                      placeholder="Describe what you want to know about sizing, materials, or custom details..."
-                      className="w-full bg-[#fcfcfc] border border-black/15 px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-black focus:bg-white transition-all rounded-[var(--radius,0px)]"
+                      placeholder="Ask about materials, sizing fit, or custom design request options..."
+                      className="w-full border border-neutral-200 rounded-lg p-3 text-xs outline-none focus:border-black transition-colors resize-none"
                     />
                   </div>
-                </div>
+                </form>
+              </div>
 
-                {/* Modal Actions */}
-                <div className="flex items-center justify-end gap-2.5 p-5 bg-black/[0.01] border-t border-black/5">
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="bg-transparent border border-black/20 hover:border-black text-black font-bold uppercase tracking-[0.2em] text-[10px] px-5 py-3 rounded-[var(--radius,0px)] transition-all cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="bg-black text-white hover:bg-black/95 font-bold uppercase tracking-[0.2em] text-[10px] px-5 py-3 rounded-[var(--radius,0px)] transition-all cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader className="w-3.5 h-3.5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                        Submit Question
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              {/* Drawer footer actions */}
+              <div className="border-t border-neutral-100 pt-4 mt-8 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="w-1/3 border border-neutral-200 hover:bg-neutral-50 px-4 py-3 rounded-full text-xs font-bold uppercase tracking-[0.1em] text-neutral-600 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAskQuestion}
+                  disabled={submitting}
+                  className="w-2/3 bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-300 transition-colors px-4 py-3 rounded-full text-xs font-bold uppercase tracking-[0.2em] cursor-pointer inline-flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader className="w-3.5 h-3.5 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      Submit Question
+                    </>
+                  )}
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
