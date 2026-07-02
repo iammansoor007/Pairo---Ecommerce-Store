@@ -52,7 +52,7 @@ export default function ProductSection({
   if (!products || products.length === 0) {
     return (
       <section className="py-4 md:py-6">
-        <div className="mx-4 md:mx-8 bg-background border border-border/60 rounded-[32px] md:rounded-[40px] shadow-sm py-16 md:py-20 px-6 md:px-16 text-center">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 py-16 md:py-20 text-center">
           <div className="max-w-md mx-auto space-y-4">
             <p className="text-xl md:text-2xl font-bold heading-font text-foreground uppercase tracking-tight">{title}</p>
             <div className="w-12 h-[1px] bg-border/60 mx-auto" />
@@ -67,7 +67,7 @@ export default function ProductSection({
 
   return (
     <section className="py-4 md:py-6 bg-background">
-      <div className="mx-4 md:mx-8 bg-background border border-border/60 rounded-[32px] md:rounded-[40px] shadow-sm py-12 md:py-20 px-4 sm:px-6 md:px-16 overflow-hidden">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-12 md:py-20 overflow-hidden">
 
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 md:mb-14 gap-6">
@@ -132,7 +132,7 @@ export default function ProductSection({
         </div>
 
         {/* Carousel Grid Area - Bleed Edge responsive layout */}
-        <div className="relative -mx-4 sm:-mx-6 md:-mx-16 px-4 sm:px-6 md:px-16">
+        <div className="relative -mx-2 sm:-mx-4 md:-mx-8 px-2 sm:px-4 md:px-8">
           <motion.div
             initial="hidden"
             whileInView="visible"

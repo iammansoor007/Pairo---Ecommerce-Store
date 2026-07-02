@@ -86,7 +86,7 @@ export default function ProductGallery({ images = [], variantImage, productName 
     <>
       <div className="flex flex-col md:flex-row gap-3">
         {/* Thumbnails */}
-        <div className="flex md:flex-col gap-2 md:w-[72px] order-2 md:order-1 overflow-x-auto md:overflow-y-auto scrollbar-hide shrink-0">
+        <div className="flex md:flex-col gap-2 md:w-[72px] order-2 md:order-2 overflow-x-auto md:overflow-y-auto scrollbar-hide shrink-0">
           {allImages.map((img, i) => {
             const isActive = displayImage === img;
             return (
@@ -117,7 +117,7 @@ export default function ProductGallery({ images = [], variantImage, productName 
         {/* Main image — Desktop: hover zoom | Mobile: tap to open lightbox */}
         <div
           ref={mainRef}
-          className="relative flex-1 aspect-[3/4] bg-[#F4F4F4] rounded-2xl overflow-hidden order-1 md:order-2 shadow-sm"
+          className="relative flex-1 aspect-square bg-[#F4F4F4] rounded-2xl overflow-hidden order-1 md:order-1 shadow-sm"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onMouseMove={handleMouseMove}

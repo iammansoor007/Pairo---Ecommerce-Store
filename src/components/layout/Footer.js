@@ -271,7 +271,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-black text-white pt-16 md:pt-24 pb-12 overflow-hidden relative z-10 border-t border-white/10">
-      <div className="container mx-auto px-6 md:px-16 relative z-20">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 relative z-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: false }} variants={containerVariants} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-white/10">
           <motion.div variants={itemVariants}>
             <Link href="/" className="flex-shrink-0">
@@ -421,7 +421,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 md:px-16 relative z-20">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 relative z-20">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-white/10">
           <p className="text-white/50 text-[9px] font-bold uppercase tracking-widest">{copyrightText}</p>
           <div className="flex gap-10">
