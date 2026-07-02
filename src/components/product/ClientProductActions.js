@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Minus, ShoppingBag, Check, Ruler, Palette, Shield, Settings } from "lucide-react";
 
 import { useCart } from "@/context/CartContext";
@@ -17,6 +18,11 @@ export default function ClientProductActions({ product, onVariantChange }) {
   const [m2mOpen, setM2mOpen] = useState(false);
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { addToCart } = useCart();
   const router = useRouter();
 
@@ -341,24 +347,29 @@ export default function ClientProductActions({ product, onVariantChange }) {
       </div>
 
       {/* ─── Modals ─────────────────────────────────────────────── */}
-      <MadeToMeasureModal
-        product={product}
-        isOpen={m2mOpen}
-        onClose={() => setM2mOpen(false)}
-        onAddToCart={(cartItem) => {
-          addToCart(cartItem, true);
-        }}
-      />
-      <CustomizeProductModal
-        product={product}
-        isOpen={customizeOpen}
-        onClose={() => setCustomizeOpen(false)}
-      />
-      <SizeGuideModal
-        isOpen={sizeGuideOpen}
-        onClose={() => setSizeGuideOpen(false)}
-        sizeGuide={product.sizeGuide}
-      />
+      {mounted && typeof document !== "undefined" && createPortal(
+        <>
+          <MadeToMeasureModal
+            product={product}
+            isOpen={m2mOpen}
+            onClose={() => setM2mOpen(false)}
+            onAddToCart={(cartItem) => {
+              addToCart(cartItem, true);
+            }}
+          />
+          <CustomizeProductModal
+            product={product}
+            isOpen={customizeOpen}
+            onClose={() => setCustomizeOpen(false)}
+          />
+          <SizeGuideModal
+            isOpen={sizeGuideOpen}
+            onClose={() => setSizeGuideOpen(false)}
+            sizeGuide={product.sizeGuide}
+          />
+        </>,
+        document.body
+      )}
     </>
   );
 }

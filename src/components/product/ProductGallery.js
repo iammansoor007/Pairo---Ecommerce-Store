@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { getOptimizedImage, getCloudinarySrcSet } from "@/lib/cloudinary";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -17,6 +18,12 @@ export default function ProductGallery({ images = [], variantImage, productName 
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const mainRef = useRef(null);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const displayImage = variantImage || mainImage;
 
@@ -147,7 +154,7 @@ export default function ProductGallery({ images = [], variantImage, productName 
       </div>
 
       {/* Lightbox Modal */}
-      {lightboxOpen && (
+      {mounted && lightboxOpen && typeof document !== "undefined" && createPortal(
         <div
           className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center animate-fade-in"
           onClick={closeLightbox}
@@ -224,7 +231,8 @@ export default function ProductGallery({ images = [], variantImage, productName 
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
