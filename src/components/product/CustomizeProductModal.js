@@ -376,28 +376,28 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
               </p>
 
               <Section icon={Palette} title="Change Leather Color">
-                <PillSelect options={LEATHER_COLORS} value={leatherColor} onChange={setLeatherColor} />
+                <PillSelect options={CHANGE_LEATHER_COLORS} value={leatherColor} onChange={setLeatherColor} />
                 {leatherColor === "Other" && (
                   <input type="text" placeholder="Describe your custom leather color..." value={leatherColorNote} onChange={(e) => setLeatherColorNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
               <Section icon={Layers} title="Change Leather Type">
-                <PillSelect options={LEATHER_TYPES} value={leatherType} onChange={setLeatherType} />
+                <PillSelect options={CHANGE_LEATHER_TYPES} value={leatherType} onChange={setLeatherType} />
                 {leatherType === "Other" && (
                   <input type="text" placeholder="Describe your custom leather type..." value={leatherTypeNote} onChange={(e) => setLeatherTypeNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
               <Section icon={Layers} title="Change Inner Lining">
-                <PillSelect options={INNER_LININGS} value={innerLining} onChange={setInnerLining} />
+                <PillSelect options={CHANGE_INNER_LININGS} value={innerLining} onChange={setInnerLining} />
                 {innerLining === "Other" && (
                   <input type="text" placeholder="Describe your custom lining..." value={innerLiningNote} onChange={(e) => setInnerLiningNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
               <Section icon={Settings} title="Change Hardware Tone">
-                <PillSelect options={HARDWARE_COLORS} value={hardwareColor} onChange={setHardwareColor} />
+                <PillSelect options={CHANGE_HARDWARE_COLORS} value={hardwareColor} onChange={setHardwareColor} />
                 {hardwareColor === "Other" && (
                   <input type="text" placeholder="Describe your custom hardware finish..." value={hardwareColorNote} onChange={(e) => setHardwareColorNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
@@ -407,16 +407,16 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 <div className="space-y-3.5">
                   <div>
                     <SubLabel>Change Fur Type</SubLabel>
-                    <PillSelect options={FUR_TYPES} value={furType} onChange={setFurType} />
+                    <PillSelect options={CHANGE_FUR_TYPES} value={furType} onChange={setFurType} />
                     {furType === "Other" && (
                       <input type="text" placeholder="Describe your custom fur type..." value={furTypeNote} onChange={(e) => setFurTypeNote(e.target.value)} className={`${inputCls} mt-2`} />
                     )}
                   </div>
                   {furType !== "None" && (
                     <>
-                      <div><SubLabel>Change Fur Color</SubLabel><PillSelect options={FUR_COLORS} value={furColor} onChange={setFurColor} /></div>
-                      <div><SubLabel>Change Fur Placement</SubLabel><MultiPillSelect options={FUR_PLACEMENTS} values={furPlacement} onChange={setFurPlacement} /></div>
-                      <div><SubLabel>Change Fur Density</SubLabel><PillSelect options={FUR_DENSITIES} value={furDensity} onChange={setFurDensity} /></div>
+                      <div><SubLabel>Change Fur Color</SubLabel><PillSelect options={CHANGE_FUR_COLORS} value={furColor} onChange={setFurColor} /></div>
+                      <div><SubLabel>Change Fur Placement</SubLabel><MultiPillSelect options={CHANGE_FUR_PLACEMENTS} values={furPlacement} onChange={setFurPlacement} /></div>
+                      <div><SubLabel>Change Fur Density</SubLabel><PillSelect options={CHANGE_FUR_DENSITIES} value={furDensity} onChange={setFurDensity} /></div>
                       <div>
                         <SubLabel>Change Removable Fur?</SubLabel>
                         <PillSelect
