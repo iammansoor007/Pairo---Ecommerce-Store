@@ -1,42 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MessageSquare, HelpCircle, Plus, X, ArrowUpRight, Loader, HelpCircle as QuestionIcon } from "lucide-react";
+import { MessageSquare, HelpCircle, Plus, X, ArrowUpRight, Loader, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
-
-// Helper to generate initials from customer name
-const getInitials = (name) => {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  return name.substring(0, 2).toUpperCase();
-};
-
-// Helper to generate color theme based on name hashing (matches ProductReviews avatar theme)
-const getAvatarColor = (name) => {
-  if (!name) return "bg-[#FAF7F0] text-[#6F655B]/60 border-[#E3DACB]";
-  const colors = [
-    "bg-[#FAF7F0] text-[#1E1B19] border-[#E3DACB]",
-    "bg-[#F2EBDD] text-[#1E1B19] border-[#C7B9A1]",
-    "bg-[#FAF7F0] text-[#6F655B] border-[#E3DACB]/50",
-    "bg-[#F5EFE6] text-[#43302A] border-[#C7B9A1]/40",
-    "bg-[#EAE3D2] text-[#1E1B19] border-[#C7B9A1]/60"
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % colors.length;
-  return colors[index];
-};
 
 export default function ProductQuestionsAnswers({ productId, productName }) {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openIndex, setOpenIndex] = useState(0);
   const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0, totalPages: 1 });
   
-  // Submit Question Drawer State (now matching Reviews right-side drawer)
+  // Submit Question Drawer State
   const [modalOpen, setModalOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -113,7 +88,7 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
         
         <button
           onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-accent text-white hover:opacity-90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em] cursor-pointer active:scale-95"
+          className="flex items-center gap-2 bg-accent text-white hover:opacity-90 transition-colors px-6 py-3.5 rounded-[var(--radius,0px)] text-xs font-medium uppercase tracking-[0.2em] cursor-pointer active:scale-95 shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
           Ask a Question
@@ -122,24 +97,14 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
 
       {loading ? (
         /* Loading Skeletons matching Reviews */
-        <div className="space-y-6">
+        <div className="space-y-4">
           {[...Array(3)].map((_, idx) => (
-            <div key={idx} className="border-b border-black/5 pb-8 last:border-0 space-y-4 animate-pulse">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2 w-1/3">
-                  <div className="h-4 bg-neutral-200 rounded w-2/3" />
-                  <div className="h-3 bg-neutral-100 rounded w-1/2" />
-                </div>
-                <div className="h-3 bg-neutral-150 rounded w-16" />
-              </div>
+            <div key={idx} className="border border-neutral-100 rounded-lg p-5 space-y-3 animate-pulse">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-neutral-200" />
-                <div className="h-3.5 bg-neutral-100 rounded w-24" />
+                <div className="h-4 bg-neutral-200 rounded w-1/3" />
               </div>
-              <div className="space-y-2">
-                <div className="h-3.5 bg-neutral-100 rounded w-full" />
-                <div className="h-3.5 bg-neutral-100 rounded w-5/6" />
-              </div>
+              <div className="h-3.5 bg-neutral-100 rounded w-full" />
             </div>
           ))}
         </div>
@@ -159,59 +124,52 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
           </button>
         </div>
       ) : (
-        /* Questions List matching Reviews layout */
-        <div className="space-y-8">
-          {questions.map((q) => {
-            const initials = getInitials(q.customerName);
-            const dateStr = new Date(q.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric"
-            });
+        /* Questions List matching exact FAQ Accordion style (no author, no admin label, no dates) */
+        <div className="space-y-3">
+          {questions.map((q, idx) => {
+            const isOpen = openIndex === idx;
             const reply = q.replies?.[0];
 
             return (
-              <div key={q._id} className="border-b border-black/5 pb-8 last:border-0 last:pb-0 space-y-4">
-                
-                {/* Topic & Date Row */}
-                <div className="flex justify-between items-start">
-                  <div className="space-y-1">
-                    <span className="inline-flex items-center gap-1 text-[9px] font-bold text-accent bg-accent/5 px-2 py-0.5 rounded-[var(--radius,0px)] border border-accent/20 text-xs uppercase tracking-wider">
-                      Product Question
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest">
-                    {dateStr}
-                  </span>
-                </div>
-
-                {/* Author Info Row */}
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-[var(--radius,0px)] border flex items-center justify-center text-xs font-medium ${getAvatarColor(q.customerName)} shrink-0 select-none`}>
-                    {initials}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#6F655B]/70 font-medium uppercase tracking-wider">
-                    <span className="text-[#1E1B19]">{q.customerName}</span>
-                  </div>
-                </div>
-
-                {/* Question Comment block */}
-                <div className="text-sm text-[#6F655B] leading-relaxed font-normal">
-                  <p className="font-semibold text-black italic">"{q.question}"</p>
-                </div>
-
-                {/* Store Reply matching Reviews admin comment block */}
-                {reply && (
-                  <div className="bg-[#FAF7F0]/60 border-l-2 border-[#1E1B19] p-4 rounded-[var(--radius,0px)] space-y-1.5 ml-4">
-                    <div className="flex items-center gap-2 text-[9px] text-[#1E1B19] font-medium uppercase tracking-wider">
-                      <div className="w-1 h-1 bg-[#1E1B19] rounded-full" />
-                      {reply.staffName} Response
+              <div
+                key={q._id}
+                className={`rounded-[var(--radius,0px)] border transition-all duration-300 overflow-hidden ${
+                  isOpen ? "bg-[var(--accent)]/[0.04] border-accent/40" : "bg-transparent border-border hover:border-accent/30"
+                }`}
+              >
+                {/* Accordion Trigger */}
+                <button
+                  onClick={() => setOpenIndex(isOpen ? -1 : idx)}
+                  className="w-full px-5 py-5 md:px-6 md:py-6 flex items-center justify-between text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-8 h-8 shrink-0 rounded-[var(--radius,0px)] flex items-center justify-center transition-colors ${isOpen ? 'bg-accent' : 'bg-white border border-border'}`}>
+                      <HelpCircle className={`w-3.5 h-3.5 ${isOpen ? 'text-white' : 'text-primary/50'}`} />
                     </div>
-                    <p className="text-xs text-[#6F655B] leading-relaxed font-normal">
-                      {reply.answer}
+                    <p className="text-xs md:text-sm font-semibold uppercase tracking-wider text-primary leading-snug">
+                      {q.question}
                     </p>
                   </div>
-                )}
+                  <ChevronDown className={`w-3.5 h-3.5 shrink-0 ml-4 transition-transform duration-300 ${isOpen ? 'text-accent rotate-180' : 'text-primary/40'}`} />
+                </button>
+
+                {/* Collapsible Answer */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                    >
+                      <div className="px-5 pb-6 md:px-6 md:pb-8 border-t border-accent/20 pt-4 pl-[52px] md:pl-[56px]">
+                        <p className="text-primary/90 font-normal text-sm md:text-base leading-loose tracking-normal max-w-2xl">
+                          {reply ? reply.answer : "Question is being reviewed by our team."}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
@@ -241,7 +199,7 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
         </div>
       )}
 
-      {/* Ask Question Drawer — now matching the premium Slide-Over form of Reviews */}
+      {/* Ask Question Drawer */}
       <AnimatePresence>
         {modalOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] flex items-center justify-end transition-opacity duration-300">
