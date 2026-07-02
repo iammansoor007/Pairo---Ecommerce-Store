@@ -146,7 +146,7 @@ export default function ProductMainSection({ product }) {
                 <Truck className="w-3 h-3 text-black/50 shrink-0" />
                 Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
               </span>
-            )},, this badge is not looking good i want it to be modern professional and good please for god sake make it looks good modern
+            )}
           </div>
 
           <div className="flex items-center flex-wrap gap-3.5">
