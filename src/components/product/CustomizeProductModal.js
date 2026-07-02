@@ -7,14 +7,14 @@ import {
   Loader2, User, Mail, Phone, AlertCircle, Scissors,
 } from "lucide-react";
 
-const LEATHER_COLORS = ["None", "Black", "Brown", "Blue", "Other"];
-const LEATHER_TYPES = ["None", "Sheepskin", "Goatskin", "Cowhide", "Calfhide", "Other"];
-const INNER_LININGS = ["None", "Non Quilted (Polyester)", "Change Color (Quilted)", "Change Color (Non-Quilted)", "Synthetic Fur", "Other"];
-const HARDWARE_COLORS = ["None", "Silver", "Brass", "Black", "Other"];
-const FUR_TYPES = ["None", "Faux Fur", "Shearling", "Rabbit", "Fox", "Mink", "Wool", "Other"];
-const FUR_COLORS = ["White", "Black", "Brown", "Grey", "Cream", "Beige", "Custom"];
-const FUR_PLACEMENTS = ["Collar", "Hood", "Sleeves", "Cuffs", "Front", "Back"];
-const FUR_DENSITIES = ["Light", "Medium", "Heavy"];
+const CHANGE_LEATHER_COLORS = ["None", "Black", "Brown", "Blue", "Other"];
+const CHANGE_LEATHER_TYPES = ["None", "Sheepskin", "Goatskin", "Cowhide", "Calfhide", "Other"];
+const CHANGE_INNER_LININGS = ["None", "Non Quilted (Polyester)", "Change Color (Quilted)", "Change Color (Non-Quilted)", "Synthetic Fur", "Other"];
+const CHANGE_HARDWARE_COLORS = ["None", "Silver", "Brass", "Black", "Other"];
+const CHANGE_FUR_TYPES = ["None", "Faux Fur", "Shearling", "Rabbit", "Fox", "Mink", "Wool", "Other"];
+const CHANGE_FUR_COLORS = ["White", "Black", "Brown", "Grey", "Cream", "Beige", "Custom"];
+const CHANGE_FUR_PLACEMENTS = ["Collar", "Hood", "Sleeves", "Cuffs", "Front", "Back"];
+const CHANGE_FUR_DENSITIES = ["Light", "Medium", "Heavy"];
 const ARTWORK_SLOTS = [
   { key: "leftChest", label: "Left Chest" },
   { key: "rightChest", label: "Right Chest" },
@@ -375,38 +375,38 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 Design Preferences
               </p>
 
-              <Section icon={Palette} title="Leather Color">
+              <Section icon={Palette} title="Change Leather Color">
                 <PillSelect options={LEATHER_COLORS} value={leatherColor} onChange={setLeatherColor} />
                 {leatherColor === "Other" && (
                   <input type="text" placeholder="Describe your custom leather color..." value={leatherColorNote} onChange={(e) => setLeatherColorNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
-              <Section icon={Layers} title="Leather Type">
+              <Section icon={Layers} title="Change Leather Type">
                 <PillSelect options={LEATHER_TYPES} value={leatherType} onChange={setLeatherType} />
                 {leatherType === "Other" && (
                   <input type="text" placeholder="Describe your custom leather type..." value={leatherTypeNote} onChange={(e) => setLeatherTypeNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
-              <Section icon={Layers} title="Inner Lining">
+              <Section icon={Layers} title="Change Inner Lining">
                 <PillSelect options={INNER_LININGS} value={innerLining} onChange={setInnerLining} />
                 {innerLining === "Other" && (
                   <input type="text" placeholder="Describe your custom lining..." value={innerLiningNote} onChange={(e) => setInnerLiningNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
-              <Section icon={Settings} title="Hardware Tone">
+              <Section icon={Settings} title="Change Hardware Tone">
                 <PillSelect options={HARDWARE_COLORS} value={hardwareColor} onChange={setHardwareColor} />
                 {hardwareColor === "Other" && (
                   <input type="text" placeholder="Describe your custom hardware finish..." value={hardwareColorNote} onChange={(e) => setHardwareColorNote(e.target.value)} className={`${inputCls} mt-1`} />
                 )}
               </Section>
 
-              <Section icon={Feather} title="Fur Accent (Optional)">
+              <Section icon={Feather} title="Change Fur Accent (Optional)">
                 <div className="space-y-3.5">
                   <div>
-                    <SubLabel>Fur Type</SubLabel>
+                    <SubLabel>Change Fur Type</SubLabel>
                     <PillSelect options={FUR_TYPES} value={furType} onChange={setFurType} />
                     {furType === "Other" && (
                       <input type="text" placeholder="Describe your custom fur type..." value={furTypeNote} onChange={(e) => setFurTypeNote(e.target.value)} className={`${inputCls} mt-2`} />
@@ -414,11 +414,11 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                   </div>
                   {furType !== "None" && (
                     <>
-                      <div><SubLabel>Fur Color</SubLabel><PillSelect options={FUR_COLORS} value={furColor} onChange={setFurColor} /></div>
-                      <div><SubLabel>Fur Placement</SubLabel><MultiPillSelect options={FUR_PLACEMENTS} values={furPlacement} onChange={setFurPlacement} /></div>
-                      <div><SubLabel>Fur Density</SubLabel><PillSelect options={FUR_DENSITIES} value={furDensity} onChange={setFurDensity} /></div>
+                      <div><SubLabel>Change Fur Color</SubLabel><PillSelect options={FUR_COLORS} value={furColor} onChange={setFurColor} /></div>
+                      <div><SubLabel>Change Fur Placement</SubLabel><MultiPillSelect options={FUR_PLACEMENTS} values={furPlacement} onChange={setFurPlacement} /></div>
+                      <div><SubLabel>Change Fur Density</SubLabel><PillSelect options={FUR_DENSITIES} value={furDensity} onChange={setFurDensity} /></div>
                       <div>
-                        <SubLabel>Removable Fur?</SubLabel>
+                        <SubLabel>Change Removable Fur?</SubLabel>
                         <PillSelect
                           options={["Yes", "No"]}
                           value={furRemovable === true ? "Yes" : furRemovable === false ? "No" : ""}
@@ -430,7 +430,7 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 </div>
               </Section>
 
-              <Section icon={ImageIcon} title="Artwork / Branding Logos">
+              <Section icon={ImageIcon} title="Change Artwork / Branding Logos">
                 <div className="space-y-2">
                   <p className="text-[10px] font-bold text-black uppercase tracking-wide">
                     PNG, JPG, SVG, PDF, AI, EPS — Max 10 MB per file
@@ -502,4 +502,4 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
       `}</style>
     </div>
   );
-}
+} 

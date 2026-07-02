@@ -175,11 +175,10 @@ export default function ProductMainSection({ product }) {
           </div>
 
           {product.shortDescription && (
-            <div className="relative">
-              <p className="text-black text-sm md:text-base leading-relaxed font-normal pl-6 py-0.5">
-                {product.shortDescription}
-              </p>
-            </div>
+            <div
+              className="short-description-prose text-black text-sm md:text-base leading-relaxed pl-6 py-0.5"
+              dangerouslySetInnerHTML={{ __html: product.shortDescription }}
+            />
           )}
 
           {/* Variant Selector + Stock + ATC */}

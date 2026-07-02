@@ -527,14 +527,11 @@ export default function ProductForm({ productId = null }) {
                      Product Short Description
                   </div>
                   <div className="p-3">
-                     <textarea
-                        rows={3}
-                        placeholder="Brief product excerpt shown on product page (1-2 sentences)…"
-                        className="w-full border border-[#c3c4c7] outline-none px-3 py-2 text-[13px] bg-white resize-none focus:border-[#2271b1] transition-colors rounded-[2px]"
-                        value={formData.shortDescription}
-                        onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+                     <TiptapEditor
+                        content={formData.shortDescription}
+                        onChange={(html) => setFormData({ ...formData, shortDescription: html })}
                      />
-                     <p className="text-[11px] text-gray-400 mt-1">This appears as an italic excerpt on the product detail page.</p>
+                     <p className="text-[11px] text-gray-400 mt-1">Supports bold, italic, lists, and links. Displays as a rich excerpt on the product page.</p>
                   </div>
                </div>
 

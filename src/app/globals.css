@@ -273,4 +273,38 @@ img {
   opacity: 1 !important;
 }
 
-
+/* ─── Product Short Description (Rich Text) ────────────────────────── */
+.short-description-prose p {
+  margin-bottom: 0.5em;
+}
+.short-description-prose p:last-child {
+  margin-bottom: 0;
+}
+.short-description-prose strong {
+  font-weight: 700;
+}
+.short-description-prose em {
+  font-style: italic;
+}
+.short-description-prose ul {
+  list-style: disc;
+  padding-left: 1.25em;
+  margin-bottom: 0.5em;
+}
+.short-description-prose ol {
+  list-style: decimal;
+  padding-left: 1.25em;
+  margin-bottom: 0.5em;
+}
+.short-description-prose li {
+  margin-bottom: 0.2em;
+}
+.short-description-prose a {
+  text-decoration: underline;
+  font-weight: 600;
+  color: inherit;
+  transition: opacity 0.15s;
+}
+.short-description-prose a:hover {
+  opacity: 0.7;
+}
