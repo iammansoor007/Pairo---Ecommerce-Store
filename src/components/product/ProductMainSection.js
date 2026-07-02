@@ -107,110 +107,110 @@ export default function ProductMainSection({ product }) {
   const categoryName = product.categories?.[0]?.name || product.category || "Collection";
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
-      {/* LEFT SIDE: STATIC/STICKY GALLERY */}
-      <div className="lg:col-span-6 lg:sticky lg:top-24 transition-all duration-500">
-        <ProductGallery
-          images={product.images}
-          variantImage={selectedVariantImage}
-          productName={product.name}
-          imageAlts={product.imageAlts}
-        />
-      </div>
-
-      {/* RIGHT SIDE: SCROLLABLE INFO */}
-      <div className="lg:col-span-6 space-y-8 md:space-y-12">
-        <div className="space-y-4 md:space-y-6">
-          <div className="space-y-2">
-            <p className="text-[11px] md:text-[12px] font-bold text-primary/80 uppercase tracking-[0.25em]">
-              Pairo Studio — {categoryName}
-            </p>
-            <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
-              {product.name}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
-              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
-              <span>{(product.rating || 0).toFixed(1)}/5.0</span>
-              <span className="text-black/10">•</span>
-              <span>({product.reviewCount || 0} Reviews)</span>
-            </p>
-
-            {deliveryRange && (
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
-                style={{ backdropFilter: "blur(6px)" }}
-              >
-                <Truck className="w-3 h-3 text-black/50 shrink-0" />
-                Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center flex-wrap gap-3.5">
-            {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
-              <>
-                <span className="text-2xl font-semibold tracking-tight text-emerald-600">${affiliateDiscountedPrice.toFixed(2)}</span>
-                <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
-                  {affiliateSavingsLabel}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-2xl font-semibold tracking-tight text-primary">${displayPrice}</span>
-                {displayCompareAtPrice > displayPrice && (
-                  <>
-                    <span className="text-sm font-medium text-primary/40 line-through">${displayCompareAtPrice}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
-                      Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
-                    </span>
-                  </>
-                )}
-              </>
-            )}
-
-          </div>
+    <div className="px-[25px]">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-start">
+        {/* LEFT SIDE: STATIC/STICKY GALLERY - 60% */}
+        <div className="lg:col-span-3 lg:sticky lg:top-24 transition-all duration-500">
+          <ProductGallery
+            images={product.images}
+            variantImage={selectedVariantImage}
+            productName={product.name}
+            imageAlts={product.imageAlts}
+          />
         </div>
 
-        {product.shortDescription && (
-          <div className="relative">
-            <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-black/20" />
-            <p className="text-black text-sm md:text-base leading-relaxed font-normal italic pl-6 py-0.5">
-              {product.shortDescription}
-            </p>
+        {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
+        <div className="lg:col-span-2 space-y-8 md:space-y-12">
+          <div className="space-y-4 md:space-y-6">
+            <div className="space-y-2">
+              <p className="text-[11px] md:text-[12px] font-bold text-primary/80 uppercase tracking-[0.25em]">
+                Pairo Studio — {categoryName}
+              </p>
+              <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
+                {product.name}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
+                <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+                <span>{(product.rating || 0).toFixed(1)}/5.0</span>
+                <span className="text-black/10">•</span>
+                <span>({product.reviewCount || 0} Reviews)</span>
+              </p>
+
+              {deliveryRange && (
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
+                  style={{ backdropFilter: "blur(6px)" }}
+                >
+                  <Truck className="w-3 h-3 text-black/50 shrink-0" />
+                  Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center flex-wrap gap-3.5">
+              {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
+                <>
+                  <span className="text-2xl font-semibold tracking-tight text-emerald-600">${affiliateDiscountedPrice.toFixed(2)}</span>
+                  <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                    {affiliateSavingsLabel}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-2xl font-semibold tracking-tight text-primary">${displayPrice}</span>
+                  {displayCompareAtPrice > displayPrice && (
+                    <>
+                      <span className="text-sm font-medium text-primary/40 line-through">${displayCompareAtPrice}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                        Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
+                      </span>
+                    </>
+                  )}
+                </>
+              )}
+
+            </div>
           </div>
-        )}
 
-        {/* Variant Selector + Stock + ATC */}
-        <ClientProductActions
-          product={{ ...product, stock: displayStock }}
-          onVariantChange={handleVariantChange}
-        />
+          {product.shortDescription && (
+            <div className="relative">
+              <p className="text-black text-sm md:text-base leading-relaxed font-normal pl-6 py-0.5">
+                {product.shortDescription}
+              </p>
+            </div>
+          )}
 
-        {/* Stats Block - CMS Driven */}
-        {product.stats && product.stats.length > 0 && (
-          <div className="grid grid-cols-2 gap-6 pt-8 border-t border-black/5">
-            {product.stats.map((stat, i) => {
-              const Icon = ICON_MAP[stat.icon] || Info;
-              return (
-                <div key={i} className="flex items-center gap-3 group">
-                  <div className="p-2.5 bg-white border border-border rounded-[var(--radius,0px)] transition-colors duration-300 group-hover:bg-primary group-hover:border-primary">
-                    <Icon className="w-3.5 h-3.5 text-primary/70 group-hover:text-white transition-colors" />
+          {/* Variant Selector + Stock + ATC */}
+          <ClientProductActions
+            product={{ ...product, stock: displayStock }}
+            onVariantChange={handleVariantChange}
+          />
+
+          {/* Stats Block - CMS Driven */}
+          {product.stats && product.stats.length > 0 && (
+            <div className="grid grid-cols-2 gap-6 pt-8 border-t border-black/5">
+              {product.stats.map((stat, i) => {
+                const Icon = ICON_MAP[stat.icon] || Info;
+                return (
+                  <div key={i} className="flex items-center gap-3 group">
+                    <div className="p-2.5 bg-white border border-border rounded-[var(--radius,0px)] transition-colors duration-300 group-hover:bg-primary group-hover:border-primary">
+                      <Icon className="w-3.5 h-3.5 text-primary/70 group-hover:text-white transition-colors" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="text-[9px] font-normal uppercase tracking-[0.15em] text-primary/60">{stat.label}</p>
+                      <p className="text-[12px] font-normal text-black uppercase tracking-wider">{stat.value}</p>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
-                    <p className="text-[9px] font-normal uppercase tracking-[0.15em] text-primary/60">{stat.label}</p>
-                    <p className="text-[12px] font-normal text-black uppercase tracking-wider">{stat.value}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
 
-
+        </div>
       </div>
     </div>
   );
