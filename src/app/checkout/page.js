@@ -6,6 +6,7 @@ import { CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, ChevronDown } from
 import { useCart } from "@/context/CartContext";
 import { useSiteData } from "@/context/SiteContext";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
   const siteData = useSiteData();
@@ -24,6 +25,9 @@ export default function CheckoutPage() {
     affiliateDiscount,
     affiliateDiscountAmount
   } = useCart();
+  const { data: session } = useSession();
+  const [profile, setProfile] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [applyingPromo, setApplyingPromo] = useState(false);
@@ -56,6 +60,70 @@ export default function CheckoutPage() {
       setIdempotencyKey(`pai_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`);
     });
   }, []);
+
+  useEffect(() => {
+    if (session) {
+      setLoadingProfile(true);
+      fetch("/api/user/profile")
+        .then(res => res.json())
+        .then(data => {
+          setProfile(data);
+          if (data.email) {
+            setFormData(prev => ({ ...prev, email: data.email }));
+          }
+        })
+        .catch(err => console.error("Error fetching profile at checkout:", err))
+        .finally(() => setLoadingProfile(false));
+    }
+  }, [session]);
+
+  const savedAddresses = useMemo(() => {
+    if (!profile) return [];
+    const list = [];
+    
+    // 1. Saved profile addresses
+    if (profile.addresses && Array.isArray(profile.addresses)) {
+      profile.addresses.forEach(addr => {
+        list.push({
+          type: "Saved Address",
+          fullName: addr.fullName,
+          street: addr.street,
+          city: addr.city,
+          state: addr.state || "",
+          zip: addr.zipCode || addr.zip || "",
+          country: addr.country || "United States",
+          phone: addr.phone || ""
+        });
+      });
+    }
+
+    // 2. Past order addresses
+    if (profile.orderHistory && Array.isArray(profile.orderHistory)) {
+      profile.orderHistory.forEach(ord => {
+        if (ord.shippingAddress && ord.shippingAddress.street) {
+          const addr = ord.shippingAddress;
+          const isDup = list.some(item => 
+            item.street.toLowerCase().trim() === addr.street.toLowerCase().trim() && 
+            item.city.toLowerCase().trim() === addr.city.toLowerCase().trim()
+          );
+          if (!isDup) {
+            list.push({
+              type: `Past Order #${ord.orderNumber}`,
+              fullName: addr.fullName,
+              street: addr.street,
+              city: addr.city,
+              state: addr.state || "",
+              zip: addr.zip || addr.zipCode || "",
+              country: addr.country || "United States",
+              phone: addr.phone || ""
+            });
+          }
+        }
+      });
+    }
+
+    return list;
+  }, [profile]);
 
   const handleApplyPromo = async () => {
     if (!promoCode) return;
@@ -262,6 +330,47 @@ export default function CheckoutPage() {
               <h3 className="text-xs font-bold uppercase tracking-wider text-black">Delivery</h3>
 
               <div className="space-y-3.5">
+                {/* Saved Address Selector */}
+                {savedAddresses.length > 0 && (
+                  <div className="space-y-1 bg-[#FAF9F6] border border-black/[0.04] p-4 rounded-[4px] mb-2">
+                    <label className={`${labelClass} text-black font-bold`}>Use Saved Address for Faster Checkout</label>
+                    <div className="relative">
+                      <select
+                        onChange={(e) => {
+                          const idx = parseInt(e.target.value);
+                          if (!isNaN(idx) && savedAddresses[idx]) {
+                            const addr = savedAddresses[idx];
+                            const nameParts = (addr.fullName || "").trim().split(" ");
+                            const firstName = nameParts[0] || "";
+                            const lastName = nameParts.slice(1).join(" ") || "";
+                            setFormData(prev => ({
+                              ...prev,
+                              firstName,
+                              lastName,
+                              street: addr.street,
+                              city: addr.city,
+                              state: addr.state,
+                              zip: addr.zip,
+                              country: addr.country || "United States",
+                              phone: addr.phone || prev.phone
+                            }));
+                          }
+                        }}
+                        className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black appearance-none"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>Select a saved address...</option>
+                        {savedAddresses.map((addr, idx) => (
+                          <option key={idx} value={idx}>
+                            {addr.fullName} — {addr.street}, {addr.city} ({addr.type})
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-black absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
                 {/* Country Selection */}
                 <div className="space-y-1">
                   <label className={labelClass}>Country/Region</label>

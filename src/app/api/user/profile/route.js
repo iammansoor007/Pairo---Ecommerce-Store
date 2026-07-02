@@ -30,7 +30,8 @@ export async function GET() {
         total: o.financials.total,
         date: o.createdAt,
         status: o.status,
-        items: o.items
+        items: o.items,
+        shippingAddress: o.shippingAddress
       }))
     };
 
