@@ -120,7 +120,7 @@ export default function ProductMainSection({ product }) {
         </div>
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
             {product.name}
           </p>
