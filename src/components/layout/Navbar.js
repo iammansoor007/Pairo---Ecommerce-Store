@@ -165,6 +165,13 @@ export default function Navbar() {
   const [mobileDropdowns, setMobileDropdowns] = useState({});
   const [mounted, setMounted] = useState(false);
 
+  const toggleMobileDropdown = (id) => {
+    setMobileDropdowns(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   const siteData = useSiteData();
   const { data: session } = useSession();
   const { cartCount } = useCart();
@@ -514,8 +521,8 @@ export default function Navbar() {
                                 transition={{ duration: 0.25, ease: "easeInOut" }}
                                 className="overflow-hidden mt-4 pl-4"
                               >
-                                {item.dropdownType === 'simple' && (
-                                  <div className="flex flex-col gap-4 py-2 border-l border-black/5">
+                                {(item.dropdownType === 'simple' || item.type === 'dropdown_custom') && item.subItems?.length > 0 && (
+                                  <div className="flex flex-col gap-4 py-2 border-l border-black/5 pl-4">
                                     {item.subItems.map((sub) => (
                                       <Link
                                         key={sub.id || sub.name}
@@ -530,9 +537,9 @@ export default function Navbar() {
                                   </div>
                                 )}
 
-                                {(item.dropdownType === 'mega' || item.type === 'mega_menu') && (
+                                {(item.dropdownType === 'mega' || item.type === 'mega_menu' || item.type === 'dropdown_category') && (
                                   <div className="grid grid-cols-2 gap-4 mt-4">
-                                    {item.itemMegaCategories.map((cat) => (
+                                    {((item.type === 'dropdown_category' ? item.itemDropdownCategories : item.itemMegaCategories) || []).map((cat) => (
                                       <Link key={cat.slug || cat.name} href={getCategoryUrl(cat)} onClick={() => setIsOpen(false)}>
                                         <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-black/5">
                                           <Image src={cat.image || '/placeholder.jpg'} alt={cat.name} fill className="object-cover" />
@@ -540,6 +547,21 @@ export default function Navbar() {
                                             <p className="text-white font-bold text-[9px] uppercase tracking-widest w-full text-left">{cat.name}</p>
                                           </div>
                                         </div>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {item.type === 'dropdown_product' && item.itemDropdownProducts?.length > 0 && (
+                                  <div className="flex flex-col gap-4 py-2 border-l border-black/5 pl-4">
+                                    {item.itemDropdownProducts.map((prod) => (
+                                      <Link
+                                        key={prod._id}
+                                        href={getProductUrl(prod)}
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-lg font-bold text-black/60 hover:text-black uppercase tracking-wide block truncate"
+                                      >
+                                        {prod.name}
                                       </Link>
                                     ))}
                                   </div>
