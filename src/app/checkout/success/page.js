@@ -90,10 +90,10 @@ export default function SuccessPage() {
         }
       `}</style>
 
-      {/* Brand Header Banner for Desktop & Mobile */}
+      {/* Brand Header Banner for Desktop & Mobile - Matches site navigation padding */}
       <header className="border-b border-neutral-100 bg-white no-print">
-        <div className="container mx-auto px-4 sm:px-6 md:px-8 py-5">
-          <Link href="/" className="text-xl font-bold uppercase tracking-[0.15em] text-black">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 py-5">
+          <Link href="/" className="text-[15px] font-bold uppercase tracking-[0.15em] text-black">
             PAIRO LIFESTYLE
           </Link>
         </div>
@@ -167,8 +167,8 @@ export default function SuccessPage() {
         </div>
       )}
 
-      {/* Main Grid Wrapper */}
-      <div className="container mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
+      {/* Main Grid Wrapper - Matches site margins/padding */}
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Confirmation Message & Info (7 cols) */}
@@ -177,17 +177,17 @@ export default function SuccessPage() {
             {/* Success Status Card */}
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center shrink-0">
-                  <Check className="w-6 h-6" />
+                <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center shrink-0">
+                  <Check className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Order #{orderNumber || order?.orderNumber}</p>
-                  <h1 className="text-xl font-bold uppercase tracking-wide text-black">Thank you, {customerName}!</h1>
+                  <h1 className="text-base md:text-lg font-bold uppercase tracking-wider text-black">Thank you, {customerName}!</h1>
                 </div>
               </div>
 
               <div className="border border-neutral-200 rounded-[4px] p-5 space-y-4">
-                <p className="text-xs font-bold uppercase tracking-wider text-black">Your Order is Confirmed</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-black">Your Order is Confirmed</p>
                 <p className="text-[13px] text-neutral-600 leading-relaxed">
                   We have accepted your order and are preparing it. A confirmation email has been sent.
                 </p>
@@ -208,12 +208,12 @@ export default function SuccessPage() {
             {/* Shipping & Payment Details */}
             {order && (
               <div className="border border-neutral-200 rounded-[4px] p-5 space-y-6">
-                <p className="text-xs font-bold uppercase tracking-wider text-black pb-3 border-b border-neutral-100">Order Details</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-black pb-3 border-b border-neutral-100">Order Details</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Shipping Address */}
                   <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <h4 className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Shipping Address
                     </h4>
                     <div className="text-[13px] text-neutral-600 space-y-0.5">
@@ -227,7 +227,7 @@ export default function SuccessPage() {
 
                   {/* Billing Address */}
                   <div className="space-y-2">
-                    <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <h4 className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Billing Address
                     </h4>
                     <div className="text-[13px] text-neutral-600 space-y-0.5">
@@ -241,7 +241,7 @@ export default function SuccessPage() {
 
                   {/* Payment Method */}
                   <div className="space-y-2 md:col-span-2 pt-2 border-t border-neutral-100">
-                    <h4 className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <h4 className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
                       <CreditCard className="w-3.5 h-3.5 text-black shrink-0" /> Payment Information
                     </h4>
                     <div className="text-[13px] text-neutral-600">

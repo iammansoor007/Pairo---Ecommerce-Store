@@ -192,7 +192,7 @@ export default function CheckoutPage() {
 
       if (data.success) {
         clearCart();
-        router.push(`/checkout/success?orderNumber=${data.orderNumber}`);
+        router.push(`/checkout/success?id=${data.orderId}&orderNumber=${data.orderNumber}`);
       } else {
         alert(data.error || "Order failed");
       }
