@@ -77,9 +77,9 @@ export default function ProductSection({
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center bg-primary text-background px-3 py-1 rounded-md"
+              className="inline-flex items-center bg-black text-white px-3 py-1 rounded-full"
             >
-              <span className="text-[8px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
+              <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
                 {productLabels.seriesLabel}
               </span>
             </motion.div>
