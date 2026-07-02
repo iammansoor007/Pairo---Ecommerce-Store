@@ -172,63 +172,83 @@ export default function ClientProductActions({ product, onVariantChange }) {
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {(attr.values || []).map((option) => {
-                  const isSelected = selectedOptions[attr.name] === option.label;
-
-                  if (isColor) {
+              {/* Size buttons - 4 per row, equal size */}
+              {attr.name.toLowerCase() === "size" ? (
+                <div className="grid grid-cols-4 gap-2">
+                  {(attr.values || []).map((option) => {
+                    const isSelected = selectedOptions[attr.name] === option.label;
                     return (
                       <button
                         key={option.label}
                         type="button"
                         onClick={() => handleOptionSelect(attr.name, option)}
-                        title={option.label}
-                        className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${
-                          isSelected
-                            ? "ring-1 ring-offset-2 ring-black scale-105"
-                            : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
-                        }`}
-                        style={{
-                          backgroundColor: option.hex || "#ddd",
-                          backgroundImage: option.image
-                            ? `url(${option.image})`
-                            : "none",
-                          backgroundSize: "cover",
-                        }}
+                        className={`w-full h-10 rounded-[var(--radius,0px)] text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-200 border ${isSelected
+                            ? "bg-black text-white border-black"
+                            : "bg-transparent text-black border-black/30 hover:border-black"
+                          }`}
                       >
-                        {isSelected && (
-                          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10">
-                            <Check
-                              className={`w-3 h-3 ${
-                                option.hex === "#FFFFFF" ||
-                                option.hex === "#ffffff"
-                                  ? "text-black"
-                                  : "text-white"
-                              }`}
-                              strokeWidth={3}
-                            />
-                          </div>
-                        )}
+                        {option.label}
                       </button>
                     );
-                  }
+                  })}
+                </div>
+              ) : (
+                /* Other attributes (like color) - flex wrap */
+                <div className="flex flex-wrap gap-2">
+                  {(attr.values || []).map((option) => {
+                    const isSelected = selectedOptions[attr.name] === option.label;
 
-                  return (
-                    <button
-                      key={option.label}
-                      type="button"
-                      onClick={() => handleOptionSelect(attr.name, option)}
-                      className={`h-9 min-w-[2.75rem] px-3 rounded-[var(--radius,0px)] text-[10px] font-medium uppercase tracking-[0.15em] transition-all duration-200 border ${
-                        isSelected
-                          ? "bg-black text-white border-black"
-                          : "bg-transparent text-black border-black/30 hover:border-black"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
+                    if (isColor) {
+                      return (
+                        <button
+                          key={option.label}
+                          type="button"
+                          onClick={() => handleOptionSelect(attr.name, option)}
+                          title={option.label}
+                          className={`relative w-9 h-9 md:w-10 md:h-10 rounded-full transition-all duration-200 flex items-center justify-center ${isSelected
+                              ? "ring-1 ring-offset-2 ring-black scale-105"
+                              : "ring-1 ring-black/10 hover:ring-black/30 hover:scale-105"
+                            }`}
+                          style={{
+                            backgroundColor: option.hex || "#ddd",
+                            backgroundImage: option.image
+                              ? `url(${option.image})`
+                              : "none",
+                            backgroundSize: "cover",
+                          }}
+                        >
+                          {isSelected && (
+                            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/10">
+                              <Check
+                                className={`w-3 h-3 ${option.hex === "#FFFFFF" ||
+                                    option.hex === "#ffffff"
+                                    ? "text-black"
+                                    : "text-white"
+                                  }`}
+                                strokeWidth={3}
+                              />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        onClick={() => handleOptionSelect(attr.name, option)}
+                        className={`h-9 min-w-[2.75rem] px-3 rounded-[var(--radius,0px)] text-[10px] font-medium uppercase tracking-[0.15em] transition-all duration-200 border ${isSelected
+                            ? "bg-black text-white border-black"
+                            : "bg-transparent text-black border-black/30 hover:border-black"
+                          }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
@@ -271,73 +291,76 @@ export default function ClientProductActions({ product, onVariantChange }) {
           })()}
         </div>
 
-        {/* Row 1: Qty + Add to Bag + Secure Checkout — all in one compact line */}
-        <div className="space-y-2 pt-1">
-          <div className="flex gap-2 items-center">
-            {/* Quantity Selector */}
-            <div className="flex items-center bg-transparent rounded-[var(--radius,0px)] border border-black px-2.5 gap-2 h-9 shrink-0">
+        {/* Action Buttons */}
+        <div className="space-y-2.5 pt-1">
+          {/* Row 1: Quantity + Add to Bag + Checkout - all equal height */}
+          <div className="flex gap-2 items-stretch">
+            {/* Quantity Selector - compact but same height */}
+            <div className="flex items-center justify-center bg-transparent rounded-[var(--radius,0px)] border border-black gap-2 h-11 min-w-[100px] shrink-0">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="text-black hover:text-black/70 transition-colors"
+                className="text-black hover:text-black/70 transition-colors p-1"
                 aria-label="Decrease quantity"
               >
-                <Minus className="w-3 h-3" />
+                <Minus className="w-3.5 h-3.5" />
               </button>
-              <span className="font-bold text-[12px] w-4 text-center text-black select-none">{quantity}</span>
+              <span className="font-bold text-[14px] w-6 text-center text-black select-none">{quantity}</span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                className="text-black hover:text-black/70 transition-colors"
+                className="text-black hover:text-black/70 transition-colors p-1"
                 aria-label="Increase quantity"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* Add to Bag */}
+            {/* Add to Bag - equal size to checkout */}
             <button
               onClick={handleAddToCart}
-              className={`flex-1 h-9 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-1.5 transition-all duration-300 active:scale-[0.98] ${
-                addedFeedback
+              className={`flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] ${addedFeedback
                   ? "bg-emerald-600 text-white"
                   : "bg-black text-white hover:bg-black/90"
-              }`}
+                }`}
             >
               {addedFeedback ? (
                 <>
-                  <Check className="w-3 h-3" strokeWidth={2.5} />
+                  <Check className="w-4 h-4" strokeWidth={2.5} />
                   Added!
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-3 h-3" />
+                  <ShoppingBag className="w-4 h-4" />
                   Add to Bag
                 </>
               )}
             </button>
 
-            {/* Secure Checkout */}
+            {/* Checkout - same height as Add to Bag */}
             <button
               onClick={handleSecureCheckout}
-              className="shrink-0 h-9 px-3 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.15em] text-[10px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] whitespace-nowrap"
+              className="flex-1 h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
+              <Shield className="w-4 h-4" />
               Checkout
             </button>
           </div>
 
-          {/* Row 2: Measure + Customize — always shown side by side */}
+          {/* Row 2: Measure + Customize - equal size, same style */}
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setM2mOpen(true)}
-              className="w-full h-9 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.15em] text-[10px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
+              className="w-full h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
+              <Ruler className="w-4 h-4" />
               Measure (+$25)
             </button>
             <button
               type="button"
               onClick={handleCustomizeClick}
-              className="w-full h-9 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.15em] text-[10px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
+              className="w-full h-11 rounded-[var(--radius,0px)] border-2 border-black text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
+              <Settings className="w-4 h-4" />
               Customize
             </button>
           </div>
