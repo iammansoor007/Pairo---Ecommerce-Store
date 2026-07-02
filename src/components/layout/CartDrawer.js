@@ -113,18 +113,22 @@ export default function CartDrawer() {
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-black/60 uppercase tracking-widest font-bold">
-                              Size: {item.selectedSize}
-                            </span>
-                            <div className="w-[1px] h-2 bg-black/10" />
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-[10px] text-black/60 uppercase tracking-widest font-bold">Color:</span>
-                              <div
-                                className="w-2.5 h-2.5 rounded-full border border-black/10"
-                                style={{ backgroundColor: item.selectedColor }}
-                              />
-                            </div>
+                          {/* Selected Options (Size & Color) */}
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[9px] text-neutral-500 font-bold uppercase tracking-wider">
+                            {item.selectedSize && item.selectedSize !== "Standard" && item.selectedSize !== "" && (
+                              <span>Size: {item.selectedSize}</span>
+                            )}
+                            
+                            {item.selectedSize && item.selectedSize !== "Standard" && item.selectedSize !== "" && item.selectedColor && item.selectedColor !== "Standard" && item.selectedColor !== "" && (
+                              <span className="text-black/10">•</span>
+                            )}
+
+                            {item.selectedColor && item.selectedColor !== "Standard" && item.selectedColor !== "" && (
+                              <div className="flex items-center gap-1">
+                                <span>Color:</span>
+                                <div className="w-2 h-2 rounded-full border border-black/10" style={{ backgroundColor: item.selectedColor }} />
+                              </div>
+                            )}
                           </div>
                         </div>
 
