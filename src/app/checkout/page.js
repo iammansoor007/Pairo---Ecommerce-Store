@@ -455,7 +455,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right Column: Order Summary (40% / 5 Cols) - STICKY */}
-          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-6 self-start">
+          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
             <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
 
             {/* Cart Products List */}
@@ -465,11 +465,11 @@ export default function CheckoutPage() {
                 const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
                 return (
                   <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0 pr-2 pt-2">
                       <div className="w-16 h-20 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden">
                         <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
                       </div>
-                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm z-10">
+                      <span className="absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm z-10">
                         {item.quantity}
                       </span>
                     </div>
