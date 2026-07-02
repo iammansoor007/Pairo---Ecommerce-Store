@@ -139,13 +139,23 @@ export default function ProductMainSection({ product }) {
             </p>
 
             {deliveryRange && (
-              <span
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
-                style={{ backdropFilter: "blur(6px)" }}
-              >
-                <Truck className="w-3 h-3 text-black/50 shrink-0" />
-                Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
-              </span>
+              <div className="group flex items-center gap-4 rounded-2xl border border-neutral-200 bg-gradient-to-r from-white to-neutral-50 px-4 py-3 shadow-sm transition-all duration-300 hover:shadow-md hover:border-black/20">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-black text-white shrink-0">
+                  <Truck className="h-5 w-5" />
+                </div>
+
+                <div className="flex flex-col leading-tight">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+                    Estimated Delivery
+                  </span>
+
+                  <span className="text-[15px] font-semibold text-black">
+                    {deliveryRange}
+                  </span>
+
+
+                </div>
+              </div>
             )}
           </div>
 
