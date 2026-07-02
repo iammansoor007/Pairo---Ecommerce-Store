@@ -61,6 +61,16 @@ export default function ClientProductActions({ product, onVariantChange }) {
     setCustomizeOpen(true);
   };
 
+  const handleM2mClick = () => {
+    const updatedOptions = { ...selectedOptions };
+    const sizeAttr = attributes.find(a => a.name.toLowerCase() === "size");
+    if (sizeAttr) {
+      delete updatedOptions[sizeAttr.name];
+    }
+    setSelectedOptions(updatedOptions);
+    setM2mOpen(true);
+  };
+
   const handleOptionSelect = (attrName, option) => {
     const newOptions = { ...selectedOptions, [attrName]: option.label };
     setSelectedOptions(newOptions);
@@ -304,7 +314,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={() => setM2mOpen(true)}
+              onClick={handleM2mClick}
               className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <Ruler className="w-4 h-4" />

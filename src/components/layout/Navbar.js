@@ -320,7 +320,7 @@ export default function Navbar() {
                       href={item.href}
                       target={item.openInNewTab ? '_blank' : undefined}
                       rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
-                      className="text-[14px] font-semibold uppercase tracking-[0.2em] text-black hover:text-black transition-colors flex items-center gap-2"
+                      className="text-[14px] font-semibold uppercase tracking-[0.05em] text-black hover:text-black transition-colors flex items-center gap-2"
                       onMouseEnter={() => hasDropdown && setActiveDropdownId(item.id || item.name)}
                     >
                       {item.name}
@@ -344,7 +344,7 @@ export default function Navbar() {
                                   href={sub.href}
                                   target={sub.openInNewTab ? '_blank' : undefined}
                                   rel={sub.openInNewTab ? 'noopener noreferrer' : undefined}
-                                  className="block px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-black/60 hover:text-black hover:bg-black/[0.02] transition-colors"
+                                  className="block px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.05em] text-black/60 hover:text-black hover:bg-black/[0.02] transition-colors"
                                 >
                                   {sub.name}
                                 </Link>

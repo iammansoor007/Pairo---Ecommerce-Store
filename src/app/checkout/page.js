@@ -37,7 +37,7 @@ export default function CheckoutPage() {
     lastName: "",
     email: "",
     phone: "",
-    country: "Pakistan",
+    country: "United States",
     state: "",
     street: "",
     city: "",
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const brandName = siteData?.siteSettings?.general?.brandName || "PAIRO LIFESTYLE";
+  const brandName = siteData?.siteSettings?.general?.brandName || "";
   const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
   const labelClass = "block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1";
 
@@ -218,22 +218,15 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      {/* Shopify-style Text Header */}
-      <header className="border-b border-black/5 bg-white py-6">
-        <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center">
-          <span className="text-xl font-black uppercase tracking-[0.25em] text-black">
-            {brandName}
-          </span>
-        </div>
-      </header>
+
 
       {/* Main Container - Matches site margins/padding */}
       <main className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
+
           {/* Left Column: Checkout Forms (60% / 7 Cols) */}
           <div className="lg:col-span-7 space-y-8">
-            
+
             {/* 1. Contact Info */}
             <section className="space-y-4">
               <div className="flex justify-between items-baseline">
@@ -267,7 +260,7 @@ export default function CheckoutPage() {
             {/* 2. Delivery Info */}
             <section className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-black">Delivery</h3>
-              
+
               <div className="space-y-3.5">
                 {/* Country Selection */}
                 <div className="space-y-1">
@@ -279,7 +272,7 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-3 text-[13px] text-black focus:border-black outline-none appearance-none font-medium"
                     >
-                      <option value="Pakistan">Pakistan</option>
+                      <option value="United States">United States</option>
                     </select>
                     <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
@@ -410,9 +403,8 @@ export default function CheckoutPage() {
                   {shippingRates.map((rate) => (
                     <label
                       key={rate.methodId}
-                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50/50 transition-colors ${
-                        selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/30" : ""
-                      }`}
+                      className={`flex items-center justify-between p-4 cursor-pointer hover:bg-neutral-50/50 transition-colors ${selectedShipping?.methodId === rate.methodId ? "bg-neutral-50/30" : ""
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <input
@@ -473,15 +465,17 @@ export default function CheckoutPage() {
                 const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
                 return (
                   <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative w-16 h-20 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden shrink-0">
-                      <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
-                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm">
+                    <div className="relative shrink-0">
+                      <div className="w-16 h-20 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden">
+                        <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm z-10">
                         {item.quantity}
                       </span>
                     </div>
                     <div className="flex-1 space-y-0.5 min-w-0">
                       <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
-                      
+
                       {item.selectedOptions && (
                         <p className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider">
                           {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
@@ -505,7 +499,7 @@ export default function CheckoutPage() {
                           </details>
                         </div>
                       )}
-                      
+
                       <p className="text-[12px] font-bold text-black font-mono mt-1">
                         ${(item.price * item.quantity).toLocaleString()}
                       </p>

@@ -102,14 +102,14 @@ export default function SearchModal({ isOpen, onClose }) {
                   placeholder={search.placeholder || "Search Pairo..."}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-base md:text-lg font-semibold outline-none placeholder:text-black/30 uppercase tracking-[0.15em] text-black"
+                  className="w-full bg-transparent text-base md:text-lg font-semibold outline-none placeholder:text-black/60 uppercase tracking-[0.15em] text-black"
                 />
               </div>
               <button
                 onClick={onClose}
                 className="flex items-center gap-2 md:gap-3 group"
               >
-                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-[0.2em] text-black/40 group-hover:text-black transition-colors">{search.close}</span>
+                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-[0.2em] text-black group-hover:text-black transition-colors">{search.close}</span>
                 <div className="p-2 md:p-2.5 bg-black/5 rounded-full group-hover:bg-black group-hover:text-white transition-all">
                   <X className="w-4 h-4 md:w-5 md:h-5" />
                 </div>
@@ -127,7 +127,7 @@ export default function SearchModal({ isOpen, onClose }) {
                 >
                   {/* Main Results: Products */}
                   <div>
-                    <h4 className="text-[8px] md:text-[9px] font-bold text-black/30 uppercase tracking-[0.3em] mb-4">
+                    <h4 className="text-[8px] md:text-[9px] font-bold text-black uppercase tracking-[0.3em] mb-4">
                       {search.matchingProducts} ({results.products.length})
                     </h4>
                     {results.products.length > 0 ? (
@@ -155,16 +155,16 @@ export default function SearchModal({ isOpen, onClose }) {
                               })()}
                             </div>
                             <div className="space-y-0.5">
-                               <p className="text-[7px] font-bold text-black/30 uppercase tracking-widest">{product.category}</p>
-                               <h5 className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight leading-tight line-clamp-2 text-black group-hover:text-black/70 transition-colors">{product.name}</h5>
-                               <p className="text-[8px] md:text-[9px] font-semibold text-black/60">${product.price}</p>
+                               <p className="text-[7px] font-bold text-black uppercase tracking-widest">{product.category}</p>
+                               <h5 className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight leading-tight line-clamp-2 text-black group-hover:text-black/75 transition-colors">{product.name}</h5>
+                               <p className="text-[8px] md:text-[9px] font-semibold text-black">${product.price}</p>
                             </div>
                           </Link>
                         ))}
                       </div>
                     ) : (
                       <div className="py-8 md:py-12 text-center bg-black/5 rounded-[var(--radius,0px)] border border-dashed border-black/10">
-                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-black/30 italic px-4">{search.noProductsFound} &quot;{searchQuery}&quot;</p>
+                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-black italic px-4">{search.noProductsFound} &quot;{searchQuery}&quot;</p>
                       </div>
                     )}
                   </div>
@@ -175,7 +175,7 @@ export default function SearchModal({ isOpen, onClose }) {
                   onClick={(e) => e.stopPropagation()}
                   className="flex flex-col items-center justify-center py-20 text-center select-none"
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/30">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-black">
                     Type to search our collection
                   </p>
                 </div>
