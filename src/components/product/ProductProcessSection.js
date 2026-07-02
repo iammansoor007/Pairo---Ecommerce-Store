@@ -35,15 +35,17 @@ export default function ProductProcessSection() {
 
           {/* Section Header */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6 }}
-              className="text-[10px] md:text-[11px] font-black text-black/50 uppercase tracking-[0.3em]"
+              className="inline-flex items-center bg-black text-white px-3 py-1 rounded-full mx-auto"
             >
-              {process.subtitle || "The Craftsmanship Behind Pairo"}
-            </motion.p>
+              <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
+                {process.subtitle || "The Craftsmanship Behind Pairo"}
+              </span>
+            </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -116,7 +118,7 @@ export default function ProductProcessSection() {
                             Step {idx + 1}
                           </span>
                           {step.subheading && (
-                            <span className="text-[10px] font-bold text-black/40 uppercase tracking-[0.2em]">
+                            <span className="inline-flex items-center bg-black text-white px-2.5 py-0.5 rounded-full text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em]">
                               {step.subheading}
                             </span>
                           )}
