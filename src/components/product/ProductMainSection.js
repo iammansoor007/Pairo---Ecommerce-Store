@@ -107,7 +107,7 @@ export default function ProductMainSection({ product }) {
   const categoryName = product.categories?.[0]?.name || product.category || "Collection";
 
   return (
-    <div className="px-[25px]">
+    <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-16 items-start">
         {/* LEFT SIDE: STATIC/STICKY GALLERY - 60% */}
         <div className="lg:col-span-3 lg:sticky lg:top-24 transition-all duration-500">
