@@ -123,67 +123,23 @@ export default function SearchModal({ isOpen, onClose }) {
               {searchQuery.length > 1 ? (
                 <div 
                   onClick={(e) => e.stopPropagation()}
-                  className="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8"
+                  className="space-y-6 animate-fade-in"
                 >
-                  {/* Sidebar Results: Collections */}
-                  <div className="lg:col-span-3 space-y-6 md:space-y-8">
-                    <div>
-                      <h4 className="text-[8px] md:text-[9px] font-bold text-black/30 uppercase tracking-[0.3em] mb-2 md:mb-4">{search.suggestedDepartments}</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 md:gap-4">
-                        {results.categories.length > 0 ? (
-                          results.categories.map((cat) => (
-                            <Link
-                              key={cat.slug}
-                              href={getCategoryUrl(cat)}
-                              onClick={onClose}
-                              className="group block"
-                            >
-                              <div className="flex items-center gap-3 md:gap-4">
-                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-black/5 border border-black/5 flex-shrink-0">
-                                   <Image src={cat.image || "/placeholder.jpg"} alt={cat.name} width={40} height={40} className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                                </div>
-                                <span className="text-[11px] md:text-xs font-bold uppercase tracking-widest text-black/60 group-hover:text-black transition-colors">{cat.name} Collection</span>
-                              </div>
-                            </Link>
-                          ))
-                        ) : (
-                          <p className="text-[10px] text-black/20 italic">No collections found.</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="pt-4 md:pt-6 border-t border-black/5">
-                      <h4 className="text-[8px] md:text-[9px] font-bold text-black/30 uppercase tracking-[0.3em] mb-2 md:mb-3 flex items-center gap-2">
-                        <TrendingUp className="w-3 h-3" />
-                        {search.trendingSearches}
-                      </h4>
-                      <div className="flex flex-wrap lg:flex-col gap-2 md:gap-3">
-                        {search.trending.map((tag) => (
-                          <button
-                            key={tag}
-                            onClick={() => setSearchQuery(tag)}
-                            className="bg-black/5 lg:bg-transparent px-4 py-2 lg:p-0 rounded-full lg:rounded-none text-left text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-black/40 hover:text-black transition-colors"
-                          >
-                            {tag}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Main Results: Products */}
-                  <div className="lg:col-span-9">
-                    <h4 className="text-[8px] md:text-[9px] font-bold text-black/30 uppercase tracking-[0.3em] mb-3 md:mb-4">{search.matchingProducts} ({results.products.length})</h4>
+                  <div>
+                    <h4 className="text-[8px] md:text-[9px] font-bold text-black/30 uppercase tracking-[0.3em] mb-4">
+                      {search.matchingProducts} ({results.products.length})
+                    </h4>
                     {results.products.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                         {results.products.map((product) => (
                           <Link
                             key={product._id || product.id}
                             href={getProductUrl(product)}
                             onClick={onClose}
-                            className="group"
+                            className="group block"
                           >
-                            <div className="relative aspect-[3/4] rounded-[var(--radius,0px)] overflow-hidden bg-black/5 mb-2 md:mb-2.5">
+                            <div className="relative aspect-[3/4] rounded-[var(--radius,0px)] overflow-hidden bg-black/5 mb-2 border border-black/5">
                               {(() => {
                                 const productImg = product.images?.[0] || product.image || "/placeholder.jpg";
                                 return (
@@ -191,17 +147,17 @@ export default function SearchModal({ isOpen, onClose }) {
                                     src={productImg} 
                                     alt={product.name} 
                                     fill 
-                                    sizes="(max-width: 768px) 50vw, 33vw" 
+                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 15vw" 
                                     className="object-cover group-hover:scale-105 transition-transform duration-700" 
                                     unoptimized={productImg ? (!productImg.startsWith("http") && !productImg.includes("cloudinary.com")) : false}
                                   />
                                 );
                               })()}
                             </div>
-                            <div className="space-y-0.5 md:space-y-1">
-                               <p className="text-[7px] md:text-[8px] font-bold text-black/30 uppercase tracking-widest">{product.category}</p>
-                               <h5 className="text-[10px] md:text-sm font-bold uppercase tracking-tight leading-tight">{product.name}</h5>
-                               <p className="text-[9px] md:text-xs font-medium text-black/60">${product.price}</p>
+                            <div className="space-y-0.5">
+                               <p className="text-[7px] font-bold text-black/30 uppercase tracking-widest">{product.category}</p>
+                               <h5 className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight leading-tight line-clamp-2 text-black group-hover:text-black/70 transition-colors">{product.name}</h5>
+                               <p className="text-[8px] md:text-[9px] font-semibold text-black/60">${product.price}</p>
                             </div>
                           </Link>
                         ))}

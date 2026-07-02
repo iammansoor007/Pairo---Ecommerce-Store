@@ -173,33 +173,7 @@ export default function ProductMainSection({ product }) {
           </div>
         )}
 
-        {/* FAQ Summary Section */}
-        {product.faqs && product.faqs.length > 0 && (
-          <div className="pt-8 border-t border-black/5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-[11px] md:text-[12px] font-medium uppercase tracking-[0.2em] text-primary/60">Frequent Inquiries</h3>
-              <div className="flex items-center gap-2 text-[10px] font-medium text-black/40 uppercase tracking-widest">
-                <MessageSquare className="w-3 h-3 text-primary/60" /> {product.faqs.length} Total
-              </div>
-            </div>
-            <div className="space-y-2.5">
-              {product.faqs.slice(0, 2).map((faq, i) => (
-                <div key={i} className="p-4 bg-white border border-border rounded-[var(--radius,0px)] flex gap-3.5 hover:border-primary/30 transition-all cursor-pointer group">
-                  <div className="shrink-0 w-7 h-7 bg-white border border-border/60 rounded-[var(--radius,0px)] flex items-center justify-center group-hover:bg-primary transition-colors">
-                    <HelpCircle className="w-3.5 h-3.5 text-primary/70 group-hover:text-white transition-colors" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-normal text-black tracking-tight">{faq.question}</p>
-                    <p className="text-[12px] text-primary/70 leading-relaxed line-clamp-1 font-light">{faq.answer}</p>
-                  </div>
-                </div>
-              ))}
-              <p className="text-center text-[10px] font-normal text-black/40 uppercase tracking-[0.15em] pt-1.5">
-                View detailed FAQs below
-              </p>
-            </div>
-          </div>
-        )}
+
       </div>
     </div>
   );

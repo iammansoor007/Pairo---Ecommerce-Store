@@ -22,8 +22,41 @@ import {
    Pencil,
    Lock,
    Unlock,
-   Loader2
+   Loader2,
+   Ruler
 } from "lucide-react";
+
+const DEFAULT_SIZES_CM = [
+  { size: "XS", us: "34", eu: "44", chest: "86 - 89", sleeves: "63.5" },
+  { size: "S", us: "36 - 38", eu: "46 - 48", chest: "91 - 97", sleeves: "64.5" },
+  { size: "M", us: "40", eu: "50", chest: "99 - 104", sleeves: "66" },
+  { size: "L", us: "42 - 44", eu: "52 - 54", chest: "106 - 112", sleeves: "67" },
+  { size: "XL", us: "46", eu: "56", chest: "114 - 119", sleeves: "68.5" },
+  { size: "2XL", us: "48 - 50", eu: "58 - 60", chest: "122 - 127", sleeves: "70" },
+  { size: "3XL", us: "52", eu: "62", chest: "129 - 135", sleeves: "71" },
+  { size: "4XL", us: "54 - 56", eu: "64 - 66", chest: "137 - 142", sleeves: "72" },
+];
+
+const DEFAULT_SIZES_IN = [
+  { size: "XS", us: "34", eu: "44", chest: "34 - 35", sleeves: "25" },
+  { size: "S", us: "36 - 38", eu: "46 - 48", chest: "36 - 38", sleeves: "25.4" },
+  { size: "M", us: "40", eu: "50", chest: "39 - 41", sleeves: "26" },
+  { size: "L", us: "42 - 44", eu: "52 - 54", chest: "42 - 44", sleeves: "26.4" },
+  { size: "XL", us: "46", eu: "56", chest: "45 - 47", sleeves: "27" },
+  { size: "2XL", us: "48 - 50", eu: "58 - 60", chest: "48 - 50", sleeves: "27.6" },
+  { size: "3XL", us: "52", eu: "62", chest: "51 - 53", sleeves: "28" },
+  { size: "4XL", us: "54 - 56", eu: "64 - 66", chest: "54 - 56", sleeves: "28.3" },
+];
+
+const DEFAULT_INSTRUCTIONS = [
+  { title: "Shoulder", desc: "Measure from the tip of one shoulder, across your back to the tip of your other shoulder." },
+  { title: "Chest", desc: "Measure the circumference around the fullest area of chest, keeping the tape level." },
+  { title: "Natural Waist", desc: "Measure the circumference around the narrowest area of waist, above the navel." },
+  { title: "Lower Waist", desc: "Measure the circumference around the fullest area of waist, below the navel." },
+  { title: "Hips", desc: "Measure around the fullest part of your body, above the top of your legs." },
+  { title: "Sleeves Outseam", desc: "Measure from your shoulder seam, with your arm slightly bent, to the tip of your wrist." },
+  { title: "Pants Inseam", desc: "Measure from your crotch point down to your ankle." }
+];
 
 const TiptapEditor = dynamic(() => import('./TiptapEditor'), { ssr: false });
 import MediaPicker from "./MediaPicker";
@@ -131,7 +164,15 @@ export default function ProductForm({ productId = null }) {
       attributes: [], // { name: "", type: "custom", values: [{ label: "", hex: "", image: "", value: "", variantImage: "" }] }
       variantCombinations: [], // { title: "", price: "", stock: "", sku: "", image: "" }
       stats: [],
-      faqs: []
+      faqs: [],
+      sizeGuide: {
+         enabled: false,
+         chartImage: "",
+         videoUrl: "https://www.youtube.com/watch?v=ipyhV51zUWk",
+         sizesCm: DEFAULT_SIZES_CM,
+         sizesIn: DEFAULT_SIZES_IN,
+         instructions: DEFAULT_INSTRUCTIONS
+      }
    });
 
    useEffect(() => {
@@ -180,7 +221,15 @@ export default function ProductForm({ productId = null }) {
                   stats: prodData.stats || [],
                   faqs: prodData.faqs || [],
                   overview: prodData.overview || "",
-                  shippingType: prodData.shippingType || "Express"
+                  shippingType: prodData.shippingType || "Express",
+                  sizeGuide: {
+                     enabled: prodData.sizeGuide?.enabled || false,
+                     chartImage: prodData.sizeGuide?.chartImage || "",
+                     videoUrl: prodData.sizeGuide?.videoUrl || "https://www.youtube.com/watch?v=ipyhV51zUWk",
+                     sizesCm: prodData.sizeGuide?.sizesCm?.length > 0 ? prodData.sizeGuide.sizesCm : DEFAULT_SIZES_CM,
+                     sizesIn: prodData.sizeGuide?.sizesIn?.length > 0 ? prodData.sizeGuide.sizesIn : DEFAULT_SIZES_IN,
+                     instructions: prodData.sizeGuide?.instructions?.length > 0 ? prodData.sizeGuide.instructions : DEFAULT_INSTRUCTIONS
+                  }
                });
             }
             setLoading(false);
@@ -562,7 +611,8 @@ export default function ProductForm({ productId = null }) {
                                  { id: "inventory", label: "Inventory", icon: Package },
                                  formData.productType === "variable" && { id: "variants", label: "Variants Engine", icon: Layers },
                                  { id: "stats", label: "Product Stats", icon: Activity },
-                                 { id: "faqs", label: "FAQs", icon: HelpCircle }
+                                 { id: "faqs", label: "FAQs", icon: HelpCircle },
+                                 { id: "sizeguide", label: "Size Guide", icon: Ruler }
                               ].filter(Boolean).map(tab => (
                                  <button
                                     key={tab.id}
@@ -866,6 +916,235 @@ export default function ProductForm({ productId = null }) {
                                     ))}
                                  </div>
                               )}
+
+                               {activeTab === "sizeguide" && (
+                                  <div className="space-y-6">
+                                     <div className="flex items-center gap-3 bg-gray-50 p-4 border border-gray-200 rounded">
+                                        <input
+                                           type="checkbox"
+                                           id="sg_enabled"
+                                           className="w-4 h-4 rounded border-gray-300 text-[#2271b1] focus:ring-[#2271b1]"
+                                           checked={formData.sizeGuide?.enabled || false}
+                                           onChange={(e) => setFormData({
+                                              ...formData,
+                                              sizeGuide: {
+                                                 ...(formData.sizeGuide || {}),
+                                                 enabled: e.target.checked
+                                              }
+                                           })}
+                                        />
+                                        <label htmlFor="sg_enabled" className="text-[13px] font-bold text-gray-700 cursor-pointer">
+                                           Enable Custom Size Guide for this Product
+                                        </label>
+                                     </div>
+
+                                     {formData.sizeGuide?.enabled && (
+                                        <div className="space-y-6">
+                                           {/* Diagram & Video */}
+                                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase mb-2">Size Chart Diagram</label>
+                                                 <MediaPicker
+                                                    value={formData.sizeGuide?.chartImage}
+                                                    onChange={(url) => setFormData({
+                                                       ...formData,
+                                                       sizeGuide: {
+                                                          ...(formData.sizeGuide || {}),
+                                                          chartImage: url
+                                                       }
+                                                    })}
+                                                 />
+                                                 <p className="text-[11px] text-gray-400 mt-2">Diagram showing how to measure.</p>
+                                              </div>
+                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3">
+                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase">YouTube Video Link</label>
+                                                 <input
+                                                    className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
+                                                    placeholder="e.g. https://www.youtube.com/watch?v=ipyhV51zUWk"
+                                                    value={formData.sizeGuide?.videoUrl || ""}
+                                                    onChange={(e) => setFormData({
+                                                       ...formData,
+                                                       sizeGuide: {
+                                                          ...(formData.sizeGuide || {}),
+                                                          videoUrl: e.target.value
+                                                       }
+                                                    })}
+                                                 />
+                                                 <p className="text-[11px] text-gray-400">URL to instructions video (YouTube embed/watch link).</p>
+                                              </div>
+                                           </div>
+
+                                           {/* CM Table */}
+                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                              <div className="flex justify-between items-center mb-3">
+                                                 <h4 className="text-[13px] font-bold text-gray-700">Size Chart (CM)</h4>
+                                                 <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                       const cm = [...(formData.sizeGuide?.sizesCm || [])];
+                                                       cm.push({ size: "", us: "", eu: "", chest: "", sleeves: "" });
+                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                    }}
+                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
+                                                 >
+                                                    + Add Row (CM)
+                                                 </button>
+                                              </div>
+                                              <div className="overflow-x-auto">
+                                                 <table className="w-full text-left text-[11px] border-collapse">
+                                                    <thead>
+                                                       <tr className="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold uppercase">
+                                                          <th className="p-2 w-20">Size</th>
+                                                          <th className="p-2 w-24">US Size</th>
+                                                          <th className="p-2 w-24">EU Size</th>
+                                                          <th className="p-2">Chest (CM)</th>
+                                                          <th className="p-2">Sleeves (CM)</th>
+                                                          <th className="p-2 w-10"></th>
+                                                       </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-100">
+                                                       {(formData.sizeGuide?.sizesCm || []).map((row, rIdx) => {
+                                                          const updateRow = (key, val) => {
+                                                             const cm = [...(formData.sizeGuide?.sizesCm || [])];
+                                                             cm[rIdx] = { ...cm[rIdx], [key]: val };
+                                                             setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                          };
+                                                          return (
+                                                             <tr key={rIdx}>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.size || ""} onChange={(e) => updateRow("size", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.us || ""} onChange={(e) => updateRow("us", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.eu || ""} onChange={(e) => updateRow("eu", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.chest || ""} onChange={(e) => updateRow("chest", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.sleeves || ""} onChange={(e) => updateRow("sleeves", e.target.value)} /></td>
+                                                                <td className="p-1 text-center">
+                                                                   <button type="button" onClick={() => {
+                                                                      const cm = (formData.sizeGuide?.sizesCm || []).filter((_, idx) => idx !== rIdx);
+                                                                      setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                                   }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
+                                                                </td>
+                                                             </tr>
+                                                          );
+                                                       })}
+                                                    </tbody>
+                                                 </table>
+                                              </div>
+                                           </div>
+
+                                           {/* IN Table */}
+                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                              <div className="flex justify-between items-center mb-3">
+                                                 <h4 className="text-[13px] font-bold text-gray-700">Size Chart (INCHES)</h4>
+                                                 <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                       const inches = [...(formData.sizeGuide?.sizesIn || [])];
+                                                       inches.push({ size: "", us: "", eu: "", chest: "", sleeves: "" });
+                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                    }}
+                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
+                                                 >
+                                                    + Add Row (IN)
+                                                 </button>
+                                              </div>
+                                              <div className="overflow-x-auto">
+                                                 <table className="w-full text-left text-[11px] border-collapse">
+                                                    <thead>
+                                                       <tr className="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold uppercase">
+                                                          <th className="p-2 w-20">Size</th>
+                                                          <th className="p-2 w-24">US Size</th>
+                                                          <th className="p-2 w-24">EU Size</th>
+                                                          <th className="p-2">Chest (IN)</th>
+                                                          <th className="p-2">Sleeves (IN)</th>
+                                                          <th className="p-2 w-10"></th>
+                                                       </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-100">
+                                                       {(formData.sizeGuide?.sizesIn || []).map((row, rIdx) => {
+                                                          const updateRow = (key, val) => {
+                                                             const inches = [...(formData.sizeGuide?.sizesIn || [])];
+                                                             inches[rIdx] = { ...inches[rIdx], [key]: val };
+                                                             setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                          };
+                                                          return (
+                                                             <tr key={rIdx}>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.size || ""} onChange={(e) => updateRow("size", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.us || ""} onChange={(e) => updateRow("us", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.eu || ""} onChange={(e) => updateRow("eu", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.chest || ""} onChange={(e) => updateRow("chest", e.target.value)} /></td>
+                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.sleeves || ""} onChange={(e) => updateRow("sleeves", e.target.value)} /></td>
+                                                                <td className="p-1 text-center">
+                                                                   <button type="button" onClick={() => {
+                                                                      const inches = (formData.sizeGuide?.sizesIn || []).filter((_, idx) => idx !== rIdx);
+                                                                      setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                                   }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
+                                                                </td>
+                                                             </tr>
+                                                          );
+                                                       })}
+                                                    </tbody>
+                                                 </table>
+                                              </div>
+                                           </div>
+
+                                           {/* Instructions */}
+                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-4">
+                                              <div className="flex justify-between items-center">
+                                                 <h4 className="text-[13px] font-bold text-gray-700">How To Measure Instructions</h4>
+                                                 <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                       const inst = [...(formData.sizeGuide?.instructions || [])];
+                                                       inst.push({ title: "", desc: "" });
+                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                    }}
+                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
+                                                 >
+                                                    + Add Instruction Step
+                                                 </button>
+                                              </div>
+                                              <div className="space-y-3">
+                                                 {(formData.sizeGuide?.instructions || []).map((row, rIdx) => {
+                                                    const updateRow = (key, val) => {
+                                                       const inst = [...(formData.sizeGuide?.instructions || [])];
+                                                       inst[rIdx] = { ...inst[rIdx], [key]: val };
+                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                    };
+                                                    return (
+                                                       <div key={rIdx} className="border border-gray-150 p-3 bg-gray-50/30 rounded flex items-start gap-4">
+                                                          <div className="flex-1 space-y-2">
+                                                             <input
+                                                                className="w-full border border-gray-200 p-2 text-[12px] font-bold bg-white outline-none focus:border-[#2271b1]"
+                                                                placeholder="Instruction Title (e.g. Shoulder)"
+                                                                value={row.title || ""}
+                                                                onChange={(e) => updateRow("title", e.target.value)}
+                                                             />
+                                                             <textarea
+                                                                className="w-full border border-gray-200 p-2 text-[12px] bg-white outline-none focus:border-[#2271b1] resize-none"
+                                                                placeholder="Instruction Description..."
+                                                                rows={2}
+                                                                value={row.desc || ""}
+                                                                onChange={(e) => updateRow("desc", e.target.value)}
+                                                             />
+                                                          </div>
+                                                          <button
+                                                             type="button"
+                                                             onClick={() => {
+                                                                const inst = (formData.sizeGuide?.instructions || []).filter((_, idx) => idx !== rIdx);
+                                                                setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                             }}
+                                                             className="text-gray-300 hover:text-red-500 mt-1"
+                                                          >
+                                                             <X className="w-4 h-4" />
+                                                          </button>
+                                                       </div>
+                                                    );
+                                                 })}
+                                              </div>
+                                           </div>
+                                        </div>
+                                     )}
+                                  </div>
+                               )}
                            </div>
                         </div>
                      </div>

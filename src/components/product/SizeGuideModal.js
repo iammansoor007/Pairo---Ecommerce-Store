@@ -25,7 +25,28 @@ const SIZES_IN = [
   { size: "4XL", us: "54 - 56", eu: "64 - 66", chest: "54 - 56", sleeves: "28.3" },
 ];
 
-export default function SizeGuideModal({ isOpen, onClose }) {
+const DEFAULT_INSTRUCTIONS = [
+  { title: "Shoulder", desc: "Measure from the tip of one shoulder, across your back to the tip of your other shoulder." },
+  { title: "Chest", desc: "Measure the circumference around the fullest area of chest, keeping the tape level." },
+  { title: "Natural Waist", desc: "Measure the circumference around the narrowest area of waist, above the navel." },
+  { title: "Lower Waist", desc: "Measure the circumference around the fullest area of waist, below the navel." },
+  { title: "Hips", desc: "Measure around the fullest part of your body, above the top of your legs." },
+  { title: "Sleeves Outseam", desc: "Measure from your shoulder seam, with your arm slightly bent, to the tip of your wrist." },
+  { title: "Pants Inseam", desc: "Measure from your crotch point down to your ankle." }
+];
+
+function getYoutubeEmbedUrl(url) {
+  if (!url) return "https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1";
+  let videoId = "";
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length === 11) {
+    videoId = match[2];
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
+}
+
+export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
   const [unit, setUnit] = useState("cm"); // cm or in
   const [showVideo, setShowVideo] = useState(false);
 
@@ -38,15 +59,33 @@ export default function SizeGuideModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const data = unit === "cm" ? SIZES_CM : SIZES_IN;
+  // Resolve config based on custom settings or default fallbacks
+  const isCustomEnabled = !!sizeGuide?.enabled;
+  const tableData = unit === "cm"
+    ? (isCustomEnabled && sizeGuide?.sizesCm?.length > 0 ? sizeGuide.sizesCm : SIZES_CM)
+    : (isCustomEnabled && sizeGuide?.sizesIn?.length > 0 ? sizeGuide.sizesIn : SIZES_IN);
+
+  const instructions = isCustomEnabled && sizeGuide?.instructions?.length > 0
+    ? sizeGuide.instructions
+    : DEFAULT_INSTRUCTIONS;
+
+  const chartImage = isCustomEnabled && sizeGuide?.chartImage
+    ? sizeGuide.chartImage
+    : "/images/size-guide-diagram.png";
+
+  const rawVideoUrl = isCustomEnabled && sizeGuide?.videoUrl
+    ? sizeGuide.videoUrl
+    : "https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1";
+  
+  const embedVideoUrl = getYoutubeEmbedUrl(rawVideoUrl);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full max-w-xl max-h-[92dvh] bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-sg-up rounded-[var(--radius,0px)]">
+      <div className="relative w-full h-full max-w-none max-h-none bg-white flex flex-col overflow-hidden shadow-2xl border border-black animate-sg-up rounded-[var(--radius,0px)]">
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-black shrink-0">
@@ -104,8 +143,8 @@ export default function SizeGuideModal({ isOpen, onClose }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/10">
-                  {data.map((row) => (
-                    <tr key={row.size} className="hover:bg-black/[0.02] text-black">
+                  {tableData.map((row, idx) => (
+                    <tr key={row.size || idx} className="hover:bg-black/[0.02] text-black">
                       <td className="px-3 py-2.5 font-bold">{row.size}</td>
                       <td className="px-3 py-2.5">{row.us}</td>
                       <td className="px-3 py-2.5">{row.eu}</td>
@@ -140,7 +179,7 @@ export default function SizeGuideModal({ isOpen, onClose }) {
                 </div>
               ) : (
                 <iframe
-                  src="https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1"
+                  src={embedVideoUrl}
                   title="Measurement Guide Video"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -151,14 +190,14 @@ export default function SizeGuideModal({ isOpen, onClose }) {
 
             {/* Measurement Guide Image & Explanations */}
             <div className="space-y-6 pt-2">
-              {/* Image Placeholder (for user to add their own image path later) */}
+              {/* Image Frame */}
               <div className="w-full flex justify-center border border-black/10 rounded-[var(--radius,0px)] bg-black/[0.02] p-4">
                 <img
-                  src="/images/size-guide-diagram.png"
-                  alt="Size Guide Diagram Placeholder"
+                  src={chartImage}
+                  alt="Size Guide Diagram"
                   className="max-w-full h-auto object-contain"
                   onError={(e) => {
-                    // Gracefully hide the image frame if they haven't uploaded the file yet
+                    // Gracefully hide the image frame if image loading fails
                     e.target.parentNode.style.display = "none";
                   }}
                 />
@@ -166,16 +205,8 @@ export default function SizeGuideModal({ isOpen, onClose }) {
 
               {/* Descriptions */}
               <div className="space-y-4 text-black">
-                {[
-                  { title: "Shoulder", desc: "Measure from the tip of one shoulder, across your back to the tip of your other shoulder." },
-                  { title: "Chest", desc: "Measure the circumference around the fullest area of chest, keeping the tape level." },
-                  { title: "Natural Waist", desc: "Measure the circumference around the narrowest area of waist, above the navel." },
-                  { title: "Lower Waist", desc: "Measure the circumference around the fullest area of waist, below the navel." },
-                  { title: "Hips", desc: "Measure around the fullest part of your body, above the top of your legs." },
-                  { title: "Sleeves Outseam", desc: "Measure from your shoulder seam, with your arm slightly bent, to the tip of your wrist." },
-                  { title: "Pants Inseam", desc: "Measure from your crotch point down to your ankle." }
-                ].map((item) => (
-                  <div key={item.title} className="text-[11px] sm:text-[12px] leading-relaxed">
+                {instructions.map((item, idx) => (
+                  <div key={item.title || idx} className="text-[11px] sm:text-[12px] leading-relaxed">
                     <p className="font-bold uppercase tracking-wider">{item.title}</p>
                     <p className="text-black/80">{item.desc}</p>
                   </div>

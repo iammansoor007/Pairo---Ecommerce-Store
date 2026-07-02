@@ -39,6 +39,22 @@ const FooterCustomLinkSchema = new mongoose.Schema({
   order: { type: Number, default: 0 }
 }, { _id: false });
 
+// Dynamic footer column — each column is independently typed
+const FooterColumnSchema = new mongoose.Schema({
+  id: { type: String, default: () => Math.random().toString(36).substring(2, 11) },
+  type: { type: String, enum: ['newsletter', 'collections', 'blog_posts', 'pages', 'custom_links'], default: 'custom_links' },
+  heading: { type: String, default: '' },
+  order: { type: Number, default: 0 },
+  // type=collections
+  categoryIds: [String],
+  // type=blog_posts
+  blogIds: [String],
+  // type=pages
+  pageIds: [String],
+  // type=custom_links
+  customLinks: [FooterCustomLinkSchema],
+}, { _id: false });
+
 const SiteConfigSchema = new mongoose.Schema({
   key: { type: String, default: 'main' },
 
@@ -64,17 +80,16 @@ const SiteConfigSchema = new mongoose.Schema({
   // ─── Footer Configuration ──────────────────────────────────
   footerConfig: {
     logoUrl: { type: String, default: '' },        // dynamic footer logo
-    // Column 1 — Newsletter
+    // ── Dynamic columns (new system) ──────────────────────────
+    footerColumns: [FooterColumnSchema],           // fully dynamic column array
+    // ── Legacy fields (backward compat — used when footerColumns is empty) ──
     newsletterHeading: { type: String, default: 'Elite List' },
     newsletterDescription: { type: String, default: '' },
     newsletterPlaceholder: { type: String, default: 'JOIN THE LIST' },
     newsletterButtonText: { type: String, default: 'Subscribe' },
-    // Column 2 — Categories
-    footerCategoryIds: [String],                   // ordered list of category slugs
-    // Column 3 — Blog Posts
-    footerBlogIds: [String],                       // ordered list of blog post IDs
+    footerCategoryIds: [String],
+    footerBlogIds: [String],
     footerBlogHeading: { type: String, default: 'Blog' },
-    // Column 4 — Custom Links
     footerCustomLinks: [FooterCustomLinkSchema],
     footerCustomLinksHeading: { type: String, default: 'Information' },
   },

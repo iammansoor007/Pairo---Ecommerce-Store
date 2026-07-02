@@ -116,7 +116,30 @@ const ProductSchema = new mongoose.Schema({
     1: { type: Number, default: 0 }
   },
   type: { type: String }, // Legacy type (newArrival, etc)
-  id: { type: Number } // Legacy numeric ID
+  id: { type: Number }, // Legacy numeric ID
+  sizeGuide: {
+    enabled: { type: Boolean, default: false },
+    chartImage: { type: String, default: "" },
+    videoUrl: { type: String, default: "" },
+    sizesCm: [{
+      size: String,
+      us: String,
+      eu: String,
+      chest: String,
+      sleeves: String
+    }],
+    sizesIn: [{
+      size: String,
+      us: String,
+      eu: String,
+      chest: String,
+      sleeves: String
+    }],
+    instructions: [{
+      title: String,
+      desc: String
+    }]
+  }
 }, { timestamps: true });
 
 // Ensure unique slugs per tenant

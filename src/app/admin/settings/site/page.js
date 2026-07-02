@@ -403,22 +403,198 @@ function HeaderTab({ config, onChange, dbPages, dbCategories, dbProducts }) {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   TAB: Footer
-   ═══════════════════════════════════════════════════════════════ */
-function FooterTab({ config, onChange, dbCategories, dbBlogs }) {
-  const fc = config.footerConfig || {};
-  const setFc = (u) => onChange({ ...config, footerConfig: { ...fc, ...u } });
-  const customLinks = (fc.footerCustomLinks || []).sort((a, b) => (a.order || 0) - (b.order || 0));
-  const footerCategoryIds = fc.footerCategoryIds || [];
-  const footerBlogIds = fc.footerBlogIds || [];
+/* ════════════════════════════════════════════════════════════
+   TAB: Footer — Dynamic Column Builder
+   ════════════════════════════════════════════════════════════ */
 
-  const addLink = () => setFc({ footerCustomLinks: [...customLinks, { id: generateId(), label: '', url: '', order: customLinks.length }] });
-  const updateLink = (idx, u) => setFc({ footerCustomLinks: customLinks.map((l, i) => i === idx ? { ...l, ...u } : l) });
-  const removeLink = (idx) => setFc({ footerCustomLinks: customLinks.filter((_, i) => i !== idx).map((l, i) => ({ ...l, order: i })) });
+const COLUMN_TYPES = [
+  { value: 'newsletter',   label: 'Newsletter' },
+  { value: 'collections',  label: 'Collections' },
+  { value: 'blog_posts',   label: 'Blog Posts' },
+  { value: 'pages',        label: 'Pages' },
+  { value: 'custom_links', label: 'Custom Links' },
+];
+
+function ColumnEditor({ col, idx, total, dbCategories, dbBlogs, dbPages, onChange, onDelete, onMove }) {
+  const [expanded, setExpanded] = useState(true);
+
+  const addCustomLink = () => onChange({ customLinks: [...(col.customLinks || []), { id: generateId(), label: '', url: '', order: (col.customLinks||[]).length }] });
+  const updateCustomLink = (li, u) => onChange({ customLinks: (col.customLinks||[]).map((l,i) => i===li ? {...l,...u} : l) });
+  const removeCustomLink = (li) => onChange({ customLinks: (col.customLinks||[]).filter((_,i) => i!==li).map((l,i) => ({...l,order:i})) });
+
+  const toggleCat   = (slug) => { const ids = col.categoryIds||[]; onChange({ categoryIds: ids.includes(slug) ? ids.filter(s=>s!==slug) : [...ids,slug] }); };
+  const toggleBlog  = (id)   => { const ids = col.blogIds||[];     onChange({ blogIds:     ids.includes(id)   ? ids.filter(s=>s!==id)   : [...ids,id]   }); };
+  const togglePage  = (id)   => { const ids = col.pageIds||[];     onChange({ pageIds:     ids.includes(id)   ? ids.filter(s=>s!==id)   : [...ids,id]   }); };
 
   return (
-    <div className="space-y-8">
+    <div className="bg-white border border-[#c3c4c7] rounded-[3px] overflow-hidden">
+      {/* Column Card Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7]">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-bold text-[#646970] uppercase tracking-wider">Col {idx+1}</span>
+          <input
+            className={`${inputClass} w-48 text-[13px] font-semibold`}
+            value={col.heading}
+            onChange={e => onChange({ heading: e.target.value })}
+            placeholder="Column Heading"
+          />
+          <select
+            className={`${inputClass} w-40 text-[12px]`}
+            value={col.type}
+            onChange={e => onChange({ type: e.target.value })}
+          >
+            {COLUMN_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
+        </div>
+        <div className="flex items-center gap-1">
+          <button type="button" disabled={idx===0} onClick={() => onMove(idx, -1)}
+            className="p-1.5 rounded-[3px] text-[#646970] hover:bg-[#e5e5e5] disabled:opacity-30 transition-colors" title="Move Up">
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
+          <button type="button" disabled={idx===total-1} onClick={() => onMove(idx, 1)}
+            className="p-1.5 rounded-[3px] text-[#646970] hover:bg-[#e5e5e5] disabled:opacity-30 transition-colors" title="Move Down">
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+          <button type="button" onClick={() => setExpanded(v => !v)}
+            className="p-1.5 rounded-[3px] text-[#646970] hover:bg-[#e5e5e5] transition-colors">
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+          <button type="button" onClick={onDelete}
+            className="p-1.5 rounded-[3px] text-[#d63638] hover:bg-red-50 transition-colors" title="Remove Column">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Column Body */}
+      {expanded && (
+        <div className="p-4">
+
+          {/* Newsletter */}
+          {col.type === 'newsletter' && (
+            <p className="text-[12px] text-[#646970] italic">Newsletter signup form will render in this column. Customize the heading above — email input and submit are automatic.</p>
+          )}
+
+          {/* Collections */}
+          {col.type === 'collections' && (
+            <div>
+              <p className="text-[12px] text-[#646970] mb-3">Select which categories appear in this column.</p>
+              {dbCategories.length === 0
+                ? <p className="text-[12px] text-[#646970] italic">No published categories found.</p>
+                : <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {dbCategories.map(cat => {
+                      const selected = (col.categoryIds||[]).includes(cat.slug);
+                      return (
+                        <label key={cat.slug} className={`flex items-center gap-2 p-2.5 border rounded-[3px] cursor-pointer text-[12px] ${selected ? 'border-[#2271b1] bg-[#f0f6fb]' : 'border-[#c3c4c7] hover:bg-[#f6f7f7]'}`}>
+                          <input type="checkbox" checked={selected} onChange={() => toggleCat(cat.slug)} />
+                          <span className="font-medium text-[#1d2327]">{cat.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+              }
+            </div>
+          )}
+
+          {/* Blog Posts */}
+          {col.type === 'blog_posts' && (
+            <div>
+              <p className="text-[12px] text-[#646970] mb-3">Select which blog posts appear in this column.</p>
+              {dbBlogs.length === 0
+                ? <p className="text-[12px] text-[#646970] italic">No published blog posts found.</p>
+                : <div className="max-h-48 overflow-y-auto border border-[#c3c4c7] rounded-[3px] divide-y divide-[#f0f0f1]">
+                    {dbBlogs.map(blog => {
+                      const id = blog._id?.toString();
+                      const selected = (col.blogIds||[]).includes(id);
+                      return (
+                        <label key={id} className={`flex items-center gap-2 px-3 py-2 cursor-pointer text-[12px] transition-colors ${selected ? 'bg-[#f0f6fb]' : 'hover:bg-[#f6f7f7]'}`}>
+                          <input type="checkbox" checked={selected} onChange={() => toggleBlog(id)} />
+                          <span className="text-[#1d2327] truncate">{blog.title}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+              }
+            </div>
+          )}
+
+          {/* Pages */}
+          {col.type === 'pages' && (
+            <div>
+              <p className="text-[12px] text-[#646970] mb-3">Select which pages appear in this column.</p>
+              {dbPages.length === 0
+                ? <p className="text-[12px] text-[#646970] italic">No published pages found.</p>
+                : <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {dbPages.map(page => {
+                      const id = page._id?.toString();
+                      const selected = (col.pageIds||[]).includes(id);
+                      return (
+                        <label key={id} className={`flex items-center gap-2 p-2.5 border rounded-[3px] cursor-pointer text-[12px] ${selected ? 'border-[#2271b1] bg-[#f0f6fb]' : 'border-[#c3c4c7] hover:bg-[#f6f7f7]'}`}>
+                          <input type="checkbox" checked={selected} onChange={() => togglePage(id)} />
+                          <span className="font-medium text-[#1d2327]">{page.title || page.slug}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+              }
+            </div>
+          )}
+
+          {/* Custom Links */}
+          {col.type === 'custom_links' && (
+            <div className="space-y-2">
+              {(col.customLinks||[]).length === 0 && <p className="text-[12px] text-[#646970] italic">No links yet. Add one below.</p>}
+              {(col.customLinks||[]).map((link, li) => (
+                <div key={link.id||li} className="flex gap-2 items-center">
+                  <input className={`${inputClass} flex-1`} value={link.label} onChange={e => updateCustomLink(li, { label: e.target.value })} placeholder="Label" />
+                  <input className={`${inputClass} flex-1`} value={link.url}   onChange={e => updateCustomLink(li, { url:   e.target.value })} placeholder="/url or https://..." />
+                  <button type="button" onClick={() => removeCustomLink(li)} className="p-1 text-[#d63638] hover:bg-red-50 rounded-[3px]"><X className="w-4 h-4" /></button>
+                </div>
+              ))}
+              <button type="button" onClick={addCustomLink} className="text-[#2271b1] text-[12px] font-medium hover:underline flex items-center gap-1 mt-1">
+                <Plus className="w-3 h-3" /> Add Link
+              </button>
+            </div>
+          )}
+
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FooterTab({ config, onChange, dbCategories, dbBlogs, dbPages }) {
+  const fc = config.footerConfig || {};
+  const setFc = (u) => onChange({ ...config, footerConfig: { ...fc, ...u } });
+
+  const columns = (fc.footerColumns || []).slice().sort((a,b) => (a.order||0)-(b.order||0));
+
+  const addColumn = () => {
+    const newCol = { id: generateId(), type: 'custom_links', heading: 'New Column', order: columns.length, categoryIds: [], blogIds: [], pageIds: [], customLinks: [] };
+    setFc({ footerColumns: [...columns, newCol] });
+  };
+
+  const updateColumn = (idx, u) => {
+    const updated = columns.map((c,i) => i===idx ? {...c,...u} : c);
+    setFc({ footerColumns: updated });
+  };
+
+  const deleteColumn = (idx) => {
+    const updated = columns.filter((_,i) => i!==idx).map((c,i) => ({...c, order:i}));
+    setFc({ footerColumns: updated });
+  };
+
+  const moveColumn = (idx, dir) => {
+    const arr = [...columns];
+    const target = idx + dir;
+    if (target < 0 || target >= arr.length) return;
+    [arr[idx], arr[target]] = [arr[target], arr[idx]];
+    setFc({ footerColumns: arr.map((c,i) => ({...c, order:i})) });
+  };
+
+  return (
+    <div className="space-y-6">
+
       {/* Footer Logo */}
       <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
         <h3 className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] text-[13px] font-bold text-[#1d2327]">Footer Logo</h3>
@@ -427,88 +603,46 @@ function FooterTab({ config, onChange, dbCategories, dbBlogs }) {
         </tbody></table>
       </div>
 
-      {/* Newsletter Settings */}
+      {/* Dynamic Columns */}
       <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
-        <h3 className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] text-[13px] font-bold text-[#1d2327]">Column 1 — Newsletter</h3>
-        <table className="w-full"><tbody>
-          <TextRow label="Heading" value={fc.newsletterHeading} onChange={v => setFc({ newsletterHeading: v })} placeholder="Elite List" />
-          <TextRow label="Placeholder" value={fc.newsletterPlaceholder} onChange={v => setFc({ newsletterPlaceholder: v })} placeholder="JOIN THE LIST" />
-          <TextRow label="Description" value={fc.newsletterDescription} onChange={v => setFc({ newsletterDescription: v })} placeholder="Optional description text" textarea />
-        </tbody></table>
-      </div>
-
-      {/* Product Categories */}
-      <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
-        <h3 className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] text-[13px] font-bold text-[#1d2327]">Column 2 — Product Categories</h3>
-        <div className="p-4">
-          <p className="text-[12px] text-[#646970] mb-3">Select which categories appear in the footer.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {dbCategories.map(cat => {
-              const selected = footerCategoryIds.includes(cat.slug);
-              return (
-                <label key={cat.slug} className={`flex items-center gap-2 p-2.5 border rounded-[3px] cursor-pointer text-[12px] ${selected ? 'border-[#2271b1] bg-[#f0f6fb]' : 'border-[#c3c4c7] hover:bg-[#f6f7f7]'}`}>
-                  <input type="checkbox" checked={selected} onChange={() => {
-                    const updated = selected ? footerCategoryIds.filter(s => s !== cat.slug) : [...footerCategoryIds, cat.slug];
-                    setFc({ footerCategoryIds: updated });
-                  }} />
-                  <span className="font-medium text-[#1d2327]">{cat.name}</span>
-                </label>
-              );
-            })}
+        <div className="flex items-center justify-between px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7]">
+          <div>
+            <h3 className="text-[13px] font-bold text-[#1d2327]">Footer Columns</h3>
+            <p className="text-[11px] text-[#646970] mt-0.5">Add, remove and reorder columns. Each can show a newsletter, collections, blog posts, pages or custom links.</p>
           </div>
-          {dbCategories.length === 0 && <p className="text-[12px] text-[#646970] italic">No published categories found.</p>}
+          <button type="button" onClick={addColumn}
+            className="flex items-center gap-1.5 bg-[#2271b1] text-white px-3 py-[6px] text-[12px] font-semibold rounded-[3px] hover:bg-[#135e96] transition-colors">
+            <Plus className="w-3.5 h-3.5" /> Add Column
+          </button>
         </div>
-      </div>
-
-      {/* Blog Posts */}
-      <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
-        <h3 className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] text-[13px] font-bold text-[#1d2327]">Column 3 — Blog Posts</h3>
-        <table className="w-full"><tbody>
-          <TextRow label="Column Heading" value={fc.footerBlogHeading} onChange={v => setFc({ footerBlogHeading: v })} placeholder="Journal" />
-        </tbody></table>
-        <div className="p-4 pt-0">
-          <div className="space-y-1 max-h-48 overflow-y-auto border border-[#c3c4c7] rounded-[3px]">
-            {dbBlogs.map(blog => {
-              const id = blog._id?.toString();
-              const selected = footerBlogIds.includes(id);
-              return (
-                <label key={id} className={`flex items-center gap-2 px-3 py-2 cursor-pointer text-[12px] transition-colors ${selected ? 'bg-[#f0f6fb]' : 'hover:bg-[#f6f7f7]'}`}>
-                  <input type="checkbox" checked={selected} onChange={() => {
-                    const updated = selected ? footerBlogIds.filter(s => s !== id) : [...footerBlogIds, id];
-                    setFc({ footerBlogIds: updated });
-                  }} />
-                  <span className="text-[#1d2327] truncate">{blog.title}</span>
-                </label>
-              );
-            })}
-            {dbBlogs.length === 0 && <p className="text-[12px] text-[#646970] italic p-3">No published blog posts found.</p>}
-          </div>
-        </div>
-      </div>
-
-      {/* Custom Links */}
-      <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
-        <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] flex items-center justify-between">
-          <h3 className="text-[13px] font-bold text-[#1d2327]">Column 4 — Custom Links</h3>
-          <button type="button" onClick={addLink} className="text-[#2271b1] text-[12px] font-medium hover:underline flex items-center gap-1"><Plus className="w-3 h-3" /> Add Link</button>
-        </div>
-        <table className="w-full"><tbody>
-          <TextRow label="Column Heading" value={fc.footerCustomLinksHeading} onChange={v => setFc({ footerCustomLinksHeading: v })} placeholder="Information" />
-        </tbody></table>
-        <div className="px-4 pb-4 space-y-2">
-          {customLinks.length === 0 && <p className="text-[12px] text-[#646970] italic">No custom links added yet.</p>}
-          {customLinks.map((link, idx) => (
-            <div key={link.id || idx} className="flex gap-2 items-center">
-              <input className={`${inputClass} flex-1`} value={link.label} onChange={e => updateLink(idx, { label: e.target.value })} placeholder="Label" />
-              <input className={`${inputClass} flex-1`} value={link.url} onChange={e => updateLink(idx, { url: e.target.value })} placeholder="/url or https://..." />
-              <button type="button" onClick={() => removeLink(idx)} className="p-1 text-[#d63638] hover:bg-red-50 rounded-[3px]"><X className="w-4 h-4" /></button>
+        <div className="p-4 space-y-4">
+          {columns.length === 0 && (
+            <div className="text-center py-8 border border-dashed border-[#c3c4c7] rounded-[3px]">
+              <p className="text-[13px] text-[#646970] mb-3">No columns yet. Click <strong>Add Column</strong> to start building your footer.</p>
+              <p className="text-[11px] text-[#646970]">Tip: The footer will fall back to the default 4-column layout until you add at least one column here.</p>
             </div>
+          )}
+          {columns.map((col, idx) => (
+            <ColumnEditor
+              key={col.id||idx}
+              col={col}
+              idx={idx}
+              total={columns.length}
+              dbCategories={dbCategories}
+              dbBlogs={dbBlogs}
+              dbPages={dbPages}
+              onChange={u => updateColumn(idx, u)}
+              onDelete={() => deleteColumn(idx)}
+              onMove={(i, dir) => moveColumn(i, dir)}
+            />
           ))}
         </div>
       </div>
+
     </div>
   );
 }
+
 
 /* ═══════════════════════════════════════════════════════════════
    TAB: Social Links
@@ -641,7 +775,7 @@ export default function SiteSettingsPage() {
       <div className="pb-20">
         {tab === 'general' && <GeneralTab config={config} onChange={setConfig} />}
         {tab === 'header' && <HeaderTab config={config} onChange={setConfig} dbPages={dbPages} dbCategories={dbCategories} dbProducts={dbProducts} />}
-        {tab === 'footer' && <FooterTab config={config} onChange={setConfig} dbCategories={dbCategories} dbBlogs={dbBlogs} />}
+        {tab === 'footer' && <FooterTab config={config} onChange={setConfig} dbCategories={dbCategories} dbBlogs={dbBlogs} dbPages={dbPages} />}
         {tab === 'social' && <SocialLinksTab config={config} onChange={setConfig} />}
       </div>
 

@@ -47,6 +47,123 @@ const SOCIAL_ICONS = {
   tiktok: TiktokIcon,
 };
 
+// ── Dynamic Column Renderer ────────────────────────────────────────────────────
+function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, submitting, itemVariants }) {
+  const { _dbCategories, _dbBlogs, _dbPages } = siteData;
+
+  const heading = col.heading || '';
+
+  // ── Newsletter ──
+  if (col.type === 'newsletter') {
+    return (
+      <motion.div variants={itemVariants} className="space-y-6">
+        <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{heading}</h3>
+        <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="JOIN THE LIST"
+            disabled={submitting}
+            className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
+          />
+          <button type="submit" disabled={submitting} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-white transition-colors disabled:opacity-50">
+            <ArrowUpRight className="w-4 h-4" />
+          </button>
+        </form>
+      </motion.div>
+    );
+  }
+
+  // ── Collections ──
+  if (col.type === 'collections') {
+    const cats = (col.categoryIds || [])
+      .map(slug => (_dbCategories || []).find(c => c.slug === slug))
+      .filter(Boolean);
+    return (
+      <motion.div variants={itemVariants} className="space-y-6">
+        <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{heading}</h3>
+        <ul className="space-y-3">
+          {cats.map(cat => (
+            <li key={cat.slug || cat.name}>
+              <Link href={getCategoryUrl(cat)} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                {cat.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    );
+  }
+
+  // ── Blog Posts ──
+  if (col.type === 'blog_posts') {
+    const blogs = (col.blogIds || [])
+      .map(id => (_dbBlogs || []).find(b => b._id?.toString() === id))
+      .filter(Boolean);
+    return (
+      <motion.div variants={itemVariants} className="space-y-6">
+        <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{heading}</h3>
+        <ul className="space-y-3">
+          {blogs.map(blog => (
+            <li key={blog._id?.toString()}>
+              <Link href={`/blog/${blog.slug}`} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                {blog.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    );
+  }
+
+  // ── Pages ──
+  if (col.type === 'pages') {
+    const pages = (col.pageIds || [])
+      .map(id => (_dbPages || []).find(p => p._id?.toString() === id))
+      .filter(Boolean);
+    return (
+      <motion.div variants={itemVariants} className="space-y-6">
+        <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{heading}</h3>
+        <ul className="space-y-3">
+          {pages.map(page => {
+            const href = page.slug ? `/pages/${page.slug}` : '#';
+            return (
+              <li key={page._id?.toString()}>
+                <Link href={href} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                  {page.title || page.slug}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </motion.div>
+    );
+  }
+
+  // ── Custom Links (default) ──
+  const links = (col.customLinks || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+  return (
+    <motion.div variants={itemVariants} className="space-y-6">
+      <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{heading}</h3>
+      <ul className="space-y-3">
+        {links.map(link => {
+          const href = link.url || '#';
+          const resolved = href === '/home' || href === 'home' ? '/' : href;
+          return (
+            <li key={link.id || link.label}>
+              <Link href={resolved} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                {link.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </motion.div>
+  );
+}
+
 export default function Footer() {
   const siteData = useSiteData();
   const [email, setEmail] = useState('');
@@ -57,37 +174,34 @@ export default function Footer() {
   const { footer, categories, footerConfig, socialLinks, brand, _dbCategories, _dbBlogs } = siteData;
   const fc = footerConfig || {};
 
-  // ── Column 1 - Newsletter ──
+  // ── Dynamic columns (new system) ──
+  const footerColumns = (fc.footerColumns || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+  const useDynamicColumns = footerColumns.length > 0;
+
+  // ── Legacy: Column 1 - Newsletter ──
   const newsletterHeading = fc.newsletterHeading || 'Elite List';
   const newsletterPlaceholder = fc.newsletterPlaceholder || 'JOIN THE LIST';
 
-  // ── Column 2 - Categories ──
+  // ── Legacy: Column 2 - Categories ──
   const footerCategories = (() => {
-    if (fc.footerCategoryIds && fc.footerCategoryIds.length > 0 && _dbCategories?.length > 0) {
-      return fc.footerCategoryIds
-        .map(slug => _dbCategories.find(c => c.slug === slug))
-        .filter(Boolean);
+    if (fc.footerCategoryIds?.length > 0 && _dbCategories?.length > 0) {
+      return fc.footerCategoryIds.map(slug => _dbCategories.find(c => c.slug === slug)).filter(Boolean);
     }
-    // Legacy fallback
     return categories?.items || _dbCategories || [];
   })();
 
-  // ── Column 3 - Blog Posts ──
+  // ── Legacy: Column 3 - Blog Posts ──
   const footerBlogHeading = fc.footerBlogHeading || 'Journal';
   const footerBlogs = (() => {
-    if (fc.footerBlogIds && fc.footerBlogIds.length > 0 && _dbBlogs?.length > 0) {
-      return fc.footerBlogIds
-        .map(id => _dbBlogs.find(b => b._id?.toString() === id))
-        .filter(Boolean);
+    if (fc.footerBlogIds?.length > 0 && _dbBlogs?.length > 0) {
+      return fc.footerBlogIds.map(id => _dbBlogs.find(b => b._id?.toString() === id)).filter(Boolean);
     }
     return [];
   })();
 
-  // ── Column 4 - Custom Links ──
+  // ── Legacy: Column 4 - Custom Links ──
   const footerCustomLinksHeading = fc.footerCustomLinksHeading || 'Information';
   const footerCustomLinks = (fc.footerCustomLinks || []).sort((a, b) => (a.order || 0) - (b.order || 0));
-
-  // Legacy fallback for column 4 (information links)
   const legacyInfoLinks = footer?.sections?.[1]?.links || [];
 
   // ── Social Links ──
@@ -143,17 +257,25 @@ export default function Footer() {
     })
   };
 
+  // Grid class based on column count
+  const gridColsClass = useDynamicColumns
+    ? {
+        1: 'grid-cols-1',
+        2: 'grid-cols-1 sm:grid-cols-2',
+        3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+        4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+        5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5',
+        6: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-6',
+      }[Math.min(footerColumns.length, 6)] || 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+
   return (
     <footer className="bg-black text-white pt-16 md:pt-24 pb-12 overflow-hidden relative z-10 border-t border-white/10">
       <div className="container mx-auto px-6 md:px-16 relative z-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: false }} variants={containerVariants} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 pb-12 border-b border-white/10">
           <motion.div variants={itemVariants}>
             <Link href="/" className="flex-shrink-0">
-
-
-
               <Image src={logo} alt="Pairo Logo" width={110} height={40} className="object-contain h-10 w-auto" />
-
             </Link>
           </motion.div>
           <motion.div variants={itemVariants} className="flex items-center gap-8">
@@ -167,7 +289,6 @@ export default function Footer() {
                 );
               })
             ) : (
-              // Legacy fallback icons (placeholder)
               <>
                 <Link href="#" className="text-white/60 hover:text-white transition-colors"><FacebookIcon className="w-5 h-5" /></Link>
                 <Link href="#" className="text-white/60 hover:text-white transition-colors"><InstagramIcon className="w-5 h-5" /></Link>
@@ -177,91 +298,115 @@ export default function Footer() {
           </motion.div>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: false }} variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 py-16">
-          {/* Column 1 — Newsletter */}
-          <motion.div variants={itemVariants} className="space-y-6">
-            <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{newsletterHeading}</h3>
-            <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder={newsletterPlaceholder}
-                disabled={submitting}
-                className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
+        {/* ── Columns ── */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: false }}
+          variants={containerVariants}
+          className={`grid ${gridColsClass} gap-12 py-16`}
+        >
+          {useDynamicColumns ? (
+            // ── NEW: Dynamic columns ──
+            footerColumns.map((col, idx) => (
+              <FooterColumn
+                key={col.id || idx}
+                col={col}
+                siteData={siteData}
+                handleNewsletterSubmit={handleNewsletterSubmit}
+                email={email}
+                setEmail={setEmail}
+                submitting={submitting}
+                itemVariants={itemVariants}
               />
-              <button type="submit" disabled={submitting} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-white transition-colors disabled:opacity-50">
-                <ArrowUpRight className="w-4 h-4" />
-              </button>
-            </form>
-          </motion.div>
-
-          {/* Column 2 — Product Categories */}
-          <motion.div variants={itemVariants} className="space-y-6">
-            <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">Collections</h3>
-            <ul className="space-y-3">
-              {footerCategories.map((cat) => (
-                <li key={cat.slug || cat.name}>
-                  <Link href={getCategoryUrl(cat)} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                    {cat.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Column 3 — Blog Posts */}
-          {footerBlogs.length > 0 ? (
-            <motion.div variants={itemVariants} className="space-y-6">
-              <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{footerBlogHeading}</h3>
-              <ul className="space-y-3">
-                {footerBlogs.map((blog) => (
-                  <li key={blog._id?.toString()}>
-                    <Link href={`/blog/${blog.slug}`} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                      {blog.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+            ))
           ) : (
-            // Render Column 3 as custom links heading if no blog selected (legacy: was blank)
-            <motion.div variants={itemVariants} className="space-y-6" />
-          )}
+            // ── LEGACY: Hardcoded 4 columns ──
+            <>
+              {/* Column 1 — Newsletter */}
+              <motion.div variants={itemVariants} className="space-y-6">
+                <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{newsletterHeading}</h3>
+                <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder={newsletterPlaceholder}
+                    disabled={submitting}
+                    className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[10px] font-bold tracking-[0.2em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
+                  />
+                  <button type="submit" disabled={submitting} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-white transition-colors disabled:opacity-50">
+                    <ArrowUpRight className="w-4 h-4" />
+                  </button>
+                </form>
+              </motion.div>
 
-          {/* Column 4 — Custom Links */}
-          <motion.div variants={itemVariants} className="space-y-6">
-            <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{footerCustomLinksHeading}</h3>
-            <ul className="space-y-3">
-              {footerCustomLinks.length > 0 ? (
-                footerCustomLinks.map((link) => {
-                  const href = link.url || '#';
-                  const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
-                  return (
-                    <li key={link.id || link.label}>
-                      <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                        {link.label}
+              {/* Column 2 — Product Categories */}
+              <motion.div variants={itemVariants} className="space-y-6">
+                <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">Collections</h3>
+                <ul className="space-y-3">
+                  {footerCategories.map((cat) => (
+                    <li key={cat.slug || cat.name}>
+                      <Link href={getCategoryUrl(cat)} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                        {cat.name}
                       </Link>
                     </li>
-                  );
-                })
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Column 3 — Blog Posts */}
+              {footerBlogs.length > 0 ? (
+                <motion.div variants={itemVariants} className="space-y-6">
+                  <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{footerBlogHeading}</h3>
+                  <ul className="space-y-3">
+                    {footerBlogs.map((blog) => (
+                      <li key={blog._id?.toString()}>
+                        <Link href={`/blog/${blog.slug}`} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                          {blog.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
               ) : (
-                // Legacy fallback
-                legacyInfoLinks.map((link) => {
-                  const href = link.href;
-                  const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
-                  return (
-                    <li key={link.name}>
-                      <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
-                        {link.name}
-                      </Link>
-                    </li>
-                  );
-                })
+                <motion.div variants={itemVariants} className="space-y-6" />
               )}
-            </ul>
-          </motion.div>
+
+              {/* Column 4 — Custom Links */}
+              <motion.div variants={itemVariants} className="space-y-6">
+                <h3 className="text-[10px] font-bold text-white/60 uppercase tracking-[0.4em]">{footerCustomLinksHeading}</h3>
+                <ul className="space-y-3">
+                  {footerCustomLinks.length > 0 ? (
+                    footerCustomLinks.map((link) => {
+                      const href = link.url || '#';
+                      const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
+                      return (
+                        <li key={link.id || link.label}>
+                          <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                            {link.label}
+                          </Link>
+                        </li>
+                      );
+                    })
+                  ) : (
+                    legacyInfoLinks.map((link) => {
+                      const href = link.href;
+                      const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
+                      return (
+                        <li key={link.name}>
+                          <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[9px] uppercase tracking-widest transition-colors block">
+                            {link.name}
+                          </Link>
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </motion.div>
+            </>
+          )}
         </motion.div>
       </div>
 

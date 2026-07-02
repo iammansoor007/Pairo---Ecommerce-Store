@@ -49,16 +49,20 @@ export default function ProductGallery({ images = [], variantImage, productName 
   const prevImage = () => setLightboxIndex(i => (i - 1 + allImages.length) % allImages.length);
   const nextImage = () => setLightboxIndex(i => (i + 1) % allImages.length);
 
-  // Keyboard navigation for lightbox
+  // Keyboard navigation and scroll lock for lightbox
   useEffect(() => {
     if (!lightboxOpen) return;
+    document.body.style.overflow = "hidden";
     const onKey = (e) => {
       if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowLeft") prevImage();
       if (e.key === "ArrowRight") nextImage();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
   }, [lightboxOpen]);
 
   // Touch swipe for lightbox
@@ -145,7 +149,7 @@ export default function ProductGallery({ images = [], variantImage, productName 
       {/* Lightbox Modal */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-[999] bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center animate-fade-in"
           onClick={closeLightbox}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}

@@ -41,6 +41,20 @@ export default function ClientProductActions({ product, onVariantChange }) {
     })) ||
     [];
 
+  const sizeAttribute = attributes.find(a => a.name.toLowerCase() === "size");
+  const isCustomSizeSelected = sizeAttribute && selectedOptions[sizeAttribute.name]?.toLowerCase() === "custom";
+
+  const handleCustomizeClick = () => {
+    const updatedOptions = { ...selectedOptions };
+    for (const key of Object.keys(updatedOptions)) {
+      if (key.toLowerCase().includes("size") || key.toLowerCase().includes("color")) {
+        delete updatedOptions[key];
+      }
+    }
+    setSelectedOptions(updatedOptions);
+    setCustomizeOpen(true);
+  };
+
   const handleOptionSelect = (attrName, option) => {
     const newOptions = { ...selectedOptions, [attrName]: option.label };
     setSelectedOptions(newOptions);
@@ -302,20 +316,22 @@ export default function ClientProductActions({ product, onVariantChange }) {
           </button>
 
           {/* ─── Premium Feature Buttons ──────────────────────────── */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 pt-0.5">
+          <div className={isCustomSizeSelected ? "grid grid-cols-2 gap-3 pt-0.5" : "pt-0.5"}>
             {/* Made to Measure */}
-            <button
-              type="button"
-              onClick={() => setM2mOpen(true)}
-              className="w-full h-12 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.25em] text-[12px] md:text-[13px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
-            >
-              <span>Measure (+$25)</span>
-            </button>
+            {isCustomSizeSelected && (
+              <button
+                type="button"
+                onClick={() => setM2mOpen(true)}
+                className="w-full h-12 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.25em] text-[12px] md:text-[13px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
+              >
+                <span>Measure (+$25)</span>
+              </button>
+            )}
 
             {/* Customize Product */}
             <button
               type="button"
-              onClick={() => setCustomizeOpen(true)}
+              onClick={handleCustomizeClick}
               className="w-full h-12 border border-black rounded-[var(--radius,0px)] text-black font-bold uppercase tracking-[0.25em] text-[12px] md:text-[13px] hover:bg-black hover:text-white transition-all duration-200 active:scale-[0.98]"
             >
               <span>Customize</span>
@@ -341,6 +357,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
       <SizeGuideModal
         isOpen={sizeGuideOpen}
         onClose={() => setSizeGuideOpen(false)}
+        sizeGuide={product.sizeGuide}
       />
     </>
   );
