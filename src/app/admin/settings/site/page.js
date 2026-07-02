@@ -639,6 +639,65 @@ function FooterTab({ config, onChange, dbCategories, dbBlogs, dbPages }) {
         </div>
       </div>
 
+      {/* Privacy & Terms Page Links */}
+      <div className="bg-white border border-[#c3c4c7] rounded-[3px]">
+        <h3 className="px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7] text-[13px] font-bold text-[#1d2327]">Privacy & Terms Links</h3>
+        <p className="px-4 pt-3 text-[12px] text-[#646970]">
+          Select which published page should open when a visitor clicks the Privacy or Terms link in the footer.
+          Create your pages first under <strong>Pages → Add New</strong>.
+        </p>
+        <table className="w-full mt-2">
+          <tbody>
+            <tr className="border-b border-[#f0f0f1]">
+              <th className="text-left px-4 py-3 align-top w-52">
+                <label className="block text-[13px] font-semibold text-[#1d2327] mb-[2px]">Privacy Policy Page</label>
+                <p className="text-[12px] text-[#646970]">Footer &ldquo;Privacy&rdquo; link target</p>
+              </th>
+              <td className="px-4 py-3">
+                <select
+                  value={fc.privacyPageSlug || ""}
+                  onChange={e => setFc({ privacyPageSlug: e.target.value })}
+                  className="w-full max-w-sm border border-[#8c8f94] rounded-[3px] px-3 py-[6px] text-[13px] outline-none focus:border-[#2271b1] focus:shadow-[0_0_0_1px_#2271b1] bg-white"
+                >
+                  <option value="">— None selected —</option>
+                  {(dbPages || []).map(p => (
+                    <option key={p._id || p.slug} value={p.slug}>{p.title} ({p.slug})</option>
+                  ))}
+                </select>
+                {fc.privacyPageSlug && (
+                  <p className="text-[11px] text-[#2271b1] mt-1">
+                    Link will go to: <strong>/pages/{fc.privacyPageSlug}</strong>
+                  </p>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <th className="text-left px-4 py-3 align-top w-52">
+                <label className="block text-[13px] font-semibold text-[#1d2327] mb-[2px]">Terms of Service Page</label>
+                <p className="text-[12px] text-[#646970]">Footer &ldquo;Terms&rdquo; link target</p>
+              </th>
+              <td className="px-4 py-3">
+                <select
+                  value={fc.termsPageSlug || ""}
+                  onChange={e => setFc({ termsPageSlug: e.target.value })}
+                  className="w-full max-w-sm border border-[#8c8f94] rounded-[3px] px-3 py-[6px] text-[13px] outline-none focus:border-[#2271b1] focus:shadow-[0_0_0_1px_#2271b1] bg-white"
+                >
+                  <option value="">— None selected —</option>
+                  {(dbPages || []).map(p => (
+                    <option key={p._id || p.slug} value={p.slug}>{p.title} ({p.slug})</option>
+                  ))}
+                </select>
+                {fc.termsPageSlug && (
+                  <p className="text-[11px] text-[#2271b1] mt-1">
+                    Link will go to: <strong>/pages/{fc.termsPageSlug}</strong>
+                  </p>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   );
 }

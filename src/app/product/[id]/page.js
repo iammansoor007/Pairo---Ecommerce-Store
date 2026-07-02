@@ -162,14 +162,14 @@ export default async function ProductDetailPage({ params, searchParams }) {
   });
 
   return (
-    <div className="bg-white min-h-screen font-sans">
+    <div className="bg-white min-h-screen font-sans overflow-x-hidden">
       {structuredData && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: escapeJsonLd(structuredData) }}
         />
       )}
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-2 md:py-4">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-4">
 
         <ProductMainSection product={sanitizedProduct} />
 
@@ -177,7 +177,7 @@ export default async function ProductDetailPage({ params, searchParams }) {
 
         {/* Narrative Section */}
         {product.narrative?.content && (
-          <div className="mt-16 md:mt-24 bg-white border border-border rounded-[var(--radius,0px)] p-8 md:p-16 overflow-hidden relative group">
+          <div className="mt-10 md:mt-16 bg-white border border-border rounded-[var(--radius,0px)] p-6 md:p-12 overflow-hidden relative group">
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -mr-48 -mt-48 transition-all group-hover:bg-primary/[0.08]" />
             <div className="max-w-3xl relative z-10">
               <div className="flex items-center gap-3 mb-6">
@@ -192,9 +192,10 @@ export default async function ProductDetailPage({ params, searchParams }) {
             </div>
           </div>
         )}
-
-        <ProductProcessSection />
       </div>
+
+      {/* Process section — full-width with its own container */}
+      <ProductProcessSection />
 
       <div className="border-t border-black/5">
         <ProductSection title="Related Products" products={sanitizedRelated} />

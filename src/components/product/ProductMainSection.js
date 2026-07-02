@@ -108,9 +108,9 @@ export default function ProductMainSection({ product }) {
 
   return (
     <div className="">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-8 items-start">
         {/* LEFT SIDE: STICKY GALLERY - 60% */}
-        <div className="lg:col-span-3 self-start sticky top-24">
+        <div className="lg:col-span-3 lg:sticky lg:top-24 self-start w-full min-w-0">
           <ProductGallery
             images={product.images}
             variantImage={selectedVariantImage}
@@ -120,7 +120,7 @@ export default function ProductMainSection({ product }) {
         </div>
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 min-w-0 overflow-hidden">
           <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
             {product.name}
           </p>
