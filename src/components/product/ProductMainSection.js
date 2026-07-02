@@ -120,66 +120,64 @@ export default function ProductMainSection({ product }) {
         </div>
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
-        <div className="lg:col-span-2 space-y-8 md:space-y-12">
-          <div className="space-y-4 md:space-y-6">
-            <div className="space-y-2">
+        <div className="lg:col-span-2 space-y-6">
+          <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
+            {product.name}
+          </p>
 
-              <p className="text-[18px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
-                {product.name}
-              </p>
-            </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
+              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <span>{(product.rating || 0).toFixed(1)}/5.0</span>
+              <span className="text-black/10">•</span>
+              <span>({product.reviewCount || 0} Reviews)</span>
+            </p>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">
-                <Star className="w-3.5 h-3.5 fill-primary text-primary" />
-                <span>{(product.rating || 0).toFixed(1)}/5.0</span>
-                <span className="text-black/10">•</span>
-                <span>({product.reviewCount || 0} Reviews)</span>
-              </p>
-
-              {deliveryRange && (
-                <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
-                  style={{ backdropFilter: "blur(6px)" }}
-                >
-                  <Truck className="w-3 h-3 text-black/50 shrink-0" />
-                  Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center flex-wrap gap-3.5">
-              {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
-                <>
-                  <span className="text-2xl font-semibold tracking-tight text-emerald-600">${affiliateDiscountedPrice.toFixed(2)}</span>
-                  <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
-                    {affiliateSavingsLabel}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-2xl font-semibold tracking-tight text-primary">${displayPrice}</span>
-                  {displayCompareAtPrice > displayPrice && (
-                    <>
-                      <span className="text-sm font-medium text-primary/40 line-through">${displayCompareAtPrice}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
-                        Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
-                      </span>
-                    </>
-                  )}
-                </>
-              )}
-
-            </div>
+            {deliveryRange && (
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-black/10 bg-white/80 text-[11px] font-semibold text-black tracking-wide shadow-sm"
+                style={{ backdropFilter: "blur(6px)" }}
+              >
+                <Truck className="w-3 h-3 text-black/50 shrink-0" />
+                Delivered between&nbsp;<span className="font-bold">{deliveryRange}</span>
+              </span>
+            )}
           </div>
+
+          <div className="flex items-center flex-wrap gap-3.5">
+            {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
+              <>
+                <span className="text-2xl font-semibold tracking-tight text-emerald-600">${affiliateDiscountedPrice.toFixed(2)}</span>
+                <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                  {affiliateSavingsLabel}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl font-semibold tracking-tight text-primary">${displayPrice}</span>
+                {displayCompareAtPrice > displayPrice && (
+                  <>
+                    <span className="text-sm font-medium text-primary/40 line-through">${displayCompareAtPrice}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                      Save {Math.round(((displayCompareAtPrice - displayPrice) / displayCompareAtPrice) * 100)}%
+                    </span>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+
+          <hr className="border-t border-black/10" />
 
           {product.shortDescription && (
             <div
-              className="short-description-prose text-black text-sm md:text-base leading-relaxed "
+              className="short-description-prose text-black text-sm md:text-base leading-relaxed"
               dangerouslySetInnerHTML={{ __html: product.shortDescription }}
             />
           )}
+
+          <hr className="border-t border-black/10" />
 
           {/* Variant Selector + Stock + ATC */}
           <ClientProductActions
@@ -189,7 +187,7 @@ export default function ProductMainSection({ product }) {
 
           {/* Stats Block - CMS Driven */}
           {product.stats && product.stats.length > 0 && (
-            <div className="grid grid-cols-2 gap-6 pt-8 border-t border-black/5">
+            <div className="grid grid-cols-2 gap-6 pt-2">
               {product.stats.map((stat, i) => {
                 const Icon = ICON_MAP[stat.icon] || Info;
                 return (

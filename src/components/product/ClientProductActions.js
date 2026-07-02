@@ -140,7 +140,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
 
   return (
     <>
-      <div className="space-y-6 pt-6 border-t border-black/5">
+      <div className="space-y-6">
         {product.productType === "variable" && attributes.map((attr) => {
           const isColor =
             attr.type === "color" || attr.name.toLowerCase().includes("color");
@@ -248,7 +248,9 @@ export default function ClientProductActions({ product, onVariantChange }) {
           );
         })}
 
-
+        {product.productType === "variable" && attributes.length > 0 && (
+          <hr className="border-t border-black/10" />
+        )}
 
         <div className="space-y-2.5 pt-1">
           <div className="flex gap-2 items-stretch">
