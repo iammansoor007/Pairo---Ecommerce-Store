@@ -85,13 +85,6 @@ export default function ProductCard({ product }) {
             </button>
           </Link>
         </div>
-
-        {/* Category Badge */}
-        <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
-          <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">
-            {product.category || "COLLECTION"}
-          </span>
-        </div>
       </div>
 
       {/* Info Section */}
