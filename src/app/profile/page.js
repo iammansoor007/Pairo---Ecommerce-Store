@@ -148,15 +148,15 @@ export default function ProfilePage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!session || !userData) return null;
 
-  const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black";
+  const inputClass = "w-full bg-background border border-border rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-primary outline-none transition-all text-foreground";
 
   const getInitials = (name) => {
     if (!name) return "PA";
@@ -208,7 +208,7 @@ export default function ProfilePage() {
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-background text-black font-sans selection:bg-primary selection:text-background">
       <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-8 pb-12">
         <div className="w-full mx-auto">
 
@@ -219,7 +219,7 @@ export default function ProfilePage() {
             <div className="lg:col-span-4 space-y-6">
 
               {/* User Profile Card */}
-              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
+              <div className="bg-secondary border border-black/10 p-6 rounded-[4px] shadow-sm">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
                   <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-base font-black uppercase shadow-sm border border-black/5 shrink-0">
@@ -256,13 +256,13 @@ export default function ProfilePage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleAction("updateInfo", infoForm)}
-                          className="flex-1 bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm"
+                          className="flex-1 bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingInfo(false)}
-                          className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+                          className="flex-1 border border-black/15 text-black hover:bg-secondary py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -272,13 +272,13 @@ export default function ProfilePage() {
                     <div className="flex flex-col gap-2.5">
                       <button
                         onClick={() => setEditingInfo(true)}
-                        className="w-full border border-black/15 text-black hover:bg-neutral-50 py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full border border-black/15 text-black hover:bg-secondary py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
                         <User className="w-3.5 h-3.5" /> Edit Profile
                       </button>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="w-full bg-black text-white hover:bg-neutral-900 py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-black text-white hover:bg-foreground py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Sign Out
                       </button>
@@ -288,21 +288,21 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Statistics Block (2x2 Grid) â€” Bata reference style */}
-              <div className="bg-[#FAF9F6] border border-black/10 p-5 rounded-[4px] shadow-sm">
+              <div className="bg-secondary border border-black/10 p-5 rounded-[4px] shadow-sm">
                 <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-black/10 border border-black/10 rounded-[4px] overflow-hidden">
-                  <div className="p-4 space-y-1 bg-white">
+                  <div className="p-4 space-y-1 bg-background">
                     <p className="text-[8px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
                     <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
+                  <div className="p-4 space-y-1 bg-background">
                     <p className="text-[8px] font-bold text-blue-600 uppercase tracking-widest">Confirmed</p>
                     <p className="text-2xl font-black text-black font-mono">{confirmedCount}</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
+                  <div className="p-4 space-y-1 bg-background">
                     <p className="text-[8px] font-bold text-purple-600 uppercase tracking-widest">Dispatched</p>
                     <p className="text-2xl font-black text-black font-mono">{dispatchedCount}</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
+                  <div className="p-4 space-y-1 bg-background">
                     <p className="text-[8px] font-bold text-green-600 uppercase tracking-widest">Delivered</p>
                     <p className="text-2xl font-black text-black font-mono">{deliveredCount}</p>
                   </div>
@@ -310,7 +310,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
+              <div className="space-y-4 bg-secondary border border-black/10 p-6 rounded-[4px] shadow-sm">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
@@ -329,7 +329,7 @@ export default function ProfilePage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-4 bg-white rounded-[4px] border border-black/[0.06] space-y-3">
+                      <div className="p-4 bg-background rounded-[4px] border border-black/[0.06] space-y-3">
                         <div className="space-y-1">
                           <label className="text-[8px] font-bold uppercase tracking-wider text-black">Recipient Name</label>
                           <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                         </div>
                         <button
                           onClick={() => handleAction("addAddress", addressForm)}
-                          className="w-full bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm"
+                          className="w-full bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
                         >
                           Save Address
                         </button>
@@ -361,12 +361,12 @@ export default function ProfilePage() {
 
                 <div className="space-y-2">
                   {!userData.addresses?.length ? (
-                    <p className="text-[9px] text-black uppercase tracking-widest text-center py-4 bg-white border border-black/[0.04] rounded-[4px]">
+                    <p className="text-[9px] text-black uppercase tracking-widest text-center py-4 bg-background border border-black/[0.04] rounded-[4px]">
                       No addresses saved.
                     </p>
                   ) : (
                     userData.addresses.map((addr) => (
-                      <div key={addr._id} className="p-3 bg-white border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
+                      <div key={addr._id} className="p-3 bg-background border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
                         <div className="min-w-0">
                           <p className="text-[10px] font-bold uppercase text-black truncate">{addr.fullName}</p>
                           <p className="text-[9px] text-black uppercase tracking-wider leading-relaxed mt-0.5 truncate">
@@ -387,11 +387,12 @@ export default function ProfilePage() {
               </div>
 
               {/* Delete Account */}
-              <div className="text-center pt-2">
+              <div className="pt-3 border-t border-border">
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="text-[9px] text-black hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[4px] border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 text-[9px] font-black uppercase tracking-[0.25em] transition-all cursor-pointer"
                 >
+                  <Trash2 className="w-3 h-3" />
                   Delete Account
                 </button>
               </div>
@@ -430,7 +431,7 @@ export default function ProfilePage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search Order Here"
-                    className="w-full bg-[#FAF9F6] border border-black/10 rounded-[4px] pl-9 pr-4 py-2.5 text-[10px] font-bold tracking-widest uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
+                    className="w-full bg-secondary border border-black/10 rounded-[4px] pl-9 pr-4 py-2.5 text-[10px] font-bold tracking-widest uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -438,7 +439,7 @@ export default function ProfilePage() {
               {/* Order List Rows */}
               <div className="space-y-3">
                 {filteredOrders.length === 0 ? (
-                  <div className="py-20 text-center border border-dashed border-black/10 rounded-[4px] bg-[#FAF9F6] space-y-4">
+                  <div className="py-20 text-center border border-dashed border-black/10 rounded-[4px] bg-secondary space-y-4">
                     <ShoppingBag className="w-12 h-12 text-black/10 mx-auto" />
                     <p className="text-[10px] text-black uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
                   </div>
@@ -453,14 +454,14 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-black/10 rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
+                        className={`border border-black/10 rounded-[4px] bg-background transition-all shadow-sm overflow-hidden ${
                           isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/20'
                         }`}
                       >
                         {/* Summary Header Row â€” clickable to expand items */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
+                          className="px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-secondary transition-colors select-none"
                         >
                           {/* Left Column: Order metadata */}
                           <div className="space-y-1 flex-1 min-w-0">
@@ -558,12 +559,12 @@ export default function ProfilePage() {
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="border-t border-black/10 bg-[#FAF9F6]/40 p-5 space-y-5">
+                              <div className="border-t border-black/10 bg-secondary p-5 space-y-5">
 
                                 {/* Products List */}
                                 <div className="space-y-3">
                                   <p className="text-[9px] font-bold text-black uppercase tracking-wider">Items in this Order</p>
-                                  <div className="divide-y divide-black/[0.04] bg-white border border-black/10 rounded-[4px] p-4 space-y-4">
+                                  <div className="divide-y divide-black/[0.04] bg-background border border-black/10 rounded-[4px] p-4 space-y-4">
                                     {(order.items || []).map((item, idx) => {
                                       const reviewId = `${order.id}-${item.productId}`;
                                       const showForm = activeReviewId === reviewId;
@@ -571,7 +572,7 @@ export default function ProfilePage() {
                                         <div key={idx} className="pt-4 first:pt-0 space-y-4">
                                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div className="flex items-center gap-3 min-w-0">
-                                              <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-[#FAF9F6] shrink-0">
+                                              <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-secondary shrink-0">
                                                 <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
                                               </div>
                                               <div className="min-w-0">
@@ -594,7 +595,7 @@ export default function ProfilePage() {
                                                       setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
                                                     }
                                                   }}
-                                                  className="text-[9px] border border-black/15 text-black hover:bg-neutral-50 px-3 py-1.5 rounded-[4px] font-bold uppercase tracking-widest cursor-pointer transition-colors"
+                                                  className="text-[9px] border border-black/15 text-black hover:bg-secondary px-3 py-1.5 rounded-[4px] font-bold uppercase tracking-widest cursor-pointer transition-colors"
                                                 >
                                                   {showForm ? "Cancel" : "Write Review"}
                                                 </button>
@@ -608,7 +609,7 @@ export default function ProfilePage() {
                                             <motion.div
                                               initial={{ height: 0, opacity: 0 }}
                                               animate={{ height: "auto", opacity: 1 }}
-                                              className="bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-4 mt-2 space-y-4"
+                                              className="bg-secondary border border-black/[0.04] rounded-[4px] p-4 mt-2 space-y-4"
                                             >
                                               <div className="flex items-center justify-between border-b border-black/5 pb-2">
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-black flex items-center gap-1.5">
@@ -646,7 +647,7 @@ export default function ProfilePage() {
                                                       <button type="button" onClick={() => setReviewForm({ ...reviewForm, recommend: false })} className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${!reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'}`}>No</button>
                                                     </div>
                                                   </div>
-                                                  <button type="submit" disabled={submittingReview} className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm disabled:opacity-50 mt-2">
+                                                  <button type="submit" disabled={submittingReview} className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm disabled:opacity-50 mt-2">
                                                     {submittingReview ? "Submitting..." : "Submit Review"}
                                                   </button>
                                                 </form>
@@ -675,7 +676,7 @@ export default function ProfilePage() {
                                           fetchOrderTimeline(order.id);
                                         }
                                       }}
-                                      className="bg-black text-white px-4 py-2 rounded-[4px] text-[9px] font-black uppercase tracking-widest hover:bg-neutral-900 transition-all shadow-sm cursor-pointer"
+                                      className="bg-black text-white px-4 py-2 rounded-[4px] text-[9px] font-black uppercase tracking-widest hover:bg-foreground transition-all shadow-sm cursor-pointer"
                                     >
                                       {loadingTimeline === order.id ? "Loading..." : isTimelineExpanded ? "Hide Timeline" : "Order Journey"}
                                     </button>
@@ -703,7 +704,7 @@ export default function ProfilePage() {
                                       exit={{ height: 0, opacity: 0 }}
                                       className="overflow-hidden"
                                     >
-                                      <div className="bg-white border border-black/10 rounded-[4px] p-5 space-y-5">
+                                      <div className="bg-background border border-black/10 rounded-[4px] p-5 space-y-5">
                                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Order Journey</h3>
 
                                         {/* Progress Stepper */}
@@ -722,7 +723,7 @@ export default function ProfilePage() {
                                                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[9px] font-bold transition-all duration-300 ${
                                                     isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
                                                     active ? 'bg-black text-white border-black' :
-                                                    'bg-white text-black border-black/20'
+                                                    'bg-background text-black border-black/20'
                                                   }`}>
                                                     {idx + 1}
                                                   </div>
@@ -804,17 +805,17 @@ export default function ProfilePage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
-          <div className="bg-white border border-black/10 rounded-[4px] p-8 max-w-md w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-background border border-border rounded-[4px] p-8 max-w-md w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="space-y-2">
-              <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-black">Confirm Account Deletion</h3>
-              <p className="text-xs text-black leading-relaxed uppercase tracking-wider font-semibold">
+              <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-foreground">Confirm Account Deletion</h3>
+              <p className="text-xs text-foreground leading-relaxed uppercase tracking-wider font-semibold">
                 Are you sure you want to permanently delete your account? This action is irreversible and all your order history will be lost.
               </p>
             </div>
             <div className="flex gap-4">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+                className="flex-1 border border-border text-foreground hover:bg-secondary py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -831,4 +832,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
