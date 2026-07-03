@@ -38,6 +38,7 @@ const CustomerSchema = new mongoose.Schema({
     expiry: String,
     isDefault: { type: Boolean, default: false }
   }],
+  preferredCourier: { type: String, default: 'TCS' },
   activityLog: [{
     action: String,
     details: String,

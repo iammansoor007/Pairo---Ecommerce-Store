@@ -1,12 +1,120 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, ChevronDown, Search } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useSiteData } from "@/context/SiteContext";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+
+function SearchableDropdown({
+  label,
+  placeholder,
+  value,
+  onChange,
+  options = [],
+  loading = false,
+  required = false,
+  labelClass
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setSearchTerm(value || "");
+  }, [value]);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm) return options;
+    return options.filter(opt => {
+      const name = typeof opt === 'string' ? opt : opt.name;
+      return name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  }, [options, searchTerm]);
+
+  return (
+    <div className="space-y-1 relative" ref={dropdownRef}>
+      <label className={labelClass}>{label}</label>
+      {loading ? (
+        <div className="flex items-center gap-2 px-3.5 py-3 border border-border rounded-[4px] text-[12px] text-foreground/50 bg-background">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading options…
+        </div>
+      ) : (
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+            <Search className="w-3.5 h-3.5" />
+          </span>
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={searchTerm}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchTerm(val);
+              setIsOpen(true);
+              const found = options.find(opt => {
+                const name = typeof opt === 'string' ? opt : opt.name;
+                return name.toLowerCase() === val.toLowerCase();
+              });
+              onChange(val, found);
+            }}
+            onFocus={() => setIsOpen(true)}
+            className="w-full bg-background border border-border rounded-[4px] pl-9 pr-10 py-3 text-[13px] text-foreground focus:border-primary outline-none font-semibold placeholder:text-foreground/45 transition-all shadow-sm"
+            required={required}
+          />
+          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          </span>
+
+          {isOpen && (
+            <div className="absolute z-[1000] left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-background border border-border rounded-[4px] shadow-lg animate-in fade-in slide-in-from-top-1 duration-100 divide-y divide-border/20">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((opt, idx) => {
+                  const name = typeof opt === 'string' ? opt : opt.name;
+                  const isSelected = name.toLowerCase() === (value || "").toLowerCase();
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm(name);
+                        onChange(name, opt);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
+                        isSelected 
+                          ? 'bg-primary text-background' 
+                          : 'text-foreground hover:bg-secondary'
+                      }`}
+                    >
+                      {name}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="px-4 py-3 text-[10px] text-foreground/50 uppercase tracking-widest text-center italic bg-background">
+                  No matching options
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CheckoutPage() {
   const siteData = useSiteData();
@@ -423,36 +531,22 @@ export default function CheckoutPage() {
                 )}
 
                 {/* Country Selection */}
-                <div className="space-y-1">
-                  <label className={labelClass}>Country / Region *</label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
-                      <Search className="w-3.5 h-3.5" />
-                    </span>
-                    <input
-                      list="countries-list"
-                      placeholder="Search Country / Region…"
-                      value={formData.country}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        const matched = countries.find(c => c.name.toLowerCase() === val.toLowerCase() || c.isoCode.toLowerCase() === val.toLowerCase());
-                        setFormData(prev => ({
-                          ...prev,
-                          country: val,
-                          countryCode: matched ? matched.isoCode : "",
-                          state: "", stateCode: "", city: ""
-                        }));
-                      }}
-                      className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
-                      required
-                    />
-                    <datalist id="countries-list">
-                      {countries.map(c => (
-                        <option key={c.isoCode} value={c.name} />
-                      ))}
-                    </datalist>
-                  </div>
-                </div>
+                <SearchableDropdown
+                  label="Country / Region *"
+                  placeholder="Search Country / Region…"
+                  value={formData.country}
+                  options={countries}
+                  labelClass={labelClass}
+                  required
+                  onChange={(val, matched) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      country: val,
+                      countryCode: matched ? matched.isoCode : "",
+                      state: "", stateCode: "", city: ""
+                    }));
+                  }}
+                />
 
                 {/* Names */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -496,41 +590,27 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* State / Province */}
-                <div className="space-y-1">
-                  <label className={labelClass}>State / Province {states.length > 0 && "*"}</label>
-                  {loadingStates ? (
-                    <div className="flex items-center gap-2 px-3.5 py-3 border border-border rounded-[4px] text-[12px] text-foreground/50">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading states…
-                    </div>
-                  ) : states.length > 0 ? (
-                    <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
-                        <Search className="w-3.5 h-3.5" />
-                      </span>
-                      <input
-                        list="states-list"
-                        placeholder="Search State / Province…"
-                        value={formData.state}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          const matched = states.find(s => s.name.toLowerCase() === val.toLowerCase() || s.isoCode.toLowerCase() === val.toLowerCase());
-                          setFormData(prev => ({
-                            ...prev,
-                            state: val,
-                            stateCode: matched ? matched.isoCode : "",
-                            city: ""
-                          }));
-                        }}
-                        className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
-                        required={states.length > 0}
-                      />
-                      <datalist id="states-list">
-                        {states.map(s => (
-                          <option key={s.isoCode} value={s.name} />
-                        ))}
-                      </datalist>
-                    </div>
-                  ) : (
+                {states.length > 0 ? (
+                  <SearchableDropdown
+                    label="State / Province *"
+                    placeholder="Search State / Province…"
+                    value={formData.state}
+                    options={states}
+                    loading={loadingStates}
+                    labelClass={labelClass}
+                    required
+                    onChange={(val, matched) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        state: val,
+                        stateCode: matched ? matched.isoCode : "",
+                        city: ""
+                      }));
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-1">
+                    <label className={labelClass}>State / Province</label>
                     <input
                       type="text"
                       name="state"
@@ -539,37 +619,30 @@ export default function CheckoutPage() {
                       placeholder="State / Province"
                       className={inputClass}
                     />
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* City + ZIP */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div className="space-y-1">
-                    <label className={labelClass}>City *</label>
-                    {loadingCities ? (
-                      <div className="flex items-center gap-2 px-3.5 py-3 border border-border rounded-[4px] text-[12px] text-foreground/50">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading cities…
-                      </div>
-                    ) : cities.length > 0 ? (
-                      <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
-                          <Search className="w-3.5 h-3.5" />
-                        </span>
-                        <input
-                          list="cities-list"
-                          placeholder="Search City…"
-                          value={formData.city}
-                          onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                          className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
-                          required
-                        />
-                        <datalist id="cities-list">
-                          {cities.map((c, i) => (
-                            <option key={i} value={c.name} />
-                          ))}
-                        </datalist>
-                      </div>
-                    ) : (
+                  {cities.length > 0 ? (
+                    <SearchableDropdown
+                      label="City *"
+                      placeholder="Search City…"
+                      value={formData.city}
+                      options={cities}
+                      loading={loadingCities}
+                      labelClass={labelClass}
+                      required
+                      onChange={(val) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          city: val
+                        }));
+                      }}
+                    />
+                  ) : (
+                    <div className="space-y-1">
+                      <label className={labelClass}>City *</label>
                       <input
                         type="text"
                         name="city"
@@ -579,8 +652,8 @@ export default function CheckoutPage() {
                         className={inputClass}
                         required
                       />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <div className="space-y-1">
                     <label className={labelClass}>Postal code / ZIP</label>
                     <input
