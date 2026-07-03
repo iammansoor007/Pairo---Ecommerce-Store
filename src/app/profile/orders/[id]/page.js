@@ -94,38 +94,47 @@ export default function UserOrderDetailPage() {
 
         {/* Visual Progress Stepper */}
         <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12">
-          <div className="max-w-3xl mx-auto flex justify-between items-center relative">
+          {/* Active status label for mobile */}
+          <div className="text-center mb-5 sm:hidden">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-black text-white px-3 py-1.5 rounded-[2px] shadow-sm">
+              Status: {order.status}
+            </span>
+          </div>
+
+          <div className="relative px-3">
             {/* Connector Line */}
-            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
+            <div className="absolute left-3 right-3 top-[12px] -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
             <div 
-              className="absolute left-6 top-1/2 -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
-              style={{ width: `${currentStep >= 0 ? (currentStep / 4) * 100 : 0}%` }}
+              className="absolute left-3 top-[12px] -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
+              style={{ width: `calc(${currentStep >= 0 ? (currentStep / 4) * 100 : 0}% - 6px)` }}
             />
 
-            {steps.map((step, idx) => {
-              const active = idx <= currentStep;
-              const isCurrent = idx === currentStep;
-              return (
-                <div key={idx} className="flex flex-col items-center relative z-10">
-                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                    isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
-                    active ? 'bg-black text-white border-black' :
-                    'bg-white text-black/60 border-black/25'
-                  }`}>
-                    {idx + 1}
+            <div className="flex justify-between items-start relative z-10">
+              {steps.map((step, idx) => {
+                const active = idx <= currentStep;
+                const isCurrent = idx === currentStep;
+                return (
+                  <div key={idx} className="flex flex-col items-center">
+                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                      isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
+                      active ? 'bg-black text-white border-black' :
+                      'bg-white text-black/60 border-black/25'
+                    }`}>
+                      {idx + 1}
+                    </div>
+                    <span className={`hidden sm:inline-block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2.5 transition-colors ${
+                      active ? 'text-black font-black' : 'text-black/60'
+                    }`}>
+                      {step}
+                    </span>
                   </div>
-                  <span className={`text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2 transition-colors ${
-                    active ? 'text-black font-black' : 'text-black/60'
-                  }`}>
-                    {step}
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
            
            {/* Left: Items & Summary */}
            <div className="lg:col-span-7 space-y-12">
@@ -133,7 +142,7 @@ export default function UserOrderDetailPage() {
                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Acquired Pieces</h2>
                  <div className="space-y-8">
                     {order.items.map((item, i) => (
-                      <div key={i} className="flex gap-6 group items-center">
+                      <div key={i} className="flex flex-col sm:flex-row gap-4 sm:gap-6 group items-start sm:items-center">
                          <div className="w-16 h-20 bg-[#FAF9F6] rounded-[4px] overflow-hidden border border-black/10 shrink-0">
                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                          </div>
@@ -171,7 +180,7 @@ export default function UserOrderDetailPage() {
            {/* Right: Timeline & Info */}
            <div className="lg:col-span-5 space-y-8">
               {/* Timeline */}
-              <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-8 space-y-8">
+              <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-6 sm:p-8 space-y-8">
                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Order Journey</h2>
                  <div className="space-y-8">
                     {(() => {
@@ -185,7 +194,7 @@ export default function UserOrderDetailPage() {
                         source: 'System'
                       }];
                       return timelineEvents.map((event, i) => (
-                        <div key={i} className="flex gap-6 relative">
+                        <div key={i} className="flex gap-4 sm:gap-6 relative">
                            <div className="flex flex-col items-center">
                               <div className="w-3 h-3 rounded-full bg-black shadow-lg z-10" />
                               {i !== timelineEvents.length - 1 && <div className="w-[1px] h-full bg-black/10 absolute top-3" />}
@@ -202,7 +211,7 @@ export default function UserOrderDetailPage() {
               </div>
 
               {/* Delivery Info */}
-              <div className="p-8 border border-black/[0.06] rounded-[4px] bg-white space-y-8">
+              <div className="p-6 sm:p-8 border border-black/[0.06] rounded-[4px] bg-white space-y-8">
                  <div className="space-y-4">
                     <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/85">
                        <MapPin className="w-4 h-4" /> Destination
