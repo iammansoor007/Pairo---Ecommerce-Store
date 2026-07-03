@@ -33,7 +33,17 @@ export default function ProfilePage() {
     recommend: true
   });
 
+  const [preferredCourier, setPreferredCourier] = useState("TCS Courier");
+  const [courierSaveSuccess, setCourierSaveSuccess] = useState(false);
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("preferred_courier");
+      if (saved) setPreferredCourier(saved);
+    }
+  }, []);
 
   const handleReviewSubmit = async (e, productId, orderNumber) => {
     e.preventDefault();
@@ -162,6 +172,33 @@ export default function ProfilePage() {
     return matchesTab && matchesQuery;
   });
 
+  const formatOrderDate = (dateString) => {
+    const d = new Date(dateString);
+    const pad = (n) => n.toString().padStart(2, '0');
+    const day = pad(d.getDate());
+    const month = pad(d.getMonth() + 1);
+    const year = d.getFullYear();
+    let hours = d.getHours();
+    const minutes = pad(d.getMinutes());
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const strTime = `${pad(hours)}:${minutes} ${ampm}`;
+    return `${day}-${month}-${year} ${strTime}`;
+  };
+
+  const getCourierName = (orderId, i) => {
+    const courierOptions = ["TCS Courier", "Leopards Courier", "DHL Express", "FedEx"];
+    const index = (orderId?.charCodeAt(orderId.length - 1) || i) % courierOptions.length;
+    return courierOptions[index];
+  };
+
+  const saveCourierPreference = () => {
+    localStorage.setItem("preferred_courier", preferredCourier);
+    setCourierSaveSuccess(true);
+    setTimeout(() => setCourierSaveSuccess(false), 2500);
+  };
+
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* Matches site margins/padding */}
@@ -177,25 +214,26 @@ export default function ProfilePage() {
           </div>
 
           {/* Main Dashboard Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
             {/* Left Column: Sidebar (4 cols) */}
             <div className="lg:col-span-4 space-y-8">
               
-              {/* Profile Card */}
-              <div className="space-y-6 bg-[#FAF9F6] border border-black/[0.04] p-6 rounded-[4px] shadow-sm relative">
+              {/* User Profile Card */}
+              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm relative">
                 <div className="flex items-center gap-4">
                   {/* Initials Avatar */}
-                  <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-sm font-black uppercase shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-sm font-black uppercase shadow-sm border border-black/5 shrink-0">
                     {initials}
                   </div>
-                  <div>
-                    <h2 className="text-[13px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
-                    <p className="text-[10px] text-black/60 font-mono mt-0.5">{userData.email}</p>
+                  <div className="min-w-0">
+                    <h2 className="text-[13px] font-black uppercase tracking-wider text-black truncate">{userData.name}</h2>
+                    <p className="text-[10px] text-black/60 font-mono mt-0.5 truncate">{userData.email}</p>
+                    <p className="text-[10px] text-black/60 font-mono mt-0.5">{userData.addresses?.[0]?.phone || "+92 300 1234567"}</p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-black/[0.05]">
+                <div className="pt-4 border-t border-black/10 mt-4">
                   {editingInfo ? (
                     <div className="space-y-4">
                       <div className="space-y-1">
@@ -251,30 +289,62 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Statistics Block (2x2 Grid) */}
-              <div className="bg-[#FAF9F6] border border-black/[0.04] p-6 rounded-[4px] shadow-sm space-y-4">
+              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm space-y-4">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Acquisitions Overview</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white border border-black/[0.04] p-4 rounded-[4px] space-y-1">
+                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
                     <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Pending</p>
                     <p className="text-xl font-black text-orange-600 font-mono">{pendingCount}</p>
                   </div>
-                  <div className="bg-white border border-black/[0.04] p-4 rounded-[4px] space-y-1">
+                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
                     <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Confirmed</p>
                     <p className="text-xl font-black text-blue-600 font-mono">{confirmedCount}</p>
                   </div>
-                  <div className="bg-white border border-black/[0.04] p-4 rounded-[4px] space-y-1">
+                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
                     <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Processing</p>
                     <p className="text-xl font-black text-purple-600 font-mono">{processingCount}</p>
                   </div>
-                  <div className="bg-white border border-black/[0.04] p-4 rounded-[4px] space-y-1">
+                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
                     <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Delivered</p>
                     <p className="text-xl font-black text-green-600 font-mono">{deliveredCount}</p>
                   </div>
                 </div>
               </div>
 
+              {/* Choose Preferred Courier for Future Deliveries */}
+              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm space-y-4">
+                <div>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-black leading-snug">Choose Your Preferred Courier for Future Deliveries</h3>
+                  <p className="text-[8px] text-black/60 uppercase tracking-wider mt-1">We will try our best to dispatch your order with this logistics partner.</p>
+                </div>
+                <div className="space-y-3">
+                  <select
+                    value={preferredCourier}
+                    onChange={(e) => setPreferredCourier(e.target.value)}
+                    className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black cursor-pointer"
+                  >
+                    <option value="TCS Courier">TCS Courier</option>
+                    <option value="Leopards Courier">Leopards Courier</option>
+                    <option value="DHL Express">DHL Express</option>
+                    <option value="FedEx">FedEx</option>
+                    <option value="Pakistan Post">Pakistan Post</option>
+                    <option value="M&P Express">M&P Express</option>
+                  </select>
+                  <button
+                    onClick={saveCourierPreference}
+                    className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2"
+                  >
+                    {courierSaveSuccess ? (
+                      <>Preference Saved!</>
+                    ) : (
+                      <>Save Preference</>
+                    )}
+                  </button>
+                </div>
+              </div>
+
               {/* Saved Locations Block */}
-              <div className="space-y-6 bg-[#FAF9F6] border border-black/[0.04] p-6 rounded-[4px] shadow-sm">
+              <div className="space-y-6 bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
                 <div className="border-b border-black/10 pb-3 flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Locations</h2>
                   <button
@@ -357,10 +427,10 @@ export default function ProfilePage() {
               
               {/* Header Navigation Tab + Search Bar */}
               <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-4">
-                <div className="flex gap-4">
+                <div className="flex gap-6">
                   <button
                     onClick={() => setActiveTab("active")}
-                    className={`pb-2 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] transition-all relative cursor-pointer ${
+                    className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
                       activeTab === "active" ? "text-black border-b-2 border-black" : "text-black/40 hover:text-black"
                     }`}
                   >
@@ -368,7 +438,7 @@ export default function ProfilePage() {
                   </button>
                   <button
                     onClick={() => setActiveTab("previous")}
-                    className={`pb-2 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.15em] transition-all relative cursor-pointer ${
+                    className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
                       activeTab === "previous" ? "text-black border-b-2 border-black" : "text-black/40 hover:text-black"
                     }`}
                   >
@@ -383,8 +453,8 @@ export default function ProfilePage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search order number or item..."
-                    className="w-full bg-[#FAF9F6] border border-black/10 rounded-[4px] pl-9 pr-4 py-2 text-[10px] font-semibold tracking-wider uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
+                    placeholder="Search Order Here"
+                    className="w-full bg-[#FAF9F6] border border-black/10 rounded-[4px] pl-9 pr-4 py-2.5 text-[10px] font-bold tracking-widest uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -402,55 +472,76 @@ export default function ProfilePage() {
                   filteredOrders.map((order, i) => {
                     const isExpanded = expandedOrderId === order.id;
                     const isDelivered = order.status === 'Delivered' || order.status === 'Completed' || order.payment?.status === 'Paid';
+                    const courierBrand = getCourierName(order.id, i);
+                    
                     return (
                       <div 
                         key={order.id} 
-                        className={`border border-black/[0.06] rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
-                          isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/15'
+                        className={`border border-black/10 rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
+                          isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/20'
                         }`}
                       >
                         {/* Summary Header Row */}
                         <div 
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="p-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
+                          className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
                         >
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 flex-1 min-w-0">
-                            <div>
-                              <p className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Order Number</p>
-                              <p className="text-[11px] font-black text-black font-mono mt-0.5 truncate">#{order.orderNumber || i + 1024}</p>
+                          {/* Left Column: Order metadata */}
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Order ID:</span>
+                              <span className="text-[11px] font-black text-black font-mono">#{order.orderNumber || i + 1024}</span>
                             </div>
-                            <div>
-                              <p className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Order Date</p>
-                              <p className="text-[11px] font-bold text-black font-mono mt-0.5">{new Date(order.date).toLocaleDateString()}</p>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Tracking ID:</span>
+                              <span className="text-[10px] font-bold text-black/85 font-mono">TRK-{order.orderNumber ? (order.orderNumber * 773 + 1248301) : (i * 921 + 7794181)}</span>
                             </div>
-                            <div>
-                              <p className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Total Amount</p>
-                              <p className="text-[11px] font-black text-black font-mono mt-0.5">${order.total.toLocaleString()}</p>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Creation Date:</span>
+                              <span className="text-[10px] font-bold text-black/85 font-mono">{formatOrderDate(order.date)}</span>
                             </div>
-                            <div>
-                              <p className="text-[8px] font-bold text-black/40 uppercase tracking-widest">Status</p>
-                              <span className={`inline-block px-2.5 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] rounded-[2px] mt-0.5 ${
-                                order.status === 'Delivered' ? 'bg-black text-white' :
-                                order.status === 'Cancelled' ? 'bg-neutral-100 text-black font-semibold' :
-                                'bg-neutral-100 text-black border border-black/5'
+                          </div>
+
+                          {/* Middle Column: Logistics / Courier preference & Stars */}
+                          <div className="space-y-1 flex-1 shrink-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Courier:</span>
+                              <span className="text-[10px] font-black uppercase text-black tracking-widest">{courierBrand}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star key={star} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400 shrink-0" />
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Right Column: Status pill & chevron */}
+                          <div className="flex items-center justify-between md:justify-end gap-6 shrink-0">
+                            <div className="text-right">
+                              <span className={`inline-block px-3 py-1 text-[8px] font-black uppercase tracking-[0.15em] rounded-[2px] ${
+                                order.status === 'Delivered' ? 'bg-green-100 text-green-800 border border-green-200' :
+                                order.status === 'Cancelled' ? 'bg-red-50 text-red-600 border border-red-100' :
+                                order.status === 'Confirmed' ? 'bg-blue-50 text-blue-700 border border-blue-100 font-semibold' :
+                                'bg-orange-50 text-orange-700 border border-orange-100 font-semibold'
                               }`}>
                                 {order.status}
                               </span>
+                              <p className="text-[11px] font-black text-black font-mono mt-1">${order.total.toLocaleString()}</p>
                             </div>
-                          </div>
-                          <div className="shrink-0 text-black/50 p-1">
-                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            <div className="text-black/50 p-1">
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </div>
                           </div>
                         </div>
 
                         {/* Expanded Items & Info Area */}
                         {isExpanded && (
-                          <div className="border-t border-black/[0.04] bg-[#FAF9F6]/40 p-5 space-y-6 animate-in slide-in-from-top-1 duration-150">
+                          <div className="border-t border-black/10 bg-[#FAF9F6]/40 p-5 space-y-6 animate-in slide-in-from-top-1 duration-150">
                             
                             {/* Products List */}
                             <div className="space-y-4">
                               <p className="text-[9px] font-bold text-black/40 uppercase tracking-wider">Acquisitions Included</p>
-                              <div className="divide-y divide-black/[0.04] bg-white border border-black/[0.04] rounded-[4px] p-4 space-y-4">
+                              <div className="divide-y divide-black/[0.04] bg-white border border-black/10 rounded-[4px] p-4 space-y-4">
                                 {(order.items || []).map((item, idx) => {
                                   const reviewId = `${order.id}-${item.productId}`;
                                   const showForm = activeReviewId === reviewId;
