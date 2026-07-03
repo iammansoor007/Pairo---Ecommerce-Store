@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Trash2, ShoppingBag, ChevronDown, ChevronUp, Star, LogOut, MapPin, User, Plus, Search, Check } from "lucide-react";
+import { Trash2, ShoppingBag, ChevronDown, ChevronUp, Star, LogOut, MapPin, User, Search, Check, Package, Truck, Clock, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -16,11 +16,12 @@ export default function ProfilePage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [infoForm, setInfoForm] = useState({ name: "", email: "" });
-  const [addressForm, setAddressForm] = useState({ fullName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
+  const [addressForm, setAddressForm] = useState({ fullName: "", street: "", city: "", state: "", zipCode: "", country: "Pakistan" });
 
   const [activeTab, setActiveTab] = useState("active");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [expandedTimelineId, setExpandedTimelineId] = useState(null);
 
   const [activeReviewId, setActiveReviewId] = useState(null);
   const [submittingReview, setSubmittingReview] = useState(false);
@@ -33,17 +34,11 @@ export default function ProfilePage() {
     recommend: true
   });
 
-  const [preferredCourier, setPreferredCourier] = useState("TCS Courier");
-  const [courierSaveSuccess, setCourierSaveSuccess] = useState(false);
+  // Per-order timeline data cache
+  const [orderTimelines, setOrderTimelines] = useState({});
+  const [loadingTimeline, setLoadingTimeline] = useState(null);
 
   const router = useRouter();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("preferred_courier");
-      if (saved) setPreferredCourier(saved);
-    }
-  }, []);
 
   const handleReviewSubmit = async (e, productId, orderNumber) => {
     e.preventDefault();
@@ -65,13 +60,7 @@ export default function ProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setReviewSuccessMessage("Thank you! Your verified review has been submitted.");
-        setReviewForm({
-          rating: 5,
-          title: "",
-          comment: "",
-          customerName: "",
-          recommend: true
-        });
+        setReviewForm({ rating: 5, title: "", comment: "", customerName: "", recommend: true });
         setTimeout(() => {
           setActiveReviewId(null);
           setReviewSuccessMessage("");
@@ -84,6 +73,27 @@ export default function ProfilePage() {
       alert("Error submitting review.");
     } finally {
       setSubmittingReview(false);
+    }
+  };
+
+  const fetchOrderTimeline = async (orderId) => {
+    if (orderTimelines[orderId]) {
+      // Toggle: if already showing this timeline, hide it
+      setExpandedTimelineId(prev => prev === orderId ? null : orderId);
+      return;
+    }
+    setLoadingTimeline(orderId);
+    try {
+      const res = await fetch(`/api/profile/orders/${orderId}`);
+      const data = await res.json();
+      if (data.success && data.order) {
+        setOrderTimelines(prev => ({ ...prev, [orderId]: data.order }));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingTimeline(null);
+      setExpandedTimelineId(prev => prev === orderId ? null : orderId);
     }
   };
 
@@ -144,31 +154,26 @@ export default function ProfilePage() {
   if (!session || !userData) return null;
 
   const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black";
-  const sectionHeadingClass = "text-[11px] uppercase tracking-widest text-black font-bold";
 
   const getInitials = (name) => {
     if (!name) return "PA";
     const parts = name.trim().split(" ");
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
     return name.slice(0, 2).toUpperCase();
   };
   const initials = getInitials(userData.name);
 
   const pendingCount = (userData.orderHistory || []).filter(o => o.status === 'Pending').length || 0;
   const confirmedCount = (userData.orderHistory || []).filter(o => o.status === 'Confirmed').length || 0;
-  const processingCount = (userData.orderHistory || []).filter(o => ['Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(o.status)).length || 0;
+  const dispatchedCount = (userData.orderHistory || []).filter(o => ['Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(o.status)).length || 0;
   const deliveredCount = (userData.orderHistory || []).filter(o => o.status === 'Delivered').length || 0;
 
   const filteredOrders = (userData.orderHistory || []).filter(order => {
     const isCompleted = ['Delivered', 'Cancelled', 'Refunded'].includes(order.status);
     const matchesTab = activeTab === 'previous' ? isCompleted : !isCompleted;
-    
-    const matchesQuery = searchQuery === "" || 
+    const matchesQuery = searchQuery === "" ||
       order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (order.items || []).some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      
     return matchesTab && matchesQuery;
   });
 
@@ -183,59 +188,50 @@ export default function ProfilePage() {
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
-    const strTime = `${pad(hours)}:${minutes} ${ampm}`;
-    return `${day}-${month}-${year} ${strTime}`;
+    return `${day}-${month}-${year} ${pad(hours)}:${minutes} ${ampm}`;
   };
 
-  const getCourierName = (orderId, i) => {
-    const courierOptions = ["TCS Courier", "Leopards Courier", "DHL Express", "FedEx"];
-    const index = (orderId?.charCodeAt(orderId.length - 1) || i) % courierOptions.length;
-    return courierOptions[index];
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Delivered': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'Cancelled': return 'bg-red-50 text-red-600 border border-red-100';
+      case 'Confirmed': return 'bg-blue-50 text-blue-700 border border-blue-100';
+      case 'Shipped':
+      case 'Out for Delivery': return 'bg-purple-50 text-purple-700 border border-purple-100';
+      default: return 'bg-orange-50 text-orange-700 border border-orange-100';
+    }
   };
 
-  const saveCourierPreference = () => {
-    localStorage.setItem("preferred_courier", preferredCourier);
-    setCourierSaveSuccess(true);
-    setTimeout(() => setCourierSaveSuccess(false), 2500);
-  };
+  const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
-      {/* Matches site margins/padding */}
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-12 pb-12">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-8 pb-12">
         <div className="w-full mx-auto">
 
-          {/* Header - Luxury Banner */}
-          <div className="border-b border-black/10 pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-            <div>
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-black/60">Account Dashboard</span>
-              <h1 className="text-[24px] font-bold uppercase tracking-[0.1em] text-black mt-0.5">My Account</h1>
-            </div>
-          </div>
-
           {/* Main Dashboard Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
             {/* Left Column: Sidebar (4 cols) */}
-            <div className="lg:col-span-4 space-y-8">
-              
+            <div className="lg:col-span-4 space-y-6">
+
               {/* User Profile Card */}
-              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm relative">
-                <div className="flex items-center gap-4">
+              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
+                <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
-                  <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-sm font-black uppercase shadow-sm border border-black/5 shrink-0">
+                  <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-base font-black uppercase shadow-sm border border-black/5 shrink-0">
                     {initials}
                   </div>
-                  <div className="min-w-0">
-                    <h2 className="text-[13px] font-black uppercase tracking-wider text-black truncate">{userData.name}</h2>
-                    <p className="text-[10px] text-black/60 font-mono mt-0.5 truncate">{userData.email}</p>
-                    <p className="text-[10px] text-black/60 font-mono mt-0.5">{userData.addresses?.[0]?.phone || "+92 300 1234567"}</p>
+                  <div>
+                    <h2 className="text-[14px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
+                    <p className="text-[10px] text-black/70 font-mono mt-0.5">{userData.addresses?.[0]?.phone || ""}</p>
+                    <p className="text-[10px] text-black/60 font-mono mt-0.5">{userData.email}</p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-black/10 mt-4">
+                <div className="pt-4 border-t border-black/10">
                   {editingInfo ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="space-y-1">
                         <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Full Name</label>
                         <input
@@ -270,7 +266,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2.5">
                       <button
                         onClick={() => setEditingInfo(true)}
                         className="w-full border border-black/15 text-black hover:bg-neutral-50 py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
@@ -288,65 +284,32 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Order Statistics Block (2x2 Grid) */}
-              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm space-y-4">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Acquisitions Overview</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
-                    <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Pending</p>
-                    <p className="text-xl font-black text-orange-600 font-mono">{pendingCount}</p>
+              {/* Order Statistics Block (2x2 Grid) — Bata reference style */}
+              <div className="bg-[#FAF9F6] border border-black/10 p-5 rounded-[4px] shadow-sm">
+                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-black/10 border border-black/10 rounded-[4px] overflow-hidden">
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-[8px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
+                    <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
                   </div>
-                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
-                    <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Confirmed</p>
-                    <p className="text-xl font-black text-blue-600 font-mono">{confirmedCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-[8px] font-bold text-blue-600 uppercase tracking-widest">Confirmed</p>
+                    <p className="text-2xl font-black text-black font-mono">{confirmedCount}</p>
                   </div>
-                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
-                    <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Processing</p>
-                    <p className="text-xl font-black text-purple-600 font-mono">{processingCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-[8px] font-bold text-purple-600 uppercase tracking-widest">Dispatched</p>
+                    <p className="text-2xl font-black text-black font-mono">{dispatchedCount}</p>
                   </div>
-                  <div className="bg-white border border-black/10 p-4 rounded-[4px] space-y-1">
-                    <p className="text-[8px] font-bold text-black/60 uppercase tracking-widest">Delivered</p>
-                    <p className="text-xl font-black text-green-600 font-mono">{deliveredCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-[8px] font-bold text-green-600 uppercase tracking-widest">Delivered</p>
+                    <p className="text-2xl font-black text-black font-mono">{deliveredCount}</p>
                   </div>
-                </div>
-              </div>
-
-              {/* Choose Preferred Courier for Future Deliveries */}
-              <div className="bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm space-y-4">
-                <div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-black leading-snug">Choose Your Preferred Courier for Future Deliveries</h3>
-                  <p className="text-[8px] text-black/60 uppercase tracking-wider mt-1">We will try our best to dispatch your order with this logistics partner.</p>
-                </div>
-                <div className="space-y-3">
-                  <select
-                    value={preferredCourier}
-                    onChange={(e) => setPreferredCourier(e.target.value)}
-                    className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black cursor-pointer"
-                  >
-                    <option value="TCS Courier">TCS Courier</option>
-                    <option value="Leopards Courier">Leopards Courier</option>
-                    <option value="DHL Express">DHL Express</option>
-                    <option value="FedEx">FedEx</option>
-                    <option value="Pakistan Post">Pakistan Post</option>
-                    <option value="M&P Express">M&P Express</option>
-                  </select>
-                  <button
-                    onClick={saveCourierPreference}
-                    className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm flex items-center justify-center gap-2"
-                  >
-                    {courierSaveSuccess ? (
-                      <>Preference Saved!</>
-                    ) : (
-                      <>Save Preference</>
-                    )}
-                  </button>
                 </div>
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-6 bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
-                <div className="border-b border-black/10 pb-3 flex items-center justify-between">
-                  <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Locations</h2>
+              <div className="space-y-4 bg-[#FAF9F6] border border-black/10 p-6 rounded-[4px] shadow-sm">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
                     onClick={() => setShowAddressForm(!showAddressForm)}
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
@@ -361,7 +324,7 @@ export default function ProfilePage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden mb-4"
+                      className="overflow-hidden"
                     >
                       <div className="p-4 bg-white rounded-[4px] border border-black/[0.06] space-y-3">
                         <div className="space-y-1">
@@ -393,23 +356,23 @@ export default function ProfilePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="space-y-3">
-                  {userData.addresses?.length === 0 ? (
+                <div className="space-y-2">
+                  {!userData.addresses?.length ? (
                     <p className="text-[9px] text-black/60 uppercase tracking-widest text-center py-4 bg-white border border-black/[0.04] rounded-[4px]">
-                      No locations saved.
+                      No addresses saved.
                     </p>
                   ) : (
                     userData.addresses.map((addr) => (
-                      <div key={addr._id} className="p-4 bg-white border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
+                      <div key={addr._id} className="p-3 bg-white border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
                         <div className="min-w-0">
                           <p className="text-[10px] font-bold uppercase text-black truncate">{addr.fullName}</p>
-                          <p className="text-[9px] text-black/70 uppercase tracking-wider leading-relaxed mt-1 truncate">
+                          <p className="text-[9px] text-black/70 uppercase tracking-wider leading-relaxed mt-0.5 truncate">
                             {addr.street}, {addr.city}
                           </p>
                         </div>
                         <button
                           onClick={() => handleAction("deleteAddress", { id: addr._id })}
-                          className="text-black/50 hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0"
+                          className="text-black/40 hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0"
                           aria-label="Delete address"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -420,11 +383,21 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Delete Account */}
+              <div className="text-center pt-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-[9px] text-black/40 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
+                >
+                  Delete Account
+                </button>
+              </div>
+
             </div>
 
             {/* Right Column: Main Content (8 cols) */}
-            <div className="lg:col-span-8 space-y-6">
-              
+            <div className="lg:col-span-8 space-y-5">
+
               {/* Header Navigation Tab + Search Bar */}
               <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-4">
                 <div className="flex gap-6">
@@ -445,7 +418,7 @@ export default function ProfilePage() {
                     Previous Orders
                   </button>
                 </div>
-                
+
                 {/* Search Bar */}
                 <div className="relative w-full sm:w-64">
                   <Search className="w-3.5 h-3.5 text-black/40 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -460,73 +433,64 @@ export default function ProfilePage() {
               </div>
 
               {/* Order List Rows */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {filteredOrders.length === 0 ? (
                   <div className="py-20 text-center border border-dashed border-black/10 rounded-[4px] bg-[#FAF9F6] space-y-4">
                     <ShoppingBag className="w-12 h-12 text-black/10 mx-auto" />
-                    <div>
-                      <p className="text-[10px] text-black/80 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
-                    </div>
+                    <p className="text-[10px] text-black/80 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
                   </div>
                 ) : (
                   filteredOrders.map((order, i) => {
                     const isExpanded = expandedOrderId === order.id;
+                    const isTimelineExpanded = expandedTimelineId === order.id;
                     const isDelivered = order.status === 'Delivered' || order.status === 'Completed' || order.payment?.status === 'Paid';
-                    const courierBrand = getCourierName(order.id, i);
-                    
+                    const timelineOrder = orderTimelines[order.id];
+                    const currentStep = timelineSteps.indexOf(order.status);
+
                     return (
-                      <div 
-                        key={order.id} 
+                      <div
+                        key={order.id}
                         className={`border border-black/10 rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
                           isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/20'
                         }`}
                       >
-                        {/* Summary Header Row */}
-                        <div 
+                        {/* Summary Header Row — clickable to expand items */}
+                        <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
+                          className="px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
                         >
                           {/* Left Column: Order metadata */}
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Order ID:</span>
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Order Number</span>
                               <span className="text-[11px] font-black text-black font-mono">#{order.orderNumber || i + 1024}</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Tracking ID:</span>
-                              <span className="text-[10px] font-bold text-black/85 font-mono">TRK-{order.orderNumber ? (order.orderNumber * 773 + 1248301) : (i * 921 + 7794181)}</span>
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Tracking ID</span>
+                              <span className="text-[10px] font-bold text-black/80 font-mono">TRK-{order.orderNumber ? (parseInt(order.orderNumber.replace(/\D/g, '') || '0') * 773 + 1248301) : (i * 921 + 7794181)}</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Creation Date:</span>
-                              <span className="text-[10px] font-bold text-black/85 font-mono">{formatOrderDate(order.date)}</span>
+                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Creation Date</span>
+                              <span className="text-[10px] font-bold text-black/80 font-mono">{formatOrderDate(order.date)}</span>
                             </div>
                           </div>
 
-                          {/* Middle Column: Logistics / Courier preference & Stars */}
-                          <div className="space-y-1 flex-1 shrink-0">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Courier:</span>
-                              <span className="text-[10px] font-black uppercase text-black tracking-widest">{courierBrand}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
+                          {/* Middle Column: Stars */}
+                          <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
+                            <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Courier Rating</span>
+                            <div className="flex items-center gap-0.5">
                               {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400 shrink-0" />
+                                <Star key={star} className="w-3 h-3 fill-yellow-400 text-yellow-400 shrink-0" />
                               ))}
                             </div>
                           </div>
 
                           {/* Right Column: Status pill & chevron */}
-                          <div className="flex items-center justify-between md:justify-end gap-6 shrink-0">
-                            <div className="text-right">
-                              <span className={`inline-block px-3 py-1 text-[8px] font-black uppercase tracking-[0.15em] rounded-[2px] ${
-                                order.status === 'Delivered' ? 'bg-green-100 text-green-800 border border-green-200' :
-                                order.status === 'Cancelled' ? 'bg-red-50 text-red-600 border border-red-100' :
-                                order.status === 'Confirmed' ? 'bg-blue-50 text-blue-700 border border-blue-100 font-semibold' :
-                                'bg-orange-50 text-orange-700 border border-orange-100 font-semibold'
-                              }`}>
+                          <div className="flex items-center justify-between md:justify-end gap-4 shrink-0">
+                            <div className="text-right space-y-1">
+                              <span className={`inline-block px-3 py-1 text-[8px] font-black uppercase tracking-[0.15em] rounded-full ${getStatusColor(order.status)}`}>
                                 {order.status}
                               </span>
-                              <p className="text-[11px] font-black text-black font-mono mt-1">${order.total.toLocaleString()}</p>
                             </div>
                             <div className="text-black/50 p-1">
                               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -535,180 +499,244 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Expanded Items & Info Area */}
-                        {isExpanded && (
-                          <div className="border-t border-black/10 bg-[#FAF9F6]/40 p-5 space-y-6 animate-in slide-in-from-top-1 duration-150">
-                            
-                            {/* Products List */}
-                            <div className="space-y-4">
-                              <p className="text-[9px] font-bold text-black/40 uppercase tracking-wider">Acquisitions Included</p>
-                              <div className="divide-y divide-black/[0.04] bg-white border border-black/10 rounded-[4px] p-4 space-y-4">
-                                {(order.items || []).map((item, idx) => {
-                                  const reviewId = `${order.id}-${item.productId}`;
-                                  const showForm = activeReviewId === reviewId;
-                                  return (
-                                    <div key={idx} className="pt-4 first:pt-0 space-y-4">
-                                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                          <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-[#FAF9F6] shrink-0">
-                                            <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
-                                          </div>
-                                          <div className="min-w-0">
-                                            <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
-                                            {item.selectedSize && item.selectedSize !== "Standard" && (
-                                              <p className="text-[8px] font-semibold text-black/50 uppercase tracking-widest mt-0.5">Size: {item.selectedSize}</p>
-                                            )}
-                                            <p className="text-[9px] font-bold text-black/70 uppercase mt-0.5">Qty {item.quantity}</p>
-                                          </div>
-                                        </div>
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="border-t border-black/10 bg-[#FAF9F6]/40 p-5 space-y-5">
 
-                                        <div className="flex items-center gap-4 self-end sm:self-center shrink-0">
-                                          {isDelivered && (
-                                            <button
-                                              onClick={() => {
-                                                if (showForm) {
-                                                  setActiveReviewId(null);
-                                                } else {
-                                                  setActiveReviewId(reviewId);
-                                                  setReviewForm({
-                                                    rating: 5,
-                                                    title: "",
-                                                    comment: "",
-                                                    customerName: userData.name,
-                                                    recommend: true
-                                                  });
-                                                }
-                                              }}
-                                              className="text-[9px] border border-black/15 text-black hover:bg-neutral-50 px-3 py-1.5 rounded-[4px] font-bold uppercase tracking-widest cursor-pointer transition-colors"
-                                            >
-                                              {showForm ? "Cancel Review" : "Write Review"}
-                                            </button>
-                                          )}
-                                          <p className="text-xs font-bold text-black font-mono">${(item.priceAtPurchase * item.quantity).toLocaleString()}</p>
-                                        </div>
-                                      </div>
-
-                                      {/* Verified Review Submission Form */}
-                                      {showForm && (
-                                        <motion.div 
-                                          initial={{ height: 0, opacity: 0 }}
-                                          animate={{ height: "auto", opacity: 1 }}
-                                          className="bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-4 mt-2 space-y-4"
-                                        >
-                                          <div className="flex items-center justify-between border-b border-black/5 pb-2">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-black flex items-center gap-1.5">
-                                              <Check className="w-3.5 h-3.5 text-green-600" /> Submit Verified Purchase Review
-                                            </span>
-                                          </div>
-
-                                          {reviewSuccessMessage ? (
-                                            <div className="p-3 bg-green-50 border border-green-200 text-green-800 text-[10px] uppercase font-bold tracking-widest text-center rounded-[2px]">
-                                              {reviewSuccessMessage}
+                                {/* Products List */}
+                                <div className="space-y-3">
+                                  <p className="text-[9px] font-bold text-black/40 uppercase tracking-wider">Items in this Order</p>
+                                  <div className="divide-y divide-black/[0.04] bg-white border border-black/10 rounded-[4px] p-4 space-y-4">
+                                    {(order.items || []).map((item, idx) => {
+                                      const reviewId = `${order.id}-${item.productId}`;
+                                      const showForm = activeReviewId === reviewId;
+                                      return (
+                                        <div key={idx} className="pt-4 first:pt-0 space-y-4">
+                                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                              <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-[#FAF9F6] shrink-0">
+                                                <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
+                                              </div>
+                                              <div className="min-w-0">
+                                                <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
+                                                {item.selectedSize && item.selectedSize !== "Standard" && (
+                                                  <p className="text-[8px] font-semibold text-black/50 uppercase tracking-widest mt-0.5">Size: {item.selectedSize}</p>
+                                                )}
+                                                <p className="text-[9px] font-bold text-black/70 uppercase mt-0.5">Qty {item.quantity}</p>
+                                              </div>
                                             </div>
-                                          ) : (
-                                            <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber)} className="space-y-3">
-                                              
-                                              {/* Stars Picker */}
-                                              <div className="space-y-1">
-                                                <label className="text-[8px] font-bold uppercase tracking-wider text-black/60 block">Rating</label>
-                                                <div className="flex gap-1.5">
-                                                  {[1, 2, 3, 4, 5].map((star) => (
-                                                    <button
-                                                      type="button"
-                                                      key={star}
-                                                      onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-                                                      className="p-0.5 cursor-pointer hover:scale-110 transition-transform"
-                                                    >
-                                                      <Star className={`w-4 h-4 ${star <= reviewForm.rating ? "fill-black text-black" : "text-black/25"}`} />
-                                                    </button>
-                                                  ))}
+
+                                            <div className="flex items-center gap-4 self-end sm:self-center shrink-0">
+                                              {isDelivered && (
+                                                <button
+                                                  onClick={() => {
+                                                    if (showForm) {
+                                                      setActiveReviewId(null);
+                                                    } else {
+                                                      setActiveReviewId(reviewId);
+                                                      setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
+                                                    }
+                                                  }}
+                                                  className="text-[9px] border border-black/15 text-black hover:bg-neutral-50 px-3 py-1.5 rounded-[4px] font-bold uppercase tracking-widest cursor-pointer transition-colors"
+                                                >
+                                                  {showForm ? "Cancel" : "Write Review"}
+                                                </button>
+                                              )}
+                                              <p className="text-xs font-bold text-black font-mono">${(item.priceAtPurchase * item.quantity).toLocaleString()}</p>
+                                            </div>
+                                          </div>
+
+                                          {/* Verified Review Submission Form */}
+                                          {showForm && (
+                                            <motion.div
+                                              initial={{ height: 0, opacity: 0 }}
+                                              animate={{ height: "auto", opacity: 1 }}
+                                              className="bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-4 mt-2 space-y-4"
+                                            >
+                                              <div className="flex items-center justify-between border-b border-black/5 pb-2">
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-black flex items-center gap-1.5">
+                                                  <Check className="w-3.5 h-3.5 text-green-600" /> Verified Purchase Review
+                                                </span>
+                                              </div>
+                                              {reviewSuccessMessage ? (
+                                                <div className="p-3 bg-green-50 border border-green-200 text-green-800 text-[10px] uppercase font-bold tracking-widest text-center rounded-[2px]">
+                                                  {reviewSuccessMessage}
                                                 </div>
-                                              </div>
-
-                                              <div className="space-y-1">
-                                                <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Headline Title</label>
-                                                <input
-                                                  placeholder="e.g. Absolutely Outstanding!"
-                                                  className={inputClass}
-                                                  value={reviewForm.title}
-                                                  onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })}
-                                                />
-                                              </div>
-
-                                              <div className="space-y-1">
-                                                <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Review Comments</label>
-                                                <textarea
-                                                  placeholder="Detail your acquisition experience..."
-                                                  rows={3}
-                                                  className={`${inputClass} resize-none`}
-                                                  value={reviewForm.comment}
-                                                  onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                                                />
-                                              </div>
-
-                                              <div className="flex items-center gap-4">
-                                                <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Would you recommend this item?</label>
-                                                <div className="flex gap-2">
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => setReviewForm({ ...reviewForm, recommend: true })}
-                                                    className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${
-                                                      reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'
-                                                    }`}
-                                                  >
-                                                    Yes
+                                              ) : (
+                                                <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber)} className="space-y-3">
+                                                  <div className="space-y-1">
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60 block">Rating</label>
+                                                    <div className="flex gap-1.5">
+                                                      {[1, 2, 3, 4, 5].map((star) => (
+                                                        <button type="button" key={star} onClick={() => setReviewForm({ ...reviewForm, rating: star })} className="p-0.5 cursor-pointer hover:scale-110 transition-transform">
+                                                          <Star className={`w-4 h-4 ${star <= reviewForm.rating ? "fill-black text-black" : "text-black/25"}`} />
+                                                        </button>
+                                                      ))}
+                                                    </div>
+                                                  </div>
+                                                  <div className="space-y-1">
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Headline Title</label>
+                                                    <input placeholder="e.g. Absolutely Outstanding!" className={inputClass} value={reviewForm.title} onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })} />
+                                                  </div>
+                                                  <div className="space-y-1">
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Review Comments</label>
+                                                    <textarea placeholder="Detail your experience..." rows={3} className={`${inputClass} resize-none`} value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} />
+                                                  </div>
+                                                  <div className="flex items-center gap-4">
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Recommend?</label>
+                                                    <div className="flex gap-2">
+                                                      <button type="button" onClick={() => setReviewForm({ ...reviewForm, recommend: true })} className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'}`}>Yes</button>
+                                                      <button type="button" onClick={() => setReviewForm({ ...reviewForm, recommend: false })} className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${!reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'}`}>No</button>
+                                                    </div>
+                                                  </div>
+                                                  <button type="submit" disabled={submittingReview} className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm disabled:opacity-50 mt-2">
+                                                    {submittingReview ? "Submitting..." : "Submit Review"}
                                                   </button>
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => setReviewForm({ ...reviewForm, recommend: false })}
-                                                    className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${
-                                                      !reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'
-                                                    }`}
-                                                  >
-                                                    No
-                                                  </button>
-                                                </div>
-                                              </div>
-
-                                              <button
-                                                type="submit"
-                                                disabled={submittingReview}
-                                                className="w-full bg-black text-white py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer shadow-sm disabled:opacity-50 mt-2"
-                                              >
-                                                {submittingReview ? "Submitting Review..." : "Submit Review"}
-                                              </button>
-                                            </form>
+                                                </form>
+                                              )}
+                                            </motion.div>
                                           )}
-                                        </motion.div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
 
-                            {/* Row Footer Buttons */}
-                            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-black/[0.04]">
-                              <Link 
-                                href={`/profile/orders/${order.id}`}
-                                className="bg-black text-white px-5 py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest hover:bg-neutral-900 transition-all shadow-sm"
-                              >
-                                View Order Timeline & Tracking
-                              </Link>
-                              {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleAction("cancelOrder", { orderId: order.id });
-                                  }}
-                                  className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:underline cursor-pointer"
-                                >
-                                  Request Cancel
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        )}
+                                {/* Total & Order Journey Toggle */}
+                                <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-black/[0.06]">
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-black/40">Total</span>
+                                    <span className="text-[13px] font-black text-black font-mono">${order.total.toLocaleString()}</span>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (expandedTimelineId === order.id) {
+                                          setExpandedTimelineId(null);
+                                        } else {
+                                          fetchOrderTimeline(order.id);
+                                        }
+                                      }}
+                                      className="bg-black text-white px-4 py-2 rounded-[4px] text-[9px] font-black uppercase tracking-widest hover:bg-neutral-900 transition-all shadow-sm cursor-pointer"
+                                    >
+                                      {loadingTimeline === order.id ? "Loading..." : isTimelineExpanded ? "Hide Timeline" : "Order Journey"}
+                                    </button>
+                                    {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          handleAction("cancelOrder", { orderId: order.id });
+                                        }}
+                                        className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:underline cursor-pointer"
+                                      >
+                                        Request Cancel
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Inline Order Timeline */}
+                                <AnimatePresence>
+                                  {isTimelineExpanded && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      className="overflow-hidden"
+                                    >
+                                      <div className="bg-white border border-black/10 rounded-[4px] p-5 space-y-5">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-black">Order Journey</h3>
+
+                                        {/* Progress Stepper */}
+                                        <div className="relative px-2">
+                                          <div className="absolute left-2 right-2 top-[10px] h-[2px] bg-black/10" />
+                                          <div
+                                            className="absolute left-2 top-[10px] h-[2px] bg-black transition-all duration-500"
+                                            style={{ width: `calc(${currentStep >= 0 ? (currentStep / (timelineSteps.length - 1)) * 100 : 0}% - 4px)` }}
+                                          />
+                                          <div className="flex justify-between items-start relative z-10">
+                                            {timelineSteps.map((step, idx) => {
+                                              const active = idx <= currentStep;
+                                              const isCurrent = idx === currentStep;
+                                              return (
+                                                <div key={idx} className="flex flex-col items-center gap-2">
+                                                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[9px] font-bold transition-all duration-300 ${
+                                                    isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
+                                                    active ? 'bg-black text-white border-black' :
+                                                    'bg-white text-black/40 border-black/20'
+                                                  }`}>
+                                                    {idx + 1}
+                                                  </div>
+                                                  <span className={`hidden sm:block text-[8px] font-bold uppercase tracking-wider transition-colors text-center max-w-[60px] leading-tight ${active ? 'text-black font-black' : 'text-black/40'}`}>
+                                                    {step}
+                                                  </span>
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+
+                                        {/* Timeline Events */}
+                                        {timelineOrder && (
+                                          <div className="space-y-4 pt-2">
+                                            {(() => {
+                                              const events = timelineOrder.timeline?.length > 0
+                                                ? timelineOrder.timeline
+                                                : [{
+                                                    status: order.status,
+                                                    message: order.status === 'Pending'
+                                                      ? 'Order placed successfully. Awaiting confirmation.'
+                                                      : `Order is currently ${order.status.toLowerCase()}.`,
+                                                    timestamp: order.date,
+                                                    source: 'System'
+                                                  }];
+                                              return events.map((event, idx) => (
+                                                <div key={idx} className="flex gap-4 relative">
+                                                  <div className="flex flex-col items-center">
+                                                    <div className="w-2.5 h-2.5 rounded-full bg-black shrink-0 mt-0.5" />
+                                                    {idx !== events.length - 1 && <div className="w-px flex-1 bg-black/10 mt-1" />}
+                                                  </div>
+                                                  <div className="space-y-0.5 pb-3 min-w-0">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-black">{event.status}</p>
+                                                    <p className="text-[10px] text-black leading-relaxed">{event.message}</p>
+                                                    <p className="text-[9px] font-bold text-black/60 uppercase tracking-widest">
+                                                      {new Date(event.timestamp).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              ));
+                                            })()}
+                                          </div>
+                                        )}
+
+                                        {/* Shipping Address */}
+                                        {timelineOrder?.shippingAddress && (
+                                          <div className="pt-4 border-t border-black/[0.06] space-y-1">
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-black/40 flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Delivery Destination</p>
+                                            <p className="text-[10px] font-bold text-black leading-relaxed">
+                                              {timelineOrder.shippingAddress.fullName}<br />
+                                              {timelineOrder.shippingAddress.street}, {timelineOrder.shippingAddress.city}<br />
+                                              {timelineOrder.shippingAddress.country}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     );
                   })
@@ -717,18 +745,6 @@ export default function ProfilePage() {
 
             </div>
 
-          </div>
-
-          {/* Minimal Footer Action */}
-          <div className="flex flex-col items-center pt-16 mt-16 border-t border-black/10 space-y-4">
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="text-[9px] text-black/50 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
-            >
-              Delete Account
-            </button>
-            <div className="w-1 h-1 bg-black/10 rounded-full" />
-            <p className="text-[8px] text-black/40 uppercase tracking-[0.5em] font-bold">PAIRO COLLECTION</p>
           </div>
 
         </div>
@@ -741,7 +757,7 @@ export default function ProfilePage() {
             <div className="space-y-2">
               <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-black">Confirm Account Deletion</h3>
               <p className="text-xs text-black/60 leading-relaxed uppercase tracking-wider font-semibold">
-                Are you sure you want to permanently delete your account? This action is irreversible and all your acquisition history will be lost.
+                Are you sure you want to permanently delete your account? This action is irreversible and all your order history will be lost.
               </p>
             </div>
             <div className="flex gap-4">
