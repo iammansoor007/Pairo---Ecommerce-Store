@@ -131,10 +131,16 @@ export default function ProfilePage() {
               ) : (
                 <div className="space-y-4">
                   {userData.orderHistory.map((order, i) => (
-                    <div key={i} className="border border-black/[0.08] p-5 rounded-[4px] space-y-4 bg-white hover:border-black/20 transition-all shadow-sm">
+                    <Link 
+                      href={`/profile/orders/${order.id}`}
+                      key={i} 
+                      className="block border border-black/[0.08] p-5 rounded-[4px] space-y-4 bg-white hover:border-black/20 transition-all shadow-sm group"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <p className="text-[11px] font-black uppercase tracking-wider text-black">Order #{order.orderNumber || i + 1024}</p>
+                          <p className="text-[11px] font-black uppercase tracking-wider text-black group-hover:underline decoration-black/30 underline-offset-4">
+                            Order #{order.orderNumber || i + 1024}
+                          </p>
                           <span className={`text-[8px] font-black uppercase tracking-[0.1em] px-2.5 py-0.5 rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' :
                               order.status === 'Cancelled' ? 'bg-neutral-100 text-black font-semibold' :
                                 'bg-neutral-100 text-black border border-black/5'
@@ -147,35 +153,51 @@ export default function ProfilePage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-black/[0.03]">
-                        <div className="flex -space-x-1.5 overflow-hidden">
-                          {(order.items || []).slice(0, 3).map((item, idx) => (
-                            <div key={idx} className="w-8 h-10 rounded-[2px] border border-white bg-[#FAF9F6] overflow-hidden shrink-0 shadow-sm relative z-[1]">
-                              <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
+                      {/* Complete Order Items details list */}
+                      <div className="space-y-2.5 pt-2 border-t border-black/[0.03]">
+                        {(order.items || []).map((item, idx) => (
+                          <div key={idx} className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-8 h-10 rounded-[2px] border border-black/10 overflow-hidden bg-[#FAF9F6] shrink-0">
+                                <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
+                                {item.selectedSize && item.selectedSize !== "Standard" && (
+                                  <p className="text-[8px] font-semibold text-black/50 uppercase tracking-widest">Size: {item.selectedSize}</p>
+                                )}
+                              </div>
                             </div>
-                          ))}
-                          {order.items?.length > 3 && (
-                            <div className="w-8 h-10 rounded-[2px] border border-white bg-black text-white text-[8px] flex items-center justify-center shadow-sm font-bold relative z-[2]">
-                              +{order.items.length - 3}
+                            <div className="text-right shrink-0">
+                              <p className="text-[10px] font-bold text-black/60 uppercase">Qty {item.quantity}</p>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        ))}
+                      </div>
 
-                        <div className="text-right">
-                          <p className="text-[13px] font-bold text-black font-mono">
-                            ${order.total.toLocaleString()}
-                          </p>
+                      <div className="flex justify-between items-center pt-3 border-t border-black/[0.03]">
+                        <div className="flex items-center gap-4">
+                          <span className="text-[9px] font-black uppercase tracking-widest text-black/50 group-hover:text-black transition-colors">
+                            View Details →
+                          </span>
                           {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
                             <button
-                              onClick={() => handleAction("cancelOrder", { orderId: order.id })}
-                              className="text-[8px] font-bold text-red-500 uppercase tracking-widest hover:underline block ml-auto mt-1 cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction("cancelOrder", { orderId: order.id });
+                              }}
+                              className="text-[8px] font-bold text-red-500 uppercase tracking-widest hover:underline cursor-pointer"
                             >
                               Request Cancel
                             </button>
                           )}
                         </div>
+                        <p className="text-[13px] font-bold text-black font-mono">
+                          Total: ${order.total.toLocaleString()}
+                        </p>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               )}
