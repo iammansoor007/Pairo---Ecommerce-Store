@@ -538,15 +538,15 @@ export default function Navbar() {
                                 )}
 
                                 {(item.dropdownType === 'mega' || item.type === 'mega_menu' || item.type === 'dropdown_category') && (
-                                  <div className="grid grid-cols-2 gap-4 mt-4">
+                                  <div className="flex flex-col gap-4 py-2 border-l border-black/5 pl-4">
                                     {((item.type === 'dropdown_category' ? item.itemDropdownCategories : item.itemMegaCategories) || []).map((cat) => (
-                                      <Link key={cat.slug || cat.name} href={getCategoryUrl(cat)} onClick={() => setIsOpen(false)}>
-                                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-black/5">
-                                          <Image src={cat.image || '/placeholder.jpg'} alt={cat.name} fill className="object-cover" />
-                                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10 flex items-end p-3">
-                                            <p className="text-white font-bold text-[9px] uppercase tracking-widest w-full text-left">{cat.name}</p>
-                                          </div>
-                                        </div>
+                                      <Link 
+                                        key={cat.slug || cat.name} 
+                                        href={getCategoryUrl(cat)} 
+                                        onClick={() => setIsOpen(false)}
+                                        className="text-lg font-bold text-black/60 hover:text-black uppercase tracking-wide block"
+                                      >
+                                        {cat.name}
                                       </Link>
                                     ))}
                                   </div>
