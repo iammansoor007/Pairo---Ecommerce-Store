@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editingInfo, setEditingInfo] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [infoForm, setInfoForm] = useState({ name: "", email: "" });
   const [addressForm, setAddressForm] = useState({ fullName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
@@ -319,17 +320,45 @@ export default function ProfilePage() {
           {/* Minimal Footer Action */}
           <div className="flex flex-col items-center pt-16 mt-16 border-t border-black/10 space-y-4">
             <button
-              onClick={() => handleAction("deleteAccount")}
-              className="text-[9px] text-neutral-400 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
+              onClick={() => setShowDeleteConfirm(true)}
+              className="text-[9px] text-black/50 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
             >
               Delete Account
             </button>
-            <div className="w-1 h-1 bg-neutral-200 rounded-full" />
-            <p className="text-[8px] text-neutral-300 uppercase tracking-[0.5em] font-bold">PAIRO COLLECTION</p>
+            <div className="w-1 h-1 bg-black/10 rounded-full" />
+            <p className="text-[8px] text-black/40 uppercase tracking-[0.5em] font-bold">PAIRO COLLECTION</p>
           </div>
 
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
+          <div className="bg-white border border-black/10 rounded-[4px] p-8 max-w-md w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-2">
+              <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-black">Confirm Account Deletion</h3>
+              <p className="text-xs text-black/60 leading-relaxed uppercase tracking-wider font-semibold">
+                Are you sure you want to permanently delete your account? This action is irreversible and all your acquisition history will be lost.
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleAction("deleteAccount")}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-sm"
+              >
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
