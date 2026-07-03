@@ -64,7 +64,7 @@ export default function UserOrderDetailPage() {
 
   return (
     <div className="bg-white min-h-screen text-black pb-32">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-20 pb-12 max-w-6xl">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-20 pb-12">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
           <div className="space-y-4">
@@ -174,19 +174,30 @@ export default function UserOrderDetailPage() {
               <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-8 space-y-8">
                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Order Journey</h2>
                  <div className="space-y-8">
-                    {order.timeline.filter(e => e.source !== 'Admin' || e.status === order.status).map((event, i) => (
-                      <div key={i} className="flex gap-6 relative">
-                         <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-black shadow-lg z-10" />
-                            {i !== order.timeline.length - 1 && <div className="w-[1px] h-full bg-black/10 absolute top-3" />}
-                         </div>
-                         <div className="space-y-1 pb-4">
-                            <p className="text-xs font-bold uppercase tracking-widest text-black">{event.status}</p>
-                            <p className="text-xs text-black leading-relaxed">{event.message}</p>
-                            <p className="text-[9px] font-bold text-black/85 uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
-                         </div>
-                      </div>
-                    ))}
+                    {(() => {
+                      const filtered = order.timeline?.filter(e => e.source !== 'Admin' || e.status === order.status) || [];
+                      const timelineEvents = filtered.length > 0 ? filtered : [{
+                        status: order.status,
+                        message: order.status === 'Pending' 
+                          ? 'Order placed successfully. Pending confirmation.' 
+                          : `Order is currently in ${order.status.toLowerCase()} status.`,
+                        timestamp: order.createdAt || new Date(),
+                        source: 'System'
+                      }];
+                      return timelineEvents.map((event, i) => (
+                        <div key={i} className="flex gap-6 relative">
+                           <div className="flex flex-col items-center">
+                              <div className="w-3 h-3 rounded-full bg-black shadow-lg z-10" />
+                              {i !== timelineEvents.length - 1 && <div className="w-[1px] h-full bg-black/10 absolute top-3" />}
+                           </div>
+                           <div className="space-y-1 pb-4">
+                              <p className="text-xs font-bold uppercase tracking-widest text-black">{event.status}</p>
+                              <p className="text-xs text-black leading-relaxed">{event.message}</p>
+                              <p className="text-[9px] font-bold text-black/85 uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
+                           </div>
+                        </div>
+                      ));
+                    })()}
                  </div>
               </div>
 

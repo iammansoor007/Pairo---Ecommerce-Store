@@ -263,6 +263,11 @@ export async function POST(req) {
                 orderNumber,
                 idempotencyKey,
                 status: "Pending",
+                timeline: [{
+                    status: "Pending",
+                    message: "Order placed successfully. Pending confirmation.",
+                    source: "System"
+                }],
                 items: orderItems,
                 affiliateId,
                 affiliateReferralCode,
