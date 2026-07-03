@@ -30,6 +30,7 @@ export default function CheckoutPage() {
   const [profile, setProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [applyingPromo, setApplyingPromo] = useState(false);
   const [promoError, setPromoError] = useState("");
@@ -79,10 +80,10 @@ export default function CheckoutPage() {
   }, [session]);
 
   useEffect(() => {
-    if (cartItems.length === 0 && !isProcessing) {
+    if (cartItems.length === 0 && !isProcessing && !isSuccess) {
       router.push("/cart");
     }
-  }, [cartItems, router, isProcessing]);
+  }, [cartItems, router, isProcessing, isSuccess]);
 
   const savedAddresses = useMemo(() => {
     if (!profile) return [];
@@ -266,6 +267,7 @@ export default function CheckoutPage() {
       const data = await response.json();
 
       if (data.success) {
+        setIsSuccess(true);
         clearCart();
         router.push(`/checkout/success?id=${data.orderId}&orderNumber=${data.orderNumber}`);
       } else {
