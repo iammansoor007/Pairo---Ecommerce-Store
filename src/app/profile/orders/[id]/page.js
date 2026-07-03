@@ -62,23 +62,25 @@ export default function UserOrderDetailPage() {
     <div className="bg-white min-h-screen text-black pb-32">
       <div className="container mx-auto px-6 md:px-16 pt-32 pb-20 max-w-6xl">
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
           <div className="space-y-4">
-             <Link href="/profile/orders" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-black/40 hover:text-black transition-all group">
-                <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                Back to History
+             <Link 
+               href="/profile/orders" 
+               className="text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-black transition-colors flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-[#FAF9F6] shadow-sm w-fit"
+             >
+                <ChevronLeft className="w-3.5 h-3.5" /> Back to History
              </Link>
-             <h1 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">{order.orderNumber}</h1>
+             <h1 className="text-3xl font-black uppercase tracking-wider text-black">{order.orderNumber}</h1>
           </div>
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-             <span className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest ${order.status === 'Delivered' ? 'bg-green-50 text-green-600' : 'bg-black text-white'}`}>
+          <div className="flex items-center gap-4">
+             <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' : 'bg-neutral-100 text-black border border-black/5'}`}>
                 {order.status}
              </span>
              {['Pending', 'Confirmed'].includes(order.status) && (
                <button 
                 onClick={handleCancel}
                 disabled={cancelling}
-                className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+                className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors disabled:opacity-50 cursor-pointer"
                >
                  {cancelling ? "Cancelling..." : "Cancel Order"}
                </button>
@@ -94,19 +96,19 @@ export default function UserOrderDetailPage() {
                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/30">Acquired Pieces</h2>
                  <div className="space-y-8">
                     {order.items.map((item, i) => (
-                      <div key={i} className="flex gap-8 group">
-                         <div className="w-24 h-32 bg-gray-50 rounded-2xl overflow-hidden border shrink-0">
+                      <div key={i} className="flex gap-6 group items-center">
+                         <div className="w-16 h-20 bg-[#FAF9F6] rounded-[4px] overflow-hidden border border-black/10 shrink-0">
                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                          </div>
-                         <div className="flex-1 flex flex-col justify-center gap-2">
-                            <h3 className="text-sm font-bold uppercase tracking-widest">{item.name}</h3>
+                         <div className="flex-1 flex flex-col justify-center gap-1">
+                            <h3 className="text-xs font-black uppercase tracking-wider text-black">{item.name}</h3>
                             <div className="flex flex-col gap-0.5">
-                               <p className="text-[10px] font-bold text-black/40 uppercase">Qty {item.quantity}</p>
+                               <p className="text-[9px] font-bold text-neutral-400 uppercase">Qty {item.quantity}</p>
                                {item.selectedVariant?.options && Object.entries(item.selectedVariant.options).map(([key, val]) => (
-                                 <p key={key} className="text-[10px] font-bold text-black/60 uppercase">{key}: {val}</p>
+                                 <p key={key} className="text-[9px] font-bold text-neutral-500 uppercase">{key}: {val}</p>
                                ))}
                             </div>
-                            <p className="text-lg font-bold tracking-tight mt-2">${item.priceAtPurchase.toLocaleString()}</p>
+                            <p className="text-sm font-bold tracking-tight mt-1 text-black font-mono">${item.priceAtPurchase.toLocaleString()}</p>
                          </div>
                       </div>
                     ))}
@@ -120,7 +122,7 @@ export default function UserOrderDetailPage() {
                  </div>
                  <div className="flex justify-between items-baseline text-black/40">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Shipping</span>
-                    <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Complimentary</span>
+                    <span className="text-[10px] font-bold text-black uppercase tracking-widest">Complimentary</span>
                  </div>
                  <div className="flex justify-between items-end pt-8 border-t border-black/5">
                     <span className="text-xs font-bold uppercase tracking-[0.3em]">Total Balance</span>
@@ -132,7 +134,7 @@ export default function UserOrderDetailPage() {
            {/* Right: Timeline & Info */}
            <div className="lg:col-span-5 space-y-8">
               {/* Timeline */}
-              <div className="bg-gray-50 rounded-[2.5rem] p-10 space-y-10">
+              <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-8 space-y-8">
                  <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/30">Order Journey</h2>
                  <div className="space-y-8">
                     {order.timeline.filter(e => e.source !== 'Admin' || e.status === order.status).map((event, i) => (
@@ -152,7 +154,7 @@ export default function UserOrderDetailPage() {
               </div>
 
               {/* Delivery Info */}
-              <div className="p-10 border border-black/5 rounded-[2.5rem] space-y-8">
+              <div className="p-8 border border-black/[0.06] rounded-[4px] bg-white space-y-8">
                  <div className="space-y-4">
                     <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/30">
                        <MapPin className="w-4 h-4" /> Destination
