@@ -5,6 +5,9 @@ const CustomerSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, default: 'user' },
+  emailVerified: { type: Boolean, default: false },
+  verificationToken: { type: String, default: null },
+  verificationTokenExpiry: { type: Date, default: null },
   cart: [{
     productId: { type: Number },
     quantity: { type: Number, default: 1 },

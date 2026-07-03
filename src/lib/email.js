@@ -22,6 +22,66 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
+ * Send Email Verification to New Customer
+ */
+export async function sendEmailVerification(toEmail, name, verificationUrl) {
+  const firstName = name?.split(' ')[0] || 'there';
+
+  const html = `
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 560px; margin: auto; color: #1a1a1a; background: #fff;">
+      <div style="background: #1a1a1a; padding: 28px 32px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; letter-spacing: 6px; font-size: 22px; font-weight: 800; text-transform: uppercase;">PAIRO</h1>
+        <p style="color: #888; margin: 6px 0 0; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Lifestyle Collection</p>
+      </div>
+      <div style="padding: 48px 40px; background: #fff;">
+        <h2 style="font-size: 24px; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.5px;">Verify Your Email</h2>
+        <p style="color: #555; font-size: 15px; line-height: 1.7; margin: 0 0 32px;">
+          Hi ${firstName}, welcome to PAIRO Lifestyle.<br/>
+          Please verify your email address to activate your account and start shopping.
+        </p>
+        <div style="text-align: center; margin: 36px 0;">
+          <a href="${verificationUrl}"
+             style="display: inline-block; background: #1a1a1a; color: #fff; padding: 16px 40px; border-radius: 3px; font-size: 12px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; text-decoration: none;">
+            Verify Email Address
+          </a>
+        </div>
+        <p style="color: #999; font-size: 12px; line-height: 1.6; border-top: 1px solid #f0f0f0; padding-top: 24px; margin: 0;">
+          This link expires in <strong>24 hours</strong>.<br/>
+          If you did not create an account at PAIRO, you can safely ignore this email.
+        </p>
+        <p style="color: #bbb; font-size: 11px; margin-top: 12px;">
+          Or copy this link into your browser:<br/>
+          <span style="color: #555; word-break: break-all;">${verificationUrl}</span>
+        </p>
+      </div>
+      <div style="border-top: 1px solid #eee; padding: 18px 32px; text-align: center; background: #fafafa;">
+        <p style="font-size: 11px; color: #bbb; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+          PAIRO Lifestyle • pairolifestyle.com
+        </p>
+      </div>
+    </div>
+  `;
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`[Email Simulation] Verification Email → ${toEmail} | URL: ${verificationUrl}`);
+    return;
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"PAIRO Lifestyle" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: `Verify your email — PAIRO Lifestyle`,
+      html,
+    });
+    console.log(`[Email] ✅ Verification email sent to ${toEmail} | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send verification email:', err.message);
+    throw err;
+  }
+}
+
+/**
  * Send Order Confirmation Email to Customer
  */
 export async function sendOrderConfirmation(order) {

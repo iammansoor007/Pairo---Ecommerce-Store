@@ -81,10 +81,14 @@ export const authOptions = {
             if (customer) {
                 const isMatch = await bcrypt.compare(credentials.password, customer.password);
                 if (isMatch) {
-                    return { 
-                        id: customer._id.toString(), 
-                        name: customer.name, 
-                        email: customer.email, 
+                    // Block unverified customers
+                    if (!customer.emailVerified) {
+                        throw new Error("EMAIL_NOT_VERIFIED");
+                    }
+                    return {
+                        id: customer._id.toString(),
+                        name: customer.name,
+                        email: customer.email,
                         isStaff: false,
                         isAffiliate: false
                     };

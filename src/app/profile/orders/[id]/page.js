@@ -173,12 +173,12 @@ export default function UserOrderDetailPage() {
                     <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
                       isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
                       active ? 'bg-black text-white border-black' :
-                      'bg-white text-black/60 border-black/25'
+                      'bg-white text-black border-black/25'
                     }`}>
                       {idx + 1}
                     </div>
                     <span className={`hidden sm:inline-block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2.5 transition-colors ${
-                      active ? 'text-black font-black' : 'text-black/60'
+                      active ? 'text-black font-black' : 'text-black'
                     }`}>
                       {step}
                     </span>
@@ -194,7 +194,7 @@ export default function UserOrderDetailPage() {
            {/* Left: Items & Summary */}
            <div className="lg:col-span-7 space-y-12">
               <section className="space-y-8">
-                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Acquired Pieces</h2>
+                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black">Acquired Pieces</h2>
                  <div className="space-y-6">
                     {order.items.map((item, i) => {
                       const isDelivered = order.status === 'Delivered' || order.status === 'Completed' || order.payment?.status === 'Paid';
@@ -212,7 +212,7 @@ export default function UserOrderDetailPage() {
                               <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                                  <h3 className="text-xs font-black uppercase tracking-wider text-black">{item.name}</h3>
                                  <div className="flex flex-col gap-0.5">
-                                    <p className="text-[9px] font-bold text-black/85 uppercase">Qty {item.quantity}</p>
+                                    <p className="text-[9px] font-bold text-black uppercase">Qty {item.quantity}</p>
                                     {item.selectedVariant?.options && Object.entries(item.selectedVariant.options).map(([key, val]) => (
                                       <p key={key} className="text-[9px] font-bold text-black uppercase">{key}: {val}</p>
                                     ))}
@@ -265,7 +265,7 @@ export default function UserOrderDetailPage() {
                                 <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber, order.shippingAddress?.fullName)} className="space-y-3">
                                   {/* Stars Picker */}
                                   <div className="space-y-1">
-                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60 block">Rating</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black block">Rating</label>
                                     <div className="flex gap-1.5">
                                       {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -281,7 +281,7 @@ export default function UserOrderDetailPage() {
                                   </div>
 
                                   <div className="space-y-1">
-                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Headline Title</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Headline Title</label>
                                     <input
                                       placeholder="e.g. Absolutely Outstanding!"
                                       className={inputClass}
@@ -291,7 +291,7 @@ export default function UserOrderDetailPage() {
                                   </div>
 
                                   <div className="space-y-1">
-                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Review Comments</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Review Comments</label>
                                     <textarea
                                       placeholder="Detail your acquisition experience..."
                                       rows={3}
@@ -302,7 +302,7 @@ export default function UserOrderDetailPage() {
                                   </div>
 
                                   <div className="flex items-center gap-4">
-                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Would you recommend this item?</label>
+                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Would you recommend this item?</label>
                                     <div className="flex gap-2">
                                       <button
                                         type="button"
@@ -343,11 +343,11 @@ export default function UserOrderDetailPage() {
               </section>
 
               <section className="pt-12 border-t border-black/5 space-y-6">
-                 <div className="flex justify-between items-baseline text-black/85">
+                 <div className="flex justify-between items-baseline text-black">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Subtotal</span>
                     <span className="text-sm font-bold text-black">${order.financials.subtotal.toLocaleString()}</span>
                  </div>
-                 <div className="flex justify-between items-baseline text-black/85">
+                 <div className="flex justify-between items-baseline text-black">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Shipping</span>
                     <span className="text-[10px] font-bold text-black uppercase tracking-widest">Complimentary</span>
                  </div>
@@ -362,7 +362,7 @@ export default function UserOrderDetailPage() {
            <div className="lg:col-span-5 space-y-8">
               {/* Timeline */}
               <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-6 sm:p-8 space-y-8">
-                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Order Journey</h2>
+                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black">Order Journey</h2>
                  <div className="space-y-8">
                     {(() => {
                       const filtered = order.timeline?.filter(e => e.source !== 'Admin' || e.status === order.status) || [];
@@ -383,7 +383,7 @@ export default function UserOrderDetailPage() {
                            <div className="space-y-1 pb-4">
                               <p className="text-xs font-bold uppercase tracking-widest text-black">{event.status}</p>
                               <p className="text-xs text-black leading-relaxed">{event.message}</p>
-                              <p className="text-[9px] font-bold text-black/85 uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
+                              <p className="text-[9px] font-bold text-black uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
                            </div>
                         </div>
                       ));
@@ -394,7 +394,7 @@ export default function UserOrderDetailPage() {
               {/* Delivery Info */}
               <div className="p-6 sm:p-8 border border-black/[0.06] rounded-[4px] bg-white space-y-8">
                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/85">
+                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black">
                        <MapPin className="w-4 h-4" /> Destination
                     </div>
                     <p className="text-sm font-bold leading-relaxed">
@@ -406,7 +406,7 @@ export default function UserOrderDetailPage() {
                  </div>
 
                  <div className="pt-8 border-t border-black/5 space-y-4">
-                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/85">
+                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black">
                        <Info className="w-4 h-4" /> Notice
                     </div>
                     <p className="text-[10px] leading-relaxed text-black font-semibold italic">

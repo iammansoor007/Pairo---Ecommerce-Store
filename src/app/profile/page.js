@@ -227,8 +227,8 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h2 className="text-[14px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
-                    <p className="text-[10px] text-black/70 font-mono mt-0.5">{userData.addresses?.[0]?.phone || ""}</p>
-                    <p className="text-[10px] text-black/60 font-mono mt-0.5">{userData.email}</p>
+                    <p className="text-[10px] text-black font-mono mt-0.5">{userData.addresses?.[0]?.phone || ""}</p>
+                    <p className="text-[10px] text-black font-mono mt-0.5">{userData.email}</p>
                   </div>
                 </div>
 
@@ -236,7 +236,7 @@ export default function ProfilePage() {
                   {editingInfo ? (
                     <div className="space-y-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Full Name</label>
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Full Name</label>
                         <input
                           className={inputClass}
                           value={infoForm.name}
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Email Address</label>
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Email Address</label>
                         <input
                           className={inputClass}
                           value={infoForm.email}
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Order Statistics Block (2x2 Grid) — Bata reference style */}
+              {/* Order Statistics Block (2x2 Grid) â€” Bata reference style */}
               <div className="bg-[#FAF9F6] border border-black/10 p-5 rounded-[4px] shadow-sm">
                 <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-black/10 border border-black/10 rounded-[4px] overflow-hidden">
                   <div className="p-4 space-y-1 bg-white">
@@ -331,20 +331,20 @@ export default function ProfilePage() {
                     >
                       <div className="p-4 bg-white rounded-[4px] border border-black/[0.06] space-y-3">
                         <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Recipient Name</label>
+                          <label className="text-[8px] font-bold uppercase tracking-wider text-black">Recipient Name</label>
                           <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Street Address</label>
+                          <label className="text-[8px] font-bold uppercase tracking-wider text-black">Street Address</label>
                           <input placeholder="Street" className={inputClass} value={addressForm.street} onChange={e => setAddressForm({ ...addressForm, street: e.target.value })} />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">City</label>
+                            <label className="text-[8px] font-bold uppercase tracking-wider text-black">City</label>
                             <input placeholder="City" className={inputClass} value={addressForm.city} onChange={e => setAddressForm({ ...addressForm, city: e.target.value })} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Zip Code</label>
+                            <label className="text-[8px] font-bold uppercase tracking-wider text-black">Zip Code</label>
                             <input placeholder="Zip Code" className={inputClass} value={addressForm.zipCode} onChange={e => setAddressForm({ ...addressForm, zipCode: e.target.value })} />
                           </div>
                         </div>
@@ -361,7 +361,7 @@ export default function ProfilePage() {
 
                 <div className="space-y-2">
                   {!userData.addresses?.length ? (
-                    <p className="text-[9px] text-black/60 uppercase tracking-widest text-center py-4 bg-white border border-black/[0.04] rounded-[4px]">
+                    <p className="text-[9px] text-black uppercase tracking-widest text-center py-4 bg-white border border-black/[0.04] rounded-[4px]">
                       No addresses saved.
                     </p>
                   ) : (
@@ -369,13 +369,13 @@ export default function ProfilePage() {
                       <div key={addr._id} className="p-3 bg-white border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
                         <div className="min-w-0">
                           <p className="text-[10px] font-bold uppercase text-black truncate">{addr.fullName}</p>
-                          <p className="text-[9px] text-black/70 uppercase tracking-wider leading-relaxed mt-0.5 truncate">
+                          <p className="text-[9px] text-black uppercase tracking-wider leading-relaxed mt-0.5 truncate">
                             {addr.street}, {addr.city}
                           </p>
                         </div>
                         <button
                           onClick={() => handleAction("deleteAddress", { id: addr._id })}
-                          className="text-black/40 hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0"
+                          className="text-black hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0"
                           aria-label="Delete address"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -390,7 +390,7 @@ export default function ProfilePage() {
               <div className="text-center pt-2">
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="text-[9px] text-black/40 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
+                  className="text-[9px] text-black hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
                 >
                   Delete Account
                 </button>
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => setActiveTab("active")}
                     className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
-                      activeTab === "active" ? "text-black border-b-2 border-black" : "text-black/40 hover:text-black"
+                      activeTab === "active" ? "text-black border-b-2 border-black" : "text-black hover:text-black"
                     }`}
                   >
                     Active Orders
@@ -415,7 +415,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => setActiveTab("previous")}
                     className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
-                      activeTab === "previous" ? "text-black border-b-2 border-black" : "text-black/40 hover:text-black"
+                      activeTab === "previous" ? "text-black border-b-2 border-black" : "text-black hover:text-black"
                     }`}
                   >
                     Previous Orders
@@ -424,7 +424,7 @@ export default function ProfilePage() {
 
                 {/* Search Bar */}
                 <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 text-black/40 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-3.5 h-3.5 text-black absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -440,7 +440,7 @@ export default function ProfilePage() {
                 {filteredOrders.length === 0 ? (
                   <div className="py-20 text-center border border-dashed border-black/10 rounded-[4px] bg-[#FAF9F6] space-y-4">
                     <ShoppingBag className="w-12 h-12 text-black/10 mx-auto" />
-                    <p className="text-[10px] text-black/80 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
+                    <p className="text-[10px] text-black uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
                   </div>
                 ) : (
                   filteredOrders.map((order, i) => {
@@ -457,7 +457,7 @@ export default function ProfilePage() {
                           isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/20'
                         }`}
                       >
-                        {/* Summary Header Row — clickable to expand items */}
+                        {/* Summary Header Row â€” clickable to expand items */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                           className="px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none"
@@ -465,19 +465,19 @@ export default function ProfilePage() {
                           {/* Left Column: Order metadata */}
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Order Number</span>
+                              <span className="text-[8px] font-black uppercase text-black tracking-wider">Order Number</span>
                               <span className="text-[11px] font-black text-black font-mono">#{order.orderNumber || i + 1024}</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Creation Date</span>
-                              <span className="text-[10px] font-bold text-black/80 font-mono">{formatOrderDate(order.date)}</span>
+                              <span className="text-[8px] font-black uppercase text-black tracking-wider">Creation Date</span>
+                              <span className="text-[10px] font-bold text-black font-mono">{formatOrderDate(order.date)}</span>
                             </div>
                           </div>
 
-                          {/* Middle Column: Product Rating — interactive for delivered orders */}
+                          {/* Middle Column: Product Rating â€” interactive for delivered orders */}
                           <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
                             <span className={`text-[8px] font-black uppercase tracking-wider ${
-                              isDelivered ? 'text-black/50' : 'text-black/20'
+                              isDelivered ? 'text-black' : 'text-black'
                             }`}>Product Rating</span>
                             <div
                               className="flex items-center gap-0.5"
@@ -521,14 +521,14 @@ export default function ProfilePage() {
                                     <Star className={`w-3.5 h-3.5 transition-colors ${
                                       isDelivered
                                         ? isFilled ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-yellow-300'
-                                        : 'fill-none text-black/15'
+                                        : 'fill-none text-black'
                                     }`} />
                                   </button>
                                 );
                               })}
                             </div>
                             {isDelivered && (
-                              <span className="text-[7px] text-black/40 uppercase tracking-widest font-bold">
+                              <span className="text-[7px] text-black uppercase tracking-widest font-bold">
                                 {(orderHoverRatings[order.id] || 0) > 0
                                   ? `Click to rate ${orderHoverRatings[order.id]} star${orderHoverRatings[order.id] > 1 ? 's' : ''}`
                                   : 'Hover to rate'}
@@ -543,7 +543,7 @@ export default function ProfilePage() {
                                 {order.status}
                               </span>
                             </div>
-                            <div className="text-black/50 p-1">
+                            <div className="text-black p-1">
                               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                             </div>
                           </div>
@@ -562,7 +562,7 @@ export default function ProfilePage() {
 
                                 {/* Products List */}
                                 <div className="space-y-3">
-                                  <p className="text-[9px] font-bold text-black/40 uppercase tracking-wider">Items in this Order</p>
+                                  <p className="text-[9px] font-bold text-black uppercase tracking-wider">Items in this Order</p>
                                   <div className="divide-y divide-black/[0.04] bg-white border border-black/10 rounded-[4px] p-4 space-y-4">
                                     {(order.items || []).map((item, idx) => {
                                       const reviewId = `${order.id}-${item.productId}`;
@@ -577,9 +577,9 @@ export default function ProfilePage() {
                                               <div className="min-w-0">
                                                 <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
                                                 {item.selectedSize && item.selectedSize !== "Standard" && (
-                                                  <p className="text-[8px] font-semibold text-black/50 uppercase tracking-widest mt-0.5">Size: {item.selectedSize}</p>
+                                                  <p className="text-[8px] font-semibold text-black uppercase tracking-widest mt-0.5">Size: {item.selectedSize}</p>
                                                 )}
-                                                <p className="text-[9px] font-bold text-black/70 uppercase mt-0.5">Qty {item.quantity}</p>
+                                                <p className="text-[9px] font-bold text-black uppercase mt-0.5">Qty {item.quantity}</p>
                                               </div>
                                             </div>
 
@@ -622,25 +622,25 @@ export default function ProfilePage() {
                                               ) : (
                                                 <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber)} className="space-y-3">
                                                   <div className="space-y-1">
-                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60 block">Rating</label>
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black block">Rating</label>
                                                     <div className="flex gap-1.5">
                                                       {[1, 2, 3, 4, 5].map((star) => (
                                                         <button type="button" key={star} onClick={() => setReviewForm({ ...reviewForm, rating: star })} className="p-0.5 cursor-pointer hover:scale-110 transition-transform">
-                                                          <Star className={`w-4 h-4 ${star <= reviewForm.rating ? "fill-black text-black" : "text-black/25"}`} />
+                                                          <Star className={`w-4 h-4 ${star <= reviewForm.rating ? "fill-black text-black" : "text-black"}`} />
                                                         </button>
                                                       ))}
                                                     </div>
                                                   </div>
                                                   <div className="space-y-1">
-                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Headline Title</label>
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Headline Title</label>
                                                     <input placeholder="e.g. Absolutely Outstanding!" className={inputClass} value={reviewForm.title} onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })} />
                                                   </div>
                                                   <div className="space-y-1">
-                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Review Comments</label>
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Review Comments</label>
                                                     <textarea placeholder="Detail your experience..." rows={3} className={`${inputClass} resize-none`} value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} />
                                                   </div>
                                                   <div className="flex items-center gap-4">
-                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black/60">Recommend?</label>
+                                                    <label className="text-[8px] font-bold uppercase tracking-wider text-black">Recommend?</label>
                                                     <div className="flex gap-2">
                                                       <button type="button" onClick={() => setReviewForm({ ...reviewForm, recommend: true })} className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'}`}>Yes</button>
                                                       <button type="button" onClick={() => setReviewForm({ ...reviewForm, recommend: false })} className={`px-3 py-1 rounded-[2px] text-[8px] font-bold uppercase tracking-widest border transition-colors ${!reviewForm.recommend ? 'bg-black text-white border-black' : 'border-black/15 text-black'}`}>No</button>
@@ -662,7 +662,7 @@ export default function ProfilePage() {
                                 {/* Total & Order Journey Toggle */}
                                 <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-black/[0.06]">
                                   <div className="flex items-center gap-3">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-black/40">Total</span>
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-black">Total</span>
                                     <span className="text-[13px] font-black text-black font-mono">${order.total.toLocaleString()}</span>
                                   </div>
                                   <div className="flex items-center gap-3">
@@ -722,11 +722,11 @@ export default function ProfilePage() {
                                                   <div className={`w-5 h-5 rounded-full border flex items-center justify-center text-[9px] font-bold transition-all duration-300 ${
                                                     isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
                                                     active ? 'bg-black text-white border-black' :
-                                                    'bg-white text-black/40 border-black/20'
+                                                    'bg-white text-black border-black/20'
                                                   }`}>
                                                     {idx + 1}
                                                   </div>
-                                                  <span className={`hidden sm:block text-[8px] font-bold uppercase tracking-wider transition-colors text-center max-w-[60px] leading-tight ${active ? 'text-black font-black' : 'text-black/40'}`}>
+                                                  <span className={`hidden sm:block text-[8px] font-bold uppercase tracking-wider transition-colors text-center max-w-[60px] leading-tight ${active ? 'text-black font-black' : 'text-black'}`}>
                                                     {step}
                                                   </span>
                                                 </div>
@@ -758,7 +758,7 @@ export default function ProfilePage() {
                                                   <div className="space-y-0.5 pb-3 min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-black">{event.status}</p>
                                                     <p className="text-[10px] text-black leading-relaxed">{event.message}</p>
-                                                    <p className="text-[9px] font-bold text-black/60 uppercase tracking-widest">
+                                                    <p className="text-[9px] font-bold text-black uppercase tracking-widest">
                                                       {new Date(event.timestamp).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' })}
                                                     </p>
                                                   </div>
@@ -771,7 +771,7 @@ export default function ProfilePage() {
                                         {/* Shipping Address */}
                                         {timelineOrder?.shippingAddress && (
                                           <div className="pt-4 border-t border-black/[0.06] space-y-1">
-                                            <p className="text-[8px] font-black uppercase tracking-widest text-black/40 flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Delivery Destination</p>
+                                            <p className="text-[8px] font-black uppercase tracking-widest text-black flex items-center gap-1.5"><MapPin className="w-3 h-3" /> Delivery Destination</p>
                                             <p className="text-[10px] font-bold text-black leading-relaxed">
                                               {timelineOrder.shippingAddress.fullName}<br />
                                               {timelineOrder.shippingAddress.street}, {timelineOrder.shippingAddress.city}<br />
@@ -807,7 +807,7 @@ export default function ProfilePage() {
           <div className="bg-white border border-black/10 rounded-[4px] p-8 max-w-md w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="space-y-2">
               <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-black">Confirm Account Deletion</h3>
-              <p className="text-xs text-black/60 leading-relaxed uppercase tracking-wider font-semibold">
+              <p className="text-xs text-black leading-relaxed uppercase tracking-wider font-semibold">
                 Are you sure you want to permanently delete your account? This action is irreversible and all your order history will be lost.
               </p>
             </div>
@@ -831,3 +831,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

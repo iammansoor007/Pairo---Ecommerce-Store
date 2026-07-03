@@ -34,7 +34,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center pt-32 pb-20 px-6 sm:px-8 font-sans">
+    <div className="min-h-screen bg-white flex flex-col justify-center pt-8 pb-20 px-6 sm:px-8 font-sans">
       <div className="max-w-md w-full mx-auto bg-[#FAF9F6] border border-black/[0.04] p-8 sm:p-10 rounded-[4px] shadow-sm">
         <div className="text-center">
           <h1 className="text-2xl md:text-3xl font-black uppercase tracking-wider text-black">Sign In</h1>
@@ -43,8 +43,24 @@ export default function LoginPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 text-red-600 text-[10px] font-bold p-4 rounded-[4px] text-center uppercase tracking-widest border border-red-100">
-              {error}
+            <div className={`text-[10px] font-bold p-4 rounded-[4px] text-center border space-y-2 ${
+              error === "EMAIL_NOT_VERIFIED"
+                ? "bg-amber-50 text-amber-700 border-amber-200"
+                : "bg-red-50 text-red-600 border-red-100"
+            }`}>
+              {error === "EMAIL_NOT_VERIFIED" ? (
+                <div className="space-y-2">
+                  <p className="uppercase tracking-widest">Email Not Verified</p>
+                  <p className="normal-case tracking-normal font-semibold text-amber-600">
+                    Please check your inbox and click the verification link before signing in.
+                  </p>
+                  <Link href="/signup" className="inline-block underline underline-offset-2 text-amber-700 font-black uppercase tracking-widest text-[9px]">
+                    Resend Verification Email
+                  </Link>
+                </div>
+              ) : (
+                <p className="uppercase tracking-widest">{error}</p>
+              )}
             </div>
           )}
           
