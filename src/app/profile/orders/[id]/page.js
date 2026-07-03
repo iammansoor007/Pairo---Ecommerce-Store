@@ -64,7 +64,7 @@ export default function UserOrderDetailPage() {
 
   return (
     <div className="bg-white min-h-screen text-black pb-32">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-20 pb-12">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-6 pb-12">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
           <div className="space-y-4">

@@ -43,7 +43,7 @@ export default function ProfileOrdersPage() {
 
   return (
     <div className="min-h-screen bg-white pb-32">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-20 pb-12">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-6 pb-12">
         <div className="w-full mx-auto space-y-12">
           
           <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-8">
