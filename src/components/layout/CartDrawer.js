@@ -167,8 +167,8 @@ export default function CartDrawer() {
                   </div>
                   {affiliateDiscount?.type !== 'None' && affiliateDiscountAmount > 0 && (
                     <div className="flex justify-between items-center">
-                      <span className="text-emerald-600 uppercase tracking-widest font-bold text-[10px]">Referral Discount</span>
-                      <span className="text-[12px] font-bold text-emerald-600">-${affiliateDiscountAmount.toFixed(2)}</span>
+                      <span className="text-black uppercase tracking-widest font-bold text-[10px]">Referral Discount</span>
+                      <span className="text-[12px] font-bold text-black font-mono">-${affiliateDiscountAmount.toFixed(2)}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center">

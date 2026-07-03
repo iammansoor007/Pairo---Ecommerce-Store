@@ -3,7 +3,7 @@
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, Truck, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
@@ -67,20 +67,20 @@ export default function CartPage() {
       {/* Matches site header/footer margins exactly */}
       <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-16">
         
-        {/* Title Area */}
-        <div className="flex items-baseline justify-between border-b border-black/5 pb-6 mb-8 md:mb-12">
-          <div className="space-y-1">
-            <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wider text-black">Your Cart</h1>
-            <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">
-              {cartItems.reduce((acc, item) => acc + item.quantity, 0)} Items Selected
-            </p>
+        {/* Premium Centered Title Block */}
+        <div className="text-center space-y-2 pb-8 md:pb-12 border-b border-black/5 mb-8 md:mb-12">
+          <p className="text-[10px] font-bold tracking-[0.25em] text-neutral-400 uppercase">Your Selection</p>
+          <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-[0.15em] text-black">Shopping Bag</h1>
+          <div className="flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-widest text-neutral-500">
+            <span>{cartItems.reduce((acc, item) => acc + item.quantity, 0)} {cartItems.reduce((acc, item) => acc + item.quantity, 0) === 1 ? "item" : "items"}</span>
+            <span className="text-neutral-300">•</span>
+            <Link 
+              href="/shop" 
+              className="text-black hover:text-black/70 border-b border-black pb-0.5 transition-all"
+            >
+              Continue Shopping
+            </Link>
           </div>
-          <Link 
-            href="/" 
-            className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 hover:text-black border-b border-black/20 hover:border-black transition-all pb-1"
-          >
-            Continue Shopping
-          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -191,7 +191,7 @@ export default function CartPage() {
               {[
                 { icon: ShieldCheck, title: "Secure Checkout", desc: "100% Encrypted Transactions" },
                 { icon: Truck, title: "Reliable Shipping", desc: "Tracked Worldwide Delivery" },
-                { icon: RefreshCcw, title: "Easy Returns", desc: "30-Day Hassle-Free Policy" }
+                { icon: Sparkles, title: "Artisanal Care", desc: "Handcrafted to Order" }
               ].map((prop, i) => (
                 <div key={i} className="flex items-center gap-3 p-4 rounded-[4px] bg-[#FAF9F6]/40 border border-black/[0.03]">
                   <prop.icon className="w-5 h-5 text-neutral-500 shrink-0" />
@@ -215,7 +215,7 @@ export default function CartPage() {
               </div>
               
               {discountTotal > 0 && (
-                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-black">
                   <span>Discount ({appliedPromo?.code})</span>
                   <span className="font-mono">-${discountTotal.toLocaleString()}</span>
                 </div>
@@ -258,9 +258,9 @@ export default function CartPage() {
               </div>
               {promoError && <p className="text-[10px] text-red-600 font-bold ml-1 uppercase tracking-wider">{promoError}</p>}
               {appliedPromo && (
-                <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 rounded border border-emerald-100">
-                   <span className="text-[9px] font-bold text-emerald-800 uppercase tracking-wider">Discount {appliedPromo.code} Applied</span>
-                   <button onClick={removePromoCode} className="text-[9px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-wider">Remove</button>
+                <div className="flex items-center justify-between px-3 py-2 bg-[#FAF9F6] rounded border border-neutral-200">
+                   <span className="text-[9px] font-bold text-black uppercase tracking-wider">Discount {appliedPromo.code} Applied</span>
+                   <button onClick={removePromoCode} className="text-[9px] font-bold text-black hover:underline uppercase tracking-wider">Remove</button>
                 </div>
               )}
             </div>

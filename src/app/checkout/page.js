@@ -574,11 +574,11 @@ export default function CheckoutPage() {
                 const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
                 return (
                   <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative shrink-0 pr-2 pt-2">
-                      <div className="w-16 h-20 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden">
+                    <div className="relative shrink-0">
+                      <div className="w-14 h-18 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden">
                         <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
                       </div>
-                      <span className="absolute top-0 right-0 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-sm z-10">
+                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
                         {item.quantity}
                       </span>
                     </div>
@@ -639,14 +639,14 @@ export default function CheckoutPage() {
               </div>
               {promoError && <p className="text-[10px] text-red-600 font-bold ml-1 uppercase tracking-wider">{promoError}</p>}
               {appliedPromo && (
-                <div className="flex items-center justify-between px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-[3px]">
-                  <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
+                <div className="flex items-center justify-between px-3 py-2 bg-[#FAF9F6] border border-neutral-200 rounded-[3px]">
+                  <span className="text-[10px] font-bold text-black uppercase tracking-wider">
                     Discount ({appliedPromo.code}) Applied
                   </span>
                   <button
                     type="button"
                     onClick={removePromoCode}
-                    className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 uppercase tracking-wider"
+                    className="text-[10px] font-bold text-black hover:underline uppercase tracking-wider"
                   >
                     Remove
                   </button>
@@ -662,14 +662,14 @@ export default function CheckoutPage() {
               </div>
 
               {discountTotal > 0 && (
-                <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                <div className="flex justify-between items-center text-black font-semibold">
                   <span>Discount</span>
                   <span className="font-mono">-${discountTotal.toLocaleString()}</span>
                 </div>
               )}
 
               {affiliateDiscount?.type !== "None" && affiliateDiscountAmount > 0 && (
-                <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                <div className="flex justify-between items-center text-black font-semibold">
                   <span>Referral Discount</span>
                   <span className="font-mono">-${affiliateDiscountAmount.toLocaleString()}</span>
                 </div>

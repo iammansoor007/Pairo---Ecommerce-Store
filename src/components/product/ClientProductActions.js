@@ -283,30 +283,16 @@ export default function ClientProductActions({ product, onVariantChange }) {
             </div>
 
             <button
-              onClick={handleAddToCart}
-              className={`flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] border ${addedFeedback
-                ? "bg-emerald-600 text-white border-emerald-600"
-                : "bg-black text-white border-black hover:bg-black/90"
-                }`}
-            >
-              {addedFeedback ? (
-                <>
-                  <Check className="w-4 h-4" strokeWidth={2.5} />
-                  Added!
-                </>
-              ) : (
-                <>
-                  <ShoppingBag className="w-4 h-4" />
-                  Add to Bag
-                </>
-              )}
+               onClick={handleAddToCart}
+               className="flex-1 h-11 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[11px] flex items-center justify-center transition-all duration-300 active:scale-[0.98] border bg-black text-white border-black hover:bg-black/90"
+             >
+              {addedFeedback ? "Added!" : "Add to Bag"}
             </button>
 
             <button
               onClick={handleSecureCheckout}
-              className="flex-1 h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="flex-1 h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center"
             >
-              <Shield className="w-4 h-4" />
               Checkout
             </button>
           </div>
@@ -315,17 +301,15 @@ export default function ClientProductActions({ product, onVariantChange }) {
             <button
               type="button"
               onClick={handleM2mClick}
-              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center"
             >
-              <Ruler className="w-4 h-4" />
               Measure (+$25)
             </button>
             <button
               type="button"
               onClick={handleCustomizeClick}
-              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-[var(--radius,0px)] border border-black/30 text-black font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-black hover:text-white hover:border-black transition-all duration-200 active:scale-[0.98] flex items-center justify-center"
             >
-              <Settings className="w-4 h-4" />
               Customize
             </button>
           </div>

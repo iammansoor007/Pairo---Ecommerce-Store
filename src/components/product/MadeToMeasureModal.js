@@ -208,13 +208,10 @@ export default function MadeToMeasureModal({ product, isOpen, onClose, onAddToCa
             type="button"
             onClick={handleAdd}
             disabled={adding || added}
-            className={`w-full h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[13px] flex items-center justify-center gap-2.5 transition-all duration-300 border ${added
-              ? "bg-emerald-600 border-emerald-600 text-white"
-              : "bg-black border-black text-white hover:bg-black/90 active:scale-[0.98] disabled:opacity-60"
-              }`}
+            className="w-full h-12 rounded-[var(--radius,0px)] font-bold uppercase tracking-[0.2em] text-[12px] md:text-[13px] flex items-center justify-center transition-all duration-300 border bg-black border-black text-white hover:bg-black/90 active:scale-[0.98] disabled:opacity-60"
           >
             {added ? (
-              <><Check className="w-4 h-4" strokeWidth={2.5} /> Added to Cart!</>
+              "Added to Cart!"
             ) : adding ? (
               "Adding..."
             ) : (

@@ -8,8 +8,10 @@ export async function GET(req, { params }) {
 
     const { id } = await params;
 
-    // Public access by ID (hard to guess)
-    const order = await Order.findById(id);
+    const isMongoId = /^[0-9a-fA-F]{24}$/.test(id);
+    const order = isMongoId
+      ? await Order.findById(id)
+      : await Order.findOne({ orderNumber: id });
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });

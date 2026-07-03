@@ -110,7 +110,7 @@ export default function ProductMainSection({ product }) {
     <div className="">
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-8 items-start">
         {/* LEFT SIDE: STICKY GALLERY - 60% */}
-        <div className="lg:col-span-3 lg:sticky lg:top-24 self-start w-full min-w-0">
+        <div className="lg:col-span-3 lg:sticky lg:top-28 self-start w-full min-w-0">
           <ProductGallery
             images={product.images}
             variantImage={selectedVariantImage}
@@ -120,7 +120,7 @@ export default function ProductMainSection({ product }) {
         </div>
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
-        <div className="lg:col-span-2 space-y-4 min-w-0 overflow-hidden">
+        <div className="lg:col-span-2 space-y-4 min-w-0 overflow-hidden lg:pt-1.5">
           <p className="text-[20px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
             {product.name}
           </p>
@@ -147,9 +147,9 @@ export default function ProductMainSection({ product }) {
           <div className="flex items-center flex-wrap gap-3.5">
             {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
               <>
-                <span className="text-2xl font-semibold tracking-tight text-emerald-600">${affiliateDiscountedPrice.toFixed(2)}</span>
+                <span className="text-2xl font-semibold tracking-tight text-primary">${affiliateDiscountedPrice.toFixed(2)}</span>
                 <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary bg-primary/10 border border-primary/30 px-2.5 py-0.5 rounded-[var(--radius,0px)] select-none">
                   {affiliateSavingsLabel}
                 </span>
               </>
