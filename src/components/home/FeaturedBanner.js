@@ -33,7 +33,7 @@ export default function FeaturedBanner({
   };
 
   return (
-    <section className="mx-4 md:mx-8 my-8 md:my-12">
+    <section className="container mx-auto px-2 sm:px-4 md:px-8 my-8 md:my-12">
       <div className="bg-black rounded-[24px] md:rounded-[40px] overflow-hidden relative min-h-[380px] md:min-h-[450px] flex items-center">
         {/* Product Image - Optimized for all screens */}
         <div className="absolute inset-0 w-full h-full md:w-1/2 md:left-auto md:right-0">
