@@ -27,6 +27,7 @@ export async function GET() {
       orderHistory: orders.map(o => ({
         id: o._id.toString(),
         orderNumber: o.orderNumber,
+        trackingId: o.idempotencyKey ? o.idempotencyKey.replace('pai_', '').toUpperCase() : o._id.toString().slice(-12).toUpperCase(),
         total: o.financials.total,
         date: o.createdAt,
         status: o.status,

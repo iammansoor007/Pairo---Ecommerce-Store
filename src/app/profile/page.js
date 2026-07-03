@@ -218,19 +218,11 @@ export default function ProfilePage() {
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
-    <div className="min-h-screen bg-background text-black font-sans selection:bg-primary selection:text-background">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-8 pb-12">
+    <div className="min-h-screen bg-[#f4f5fa] text-black font-sans selection:bg-primary selection:text-background py-8">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8">
         <div className="w-full mx-auto">
-          <section className="mb-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-foreground/50">account dashboard</p>
-            <h1 className="mt-4 text-[32px] sm:text-[38px] font-black uppercase tracking-[-0.03em] text-foreground">My Profile</h1>
-            <p className="mt-3 max-w-2xl text-[11px] uppercase tracking-[0.2em] text-foreground/70 leading-7">
-              Your account hub for orders, shipping details, and verified purchase updates.
-            </p>
-          </section>
-
           {/* Main Dashboard Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
             {/* Left Column: Sidebar (4 cols) */}
             <div className="lg:col-span-4 space-y-6">
@@ -247,18 +239,18 @@ export default function ProfilePage() {
               )}
 
               {/* User Profile Card */}
-              <div className="bg-secondary border border-border p-6 rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)]">
+              <div className="bg-white border border-[#eaeefc] p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
-                  <div className="w-16 h-16 rounded-full bg-primary text-background flex items-center justify-center text-lg font-black uppercase shadow-md border border-border shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-[#002f6c] text-white flex items-center justify-center text-lg font-black uppercase shadow-md border border-[#eaeefc] shrink-0">
                     {initials}
                   </div>
                   <div>
-                    <h2 className="text-[15px] font-black uppercase tracking-wider text-foreground">{userData.name}</h2>
+                    <h2 className="text-[15px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
                     {userData.addresses?.[0]?.phone && (
-                      <p className="text-[11px] text-foreground font-mono mt-0.5">{userData.addresses[0].phone}</p>
+                      <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{userData.addresses[0].phone}</p>
                     )}
-                    <p className="text-[11px] text-foreground font-mono mt-0.5">{userData.email}</p>
+                    <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{userData.email}</p>
                     {userData.pendingEmail && (
                       <div className="mt-3 p-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-[4px] text-[8px] font-bold uppercase tracking-wider leading-relaxed shadow-sm">
                         Verification pending for:<br/>
@@ -268,11 +260,11 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-border">
+                <div className="pt-4 border-t border-[#eaeefc]">
                   {editingInfo ? (
                     <div className="space-y-4">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-foreground">Full Name</label>
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Full Name</label>
                         <input
                           className={inputClass}
                           value={infoForm.name}
@@ -281,7 +273,7 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-foreground">Email Address</label>
+                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Email Address</label>
                         <input
                           className={inputClass}
                           value={infoForm.email}
@@ -292,13 +284,13 @@ export default function ProfilePage() {
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleAction("updateInfo", infoForm)}
-                          className="flex-1 bg-primary text-background py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-95 transition-all cursor-pointer shadow-sm"
+                          className="flex-1 bg-black text-white py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingInfo(false)}
-                          className="flex-1 border border-border text-foreground hover:bg-secondary py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
+                          className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -308,13 +300,13 @@ export default function ProfilePage() {
                     <div className="flex flex-col gap-2.5">
                       <button
                         onClick={() => setEditingInfo(true)}
-                        className="w-full border border-border text-foreground hover:bg-secondary py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
                         <User className="w-3.5 h-3.5" /> Edit Profile
                       </button>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="w-full bg-primary text-background hover:opacity-90 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Sign Out
                       </button>
@@ -324,29 +316,29 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Statistics Block (2x2 Grid) - reference style */}
-              <div className="bg-secondary border border-border rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)] overflow-hidden">
-                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-border bg-background text-center">
-                  <div className="p-4 space-y-1 bg-background">
-                    <p className="text-2xl font-black text-foreground font-mono">{pendingCount}</p>
+              <div className="bg-[#f8fafc] border border-[#eaeefc] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-[#eaeefc] bg-white text-center">
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
                     <p className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-background">
-                    <p className="text-2xl font-black text-foreground font-mono">{confirmedCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-2xl font-black text-black font-mono">{confirmedCount}</p>
                     <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Confirmed</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-background">
-                    <p className="text-2xl font-black text-foreground font-mono">{dispatchedCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-2xl font-black text-black font-mono">{dispatchedCount}</p>
                     <p className="text-[9px] font-bold text-purple-600 uppercase tracking-widest">Dispatched</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-background">
-                    <p className="text-2xl font-black text-foreground font-mono">{deliveredCount}</p>
+                  <div className="p-4 space-y-1 bg-white">
+                    <p className="text-2xl font-black text-black font-mono">{deliveredCount}</p>
                     <p className="text-[9px] font-bold text-green-600 uppercase tracking-widest">Delivered</p>
                   </div>
                 </div>
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-secondary border border-border p-6 rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)]">
+              <div className="space-y-4 bg-white border border-[#eaeefc] p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
@@ -424,18 +416,18 @@ export default function ProfilePage() {
 
             </div>
 
-            {/* Right Column: Main Content (8 cols) */}
-            <div className="lg:col-span-8 space-y-6">
+             {/* Right Column: Main Content (8 cols) */}
+            <div className="lg:col-span-8 space-y-4">
 
               {/* Header Navigation Tab + Search Bar */}
-              <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-border pb-4">
-                <div className="flex gap-2 p-1 bg-secondary rounded-[30px] border border-border">
+              <div className="bg-white p-3 rounded-[16px] border border-[#eaeefc] shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                <div className="flex gap-2 p-1 bg-[#f4f5fa] rounded-[30px] border border-[#eaeefc]">
                   <button
                     onClick={() => setActiveTab("active")}
                     className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[25px] transition-all cursor-pointer ${
                       activeTab === "active"
-                        ? "bg-primary text-background shadow-sm"
-                        : "text-foreground/75 hover:text-foreground"
+                        ? "bg-black text-white shadow-sm"
+                        : "text-neutral-400 hover:text-black"
                     }`}
                   >
                     Active Orders
@@ -444,8 +436,8 @@ export default function ProfilePage() {
                     onClick={() => setActiveTab("previous")}
                     className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[25px] transition-all cursor-pointer ${
                       activeTab === "previous"
-                        ? "bg-primary text-background shadow-sm"
-                        : "text-foreground/75 hover:text-foreground"
+                        ? "bg-black text-white shadow-sm"
+                        : "text-neutral-400 hover:text-black"
                     }`}
                   >
                     Previous Orders
@@ -454,13 +446,13 @@ export default function ProfilePage() {
 
                 {/* Search Bar */}
                 <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 text-foreground/40 absolute left-4 top-1/2 -translate-y-1/2" />
+                  <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search Order Here"
-                    className="w-full bg-background border border-border rounded-[30px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-foreground/45 focus:border-primary outline-none transition-colors text-foreground"
+                    className="w-full bg-[#f8fafc] border border-[#eaeefc] rounded-[30px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -468,9 +460,9 @@ export default function ProfilePage() {
               {/* Order List Rows */}
               <div className="space-y-3">
                 {filteredOrders.length === 0 ? (
-                  <div className="py-20 text-center border border-dashed border-border rounded-[20px] bg-secondary space-y-4">
-                    <ShoppingBag className="w-12 h-12 text-foreground/10 mx-auto" />
-                    <p className="text-[10px] text-foreground/60 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
+                  <div className="py-20 text-center border border-dashed border-[#eaeefc] rounded-[20px] bg-white space-y-4">
+                    <ShoppingBag className="w-12 h-12 text-neutral-200 mx-auto" />
+                    <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
                   </div>
                 ) : (
                   filteredOrders.map((order, i) => {
@@ -490,14 +482,14 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-border rounded-[20px] bg-background transition-all shadow-sm overflow-hidden ${
-                          isExpanded ? 'ring-1 ring-primary/10' : 'hover:border-border/80'
+                        className={`border border-[#eaeefc] rounded-[16px] bg-white transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden ${
+                          isExpanded ? 'border-neutral-300 ring-1 ring-black/[0.02]' : 'hover:border-neutral-300'
                         }`}
                       >
                         {/* Summary Header Row (Table format matching mockup) */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="px-6 py-5 grid grid-cols-2 md:grid-cols-5 items-center gap-4 cursor-pointer hover:bg-secondary transition-colors select-none text-left"
+                          className="px-6 py-5 grid grid-cols-2 md:grid-cols-6 items-center gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none text-left"
                         >
                           {/* Col 1: Order Number */}
                           <div className="space-y-1">
@@ -505,13 +497,19 @@ export default function ProfilePage() {
                             <p className="text-[11px] font-black text-foreground font-mono">#{order.orderNumber}</p>
                           </div>
 
-                          {/* Col 2: Creation Date */}
+                          {/* Col 2: Tracking ID */}
+                          <div className="space-y-1">
+                            <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Tracking ID</p>
+                            <p className="text-[11px] font-bold text-foreground font-mono">{order.trackingId || "N/A"}</p>
+                          </div>
+
+                          {/* Col 3: Creation Date */}
                           <div className="space-y-1">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Creation Date</p>
                             <p className="text-[10px] font-bold text-foreground font-mono">{formatOrderDate(order.date)}</p>
                           </div>
 
-                          {/* Col 3: Product Rating */}
+                          {/* Col 4: Product Rating */}
                           <div className="space-y-1 col-span-2 md:col-span-1">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Product Rating</p>
                             <div
@@ -559,14 +557,14 @@ export default function ProfilePage() {
                             </div>
                           </div>
 
-                          {/* Col 4: Status Badge */}
+                          {/* Col 5: Status Badge */}
                           <div className="flex md:justify-center">
                             <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] rounded-full ${getStatusColor(order.status)}`}>
                               {order.status}
                             </span>
                           </div>
 
-                          {/* Col 5: Chevron */}
+                          {/* Col 6: Chevron */}
                           <div className="flex justify-end text-foreground/60">
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
