@@ -1,5 +1,5 @@
 import { resolvePageSections } from "@/lib/page-data-resolver";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { resolveSEOMetadata, escapeJsonLd } from "@/lib/seo-resolver";
 import { resolvePageAndTemplate } from "@/lib/page-cache";
 
@@ -8,6 +8,10 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const { page } = await resolvePageAndTemplate("contact", "contact");
   
+  if (page && page.slug !== "contact") {
+    return {};
+  }
+
   const { metadata } = resolveSEOMetadata({
     entity: page,
     type: "page",
@@ -20,6 +24,10 @@ export async function generateMetadata() {
 
 export default async function ContactPage() {
   const { page, templateInfo } = await resolvePageAndTemplate("contact", "contact");
+
+  if (page && page.slug !== "contact") {
+    permanentRedirect(`/${page.slug}`);
+  }
 
   if (page.status !== "Published") {
     notFound();

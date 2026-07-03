@@ -36,6 +36,11 @@ export async function resolvePageAndTemplate(slug, defaultTemplate = "default") 
   // Try loading from cache/database
   let page = await getCachedPageBySlug(normalizedSlug);
 
+  if (!page && ["about", "contact", "home"].includes(defaultTemplate)) {
+    await dbConnect();
+    page = await Page.findOne({ template: defaultTemplate, status: { $ne: "Deleted" } }).lean();
+  }
+
   if (!page) {
     // If not found in DB, construct a dynamic template-specific default instance
     const templateConfig = TEMPLATE_REGISTRY[defaultTemplate] || TEMPLATE_REGISTRY.default;
