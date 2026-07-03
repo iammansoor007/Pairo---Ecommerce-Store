@@ -262,7 +262,7 @@ export async function POST(req) {
                 tenantId,
                 orderNumber,
                 idempotencyKey,
-                status: "Confirmed",
+                status: "Pending",
                 items: orderItems,
                 affiliateId,
                 affiliateReferralCode,

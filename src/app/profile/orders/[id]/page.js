@@ -59,9 +59,12 @@ export default function UserOrderDetailPage() {
   if (loading) return <div className="p-20 text-center font-bold text-sm tracking-widest uppercase animate-pulse">Retrieving Order Intelligence...</div>;
   if (!order) return <div className="p-20 text-center font-bold text-sm text-red-500 uppercase tracking-widest">Order not found.</div>;
 
+  const steps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
+  const currentStep = steps.indexOf(order.status);
+
   return (
     <div className="bg-white min-h-screen text-black pb-32">
-      <div className="container mx-auto px-6 md:px-16 pt-20 pb-12 max-w-6xl">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-20 pb-12 max-w-6xl">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
           <div className="space-y-4">
@@ -89,12 +92,45 @@ export default function UserOrderDetailPage() {
           </div>
         </div>
 
+        {/* Visual Progress Stepper */}
+        <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12">
+          <div className="max-w-3xl mx-auto flex justify-between items-center relative">
+            {/* Connector Line */}
+            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
+            <div 
+              className="absolute left-6 top-1/2 -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
+              style={{ width: `${currentStep >= 0 ? (currentStep / 4) * 100 : 0}%` }}
+            />
+
+            {steps.map((step, idx) => {
+              const active = idx <= currentStep;
+              const isCurrent = idx === currentStep;
+              return (
+                <div key={idx} className="flex flex-col items-center relative z-10">
+                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                    isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
+                    active ? 'bg-black text-white border-black' :
+                    'bg-white text-black/60 border-black/25'
+                  }`}>
+                    {idx + 1}
+                  </div>
+                  <span className={`text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2 transition-colors ${
+                    active ? 'text-black font-black' : 'text-black/60'
+                  }`}>
+                    {step}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
            
            {/* Left: Items & Summary */}
            <div className="lg:col-span-7 space-y-12">
               <section className="space-y-8">
-                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/60">Acquired Pieces</h2>
+                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Acquired Pieces</h2>
                  <div className="space-y-8">
                     {order.items.map((item, i) => (
                       <div key={i} className="flex gap-6 group items-center">
@@ -104,7 +140,7 @@ export default function UserOrderDetailPage() {
                          <div className="flex-1 flex flex-col justify-center gap-1">
                             <h3 className="text-xs font-black uppercase tracking-wider text-black">{item.name}</h3>
                             <div className="flex flex-col gap-0.5">
-                               <p className="text-[9px] font-bold text-black/60 uppercase">Qty {item.quantity}</p>
+                               <p className="text-[9px] font-bold text-black/85 uppercase">Qty {item.quantity}</p>
                                {item.selectedVariant?.options && Object.entries(item.selectedVariant.options).map(([key, val]) => (
                                  <p key={key} className="text-[9px] font-bold text-black uppercase">{key}: {val}</p>
                                ))}
@@ -117,11 +153,11 @@ export default function UserOrderDetailPage() {
               </section>
 
               <section className="pt-12 border-t border-black/5 space-y-6">
-                 <div className="flex justify-between items-baseline text-black/60">
+                 <div className="flex justify-between items-baseline text-black/85">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Subtotal</span>
                     <span className="text-sm font-bold text-black">${order.financials.subtotal.toLocaleString()}</span>
                  </div>
-                 <div className="flex justify-between items-baseline text-black/60">
+                 <div className="flex justify-between items-baseline text-black/85">
                     <span className="text-[10px] font-bold uppercase tracking-widest">Shipping</span>
                     <span className="text-[10px] font-bold text-black uppercase tracking-widest">Complimentary</span>
                  </div>
@@ -136,7 +172,7 @@ export default function UserOrderDetailPage() {
            <div className="lg:col-span-5 space-y-8">
               {/* Timeline */}
               <div className="bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-8 space-y-8">
-                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/60">Order Journey</h2>
+                 <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-black/85">Order Journey</h2>
                  <div className="space-y-8">
                     {order.timeline.filter(e => e.source !== 'Admin' || e.status === order.status).map((event, i) => (
                       <div key={i} className="flex gap-6 relative">
@@ -146,8 +182,8 @@ export default function UserOrderDetailPage() {
                          </div>
                          <div className="space-y-1 pb-4">
                             <p className="text-xs font-bold uppercase tracking-widest text-black">{event.status}</p>
-                            <p className="text-xs text-black/80 leading-relaxed">{event.message}</p>
-                            <p className="text-[9px] font-bold text-black/60 uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
+                            <p className="text-xs text-black leading-relaxed">{event.message}</p>
+                            <p className="text-[9px] font-bold text-black/85 uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
                          </div>
                       </div>
                     ))}
@@ -157,7 +193,7 @@ export default function UserOrderDetailPage() {
               {/* Delivery Info */}
               <div className="p-8 border border-black/[0.06] rounded-[4px] bg-white space-y-8">
                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/60">
+                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/85">
                        <MapPin className="w-4 h-4" /> Destination
                     </div>
                     <p className="text-sm font-bold leading-relaxed">
@@ -169,10 +205,10 @@ export default function UserOrderDetailPage() {
                  </div>
 
                  <div className="pt-8 border-t border-black/5 space-y-4">
-                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/60">
+                    <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-black/85">
                        <Info className="w-4 h-4" /> Notice
                     </div>
-                    <p className="text-[10px] leading-relaxed text-black/80 font-semibold italic">
+                    <p className="text-[10px] leading-relaxed text-black font-semibold italic">
                        Each piece is meticulously inspected by our master craftsmen before dispatch. 
                     </p>
                  </div>

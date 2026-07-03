@@ -57,7 +57,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
   if (col.type === 'newsletter') {
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{heading}</h3>
+        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
         <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
           <input
             type="email"
@@ -66,7 +66,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
             onChange={e => setEmail(e.target.value)}
             placeholder="JOIN THE LIST"
             disabled={submitting}
-            className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[11px] font-bold tracking-[0.2em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
+            className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[12px] font-bold tracking-[0.15em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
           />
           <button type="submit" disabled={submitting} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-white transition-colors disabled:opacity-50">
             <ArrowUpRight className="w-4 h-4" />
@@ -83,11 +83,11 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{heading}</h3>
+        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
         <ul className="space-y-3">
           {cats.map(cat => (
             <li key={cat.slug || cat.name}>
-              <Link href={getCategoryUrl(cat)} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+              <Link href={getCategoryUrl(cat)} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
                 {cat.name}
               </Link>
             </li>
@@ -104,11 +104,11 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{heading}</h3>
+        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
         <ul className="space-y-3">
           {blogs.map(blog => (
             <li key={blog._id?.toString()}>
-              <Link href={`/blog/${blog.slug}`} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+              <Link href={`/blog/${blog.slug}`} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
                 {blog.title}
               </Link>
             </li>
@@ -125,13 +125,13 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{heading}</h3>
+        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
         <ul className="space-y-3">
           {pages.map(page => {
             const href = page.slug ? `/pages/${page.slug}` : '#';
             return (
               <li key={page._id?.toString()}>
-                <Link href={href} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+                <Link href={href} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
                   {page.title || page.slug}
                 </Link>
               </li>
@@ -146,14 +146,14 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
   const links = (col.customLinks || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   return (
     <motion.div variants={itemVariants} className="space-y-6">
-      <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{heading}</h3>
+      <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
       <ul className="space-y-3">
         {links.map(link => {
           const href = link.url || '#';
           const resolved = href === '/home' || href === 'home' ? '/' : href;
           return (
             <li key={link.id || link.label}>
-              <Link href={resolved} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+              <Link href={resolved} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
                 {link.label}
               </Link>
             </li>
@@ -325,7 +325,7 @@ export default function Footer() {
             <>
               {/* Column 1 — Newsletter */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{newsletterHeading}</h3>
+                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{newsletterHeading}</h3>
                 <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
                   <input
                     type="email"
@@ -334,7 +334,7 @@ export default function Footer() {
                     onChange={e => setEmail(e.target.value)}
                     placeholder={newsletterPlaceholder}
                     disabled={submitting}
-                    className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[11px] font-bold tracking-[0.2em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
+                    className="w-full bg-transparent border-b border-white/20 py-3 px-0 text-[12px] font-bold tracking-[0.15em] focus:outline-none focus:border-white transition-colors uppercase disabled:opacity-50"
                   />
                   <button type="submit" disabled={submitting} className="absolute right-0 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-white transition-colors disabled:opacity-50">
                     <ArrowUpRight className="w-4 h-4" />
@@ -344,11 +344,11 @@ export default function Footer() {
 
               {/* Column 2 — Product Categories */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">Collections</h3>
+                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">Collections</h3>
                 <ul className="space-y-3">
                   {footerCategories.map((cat) => (
                     <li key={cat.slug || cat.name}>
-                      <Link href={getCategoryUrl(cat)} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+                      <Link href={getCategoryUrl(cat)} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
                         {cat.name}
                       </Link>
                     </li>
@@ -359,11 +359,11 @@ export default function Footer() {
               {/* Column 3 — Blog Posts */}
               {footerBlogs.length > 0 ? (
                 <motion.div variants={itemVariants} className="space-y-6">
-                  <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{footerBlogHeading}</h3>
+                  <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerBlogHeading}</h3>
                   <ul className="space-y-3">
                     {footerBlogs.map((blog) => (
                       <li key={blog._id?.toString()}>
-                        <Link href={`/blog/${blog.slug}`} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+                        <Link href={`/blog/${blog.slug}`} className="text-white/80 hover:text-white font-bold text-[13px] uppercase tracking-wider transition-colors block">
                           {blog.title}
                         </Link>
                       </li>
@@ -376,7 +376,7 @@ export default function Footer() {
 
               {/* Column 4 — Custom Links */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[11px] font-bold text-white/60 uppercase tracking-[0.3em]">{footerCustomLinksHeading}</h3>
+                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerCustomLinksHeading}</h3>
                 <ul className="space-y-3">
                   {footerCustomLinks.length > 0 ? (
                     footerCustomLinks.map((link) => {
@@ -384,7 +384,7 @@ export default function Footer() {
                       const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
                       return (
                         <li key={link.id || link.label}>
-                          <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+                          <Link href={resolvedHref} className="text-white/80 hover:text-white font-bold text-[13px] uppercase tracking-wider transition-colors block">
                             {link.label}
                           </Link>
                         </li>
@@ -396,7 +396,7 @@ export default function Footer() {
                       const resolvedHref = href === '/home' || href === 'home' || href === '/pages/home' ? '/' : href;
                       return (
                         <li key={link.name}>
-                          <Link href={resolvedHref} className="text-white/70 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-colors block">
+                          <Link href={resolvedHref} className="text-white/80 hover:text-white font-bold text-[13px] uppercase tracking-wider transition-colors block">
                             {link.name}
                           </Link>
                         </li>
