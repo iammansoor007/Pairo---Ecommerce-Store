@@ -34,42 +34,42 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-md w-full space-y-10">
+    <div className="min-h-screen bg-white flex flex-col justify-center pt-32 pb-20 px-6 sm:px-8 font-sans">
+      <div className="max-w-md w-full mx-auto bg-[#FAF9F6] border border-black/[0.04] p-8 sm:p-10 rounded-[4px] shadow-sm">
         <div className="text-center">
-          <h1 className="text-3xl font-bold heading-font uppercase tracking-tight text-black">Sign In</h1>
-          <p className="mt-3 text-black/50 text-sm">Welcome back. Enter your credentials to access your account.</p>
+          <h1 className="text-2xl md:text-3xl font-black uppercase tracking-wider text-black">Sign In</h1>
+          <p className="mt-2 text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Access your Pairo Account</p>
         </div>
 
-        <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 text-red-500 text-[10px] font-bold p-4 rounded-xl text-center uppercase tracking-widest border border-red-100">
+            <div className="bg-red-50 text-red-600 text-[10px] font-bold p-4 rounded-[4px] text-center uppercase tracking-widest border border-red-100">
               {error}
             </div>
           )}
           
           <div className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-black/40 uppercase tracking-widest px-1">Email</label>
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black uppercase tracking-widest text-black/60 px-0.5">Email Address</label>
               <input
                 type="email"
                 required
-                className="block w-full px-4 py-4 bg-gray-50 border border-transparent rounded-xl text-sm font-medium focus:bg-white focus:border-black outline-none transition-all"
+                className="block w-full px-4 py-3 bg-white border border-black/10 rounded-[4px] text-xs font-semibold text-black placeholder-neutral-300 focus:border-black outline-none transition-all"
                 placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             
-            <div className="space-y-1">
-              <div className="flex justify-between px-1">
-                <label className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Password</label>
-                <Link href="#" className="text-[10px] font-bold text-black/20 hover:text-black uppercase tracking-widest">Forgot?</Link>
+            <div className="space-y-1.5">
+              <div className="flex justify-between px-0.5">
+                <label className="text-[9px] font-black uppercase tracking-widest text-black/60">Password</label>
+                <Link href="#" className="text-[9px] font-bold text-neutral-400 hover:text-black uppercase tracking-widest transition-colors">Forgot?</Link>
               </div>
               <input
                 type="password"
                 required
-                className="block w-full px-4 py-4 bg-gray-50 border border-transparent rounded-xl text-sm font-medium focus:bg-white focus:border-black outline-none transition-all"
+                className="block w-full px-4 py-3 bg-white border border-black/10 rounded-[4px] text-xs font-semibold text-black placeholder-neutral-300 focus:border-black outline-none transition-all"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -79,16 +79,15 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full h-14 bg-black text-white rounded-xl text-xs font-bold uppercase tracking-[0.2em] hover:bg-black/90 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+            className="w-full py-4 bg-black text-white rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-900 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
           >
             Sign In
-            <ArrowRight className="w-4 h-4" />
           </button>
 
           <div className="text-center pt-2">
-            <p className="text-xs text-black/40">
+            <p className="text-[11px] text-neutral-500 font-medium tracking-wide">
               New to Pairo?{" "}
-              <Link href="/signup" className="text-black font-bold hover:underline underline-offset-4">Create account</Link>
+              <Link href="/signup" className="text-black font-black uppercase tracking-wider hover:underline underline-offset-2 ml-1">Create account</Link>
             </p>
           </div>
         </form>
