@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, ChevronDown } from "lucide-react";
+import { CreditCard, Truck, ShieldCheck, ArrowRight, Loader2, ChevronDown, Search } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useSiteData } from "@/context/SiteContext";
 import { useRouter } from "next/navigation";
@@ -426,27 +426,31 @@ export default function CheckoutPage() {
                 <div className="space-y-1">
                   <label className={labelClass}>Country / Region *</label>
                   <div className="relative">
-                    <select
-                      name="country"
-                      value={formData.countryCode}
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                      <Search className="w-3.5 h-3.5" />
+                    </span>
+                    <input
+                      list="countries-list"
+                      placeholder="Search Country / Region…"
+                      value={formData.country}
                       onChange={(e) => {
-                        const selected = countries.find(c => c.isoCode === e.target.value);
+                        const val = e.target.value;
+                        const matched = countries.find(c => c.name.toLowerCase() === val.toLowerCase() || c.isoCode.toLowerCase() === val.toLowerCase());
                         setFormData(prev => ({
                           ...prev,
-                          country: selected?.name || e.target.value,
-                          countryCode: e.target.value,
+                          country: val,
+                          countryCode: matched ? matched.isoCode : "",
                           state: "", stateCode: "", city: ""
                         }));
                       }}
-                      className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                      className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
                       required
-                    >
-                      <option value="">Select Country…</option>
+                    />
+                    <datalist id="countries-list">
                       {countries.map(c => (
-                        <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                        <option key={c.isoCode} value={c.name} />
                       ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </datalist>
                   </div>
                 </div>
 
@@ -500,26 +504,31 @@ export default function CheckoutPage() {
                     </div>
                   ) : states.length > 0 ? (
                     <div className="relative">
-                      <select
-                        value={formData.stateCode}
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                        <Search className="w-3.5 h-3.5" />
+                      </span>
+                      <input
+                        list="states-list"
+                        placeholder="Search State / Province…"
+                        value={formData.state}
                         onChange={(e) => {
-                          const selected = states.find(s => s.isoCode === e.target.value);
+                          const val = e.target.value;
+                          const matched = states.find(s => s.name.toLowerCase() === val.toLowerCase() || s.isoCode.toLowerCase() === val.toLowerCase());
                           setFormData(prev => ({
                             ...prev,
-                            state: selected?.name || e.target.value,
-                            stateCode: e.target.value,
+                            state: val,
+                            stateCode: matched ? matched.isoCode : "",
                             city: ""
                           }));
                         }}
-                        className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                        className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
                         required={states.length > 0}
-                      >
-                        <option value="">Select State…</option>
+                      />
+                      <datalist id="states-list">
                         {states.map(s => (
-                          <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                          <option key={s.isoCode} value={s.name} />
                         ))}
-                      </select>
-                      <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </datalist>
                     </div>
                   ) : (
                     <input
@@ -543,18 +552,22 @@ export default function CheckoutPage() {
                       </div>
                     ) : cities.length > 0 ? (
                       <div className="relative">
-                        <select
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                          <Search className="w-3.5 h-3.5" />
+                        </span>
+                        <input
+                          list="cities-list"
+                          placeholder="Search City…"
                           value={formData.city}
                           onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                          className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                          className="w-full bg-background border border-border rounded-[4px] pl-9 pr-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none font-medium placeholder:text-foreground/40"
                           required
-                        >
-                          <option value="">Select City…</option>
+                        />
+                        <datalist id="cities-list">
                           {cities.map((c, i) => (
-                            <option key={i} value={c.name}>{c.name}</option>
+                            <option key={i} value={c.name} />
                           ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </datalist>
                       </div>
                     ) : (
                       <input
