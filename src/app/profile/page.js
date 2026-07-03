@@ -12,7 +12,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editingInfo, setEditingInfo] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  
+
   const [infoForm, setInfoForm] = useState({ name: "", email: "" });
   const [addressForm, setAddressForm] = useState({ fullName: "", street: "", city: "", state: "", zipCode: "", country: "United States" });
 
@@ -80,16 +80,16 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* Matches site margins/padding */}
-      <div className="container mx-auto px-6 md:px-16 pt-20 pb-12">
+      <div className="container mx-auto px-6 md:px-16 pt-12 pb-12">
         <div className="max-w-6xl mx-auto">
-          
+
           {/* Header - Luxury Banner */}
           <div className="border-b border-black/10 pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
               <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Account Dashboard</span>
               <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black mt-0.5">My Account</h1>
             </div>
-            <button 
+            <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="px-6 py-3 bg-black text-white hover:bg-neutral-900 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer shadow-sm"
             >
@@ -115,7 +115,7 @@ export default function ProfilePage() {
 
           {/* Main Dashboard Content Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            
+
             {/* Left Column: Recent Order History (7 cols) */}
             <div className="lg:col-span-7 space-y-8">
               <div className="border-b border-black/10 pb-3 flex items-center justify-between">
@@ -133,12 +133,11 @@ export default function ProfilePage() {
                     <div key={i} className="border border-black/[0.08] p-5 rounded-[4px] space-y-4 bg-white hover:border-black/20 transition-all shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <p className="text-[11px] font-black uppercase tracking-wider text-black">Order #{order.orderNumber || i+1024}</p>
-                          <span className={`text-[8px] font-black uppercase tracking-[0.1em] px-2.5 py-0.5 rounded-[2px] ${
-                            order.status === 'Delivered' ? 'bg-black text-white' : 
-                            order.status === 'Cancelled' ? 'bg-neutral-100 text-neutral-400' :
-                            'bg-neutral-100 text-black border border-black/5'
-                          }`}>
+                          <p className="text-[11px] font-black uppercase tracking-wider text-black">Order #{order.orderNumber || i + 1024}</p>
+                          <span className={`text-[8px] font-black uppercase tracking-[0.1em] px-2.5 py-0.5 rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' :
+                              order.status === 'Cancelled' ? 'bg-neutral-100 text-neutral-400' :
+                                'bg-neutral-100 text-black border border-black/5'
+                            }`}>
                             {order.status}
                           </span>
                         </div>
@@ -160,13 +159,13 @@ export default function ProfilePage() {
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="text-right">
                           <p className="text-[13px] font-bold text-black font-mono">
                             ${order.total.toLocaleString()}
                           </p>
                           {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
-                            <button 
+                            <button
                               onClick={() => handleAction("cancelOrder", { orderId: order.id })}
                               className="text-[8px] font-bold text-red-500 uppercase tracking-widest hover:underline block ml-auto mt-1 cursor-pointer"
                             >
@@ -183,13 +182,13 @@ export default function ProfilePage() {
 
             {/* Right Column: Profile & Addresses (5 cols) */}
             <div className="lg:col-span-5 space-y-12">
-              
+
               {/* Profile Block */}
               <div className="space-y-6 bg-[#FAF9F6] border border-black/[0.04] p-6 sm:p-8 rounded-[4px]">
                 <div className="flex items-center justify-between border-b border-black/10 pb-3">
                   <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Profile Information</h2>
-                  <button 
-                    onClick={() => setEditingInfo(!editingInfo)} 
+                  <button
+                    onClick={() => setEditingInfo(!editingInfo)}
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
                   >
                     {editingInfo ? "Cancel" : "Edit Info"}
@@ -200,23 +199,23 @@ export default function ProfilePage() {
                   <div className="space-y-4">
                     <div className="space-y-1">
                       <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-400">Full Name</label>
-                      <input 
-                        className={inputClass} 
-                        value={infoForm.name} 
-                        onChange={(e) => setInfoForm({...infoForm, name: e.target.value})}
+                      <input
+                        className={inputClass}
+                        value={infoForm.name}
+                        onChange={(e) => setInfoForm({ ...infoForm, name: e.target.value })}
                         placeholder="Full Name"
                       />
                     </div>
                     <div className="space-y-1">
                       <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-400">Email Address</label>
-                      <input 
-                        className={inputClass} 
-                        value={infoForm.email} 
-                        onChange={(e) => setInfoForm({...infoForm, email: e.target.value})}
+                      <input
+                        className={inputClass}
+                        value={infoForm.email}
+                        onChange={(e) => setInfoForm({ ...infoForm, email: e.target.value })}
                         placeholder="Email"
                       />
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleAction("updateInfo", infoForm)}
                       className="w-full bg-black text-white py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer mt-2"
                     >
@@ -241,8 +240,8 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="border-b border-black/10 pb-3 flex items-center justify-between">
                   <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Saved Locations</h2>
-                  <button 
-                    onClick={() => setShowAddressForm(!showAddressForm)} 
+                  <button
+                    onClick={() => setShowAddressForm(!showAddressForm)}
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
                   >
                     {showAddressForm ? "Cancel" : "Add Address"}
@@ -251,31 +250,31 @@ export default function ProfilePage() {
 
                 <AnimatePresence>
                   {showAddressForm && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }} 
-                      animate={{ height: "auto", opacity: 1 }} 
-                      exit={{ height: 0, opacity: 0 }} 
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
                       <div className="p-6 bg-[#FAF9F6] rounded-[4px] border border-black/[0.06] grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div className="sm:col-span-2 space-y-1">
                           <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Recipient Name</label>
-                          <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({...addressForm, fullName: e.target.value})} />
+                          <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
                         </div>
                         <div className="sm:col-span-2 space-y-1">
                           <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Street Address</label>
-                          <input placeholder="Street" className={inputClass} value={addressForm.street} onChange={e => setAddressForm({...addressForm, street: e.target.value})} />
+                          <input placeholder="Street" className={inputClass} value={addressForm.street} onChange={e => setAddressForm({ ...addressForm, street: e.target.value })} />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">City</label>
-                          <input placeholder="City" className={inputClass} value={addressForm.city} onChange={e => setAddressForm({...addressForm, city: e.target.value})} />
+                          <input placeholder="City" className={inputClass} value={addressForm.city} onChange={e => setAddressForm({ ...addressForm, city: e.target.value })} />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Postal / Zip Code</label>
-                          <input placeholder="Zip Code" className={inputClass} value={addressForm.zipCode} onChange={e => setAddressForm({...addressForm, zipCode: e.target.value})} />
+                          <input placeholder="Zip Code" className={inputClass} value={addressForm.zipCode} onChange={e => setAddressForm({ ...addressForm, zipCode: e.target.value })} />
                         </div>
-                        <button 
-                          onClick={() => handleAction("addAddress", addressForm)} 
+                        <button
+                          onClick={() => handleAction("addAddress", addressForm)}
                           className="sm:col-span-2 bg-black text-white py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all cursor-pointer mt-2"
                         >
                           Save Location
@@ -296,13 +295,13 @@ export default function ProfilePage() {
                         <div>
                           <p className="text-xs font-bold uppercase mb-1.5 text-black">{addr.fullName}</p>
                           <p className="text-[11px] text-neutral-500 uppercase tracking-wider leading-relaxed font-semibold">
-                            {addr.street}<br/>
-                            {addr.city}, {addr.zipCode}<br/>
+                            {addr.street}<br />
+                            {addr.city}, {addr.zipCode}<br />
                             {addr.country || "United States"}
                           </p>
                         </div>
-                        <button 
-                          onClick={() => handleAction("deleteAddress", { id: addr._id })} 
+                        <button
+                          onClick={() => handleAction("deleteAddress", { id: addr._id })}
                           className="text-neutral-400 hover:text-red-600 transition-colors p-1 cursor-pointer"
                           aria-label="Delete address"
                         >
@@ -319,7 +318,7 @@ export default function ProfilePage() {
 
           {/* Minimal Footer Action */}
           <div className="flex flex-col items-center pt-16 mt-16 border-t border-black/10 space-y-4">
-            <button 
+            <button
               onClick={() => handleAction("deleteAccount")}
               className="text-[9px] text-neutral-400 hover:text-red-600 uppercase tracking-[0.3em] font-bold transition-colors cursor-pointer"
             >

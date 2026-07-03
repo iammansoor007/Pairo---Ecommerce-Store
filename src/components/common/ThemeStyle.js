@@ -52,10 +52,10 @@ export default async function ThemeStyle() {
       font-weight: ${typography.headingWeight};
       letter-spacing: -0.02em; 
     }
-    h1, .h1 { font-size: var(--h1-size); }
-    h2, .h2 { font-size: var(--h2-size); }
-    h3, .h3 { font-size: var(--h3-size); }
-    h4, .h4 { font-size: var(--h4-size); }
+    .h1 { font-size: var(--h1-size); }
+    .h2 { font-size: var(--h2-size); }
+    .h3 { font-size: var(--h3-size); }
+    .h4 { font-size: var(--h4-size); }
     body { 
       font-family: var(--body-font);
       font-size: var(--base-font-size); 
