@@ -3,9 +3,9 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Trash2, ShoppingBag, ChevronDown, ChevronUp, Star, LogOut, MapPin, User, Search, Check, Package, Truck, Clock, CheckCircle2 } from "lucide-react";
+import { Trash2, ShoppingBag, ChevronDown, ChevronUp, Star, LogOut, MapPin, User, Search, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -13,7 +13,6 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editingInfo, setEditingInfo] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [infoForm, setInfoForm] = useState({ name: "", email: "" });
   const [addressForm, setAddressForm] = useState({ fullName: "", street: "", city: "", state: "", zipCode: "", country: "Pakistan" });
@@ -40,6 +39,9 @@ export default function ProfilePage() {
 
   // Product rating hover state per order
   const [orderHoverRatings, setOrderHoverRatings] = useState({});
+
+  // User notification/feedback state
+  const [feedback, setFeedback] = useState(null);
 
   const router = useRouter();
 
@@ -127,20 +129,27 @@ export default function ProfilePage() {
 
   const handleAction = async (action, data) => {
     setLoading(true);
+    setFeedback(null);
     try {
       const res = await fetch("/api/user/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, data })
       });
+      const resData = await res.json();
       if (res.ok) {
         await fetchUserData();
         setEditingInfo(false);
         setShowAddressForm(false);
-        if (action === "deleteAccount") signOut({ callbackUrl: "/" });
+        if (resData.message) {
+          setFeedback({ type: "success", message: resData.message });
+        }
+      } else {
+        setFeedback({ type: "error", message: resData.message || "Failed to complete action." });
       }
     } catch (err) {
       console.error(err);
+      setFeedback({ type: "error", message: "An unexpected error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -156,7 +165,7 @@ export default function ProfilePage() {
 
   if (!session || !userData) return null;
 
-  const inputClass = "w-full bg-background border border-border rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-primary outline-none transition-all text-foreground";
+  const inputClass = "w-full bg-background border border-border rounded-[12px] px-4 py-3 text-[11px] font-semibold focus:border-primary outline-none transition-all text-foreground";
 
   const getInitials = (name) => {
     if (!name) return "PA";
@@ -211,6 +220,13 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-background text-black font-sans selection:bg-primary selection:text-background">
       <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-8 pb-12">
         <div className="w-full mx-auto">
+          <section className="mb-10">
+            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-black/50">account dashboard</p>
+            <h1 className="mt-4 text-[32px] sm:text-[38px] font-black uppercase tracking-[-0.03em] text-black">My Profile</h1>
+            <p className="mt-3 max-w-2xl text-[11px] uppercase tracking-[0.2em] text-black/70 leading-7">
+              Your account hub for orders, shipping details, and verified purchase updates.
+            </p>
+          </section>
 
           {/* Main Dashboard Content Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -218,8 +234,19 @@ export default function ProfilePage() {
             {/* Left Column: Sidebar (4 cols) */}
             <div className="lg:col-span-4 space-y-6">
 
+              {/* Feedback alert */}
+              {feedback && (
+                <div className={`p-4 rounded-[4px] border text-[10px] font-black uppercase tracking-widest text-center shadow-sm ${
+                  feedback.type === 'success'
+                    ? 'bg-green-50 text-green-700 border-green-100'
+                    : 'bg-red-50 text-red-600 border-red-100'
+                }`}>
+                  {feedback.message}
+                </div>
+              )}
+
               {/* User Profile Card */}
-              <div className="bg-secondary border border-black/10 p-6 rounded-[4px] shadow-sm">
+              <div className="bg-white border border-black/10 p-6 rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)]">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
                   <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-base font-black uppercase shadow-sm border border-black/5 shrink-0">
@@ -229,12 +256,18 @@ export default function ProfilePage() {
                     <h2 className="text-[14px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
                     <p className="text-[10px] text-black font-mono mt-0.5">{userData.addresses?.[0]?.phone || ""}</p>
                     <p className="text-[10px] text-black font-mono mt-0.5">{userData.email}</p>
+                    {userData.pendingEmail && (
+                      <div className="mt-3 p-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-[4px] text-[8px] font-bold uppercase tracking-wider leading-relaxed shadow-sm">
+                        Verification pending for:<br/>
+                        <span className="font-mono lowercase text-[9px] block mt-0.5 font-bold text-amber-800">{userData.pendingEmail}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-black/10">
                   {editingInfo ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="space-y-1">
                         <label className="text-[9px] font-bold uppercase tracking-wider text-black">Full Name</label>
                         <input
@@ -253,16 +286,16 @@ export default function ProfilePage() {
                           placeholder="Email"
                         />
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         <button
                           onClick={() => handleAction("updateInfo", infoForm)}
-                          className="flex-1 bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
+                          className="flex-1 bg-black text-white py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingInfo(false)}
-                          className="flex-1 border border-black/15 text-black hover:bg-secondary py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+                          className="flex-1 border border-black/15 text-black hover:bg-secondary py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -272,13 +305,13 @@ export default function ProfilePage() {
                     <div className="flex flex-col gap-2.5">
                       <button
                         onClick={() => setEditingInfo(true)}
-                        className="w-full border border-black/15 text-black hover:bg-secondary py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full border border-black/15 text-black hover:bg-secondary py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
                         <User className="w-3.5 h-3.5" /> Edit Profile
                       </button>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="w-full bg-black text-white hover:bg-foreground py-2.5 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-black text-white hover:bg-foreground py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Sign Out
                       </button>
@@ -287,9 +320,9 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Order Statistics Block (2x2 Grid) â€” Bata reference style */}
-              <div className="bg-secondary border border-black/10 p-5 rounded-[4px] shadow-sm">
-                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-black/10 border border-black/10 rounded-[4px] overflow-hidden">
+              {/* Order Statistics Block (2x2 Grid) - reference style */}
+              <div className="bg-white border border-black/10 rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)] overflow-hidden">
+                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-black/10 bg-background">
                   <div className="p-4 space-y-1 bg-background">
                     <p className="text-[8px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
                     <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
@@ -310,7 +343,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-secondary border border-black/10 p-6 rounded-[4px] shadow-sm">
+              <div className="space-y-4 bg-white border border-black/10 p-6 rounded-[20px] shadow-[0_14px_30px_-22px_rgba(0,0,0,0.25)]">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
@@ -329,28 +362,28 @@ export default function ProfilePage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-4 bg-background rounded-[4px] border border-black/[0.06] space-y-3">
+                      <div className="p-4 bg-background rounded-[12px] border border-black/[0.06] space-y-3">
                         <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-wider text-black">Recipient Name</label>
+                          <label className="text-[9px] font-black uppercase tracking-[0.25em] text-black">Recipient Name</label>
                           <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-wider text-black">Street Address</label>
+                          <label className="text-[9px] font-black uppercase tracking-[0.25em] text-black">Street Address</label>
                           <input placeholder="Street" className={inputClass} value={addressForm.street} onChange={e => setAddressForm({ ...addressForm, street: e.target.value })} />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-wider text-black">City</label>
+                            <label className="text-[9px] font-black uppercase tracking-[0.25em] text-black">City</label>
                             <input placeholder="City" className={inputClass} value={addressForm.city} onChange={e => setAddressForm({ ...addressForm, city: e.target.value })} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[8px] font-bold uppercase tracking-wider text-black">Zip Code</label>
+                            <label className="text-[9px] font-black uppercase tracking-[0.25em] text-black">Zip Code</label>
                             <input placeholder="Zip Code" className={inputClass} value={addressForm.zipCode} onChange={e => setAddressForm({ ...addressForm, zipCode: e.target.value })} />
                           </div>
                         </div>
                         <button
                           onClick={() => handleAction("addAddress", addressForm)}
-                          className="w-full bg-black text-white py-2 rounded-[4px] text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
+                          className="w-full bg-black text-white py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-foreground transition-all cursor-pointer shadow-sm"
                         >
                           Save Address
                         </button>
@@ -359,14 +392,14 @@ export default function ProfilePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {!userData.addresses?.length ? (
-                    <p className="text-[9px] text-black uppercase tracking-widest text-center py-4 bg-background border border-black/[0.04] rounded-[4px]">
+                    <p className="text-[9px] text-black uppercase tracking-widest text-center py-4 bg-background border border-black/[0.04] rounded-[12px]">
                       No addresses saved.
                     </p>
                   ) : (
                     userData.addresses.map((addr) => (
-                      <div key={addr._id} className="p-3 bg-background border border-black/[0.05] rounded-[4px] flex justify-between items-start shadow-sm">
+                      <div key={addr._id} className="p-4 bg-background border border-black/[0.05] rounded-[12px] flex justify-between items-start shadow-sm">
                         <div className="min-w-0">
                           <p className="text-[10px] font-bold uppercase text-black truncate">{addr.fullName}</p>
                           <p className="text-[9px] text-black uppercase tracking-wider leading-relaxed mt-0.5 truncate">
@@ -386,21 +419,10 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Delete Account */}
-              <div className="pt-3 border-t border-border">
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[4px] border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 text-[9px] font-black uppercase tracking-[0.25em] transition-all cursor-pointer"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete Account
-                </button>
-              </div>
-
             </div>
 
             {/* Right Column: Main Content (8 cols) */}
-            <div className="lg:col-span-8 space-y-5">
+            <div className="lg:col-span-8 space-y-6">
 
               {/* Header Navigation Tab + Search Bar */}
               <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-4">
@@ -408,7 +430,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => setActiveTab("active")}
                     className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
-                      activeTab === "active" ? "text-black border-b-2 border-black" : "text-black hover:text-black"
+                      activeTab === "active" ? "text-black border-b-2 border-black" : "text-black/70 hover:text-black"
                     }`}
                   >
                     Active Orders
@@ -416,7 +438,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => setActiveTab("previous")}
                     className={`pb-2 text-[11px] sm:text-[12px] font-black uppercase tracking-[0.2em] transition-all relative cursor-pointer ${
-                      activeTab === "previous" ? "text-black border-b-2 border-black" : "text-black hover:text-black"
+                      activeTab === "previous" ? "text-black border-b-2 border-black" : "text-black/70 hover:text-black"
                     }`}
                   >
                     Previous Orders
@@ -431,7 +453,7 @@ export default function ProfilePage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search Order Here"
-                    className="w-full bg-secondary border border-black/10 rounded-[4px] pl-9 pr-4 py-2.5 text-[10px] font-bold tracking-widest uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
+                    className="w-full bg-white border border-black/10 rounded-[12px] pl-9 pr-4 py-3 text-[11px] font-black tracking-[0.18em] uppercase placeholder-black/40 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -439,7 +461,7 @@ export default function ProfilePage() {
               {/* Order List Rows */}
               <div className="space-y-3">
                 {filteredOrders.length === 0 ? (
-                  <div className="py-20 text-center border border-dashed border-black/10 rounded-[4px] bg-secondary space-y-4">
+                  <div className="py-20 text-center border border-dashed border-black/10 rounded-[20px] bg-white/80 space-y-4">
                     <ShoppingBag className="w-12 h-12 text-black/10 mx-auto" />
                     <p className="text-[10px] text-black uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
                   </div>
@@ -454,28 +476,28 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-black/10 rounded-[4px] bg-background transition-all shadow-sm overflow-hidden ${
+                        className={`border border-black/10 rounded-[20px] bg-white transition-all shadow-sm overflow-hidden ${
                           isExpanded ? 'ring-1 ring-black/10' : 'hover:border-black/20'
                         }`}
                       >
-                        {/* Summary Header Row â€” clickable to expand items */}
+                        {/* Summary Header Row - clickable to expand items */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-secondary transition-colors select-none"
+                          className="px-6 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-secondary transition-colors select-none"
                         >
                           {/* Left Column: Order metadata */}
                           <div className="space-y-1 flex-1 min-w-0">
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black tracking-wider">Order Number</span>
+                              <span className="text-[9px] font-black uppercase text-black/70 tracking-[0.25em]">Order Number</span>
                               <span className="text-[11px] font-black text-black font-mono">#{order.orderNumber || i + 1024}</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black tracking-wider">Creation Date</span>
+                              <span className="text-[9px] font-black uppercase text-black/70 tracking-[0.25em]">Creation Date</span>
                               <span className="text-[10px] font-bold text-black font-mono">{formatOrderDate(order.date)}</span>
                             </div>
                           </div>
 
-                          {/* Middle Column: Product Rating â€” interactive for delivered orders */}
+                          {/* Middle Column: Product Rating - interactive for delivered orders */}
                           <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
                             <span className={`text-[8px] font-black uppercase tracking-wider ${
                               isDelivered ? 'text-black' : 'text-black'
@@ -540,7 +562,7 @@ export default function ProfilePage() {
                           {/* Right Column: Status pill & chevron */}
                           <div className="flex items-center justify-between md:justify-end gap-4 shrink-0">
                             <div className="text-right space-y-1">
-                              <span className={`inline-block px-3 py-1 text-[8px] font-black uppercase tracking-[0.15em] rounded-full ${getStatusColor(order.status)}`}>
+                              <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.18em] rounded-full ${getStatusColor(order.status)}`}>
                                 {order.status}
                               </span>
                             </div>
@@ -572,8 +594,8 @@ export default function ProfilePage() {
                                         <div key={idx} className="pt-4 first:pt-0 space-y-4">
                                           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                             <div className="flex items-center gap-3 min-w-0">
-                                              <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-secondary shrink-0">
-                                                <img src={item.image || "/placeholder.jpg"} className="w-full h-full object-cover" alt="" />
+                                              <div className="w-10 h-14 rounded-[2px] border border-black/10 overflow-hidden bg-secondary shrink-0 relative">
+                                                <Image src={item.image || "/placeholder.jpg"} alt={item.name || "Product image"} fill className="object-cover" />
                                               </div>
                                               <div className="min-w-0">
                                                 <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
@@ -687,7 +709,7 @@ export default function ProfilePage() {
                                           e.stopPropagation();
                                           handleAction("cancelOrder", { orderId: order.id });
                                         }}
-                                        className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:underline cursor-pointer"
+                                        className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] hover:underline cursor-pointer"
                                       >
                                         Request Cancel
                                       </button>
@@ -802,33 +824,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
-          <div className="bg-background border border-border rounded-[4px] p-8 max-w-md w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="space-y-2">
-              <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-foreground">Confirm Account Deletion</h3>
-              <p className="text-xs text-foreground leading-relaxed uppercase tracking-wider font-semibold">
-                Are you sure you want to permanently delete your account? This action is irreversible and all your order history will be lost.
-              </p>
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 border border-border text-foreground hover:bg-secondary py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleAction("deleteAccount")}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-[4px] text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-sm"
-              >
-                Delete Permanently
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

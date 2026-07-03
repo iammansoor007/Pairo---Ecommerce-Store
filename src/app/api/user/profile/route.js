@@ -51,10 +51,41 @@ export async function POST(req) {
     const customer = await Customer.findById(session.user.id);
     if (!customer) return NextResponse.json({ message: "Customer not found" }, { status: 404 });
     switch (action) {
-      case "updateInfo":
+      case "updateInfo": {
         customer.name = data.name || customer.name;
-        customer.email = data.email || customer.email;
+        
+        const newEmail = data.email?.trim().toLowerCase();
+        if (newEmail && newEmail !== customer.email) {
+          // Check if the new email is already in use by another customer
+          const emailExists = await Customer.findOne({ email: newEmail, _id: { $ne: customer._id } });
+          if (emailExists) {
+            return NextResponse.json({ message: "Email is already in use by another account." }, { status: 400 });
+          }
+
+          // Generate verification token for new email
+          const crypto = await import("crypto");
+          const token = crypto.randomBytes(32).toString("hex");
+          const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+          customer.pendingEmail = newEmail;
+          customer.pendingEmailToken = token;
+          customer.pendingEmailTokenExpiry = expiry;
+
+          const siteUrl = process.env.NEXTAUTH_URL || "https://pairolifestyle.com";
+          const verificationUrl = `${siteUrl}/verify-email?token=${token}&type=change`;
+          
+          const { sendEmailVerification } = await import("@/lib/email");
+          await sendEmailVerification(newEmail, customer.name, verificationUrl);
+          
+          await customer.save();
+          return NextResponse.json({ 
+            message: "Profile updated. A verification link has been sent to your new email.", 
+            emailVerificationPending: true,
+            user: customer 
+          });
+        }
         break;
+      }
       case "addAddress":
         if (data.isDefault) customer.addresses.forEach(a => a.isDefault = false);
         customer.addresses.push(data);
@@ -70,8 +101,7 @@ export async function POST(req) {
         customer.paymentMethods = customer.paymentMethods.filter(p => p._id.toString() !== data.id);
         break;
       case "deleteAccount":
-        await Customer.findByIdAndDelete(session.user.id);
-        return NextResponse.json({ message: "Account deleted" });
+        return NextResponse.json({ message: "Account deletion is disabled for this store." }, { status: 403 });
       case "cancelOrder": {
         const order = await Order.findOne({ _id: data.orderId, "customer.userId": session.user.id });
         if (!order) return NextResponse.json({ message: "Order not found" }, { status: 404 });

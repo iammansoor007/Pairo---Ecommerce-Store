@@ -12,6 +12,9 @@ export function initOrderListeners() {
         console.log(`[Event Received] ORDER_CREATED: ${order.orderNumber}`);
         // Email Customer
         await sendOrderConfirmation(order).catch(e => console.error("Email Cust Error:", e.message));
+        if (order?.guestAccount?.temporaryPassword) {
+          delete order.guestAccount.temporaryPassword;
+        }
         // Email Admin
         await sendAdminOrderNotification(order).catch(e => console.error("Email Admin Error:", e.message));
     } catch (err) {

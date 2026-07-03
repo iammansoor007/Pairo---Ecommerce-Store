@@ -8,7 +8,7 @@ import ReferralDiscountPopup from "@/components/common/ReferralDiscountPopup";
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
-  const isIsolatedRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/affiliate");
+  const isIsolatedRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/affiliate") || pathname?.startsWith("/profile");
 
   if (isIsolatedRoute) {
     return <main>{children}</main>;

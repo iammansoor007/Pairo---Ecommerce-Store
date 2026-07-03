@@ -12,7 +12,13 @@ import logger, { getContextLogger, LogCategory } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import { validateLegacyDiscount, calculateEligibleSubtotal } from "@/lib/couponValidator";
 import Affiliate from "@/models/Affiliate";
+import Customer from "@/models/Customer";
+import bcrypt from "bcryptjs";
 import { CommissionEngine } from "@/lib/affiliate/CommissionEngine";
+import {
+  buildGuestCheckoutAccountPayload,
+  resolveGuestCheckoutCustomerAction,
+} from "@/lib/guestCheckoutAccount";
 
 export async function POST(req) {
   let session = null;
@@ -295,6 +301,71 @@ export async function POST(req) {
                 customerNote
             }], { session });
 
+            let guestAccountInfo = null;
+            const checkoutEmail = (customerEmail || authSession?.user?.email || "").trim().toLowerCase();
+            const checkoutName = shippingAddress?.fullName || authSession?.user?.name || checkoutEmail.split("@")[0] || "Customer";
+
+            if (!authSession?.user?.id && checkoutEmail) {
+                const existingCustomer = await Customer.findOne({ email: checkoutEmail }).session(session);
+                const action = resolveGuestCheckoutCustomerAction({
+                    existingCustomer,
+                    customerEmail: checkoutEmail,
+                    shippingAddress,
+                    customerName: checkoutName,
+                });
+
+                if (action.shouldCreateAccount) {
+                    const accountPayload = buildGuestCheckoutAccountPayload({
+                        customerEmail: checkoutEmail,
+                        shippingAddress,
+                        customerName: checkoutName,
+                    });
+
+                    const [createdCustomer] = await Customer.create([{
+                        ...accountPayload,
+                        password: await bcrypt.hash(accountPayload.password, 12),
+                        emailVerified: true,
+                    }], { session });
+
+                    await Order.updateOne(
+                        { _id: newOrder._id },
+                        {
+                            $set: {
+                                "customer.userId": createdCustomer._id,
+                                "customer.isGuest": false,
+                            }
+                        },
+                        { session }
+                    );
+
+                    newOrder.customer.userId = createdCustomer._id;
+                    newOrder.customer.isGuest = false;
+                    guestAccountInfo = {
+                        created: true,
+                        loginEmail: createdCustomer.email,
+                        temporaryPassword: accountPayload.password,
+                        loginUrl: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "https://yourdomain.com"}/login`,
+                    };
+                } else if (existingCustomer) {
+                    await Order.updateOne(
+                        { _id: newOrder._id },
+                        {
+                            $set: {
+                                "customer.userId": existingCustomer._id,
+                                "customer.isGuest": false,
+                            }
+                        },
+                        { session }
+                    );
+
+                    newOrder.customer.userId = existingCustomer._id;
+                    newOrder.customer.isGuest = false;
+                }
+            }
+
+            if (guestAccountInfo) {
+                newOrder.guestAccount = guestAccountInfo;
+            }
 
             checkoutResult = newOrder;
 

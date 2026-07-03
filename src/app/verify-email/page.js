@@ -97,18 +97,20 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 font-sans">
-      <Suspense
-        fallback={
-          <div className="max-w-md w-full bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-10 shadow-sm text-center space-y-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">Pairo Lifestyle</p>
-            <Loader2 className="w-10 h-10 mx-auto text-black animate-spin" />
-            <p className="text-[11px] font-bold uppercase tracking-widest text-black">Loading...</p>
-          </div>
-        }
-      >
-        <VerifyEmailContent />
-      </Suspense>
+    <div className="min-h-screen bg-white flex flex-col justify-center pt-8 pb-20 px-6 font-sans">
+      <div className="max-w-md w-full mx-auto">
+        <Suspense
+          fallback={
+            <div className="max-w-md w-full bg-[#FAF9F6] border border-black/[0.06] rounded-[4px] p-10 shadow-sm text-center space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">Pairo Lifestyle</p>
+              <Loader2 className="w-10 h-10 mx-auto text-black animate-spin" />
+              <p className="text-[11px] font-bold uppercase tracking-widest text-black">Loading...</p>
+            </div>
+          }
+        >
+          <VerifyEmailContent />
+        </Suspense>
+      </div>
     </div>
   );
 }

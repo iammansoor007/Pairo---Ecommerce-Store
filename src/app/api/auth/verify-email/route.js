@@ -16,26 +16,51 @@ export async function GET(req) {
 
     await dbConnect();
 
-    const customer = await Customer.findOne({
+    // 1. Try to find customer with signup verification token
+    let customer = await Customer.findOne({
       verificationToken: token,
-      verificationTokenExpiry: { $gt: new Date() }, // not expired
+      verificationTokenExpiry: { $gt: new Date() },
     });
 
-    if (!customer) {
-      return NextResponse.json({
-        message: "This verification link is invalid or has expired. Please sign up again."
-      }, { status: 400 });
+    if (customer) {
+      customer.emailVerified = true;
+      customer.verificationToken = null;
+      customer.verificationTokenExpiry = null;
+      await customer.save();
+      console.log(`[VerifyEmail] ✅ Initial email verified for: ${customer.email}`);
+      return NextResponse.json({ message: "Email verified successfully!" }, { status: 200 });
     }
 
-    // Mark verified and clear token
-    customer.emailVerified = true;
-    customer.verificationToken = null;
-    customer.verificationTokenExpiry = null;
-    await customer.save();
+    // 2. Try to find customer with email-change verification token
+    customer = await Customer.findOne({
+      pendingEmailToken: token,
+      pendingEmailTokenExpiry: { $gt: new Date() },
+    });
 
-    console.log(`[VerifyEmail] ✅ Email verified for: ${customer.email}`);
+    if (customer) {
+      const newEmail = customer.pendingEmail;
+      
+      // Ensure the pending email wasn't taken by another account in the meantime
+      const emailExists = await Customer.findOne({ email: newEmail, _id: { $ne: customer._id } });
+      if (emailExists) {
+        return NextResponse.json({
+          message: "The new email address is already in use by another account."
+        }, { status: 400 });
+      }
 
-    return NextResponse.json({ message: "Email verified successfully!" }, { status: 200 });
+      customer.email = newEmail;
+      customer.pendingEmail = null;
+      customer.pendingEmailToken = null;
+      customer.pendingEmailTokenExpiry = null;
+      await customer.save();
+
+      console.log(`[VerifyEmail] ✅ Email changed and verified to: ${newEmail}`);
+      return NextResponse.json({ message: "Email changed and verified successfully!" }, { status: 200 });
+    }
+
+    return NextResponse.json({
+      message: "This verification link is invalid or has expired."
+    }, { status: 400 });
 
   } catch (error) {
     console.error("[VerifyEmail] ❌ Error:", error);

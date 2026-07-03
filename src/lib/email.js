@@ -101,6 +101,24 @@ export async function sendOrderConfirmation(order) {
     </tr>
   `).join('');
 
+  const accountSectionHtml = order.guestAccount?.created && order.guestAccount?.temporaryPassword
+    ? `
+      <div style="margin-top: 32px; background: linear-gradient(135deg, #f8f5f0 0%, #fff 100%); border: 1px solid #e7dfd3; border-radius: 14px; padding: 24px;">
+        <h3 style="margin: 0 0 10px; font-size: 18px; color: #1a1a1a;">Your Customer Account Has Been Created</h3>
+        <p style="margin: 0 0 14px; color: #5f574d; line-height: 1.6;">
+          Thank you for your order! We created your customer account so you can track orders, view your order history, save addresses, and checkout faster next time.
+        </p>
+        <div style="background: #fff; border: 1px solid #efe6da; border-radius: 10px; padding: 16px;">
+          <p style="margin: 0 0 8px; color: #222; font-size: 14px;"><strong>Login Email:</strong> ${order.guestAccount.loginEmail || order.customer?.email}</p>
+          <p style="margin: 0 0 8px; color: #222; font-size: 14px;"><strong>Temporary Password:</strong> <span style="font-family: monospace; background: #f6f2ec; padding: 2px 6px; border-radius: 4px;">${order.guestAccount.temporaryPassword}</span></p>
+          <p style="margin: 12px 0 0;">
+            <a href="${order.guestAccount.loginUrl || 'https://yourdomain.com/login'}" style="display: inline-block; background: #1a1a1a; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 999px; font-weight: 600;">Log in to your account</a>
+          </p>
+        </div>
+        <p style="margin: 12px 0 0; color: #7a705f; font-size: 13px;">For security, we recommend changing your password after your first login.</p>
+      </div>
+    ` : '';
+
   const html = `
     <div style="font-family: 'Helvetica Neue', sans-serif; max-width: 600px; margin: auto; color: #1a1a1a;">
       <div style="background: #1a1a1a; padding: 30px; text-align: center;">
@@ -128,6 +146,7 @@ export async function sendOrderConfirmation(order) {
             </tr>
           </tfoot>
         </table>
+        ${accountSectionHtml}
         <div style="background: #f9f9f9; border-left: 4px solid #1a1a1a; padding: 20px; border-radius: 4px; margin-top: 30px;">
           <h3 style="margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Shipping To</h3>
           <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #333;">

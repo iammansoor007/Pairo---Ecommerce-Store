@@ -44,12 +44,21 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     country: "United States",
+    countryCode: "US",
     state: "",
+    stateCode: "",
     street: "",
     city: "",
     zip: "",
     customerNote: ""
   });
+
+  // Location cascade state
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   // Shipping rates state
   const [shippingRates, setShippingRates] = useState([]);
@@ -62,6 +71,39 @@ export default function CheckoutPage() {
       setIdempotencyKey(`pai_${Math.random().toString(36).substring(2, 15)}_${Date.now()}`);
     });
   }, []);
+
+  // Load all countries on mount
+  useEffect(() => {
+    fetch("/api/locations")
+      .then(r => r.json())
+      .then(d => { if (d.success) setCountries(d.data); })
+      .catch(console.error);
+  }, []);
+
+  // Load states when country changes
+  useEffect(() => {
+    if (!formData.countryCode) { setStates([]); setCities([]); return; }
+    setLoadingStates(true);
+    setCities([]);
+    setFormData(prev => ({ ...prev, state: "", stateCode: "", city: "" }));
+    fetch(`/api/locations?countryCode=${formData.countryCode}`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setStates(d.data); })
+      .catch(console.error)
+      .finally(() => setLoadingStates(false));
+  }, [formData.countryCode]);
+
+  // Load cities when state changes
+  useEffect(() => {
+    if (!formData.countryCode || !formData.stateCode) { setCities([]); return; }
+    setLoadingCities(true);
+    setFormData(prev => ({ ...prev, city: "" }));
+    fetch(`/api/locations?countryCode=${formData.countryCode}&stateCode=${formData.stateCode}`)
+      .then(r => r.json())
+      .then(d => { if (d.success) setCities(d.data); })
+      .catch(console.error)
+      .finally(() => setLoadingCities(false));
+  }, [formData.countryCode, formData.stateCode]);
 
   useEffect(() => {
     if (session) {
@@ -382,17 +424,29 @@ export default function CheckoutPage() {
 
                 {/* Country Selection */}
                 <div className="space-y-1">
-                  <label className={labelClass}>Country/Region</label>
+                  <label className={labelClass}>Country / Region *</label>
                   <div className="relative">
                     <select
                       name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-3 text-[13px] text-black focus:border-black outline-none appearance-none font-medium"
+                      value={formData.countryCode}
+                      onChange={(e) => {
+                        const selected = countries.find(c => c.isoCode === e.target.value);
+                        setFormData(prev => ({
+                          ...prev,
+                          country: selected?.name || e.target.value,
+                          countryCode: e.target.value,
+                          state: "", stateCode: "", city: ""
+                        }));
+                      }}
+                      className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                      required
                     >
-                      <option value="United States">United States</option>
+                      <option value="">Select Country…</option>
+                      {countries.map(c => (
+                        <option key={c.isoCode} value={c.isoCode}>{c.name}</option>
+                      ))}
                     </select>
-                    <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
                 </div>
 
@@ -437,22 +491,37 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                {/* City, State, ZIP */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                  <div className="space-y-1">
-                    <label className={labelClass}>City *</label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      placeholder="City"
-                      className={inputClass}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className={labelClass}>State / Province</label>
+                {/* State / Province */}
+                <div className="space-y-1">
+                  <label className={labelClass}>State / Province {states.length > 0 && "*"}</label>
+                  {loadingStates ? (
+                    <div className="flex items-center gap-2 px-3.5 py-3 border border-border rounded-[4px] text-[12px] text-foreground/50">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading states…
+                    </div>
+                  ) : states.length > 0 ? (
+                    <div className="relative">
+                      <select
+                        value={formData.stateCode}
+                        onChange={(e) => {
+                          const selected = states.find(s => s.isoCode === e.target.value);
+                          setFormData(prev => ({
+                            ...prev,
+                            state: selected?.name || e.target.value,
+                            stateCode: e.target.value,
+                            city: ""
+                          }));
+                        }}
+                        className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                        required={states.length > 0}
+                      >
+                        <option value="">Select State…</option>
+                        {states.map(s => (
+                          <option key={s.isoCode} value={s.isoCode}>{s.name}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  ) : (
                     <input
                       type="text"
                       name="state"
@@ -461,6 +530,43 @@ export default function CheckoutPage() {
                       placeholder="State / Province"
                       className={inputClass}
                     />
+                  )}
+                </div>
+
+                {/* City + ZIP */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1">
+                    <label className={labelClass}>City *</label>
+                    {loadingCities ? (
+                      <div className="flex items-center gap-2 px-3.5 py-3 border border-border rounded-[4px] text-[12px] text-foreground/50">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading cities…
+                      </div>
+                    ) : cities.length > 0 ? (
+                      <div className="relative">
+                        <select
+                          value={formData.city}
+                          onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                          className="w-full bg-background border border-border rounded-[4px] px-3.5 py-3 text-[13px] text-foreground focus:border-primary outline-none appearance-none font-medium"
+                          required
+                        >
+                          <option value="">Select City…</option>
+                          {cities.map((c, i) => (
+                            <option key={i} value={c.name}>{c.name}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-4 h-4 text-foreground/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        placeholder="City"
+                        className={inputClass}
+                        required
+                      />
+                    )}
                   </div>
                   <div className="space-y-1">
                     <label className={labelClass}>Postal code / ZIP</label>

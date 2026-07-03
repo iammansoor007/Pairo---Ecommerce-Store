@@ -8,6 +8,9 @@ const CustomerSchema = new mongoose.Schema({
   emailVerified: { type: Boolean, default: false },
   verificationToken: { type: String, default: null },
   verificationTokenExpiry: { type: Date, default: null },
+  pendingEmail: { type: String, default: null },
+  pendingEmailToken: { type: String, default: null },
+  pendingEmailTokenExpiry: { type: Date, default: null },
   cart: [{
     productId: { type: Number },
     quantity: { type: Number, default: 1 },
