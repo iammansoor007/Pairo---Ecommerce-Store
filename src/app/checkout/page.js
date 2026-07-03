@@ -23,7 +23,8 @@ export default function CheckoutPage() {
     selectedShipping,
     setSelectedShipping,
     affiliateDiscount,
-    affiliateDiscountAmount
+    affiliateDiscountAmount,
+    removeFromCart
   } = useCart();
   const { data: session } = useSession();
   const [profile, setProfile] = useState(null);
@@ -76,6 +77,12 @@ export default function CheckoutPage() {
         .finally(() => setLoadingProfile(false));
     }
   }, [session]);
+
+  useEffect(() => {
+    if (cartItems.length === 0 && !isProcessing) {
+      router.push("/cart");
+    }
+  }, [cartItems, router, isProcessing]);
 
   const savedAddresses = useMemo(() => {
     if (!profile) return [];
@@ -277,7 +284,7 @@ export default function CheckoutPage() {
   const labelClass = "block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1";
 
   return (
-    <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white overflow-x-hidden">
+    <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white">
       {/* Loading Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center space-y-4">
@@ -572,13 +579,12 @@ export default function CheckoutPage() {
               {(cartItems || []).map((item, index) => {
                 const itemImage = item.image || (Array.isArray(item.images) && item.images[0]) || "/placeholder.jpg";
                 const itemKey = `${item.id || item._id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}-${index}`;
+                const uniqueKeyForCart = `${item.id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}`;
                 return (
                   <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative shrink-0">
-                      <div className="w-14 h-18 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-hidden">
-                        <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
+                    <div className="relative shrink-0 w-14 h-18 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-visible">
+                      <img src={itemImage} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                      <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
                         {item.quantity}
                       </span>
                     </div>
@@ -609,9 +615,18 @@ export default function CheckoutPage() {
                         </div>
                       )}
 
-                      <p className="text-[12px] font-bold text-black font-mono mt-1">
-                        ${(item.price * item.quantity).toLocaleString()}
-                      </p>
+                      <div className="flex items-center justify-between pt-1">
+                        <p className="text-[12px] font-bold text-black font-mono">
+                          ${(item.price * item.quantity).toLocaleString()}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => removeFromCart(uniqueKeyForCart)}
+                          className="text-[10px] font-bold text-neutral-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

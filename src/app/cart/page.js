@@ -67,20 +67,20 @@ export default function CartPage() {
       {/* Matches site header/footer margins exactly */}
       <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-16">
         
-        {/* Premium Centered Title Block */}
-        <div className="text-center space-y-2 pb-8 md:pb-12 border-b border-black/5 mb-8 md:mb-12">
-          <p className="text-[10px] font-bold tracking-[0.25em] text-neutral-400 uppercase">Your Selection</p>
-          <h1 className="text-2xl md:text-3xl font-bold uppercase tracking-[0.15em] text-black">Shopping Bag</h1>
-          <div className="flex items-center justify-center gap-3 text-[11px] font-bold uppercase tracking-widest text-neutral-500">
-            <span>{cartItems.reduce((acc, item) => acc + item.quantity, 0)} {cartItems.reduce((acc, item) => acc + item.quantity, 0) === 1 ? "item" : "items"}</span>
-            <span className="text-neutral-300">•</span>
-            <Link 
-              href="/shop" 
-              className="text-black hover:text-black/70 border-b border-black pb-0.5 transition-all"
-            >
-              Continue Shopping
-            </Link>
+        {/* Shopify-style Cart Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-neutral-200 pb-6 mb-8 md:mb-12">
+          <div className="space-y-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold uppercase tracking-wider text-black">Your Cart</h1>
+            <p className="text-xs text-neutral-500 font-medium">
+              {cartItems.reduce((acc, item) => acc + item.quantity, 0)} {cartItems.reduce((acc, item) => acc + item.quantity, 0) === 1 ? "item" : "items"} inside your cart
+            </p>
           </div>
+          <Link 
+            href="/shop" 
+            className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 hover:text-black border-b border-black/20 hover:border-black transition-all pb-1 mt-4 sm:mt-0 w-fit"
+          >
+            Continue Shopping
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">

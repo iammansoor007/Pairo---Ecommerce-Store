@@ -49,13 +49,7 @@ export default function SuccessPage() {
   };
 
   const getEstimatedDelivery = () => {
-    if (!order) return "5-7 business days";
-    const snapshot = order.shippingSnapshot || {};
-    const method = (snapshot.methodName || "").toLowerCase();
-    if (method.includes("express") || method.includes("fast")) {
-      return "2-3 business days";
-    }
-    return "5-7 business days";
+    return "15-20 days";
   };
 
   if (loading) {
@@ -125,11 +119,9 @@ export default function SuccessPage() {
                 <div className="divide-y divide-neutral-200 pr-2 max-h-[280px] overflow-y-auto custom-scrollbar">
                   {order.items.map((item, idx) => (
                     <div key={idx} className="flex gap-4 items-center py-3.5">
-                      <div className="relative shrink-0">
-                        <div className="w-14 h-18 bg-white rounded-[4px] border border-neutral-200 overflow-hidden">
-                          <img src={item.image || "/placeholder.jpg"} alt={item.name} className="w-full h-full object-cover" />
-                        </div>
-                        <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
+                      <div className="relative shrink-0 w-14 h-18 bg-white rounded-[4px] border border-neutral-200 overflow-visible">
+                        <img src={item.image || "/placeholder.jpg"} alt={item.name} className="w-full h-full object-cover rounded-[4px]" />
+                        <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
                           {item.quantity}
                         </span>
                       </div>
@@ -297,11 +289,9 @@ export default function SuccessPage() {
               <div className="divide-y divide-neutral-200 max-h-[360px] print:max-h-none overflow-y-auto print:overflow-visible pr-2 custom-scrollbar">
                 {order.items.map((item, idx) => (
                   <div key={idx} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative shrink-0">
-                      <div className="w-14 h-18 bg-white rounded-[4px] border border-neutral-200 overflow-hidden">
-                        <img src={item.image || "/placeholder.jpg"} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
+                    <div className="relative shrink-0 w-14 h-18 bg-white rounded-[4px] border border-neutral-200 overflow-visible">
+                      <img src={item.image || "/placeholder.jpg"} alt={item.name} className="w-full h-full object-cover rounded-[4px]" />
+                      <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
                         {item.quantity}
                       </span>
                     </div>
