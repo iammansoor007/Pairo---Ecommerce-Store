@@ -136,9 +136,9 @@ export function resolveSEOMetadata(options = {}) {
   }
   canonical = normalizeCanonicalUrl(canonical);
 
-  // 3. Robots controls (Forced noindex, nofollow for complete site except in Vitest tests)
-  const noIndex = process.env.NODE_ENV === 'test' ? (seo.noIndex === true || entity.status === "Draft") : true;
-  const noFollow = process.env.NODE_ENV === 'test' ? (seo.noFollow === true || entity.status === "Draft") : true;
+  // 3. Robots controls (Honor Draft status and custom SEO configurations)
+  const noIndex = seo.noIndex === true || entity.status === "Draft";
+  const noFollow = seo.noFollow === true || entity.status === "Draft";
 
   // 4. OpenGraph and Twitter image fallback hierarchy:
   // Custom SEO Image -> Entity Featured Image -> Global Site Image

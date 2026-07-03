@@ -6,7 +6,15 @@ export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://pairolifestyle.com";
 
   const robots = `User-agent: *
-Disallow: /
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /profile/
+Disallow: /affiliate/dashboard/
+
+Sitemap: ${siteUrl}/sitemap.xml
 `;
 
   return new NextResponse(robots, {
