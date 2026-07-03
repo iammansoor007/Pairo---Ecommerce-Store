@@ -210,8 +210,10 @@ export default function Footer() {
   // ── Brand section ──
   const footerBrandName = brand?.footerBrandName || 'PAIRO';
   const copyrightText = brand?.copyrightText || 'PAIRO — ALL RIGHTS RESERVED © 2026.';
-  const privacyUrl = fc.privacyPageSlug ? `/pages/${fc.privacyPageSlug}` : (brand?.privacyUrl || '/privacy');
-  const termsUrl   = fc.termsPageSlug   ? `/pages/${fc.termsPageSlug}`   : (brand?.termsUrl   || '/terms');
+  const cleanPrivacySlug = fc.privacyPageSlug ? fc.privacyPageSlug.replace(/^\/?pages\//, '').replace(/^\//, '') : 'privacy';
+  const cleanTermsSlug   = fc.termsPageSlug   ? fc.termsPageSlug.replace(/^\/?pages\//, '').replace(/^\//, '')   : 'terms';
+  const privacyUrl = `/${cleanPrivacySlug}`;
+  const termsUrl   = `/${cleanTermsSlug}`;
 
   // ── Footer Logo ──
   const footerLogoUrl = fc.logoUrl;
