@@ -489,28 +489,28 @@ export default function ProfilePage() {
                         {/* Summary Header Row (Table format matching mockup) */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="px-6 py-5 grid grid-cols-2 md:grid-cols-6 items-center gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none text-left"
+                          className="px-6 py-5 grid grid-cols-2 md:grid-cols-12 items-center gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none text-left"
                         >
                           {/* Col 1: Order Number */}
-                          <div className="space-y-1">
+                          <div className="space-y-1 md:col-span-2 min-w-0">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Order Number</p>
                             <p className="text-[11px] font-black text-foreground font-mono">#{order.orderNumber}</p>
                           </div>
 
                           {/* Col 2: Tracking ID */}
-                          <div className="space-y-1">
+                          <div className="space-y-1 md:col-span-3 min-w-0">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Tracking ID</p>
-                            <p className="text-[11px] font-bold text-foreground font-mono">{order.trackingId || "N/A"}</p>
+                            <p className="text-[11px] font-bold text-foreground font-mono truncate" title={order.trackingId}>{order.trackingId || "N/A"}</p>
                           </div>
 
                           {/* Col 3: Creation Date */}
-                          <div className="space-y-1">
+                          <div className="space-y-1 md:col-span-3 min-w-0">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Creation Date</p>
                             <p className="text-[10px] font-bold text-foreground font-mono">{formatOrderDate(order.date)}</p>
                           </div>
 
                           {/* Col 4: Product Rating */}
-                          <div className="space-y-1 col-span-2 md:col-span-1">
+                          <div className="space-y-1 col-span-2 md:col-span-2 min-w-0">
                             <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Product Rating</p>
                             <div
                               className="flex items-center gap-0.5"
@@ -558,14 +558,14 @@ export default function ProfilePage() {
                           </div>
 
                           {/* Col 5: Status Badge */}
-                          <div className="flex md:justify-center">
+                          <div className="flex md:col-span-1 md:justify-center min-w-0">
                             <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] rounded-full ${getStatusColor(order.status)}`}>
                               {order.status}
                             </span>
                           </div>
 
                           {/* Col 6: Chevron */}
-                          <div className="flex justify-end text-foreground/60">
+                          <div className="flex md:col-span-1 justify-end text-neutral-500 min-w-0">
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                         </div>
@@ -589,8 +589,8 @@ export default function ProfilePage() {
                                       <div key={idx} className="pt-4 first:pt-0 space-y-3">
                                         <div className="flex justify-between items-center gap-4">
                                           <div className="flex items-center gap-3 min-w-0">
-                                            <div className="w-12 h-16 rounded-[4px] border border-neutral-200 overflow-hidden bg-neutral-100 shrink-0 relative">
-                                              <Image src={item.image || "/placeholder.jpg"} alt={item.name || "Product image"} fill className="object-cover" />
+                                            <div className="w-14 h-14 rounded-[8px] border border-neutral-200 overflow-hidden bg-white shrink-0 flex items-center justify-center p-1">
+                                              <img src={item.image || "/placeholder.jpg"} alt={item.name || "Product image"} className="w-full h-full object-contain" />
                                             </div>
                                             <div className="min-w-0">
                                               <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
