@@ -38,6 +38,9 @@ export default function ProfilePage() {
   const [orderTimelines, setOrderTimelines] = useState({});
   const [loadingTimeline, setLoadingTimeline] = useState(null);
 
+  // Product rating hover state per order
+  const [orderHoverRatings, setOrderHoverRatings] = useState({});
+
   const router = useRouter();
 
   const handleReviewSubmit = async (e, productId, orderNumber) => {
@@ -466,23 +469,71 @@ export default function ProfilePage() {
                               <span className="text-[11px] font-black text-black font-mono">#{order.orderNumber || i + 1024}</span>
                             </div>
                             <div className="flex items-baseline gap-2">
-                              <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Tracking ID</span>
-                              <span className="text-[10px] font-bold text-black/80 font-mono">TRK-{order.orderNumber ? (parseInt(order.orderNumber.replace(/\D/g, '') || '0') * 773 + 1248301) : (i * 921 + 7794181)}</span>
-                            </div>
-                            <div className="flex items-baseline gap-2">
                               <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Creation Date</span>
                               <span className="text-[10px] font-bold text-black/80 font-mono">{formatOrderDate(order.date)}</span>
                             </div>
                           </div>
 
-                          {/* Middle Column: Stars */}
+                          {/* Middle Column: Product Rating — interactive for delivered orders */}
                           <div className="hidden md:flex flex-col gap-1.5 flex-shrink-0">
-                            <span className="text-[8px] font-black uppercase text-black/40 tracking-wider">Courier Rating</span>
-                            <div className="flex items-center gap-0.5">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <Star key={star} className="w-3 h-3 fill-yellow-400 text-yellow-400 shrink-0" />
-                              ))}
+                            <span className={`text-[8px] font-black uppercase tracking-wider ${
+                              isDelivered ? 'text-black/50' : 'text-black/20'
+                            }`}>Product Rating</span>
+                            <div
+                              className="flex items-center gap-0.5"
+                              onMouseLeave={() => setOrderHoverRatings(prev => ({ ...prev, [order.id]: 0 }))}
+                            >
+                              {[1, 2, 3, 4, 5].map((star) => {
+                                const hoverVal = orderHoverRatings[order.id] || 0;
+                                const isFilled = star <= hoverVal;
+                                return (
+                                  <button
+                                    key={star}
+                                    type="button"
+                                    disabled={!isDelivered}
+                                    onMouseEnter={() => {
+                                      if (isDelivered) setOrderHoverRatings(prev => ({ ...prev, [order.id]: star }));
+                                    }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!isDelivered) return;
+                                      // Expand the order row
+                                      setExpandedOrderId(order.id);
+                                      // Open review form for first item with selected rating
+                                      const firstItem = order.items?.[0];
+                                      if (firstItem) {
+                                        const reviewId = `${order.id}-${firstItem.productId}`;
+                                        setActiveReviewId(reviewId);
+                                        setReviewForm({
+                                          rating: star,
+                                          title: '',
+                                          comment: '',
+                                          customerName: userData.name,
+                                          recommend: true
+                                        });
+                                      }
+                                    }}
+                                    className={`p-0.5 transition-all ${
+                                      isDelivered ? 'cursor-pointer hover:scale-125' : 'cursor-default'
+                                    }`}
+                                    title={isDelivered ? `Rate ${star} star${star > 1 ? 's' : ''}` : 'Only available after delivery'}
+                                  >
+                                    <Star className={`w-3.5 h-3.5 transition-colors ${
+                                      isDelivered
+                                        ? isFilled ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-yellow-300'
+                                        : 'fill-none text-black/15'
+                                    }`} />
+                                  </button>
+                                );
+                              })}
                             </div>
+                            {isDelivered && (
+                              <span className="text-[7px] text-black/40 uppercase tracking-widest font-bold">
+                                {(orderHoverRatings[order.id] || 0) > 0
+                                  ? `Click to rate ${orderHoverRatings[order.id]} star${orderHoverRatings[order.id] > 1 ? 's' : ''}`
+                                  : 'Hover to rate'}
+                              </span>
+                            )}
                           </div>
 
                           {/* Right Column: Status pill & chevron */}
