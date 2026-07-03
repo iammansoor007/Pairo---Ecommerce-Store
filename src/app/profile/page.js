@@ -86,8 +86,8 @@ export default function ProfilePage() {
           {/* Header - Luxury Banner */}
           <div className="border-b border-black/10 pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Account Dashboard</span>
-              <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black mt-0.5">My Account</h1>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-black/60">Account Dashboard</span>
+              <h1 className="text-[24px] font-bold uppercase tracking-[0.1em] text-black mt-0.5">My Account</h1>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -100,13 +100,13 @@ export default function ProfilePage() {
           {/* Stats Row - Minimal Luxury Accent */}
           <div className="grid grid-cols-2 gap-4 border-b border-black/10 pb-10 mb-10">
             <div>
-              <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] font-bold">Total Acquisitions</p>
+              <p className="text-[10px] text-black/60 uppercase tracking-[0.2em] font-bold">Total Acquisitions</p>
               <p className="text-3xl font-black tracking-tight font-mono text-black mt-1">
                 ${userData.orderHistory?.reduce((acc, o) => acc + o.total, 0).toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] font-bold">Orders Placed</p>
+              <p className="text-[10px] text-black/60 uppercase tracking-[0.2em] font-bold">Orders Placed</p>
               <p className="text-3xl font-black tracking-tight font-mono text-black mt-1">
                 {userData.orderHistory?.length || 0}
               </p>
@@ -119,13 +119,13 @@ export default function ProfilePage() {
             {/* Left Column: Recent Order History (7 cols) */}
             <div className="lg:col-span-7 space-y-8">
               <div className="border-b border-black/10 pb-3 flex items-center justify-between">
-                <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Order History</h2>
-                <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">{userData.orderHistory?.length || 0} Orders</span>
+                <h2 className="text-[12px] font-black uppercase tracking-[0.1em] text-black">Order History</h2>
+                <span className="text-[9px] font-bold text-black/60 uppercase tracking-widest">{userData.orderHistory?.length || 0} Orders</span>
               </div>
 
               {userData.orderHistory?.length === 0 ? (
                 <div className="py-16 text-center border border-dashed border-black/10 rounded-[4px] bg-[#FAF9F6]">
-                  <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] font-bold">No orders placed yet.</p>
+                  <p className="text-[10px] text-black/60 uppercase tracking-[0.2em] font-bold">No orders placed yet.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -135,13 +135,13 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-3">
                           <p className="text-[11px] font-black uppercase tracking-wider text-black">Order #{order.orderNumber || i + 1024}</p>
                           <span className={`text-[8px] font-black uppercase tracking-[0.1em] px-2.5 py-0.5 rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' :
-                              order.status === 'Cancelled' ? 'bg-neutral-100 text-neutral-400' :
+                              order.status === 'Cancelled' ? 'bg-neutral-100 text-black font-semibold' :
                                 'bg-neutral-100 text-black border border-black/5'
                             }`}>
                             {order.status}
                           </span>
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 font-mono">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-black font-mono">
                           {new Date(order.date).toLocaleDateString()}
                         </p>
                       </div>
@@ -186,7 +186,7 @@ export default function ProfilePage() {
               {/* Profile Block */}
               <div className="space-y-6 bg-[#FAF9F6] border border-black/[0.04] p-6 sm:p-8 rounded-[4px]">
                 <div className="flex items-center justify-between border-b border-black/10 pb-3">
-                  <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Profile Information</h2>
+                  <h2 className="text-[12px] font-black uppercase tracking-[0.1em] text-black">Profile Information</h2>
                   <button
                     onClick={() => setEditingInfo(!editingInfo)}
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
@@ -198,7 +198,7 @@ export default function ProfilePage() {
                 {editingInfo ? (
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-400">Full Name</label>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Full Name</label>
                       <input
                         className={inputClass}
                         value={infoForm.name}
@@ -207,7 +207,7 @@ export default function ProfilePage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-400">Email Address</label>
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-black/60">Email Address</label>
                       <input
                         className={inputClass}
                         value={infoForm.email}
@@ -225,12 +225,12 @@ export default function ProfilePage() {
                 ) : (
                   <div className="space-y-4 pt-1">
                     <div>
-                      <p className="text-[9px] text-neutral-400 uppercase tracking-[0.2em] font-bold">Display Name</p>
+                      <p className="text-[9px] text-black/60 uppercase tracking-[0.2em] font-bold">Display Name</p>
                       <p className="text-xs font-bold uppercase tracking-wide text-black mt-0.5">{userData.name}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] text-neutral-400 uppercase tracking-[0.2em] font-bold">Primary Email</p>
-                      <p className="text-xs font-semibold text-black mt-0.5">{userData.email}</p>
+                      <p className="text-[9px] text-black/60 uppercase tracking-[0.2em] font-bold">Primary Email</p>
+                      <p className="text-xs font-bold text-black mt-0.5">{userData.email}</p>
                     </div>
                   </div>
                 )}
@@ -239,7 +239,7 @@ export default function ProfilePage() {
               {/* Saved Locations Block */}
               <div className="space-y-6">
                 <div className="border-b border-black/10 pb-3 flex items-center justify-between">
-                  <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Saved Locations</h2>
+                  <h2 className="text-[12px] font-black uppercase tracking-[0.1em] text-black">Saved Locations</h2>
                   <button
                     onClick={() => setShowAddressForm(!showAddressForm)}
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
@@ -286,7 +286,7 @@ export default function ProfilePage() {
 
                 <div className="space-y-3">
                   {userData.addresses?.length === 0 ? (
-                    <p className="text-[10px] text-neutral-400 uppercase tracking-widest text-center py-6 font-semibold bg-[#FAF9F6] border border-black/[0.04] rounded-[4px]">
+                    <p className="text-[10px] text-black/60 uppercase tracking-widest text-center py-6 font-semibold bg-[#FAF9F6] border border-black/[0.04] rounded-[4px]">
                       No locations saved yet.
                     </p>
                   ) : (
@@ -294,7 +294,7 @@ export default function ProfilePage() {
                       <div key={addr._id} className="p-5 bg-white border border-black/[0.08] rounded-[4px] flex justify-between items-start shadow-sm hover:border-black/25 transition-all">
                         <div>
                           <p className="text-xs font-bold uppercase mb-1.5 text-black">{addr.fullName}</p>
-                          <p className="text-[11px] text-neutral-500 uppercase tracking-wider leading-relaxed font-semibold">
+                          <p className="text-[11px] text-black uppercase tracking-wider leading-relaxed font-bold">
                             {addr.street}<br />
                             {addr.city}, {addr.zipCode}<br />
                             {addr.country || "United States"}
@@ -302,7 +302,7 @@ export default function ProfilePage() {
                         </div>
                         <button
                           onClick={() => handleAction("deleteAddress", { id: addr._id })}
-                          className="text-neutral-400 hover:text-red-600 transition-colors p-1 cursor-pointer"
+                          className="text-black/60 hover:text-red-600 transition-colors p-1 cursor-pointer"
                           aria-label="Delete address"
                         >
                           <Trash2 className="w-4 h-4" />

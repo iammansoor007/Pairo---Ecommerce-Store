@@ -46,7 +46,7 @@ export default function CartPage() {
 
         <div className="text-center space-y-3 max-w-sm relative z-10">
           <p className="text-lg md:text-xl font-bold uppercase tracking-wider text-black">Your cart is empty</p>
-          <p className="text-neutral-500 text-xs md:text-sm leading-relaxed max-w-xs mx-auto">
+          <p className="text-black/60 text-xs md:text-sm leading-relaxed max-w-xs mx-auto">
             Fill it with handcrafted masterworks and premium shearlings.
           </p>
         </div>
@@ -71,13 +71,13 @@ export default function CartPage() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-neutral-200 pb-6 mb-8 md:mb-12">
           <div className="space-y-1">
             <h1 className="text-2xl md:text-3xl font-extrabold uppercase tracking-wider text-black">Your Cart</h1>
-            <p className="text-xs text-neutral-500 font-medium">
+            <p className="text-xs text-black/60 font-semibold">
               {cartItems.reduce((acc, item) => acc + item.quantity, 0)} {cartItems.reduce((acc, item) => acc + item.quantity, 0) === 1 ? "item" : "items"} inside your cart
             </p>
           </div>
           <Link 
             href="/shop" 
-            className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 hover:text-black border-b border-black/20 hover:border-black transition-all pb-1 mt-4 sm:mt-0 w-fit"
+            className="text-[11px] font-bold uppercase tracking-widest text-black hover:opacity-75 border-b border-black/20 hover:border-black transition-all pb-1 mt-4 sm:mt-0 w-fit"
           >
             Continue Shopping
           </Link>
@@ -89,7 +89,7 @@ export default function CartPage() {
           <div className="lg:col-span-8 space-y-6">
             
             {/* Header row labels */}
-            <div className="hidden md:grid grid-cols-12 border-b border-black/5 pb-3 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+            <div className="hidden md:grid grid-cols-12 border-b border-black/5 pb-3 text-[10px] font-bold uppercase tracking-wider text-black/60">
               <div className="col-span-7">Product</div>
               <div className="col-span-3 text-center">Quantity</div>
               <div className="col-span-2 text-right">Total</div>
@@ -122,7 +122,7 @@ export default function CartPage() {
                         <p className="text-[13px] sm:text-[14px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
                         
                         {/* Selected Options (Size & Color) */}
-                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] text-neutral-500 font-bold uppercase tracking-wider">
+                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] text-black font-bold uppercase tracking-wider">
                           {item.selectedSize && item.selectedSize !== "Standard" && item.selectedSize !== "" && (
                             <span>Size: {item.selectedSize}</span>
                           )}
@@ -148,7 +148,7 @@ export default function CartPage() {
 
                         <button 
                           onClick={() => removeFromCart(uniqueKey)}
-                          className="text-[10px] font-bold text-neutral-400 hover:text-red-500 transition-colors uppercase tracking-wider w-fit text-left pt-1 cursor-pointer"
+                          className="text-[10px] font-bold text-black/60 hover:text-red-500 transition-colors uppercase tracking-wider w-fit text-left pt-1 cursor-pointer"
                         >
                           Remove
                         </button>
@@ -160,14 +160,14 @@ export default function CartPage() {
                       <div className="flex items-center gap-4 bg-white border border-neutral-300 rounded-[4px] px-3 py-1.5 w-fit">
                         <button 
                           onClick={() => updateQuantity(uniqueKey, -1)}
-                          className="text-neutral-400 hover:text-black transition-colors p-0.5 cursor-pointer"
+                          className="text-black/60 hover:text-black transition-colors p-0.5 cursor-pointer"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
                         <span className="font-bold text-[13px] w-6 text-center text-black font-mono">{item.quantity}</span>
                         <button 
                           onClick={() => updateQuantity(uniqueKey, 1)}
-                          className="text-neutral-400 hover:text-black transition-colors p-0.5 cursor-pointer"
+                          className="text-black/60 hover:text-black transition-colors p-0.5 cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -194,10 +194,10 @@ export default function CartPage() {
                 { icon: Sparkles, title: "Artisanal Care", desc: "Handcrafted to Order" }
               ].map((prop, i) => (
                 <div key={i} className="flex items-center gap-3 p-4 rounded-[4px] bg-[#FAF9F6]/40 border border-black/[0.03]">
-                  <prop.icon className="w-5 h-5 text-neutral-500 shrink-0" />
+                  <prop.icon className="w-5 h-5 text-black/70 shrink-0" />
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-black">{prop.title}</p>
-                    <p className="text-[9px] text-neutral-500 font-bold uppercase tracking-wider">{prop.desc}</p>
+                    <p className="text-[9px] text-black/80 font-bold uppercase tracking-wider">{prop.desc}</p>
                   </div>
                 </div>
               ))}
@@ -205,12 +205,12 @@ export default function CartPage() {
           </div>
 
           {/* Right Column: Order Summary Sidebar (35% / 4 Cols) - STICKY */}
-          <div className="lg:col-span-4 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
+          <div className="lg:col-span-4 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
             <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
             
             <div className="space-y-4">
               <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-wider">
-                <span className="text-neutral-500">Subtotal</span>
+                <span className="text-black/80">Subtotal</span>
                 <span className="text-black font-mono">${(cartSubtotal || 0).toLocaleString()}</span>
               </div>
               
@@ -221,11 +221,11 @@ export default function CartPage() {
                 </div>
               )}
               
-              <div className="flex justify-between items-center text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+              <div className="flex justify-between items-center text-[11px] font-bold text-black/60 uppercase tracking-wider">
                 <span>Shipping</span>
                 <span>Calculated next</span>
               </div>
-              <div className="flex justify-between items-center text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
+              <div className="flex justify-between items-center text-[11px] font-bold text-black/60 uppercase tracking-wider">
                 <span>Estimated Tax</span>
                 <span>Calculated next</span>
               </div>
@@ -274,7 +274,7 @@ export default function CartPage() {
                 <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <p className="text-center text-[10px] text-neutral-400 mt-3.5 leading-relaxed">
+              <p className="text-center text-[10px] text-black/60 mt-3.5 leading-relaxed font-medium">
                 Taxes and shipping calculated at checkout.
               </p>
             </div>

@@ -48,12 +48,12 @@ export default function ProfileOrdersPage() {
           
           <div className="flex items-center justify-between border-b border-black/10 pb-8">
             <div className="space-y-1">
-              <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black">My Orders</h1>
-              <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Track your acquisitions and history</p>
+              <h1 className="text-[24px] font-bold uppercase tracking-[0.1em] text-black">My Orders</h1>
+              <p className="text-[10px] font-bold text-black/60 uppercase tracking-[0.2em]">Track your acquisitions and history</p>
             </div>
             <Link 
               href="/profile" 
-              className="text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-black transition-colors flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-[#FAF9F6] shadow-sm"
+              className="text-[9px] font-black uppercase tracking-widest text-black hover:opacity-75 transition-opacity flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-[#FAF9F6] shadow-sm"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </Link>
@@ -69,7 +69,7 @@ export default function ProfileOrdersPage() {
                   <ShoppingBag className="w-12 h-12 text-black/10 mx-auto" />
                   <div className="space-y-2">
                      <p className="text-xs font-black uppercase tracking-[0.2em]">No orders yet</p>
-                     <p className="text-[11px] text-neutral-400 font-semibold uppercase tracking-wider">You haven&apos;t made any acquisitions yet.</p>
+                     <p className="text-[11px] text-black/60 font-semibold uppercase tracking-wider">You haven&apos;t made any acquisitions yet.</p>
                   </div>
                   <Link href="/shop" className="inline-block bg-black text-white px-8 py-3.5 rounded-[4px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-900 transition-all shadow-sm">
                      Start Shopping
@@ -89,7 +89,7 @@ export default function ProfileOrdersPage() {
                              <div className="px-3 py-1 bg-black text-white text-[9px] font-black tracking-widest rounded-[2px] uppercase">
                                 {order.orderNumber}
                              </div>
-                             <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-neutral-500">
+                             <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-black/80">
                                 {getStatusIcon(order.status)}
                                 {order.status}
                              </div>
@@ -111,11 +111,11 @@ export default function ProfileOrdersPage() {
  
                        <div className="flex flex-col justify-between items-end text-right">
                           <div className="space-y-0.5">
-                             <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Ordered On</p>
+                             <p className="text-[9px] font-bold text-black/60 uppercase tracking-widest">Ordered On</p>
                              <p className="text-xs font-bold text-black font-mono">{new Date(order.createdAt).toLocaleDateString()}</p>
                           </div>
                           <div className="space-y-0.5 mt-4">
-                             <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">Total Amount</p>
+                             <p className="text-[9px] font-bold text-black/60 uppercase tracking-widest">Total Amount</p>
                              <p className="text-xl font-bold tracking-wide text-black font-mono">${order.financials.total.toLocaleString()}</p>
                           </div>
                           <Link 

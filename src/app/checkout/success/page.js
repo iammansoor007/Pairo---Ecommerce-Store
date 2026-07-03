@@ -144,13 +144,13 @@ export default function SuccessPage() {
                     <span className="text-black font-semibold font-mono">${order.financials.subtotal.toLocaleString()}</span>
                   </div>
                   {order.financials.discountTotal > 0 && (
-                    <div className="flex justify-between text-emerald-700 font-semibold">
+                    <div className="flex justify-between text-black font-bold">
                       <span>Discount</span>
                       <span className="font-mono">-${order.financials.discountTotal.toLocaleString()}</span>
                     </div>
                   )}
                   {order.financials.affiliateDiscountAmount > 0 && (
-                    <div className="flex justify-between text-emerald-700 font-semibold">
+                    <div className="flex justify-between text-black font-bold">
                       <span>Referral Discount</span>
                       <span className="font-mono">-${order.financials.affiliateDiscountAmount.toLocaleString()}</span>
                     </div>
@@ -217,12 +217,12 @@ export default function SuccessPage() {
                     <p className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Shipping Address
                     </p>
-                    <div className="text-[13px] text-black space-y-0.5">
+                    <div className="text-[13px] text-black space-y-0.5 font-semibold">
                       <p className="font-bold text-black">{order.shippingAddress.fullName}</p>
                       <p>{order.shippingAddress.street}</p>
                       <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
                       <p>{order.shippingAddress.country}</p>
-                      <p className="text-black mt-1">{order.shippingAddress.phone}</p>
+                      <p className="text-black mt-1 font-bold">{order.shippingAddress.phone}</p>
                     </div>
                   </div>
 
@@ -231,12 +231,12 @@ export default function SuccessPage() {
                     <p className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Billing Address
                     </p>
-                    <div className="text-[13px] text-black space-y-0.5">
+                    <div className="text-[13px] text-black space-y-0.5 font-semibold">
                       <p className="font-bold text-black">{order.shippingAddress.fullName}</p>
                       <p>{order.shippingAddress.street}</p>
                       <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</p>
                       <p>{order.shippingAddress.country}</p>
-                      <p className="text-black mt-1">{order.shippingAddress.phone}</p>
+                      <p className="text-black mt-1 font-bold">{order.shippingAddress.phone}</p>
                     </div>
                   </div>
 
@@ -283,7 +283,7 @@ export default function SuccessPage() {
           </div>
 
           {/* Right Column: Order Summary Side Box (5 cols / Stacks underneath left column on print) */}
-          <div className="hidden lg:block print:block lg:col-span-5 bg-[#FAF9F6] print:bg-white border border-black/[0.04] print:border-t print:border-neutral-200 print:border-b-0 print:border-l-0 print:border-r-0 print:rounded-none rounded-2xl p-6 md:p-8 print:p-0 print:pt-6 space-y-6 lg:sticky lg:top-28 print:static print:col-span-12 print:w-full print:mt-8 self-start print-avoid-break">
+          <div className="hidden lg:block print:block lg:col-span-5 bg-[#FAF9F6] print:bg-white border border-black/[0.04] print:border-t print:border-neutral-200 print:border-b-0 print:border-l-0 print:border-r-0 print:rounded-none rounded-[4px] p-6 md:p-8 print:p-0 print:pt-6 space-y-6 lg:sticky lg:top-28 print:static print:col-span-12 print:w-full print:mt-8 self-start print-avoid-break">
             <p className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</p>
 
             {/* Products List */}
@@ -325,14 +325,14 @@ export default function SuccessPage() {
                 </div>
 
                 {order.financials.discountTotal > 0 && (
-                  <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                  <div className="flex justify-between items-center text-black font-bold">
                     <span>Discount</span>
                     <span className="font-mono">-${order.financials.discountTotal.toLocaleString()}</span>
                   </div>
                 )}
 
                 {order.financials.affiliateDiscountAmount > 0 && (
-                  <div className="flex justify-between items-center text-emerald-700 font-semibold">
+                  <div className="flex justify-between items-center text-black font-bold">
                     <span>Referral Discount</span>
                     <span className="font-mono">-${order.financials.affiliateDiscountAmount.toLocaleString()}</span>
                   </div>

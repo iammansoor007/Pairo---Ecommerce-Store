@@ -573,7 +573,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right Column: Order Summary (40% / 5 Cols) - STICKY */}
-          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-2xl p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
+          <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
             <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
 
             {/* Cart Products List */}
@@ -596,7 +596,7 @@ export default function CheckoutPage() {
                       <p className="text-[13px] font-bold text-black uppercase tracking-wide truncate">{item.name}</p>
 
                       {item.selectedOptions && (
-                        <p className="text-[10px] text-neutral-500 font-semibold uppercase tracking-wider">
+                        <p className="text-[10px] text-black font-semibold uppercase tracking-wider">
                           {Object.entries(item.selectedOptions).map(([k, v]) => `${k}: ${v}`).join(" / ")}
                         </p>
                       )}
@@ -608,12 +608,12 @@ export default function CheckoutPage() {
                             ✦ Made to Measure
                           </span>
                           <details className="mt-1">
-                            <summary className="text-[9px] text-neutral-400 cursor-pointer hover:text-neutral-600 transition-colors select-none">View measurements</summary>
-                            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-neutral-500">
+                            <summary className="text-[9px] text-black/60 cursor-pointer hover:text-black transition-colors select-none">View measurements</summary>
+                            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px] text-black font-semibold">
                               {Object.entries(item.madeToMeasure.measurements || {}).map(([k, v]) => v ? (
-                                <span key={k}><span className="font-semibold capitalize">{k.replace(/([A-Z])/g, ' $1')}</span>: {v} {item.madeToMeasure.unit}</span>
+                                <span key={k}><span className="font-bold capitalize text-black">{k.replace(/([A-Z])/g, ' $1')}</span>: {v} {item.madeToMeasure.unit}</span>
                               ) : null)}
-                              {item.madeToMeasure.notes && <span className="col-span-2 italic">Note: {item.madeToMeasure.notes}</span>}
+                              {item.madeToMeasure.notes && <span className="col-span-2 italic text-black/80 font-semibold">Note: {item.madeToMeasure.notes}</span>}
                             </div>
                           </details>
                         </div>
@@ -626,7 +626,7 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={() => removeFromCart(uniqueKeyForCart)}
-                          className="text-[10px] font-bold text-neutral-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer"
+                          className="text-[10px] font-bold text-black/60 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer"
                         >
                           Remove
                         </button>
@@ -674,10 +674,10 @@ export default function CheckoutPage() {
             </div>
 
             {/* Pricing Summary */}
-            <div className="space-y-3 pt-5 border-t border-neutral-200/80 text-[13px] text-neutral-600">
+            <div className="space-y-3 pt-5 border-t border-neutral-200/80 text-[13px] text-black font-semibold">
               <div className="flex justify-between items-center">
-                <span>Subtotal</span>
-                <span className="text-black font-semibold font-mono">${(cartSubtotal || 0).toLocaleString()}</span>
+                <span className="text-black/80">Subtotal</span>
+                <span className="text-black font-bold font-mono">${(cartSubtotal || 0).toLocaleString()}</span>
               </div>
 
               {discountTotal > 0 && (
@@ -695,8 +695,8 @@ export default function CheckoutPage() {
               )}
 
               <div className="flex justify-between items-center">
-                <span>Shipping</span>
-                <span className="text-black font-semibold font-mono">
+                <span className="text-black/80">Shipping</span>
+                <span className="text-black font-bold font-mono">
                   {selectedShipping
                     ? (shippingCost === 0 ? "Free" : `$${shippingCost.toLocaleString()}`)
                     : "Calculated at next step"}
@@ -711,18 +711,18 @@ export default function CheckoutPage() {
 
             {/* Security & Trust Badges */}
             <div className="pt-5 border-t border-neutral-200/80 space-y-4">
-              <div className="flex items-center gap-3 text-neutral-500">
+              <div className="flex items-center gap-3">
                 <ShieldCheck className="w-5 h-5 shrink-0 text-black" />
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-black">Secure Checkout Guarantee</p>
-                  <p className="text-[10px] text-neutral-400">Your details are fully protected and processed securely.</p>
+                  <p className="text-[10px] text-black/60 font-semibold">Your details are fully protected and processed securely.</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-neutral-500">
+              <div className="flex items-center gap-3">
                 <Truck className="w-5 h-5 shrink-0 text-black" />
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-black">Reliable Home Delivery</p>
-                  <p className="text-[10px] text-neutral-400">Orders are packed with care and shipped via trusted carriers.</p>
+                  <p className="text-[10px] text-black/60 font-semibold">Orders are packed with care and shipped via trusted carriers.</p>
                 </div>
               </div>
             </div>
