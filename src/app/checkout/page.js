@@ -582,9 +582,11 @@ export default function CheckoutPage() {
                 const uniqueKeyForCart = `${item.id}-${item.selectedSize || "Standard"}-${item.selectedColor || "Standard"}`;
                 return (
                   <div key={itemKey} className="flex gap-4 items-center py-3.5 first:pt-0 last:pb-0">
-                    <div className="relative shrink-0 w-14 h-18 bg-neutral-100 rounded-lg border border-black/[0.05] overflow-visible">
-                      <img src={itemImage} alt={item.name} className="w-full h-full object-cover rounded-lg" />
-                      <span className="absolute -top-2 -right-2 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
+                    <div className="relative shrink-0 w-14 h-18">
+                      <div className="w-full h-full bg-[#FAF9F6] rounded-lg border border-black/[0.05] overflow-hidden">
+                        <img src={itemImage} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="absolute -top-1.5 -right-1.5 bg-black text-white rounded-full w-5 h-5 flex items-center justify-center text-[9px] font-bold shadow-md z-10 border border-white">
                         {item.quantity}
                       </span>
                     </div>

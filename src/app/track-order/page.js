@@ -48,7 +48,7 @@ export default function TrackOrderPage() {
           <div className="w-16 h-16 bg-black text-white rounded-2xl mx-auto flex items-center justify-center mb-8">
              <Package className="w-8 h-8" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight uppercase">Track Order</h1>
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight uppercase">Track Order</h1>
           <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.2em]">Enter your details to retrieve order intelligence</p>
         </div>
 

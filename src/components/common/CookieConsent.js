@@ -30,23 +30,23 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-6 right-6 left-6 md:left-auto md:max-w-md z-[9999] animate-in fade-in slide-in-from-bottom-5 duration-500">
-      <div className="bg-[#1e1e24]/95 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.3)] text-white font-sans flex flex-col gap-4">
+      <div className="bg-white border border-black/10 rounded-[4px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.15)] text-black font-sans flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 border border-amber-500/20 shadow-inner">
-              <Cookie className="w-5 h-5 animate-pulse" />
+            <div className="w-10 h-10 rounded-[4px] bg-neutral-100 flex items-center justify-center text-black border border-neutral-200 shadow-inner">
+              <Cookie className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-[15px] font-bold tracking-tight text-white flex items-center gap-1.5">
-                Cookie Settings <Shield className="w-4 h-4 text-emerald-400" />
+              <h4 className="text-[13px] font-bold uppercase tracking-wider text-black flex items-center gap-1.5">
+                Cookie Settings <Shield className="w-4 h-4 text-black" />
               </h4>
-              <p className="text-[11px] text-gray-400">We care about your privacy</p>
+              <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Privacy Consent</p>
             </div>
           </div>
           <button 
             onClick={handleDecline}
-            className="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/5 rounded-lg"
+            className="text-neutral-400 hover:text-black transition-colors p-1 hover:bg-neutral-100 rounded-[4px]"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -54,21 +54,21 @@ export default function CookieConsent() {
         </div>
 
         {/* Description */}
-        <p className="text-[13px] text-gray-300 leading-relaxed font-light">
-          We use cookies to improve your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking <span className="font-semibold text-white">"Accept All"</span>, you consent to our use of cookies.
+        <p className="text-[12px] text-neutral-600 leading-relaxed font-medium">
+          We use cookies to improve your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking <span className="font-bold text-black">"Accept All"</span>, you consent to our use of cookies.
         </p>
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 pt-2">
           <button
             onClick={handleDecline}
-            className="px-4 py-2 rounded-xl text-[12px] font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-white/15"
+            className="px-4 py-2.5 rounded-[4px] text-[11px] font-bold uppercase tracking-wider text-neutral-500 hover:text-black border border-neutral-300 hover:bg-neutral-50 transition-all duration-200"
           >
             Decline
           </button>
           <button
             onClick={handleAccept}
-            className="px-5 py-2.5 rounded-xl text-[12px] font-semibold bg-white text-black hover:bg-gray-100 active:scale-[0.98] transition-all duration-200 shadow-md font-bold"
+            className="px-5 py-2.5 rounded-[4px] text-[11px] font-bold uppercase tracking-wider bg-black text-white hover:bg-neutral-900 active:scale-[0.98] transition-all duration-200 shadow-sm"
           >
             Accept All
           </button>

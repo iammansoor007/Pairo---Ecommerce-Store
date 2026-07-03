@@ -48,7 +48,7 @@ export default function ProfileOrdersPage() {
           
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h1 className="text-4xl font-bold tracking-tight uppercase">My Orders</h1>
+              <h1 className="text-2xl md:text-4xl font-bold tracking-tight uppercase">My Orders</h1>
               <p className="text-[10px] font-bold text-black/30 uppercase tracking-[0.2em]">Track your acquisitions and history</p>
             </div>
             <Link href="/profile" className="p-3 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
