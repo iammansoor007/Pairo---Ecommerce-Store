@@ -60,7 +60,7 @@ export default function UserOrderDetailPage() {
 
   return (
     <div className="bg-white min-h-screen text-black pb-32">
-      <div className="container mx-auto px-6 md:px-16 pt-32 pb-20 max-w-6xl">
+      <div className="container mx-auto px-6 md:px-16 pt-20 pb-12 max-w-6xl">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
           <div className="space-y-4">
@@ -70,7 +70,7 @@ export default function UserOrderDetailPage() {
              >
                 <ChevronLeft className="w-3.5 h-3.5" /> Back to History
              </Link>
-             <h1 className="text-3xl font-black uppercase tracking-wider text-black">{order.orderNumber}</h1>
+             <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black">{order.orderNumber}</h1>
           </div>
           <div className="flex items-center gap-4">
              <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' : 'bg-neutral-100 text-black border border-black/5'}`}>

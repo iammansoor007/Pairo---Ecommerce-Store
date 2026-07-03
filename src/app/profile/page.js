@@ -80,14 +80,14 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* Matches site margins/padding */}
-      <div className="container mx-auto px-6 md:px-16 pt-32 pb-20">
+      <div className="container mx-auto px-6 md:px-16 pt-20 pb-12">
         <div className="max-w-6xl mx-auto">
           
           {/* Header - Luxury Banner */}
           <div className="border-b border-black/10 pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Account Dashboard</span>
-              <h1 className="text-3xl font-black uppercase tracking-wider text-black mt-1">My Account</h1>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Account Dashboard</span>
+              <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black mt-0.5">My Account</h1>
             </div>
             <button 
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -119,8 +119,8 @@ export default function ProfilePage() {
             {/* Left Column: Recent Order History (7 cols) */}
             <div className="lg:col-span-7 space-y-8">
               <div className="border-b border-black/10 pb-3 flex items-center justify-between">
-                <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-black">Order History</h2>
-                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{userData.orderHistory?.length || 0} Orders</span>
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Order History</h2>
+                <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest">{userData.orderHistory?.length || 0} Orders</span>
               </div>
 
               {userData.orderHistory?.length === 0 ? (
@@ -187,7 +187,7 @@ export default function ProfilePage() {
               {/* Profile Block */}
               <div className="space-y-6 bg-[#FAF9F6] border border-black/[0.04] p-6 sm:p-8 rounded-[4px]">
                 <div className="flex items-center justify-between border-b border-black/10 pb-3">
-                  <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-black">Profile Information</h2>
+                  <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Profile Information</h2>
                   <button 
                     onClick={() => setEditingInfo(!editingInfo)} 
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"
@@ -240,7 +240,7 @@ export default function ProfilePage() {
               {/* Saved Locations Block */}
               <div className="space-y-6">
                 <div className="border-b border-black/10 pb-3 flex items-center justify-between">
-                  <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-black">Saved Locations</h2>
+                  <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] text-black">Saved Locations</h2>
                   <button 
                     onClick={() => setShowAddressForm(!showAddressForm)} 
                     className="text-[9px] font-black uppercase tracking-widest text-black hover:underline underline-offset-4 cursor-pointer"

@@ -43,12 +43,12 @@ export default function ProfileOrdersPage() {
 
   return (
     <div className="min-h-screen bg-white pb-32">
-      <div className="container mx-auto px-6 md:px-16 pt-32 pb-20">
+      <div className="container mx-auto px-6 md:px-16 pt-20 pb-12">
         <div className="max-w-4xl mx-auto space-y-12">
           
           <div className="flex items-center justify-between border-b border-black/10 pb-8">
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-black uppercase tracking-wider text-black">My Orders</h1>
+              <h1 className="text-[18px] font-bold uppercase tracking-[0.1em] text-black">My Orders</h1>
               <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">Track your acquisitions and history</p>
             </div>
             <Link 
