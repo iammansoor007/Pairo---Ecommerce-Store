@@ -4,6 +4,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db";
 import Customer from "@/models/Customer";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 
 export async function GET() {
   try {
@@ -21,6 +22,14 @@ export async function GET() {
       tenantId: 'DEFAULT_STORE' // or dynamic tenantId
     }).sort({ createdAt: -1 }).lean();
 
+    // Fetch product images for any orders with missing image URLs
+    const productIds = orders.flatMap(o => (o.items || []).map(item => item.productId)).filter(Boolean);
+    const dbProducts = await Product.find({ _id: { $in: productIds } }).select("images image").lean();
+    const productImageMap = {};
+    dbProducts.forEach(p => {
+      productImageMap[p._id.toString()] = p.images?.[0] || p.image || "";
+    });
+
     // Merge for compatibility with frontend
     const profileData = {
       ...customer,
@@ -31,7 +40,10 @@ export async function GET() {
         total: o.financials.total,
         date: o.createdAt,
         status: o.status,
-        items: o.items,
+        items: (o.items || []).map(item => ({
+          ...item,
+          image: item.image || (item.productId ? productImageMap[item.productId.toString()] : "") || ""
+        })),
         shippingAddress: o.shippingAddress
       }))
     };

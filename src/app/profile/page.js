@@ -183,6 +183,14 @@ export default function ProfilePage() {
     return `/${img}`;
   };
 
+  const formatCurrency = (currency) => {
+    if (!currency) return "$";
+    const curUpper = currency.toUpperCase();
+    if (curUpper === "USD" || curUpper === "US") return "$";
+    if (curUpper === "PKR" || curUpper === "RS" || curUpper === "RS.") return "Rs.";
+    return "$"; // default to $ for safety as requested
+  };
+
   const pendingCount = (userData.orderHistory || []).filter(o => o.status === 'Pending').length || 0;
   const confirmedCount = (userData.orderHistory || []).filter(o => o.status === 'Confirmed').length || 0;
   const dispatchedCount = (userData.orderHistory || []).filter(o => ['Processing', 'Packed', 'Shipped', 'Out for Delivery'].includes(o.status)).length || 0;
@@ -634,7 +642,7 @@ export default function ProfilePage() {
                                           </div>
                                           <div className="text-right shrink-0">
                                             <p className="text-xs font-black text-black font-mono">
-                                              {order.financials?.currency || 'Rs.'}{(item.priceAtPurchase * item.quantity).toLocaleString()}
+                                              {formatCurrency(order.financials?.currency)}{(item.priceAtPurchase * item.quantity).toLocaleString()}
                                             </p>
                                             {isDelivered && (
                                               <button
@@ -721,7 +729,7 @@ export default function ProfilePage() {
                               <div className="flex justify-between items-center border-t border-neutral-200 pt-4">
                                 <span className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-400">Order Amount</span>
                                 <span className="text-[13px] font-black text-black font-mono">
-                                  {order.financials?.currency || 'Rs.'}{order.total?.toLocaleString()}
+                                  {formatCurrency(order.financials?.currency)}{order.total?.toLocaleString()}
                                 </span>
                               </div>
 
