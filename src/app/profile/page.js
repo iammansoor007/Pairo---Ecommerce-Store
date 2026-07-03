@@ -218,7 +218,7 @@ export default function ProfilePage() {
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
-    <div className="min-h-screen bg-[#f4f5fa] text-black font-sans selection:bg-primary selection:text-background py-8">
+    <div className="min-h-screen bg-[#fafafa] text-black font-sans selection:bg-primary selection:text-background py-8">
       <div className="container mx-auto px-2 sm:px-4 md:px-8">
         <div className="w-full mx-auto">
           {/* Main Dashboard Content Layout */}
@@ -239,10 +239,10 @@ export default function ProfilePage() {
               )}
 
               {/* User Profile Card */}
-              <div className="bg-white border border-[#eaeefc] p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+              <div className="bg-white border border-neutral-200 p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
-                  <div className="w-16 h-16 rounded-full bg-[#002f6c] text-white flex items-center justify-center text-lg font-black uppercase shadow-md border border-[#eaeefc] shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center text-lg font-black uppercase shadow-md border border-neutral-200 shrink-0">
                     {initials}
                   </div>
                   <div>
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#eaeefc]">
+                <div className="pt-4 border-t border-neutral-200">
                   {editingInfo ? (
                     <div className="space-y-4">
                       <div className="space-y-1">
@@ -316,8 +316,8 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Statistics Block (2x2 Grid) - reference style */}
-              <div className="bg-[#f8fafc] border border-[#eaeefc] rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
-                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-[#eaeefc] bg-white text-center">
+              <div className="bg-white border border-neutral-200 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-neutral-200 bg-white text-center">
                   <div className="p-4 space-y-1 bg-white">
                     <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
                     <p className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-white border border-[#eaeefc] p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+              <div className="space-y-4 bg-white border border-neutral-200 p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
@@ -420,8 +420,8 @@ export default function ProfilePage() {
             <div className="lg:col-span-8 space-y-4">
 
               {/* Header Navigation Tab + Search Bar */}
-              <div className="bg-white p-3 rounded-[16px] border border-[#eaeefc] shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-                <div className="flex gap-2 p-1 bg-[#f4f5fa] rounded-[30px] border border-[#eaeefc]">
+              <div className="bg-white p-3 rounded-[16px] border border-neutral-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                <div className="flex gap-2 p-1 bg-neutral-100 rounded-[30px] border border-neutral-200">
                   <button
                     onClick={() => setActiveTab("active")}
                     className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[25px] transition-all cursor-pointer ${
@@ -452,7 +452,7 @@ export default function ProfilePage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search Order Here"
-                    className="w-full bg-[#f8fafc] border border-[#eaeefc] rounded-[30px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
+                    className="w-full bg-neutral-50 border border-neutral-200 rounded-[30px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -482,7 +482,7 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-[#eaeefc] rounded-[16px] bg-white transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden ${
+                        className={`border border-neutral-200 rounded-[16px] bg-white transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden ${
                           isExpanded ? 'border-neutral-300 ring-1 ring-black/[0.02]' : 'hover:border-neutral-300'
                         }`}
                       >
@@ -571,192 +571,226 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Expanded Items & Info Area */}
-                        <AnimatePresence>
-                          {isExpanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden"
-                            >
-                                    <div className="border-t border-border bg-secondary p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                                      
-                                      {/* Left Column: ORDER DETAIL */}
-                                      <div className="space-y-4">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/60 border-b border-border pb-1.5">Order Detail</h4>
-                                        
-                                        {/* Line Items */}
-                                        <div className="space-y-3">
-                                          <p className="text-[8px] font-bold text-foreground/45 uppercase tracking-widest">Line Items</p>
-                                          <div className="divide-y divide-border/30 bg-background border border-border rounded-[4px] p-4 space-y-4">
-                                            {(order.items || []).map((item, idx) => {
-                                              const reviewId = `${order.id}-${item.productId}`;
-                                              const showForm = activeReviewId === reviewId;
-                                              return (
-                                                <div key={idx} className="pt-4 first:pt-0 space-y-3">
-                                                  <div className="flex justify-between items-center gap-4">
-                                                    <div className="flex items-center gap-3 min-w-0">
-                                                      <div className="w-12 h-16 rounded-[2px] border border-border overflow-hidden bg-secondary shrink-0 relative">
-                                                        <Image src={item.image || "/placeholder.jpg"} alt={item.name || "Product image"} fill className="object-cover" />
-                                                      </div>
-                                                      <div className="min-w-0">
-                                                        <p className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">{item.name}</p>
-                                                        <p className="text-[8px] font-semibold text-foreground/50 uppercase tracking-widest mt-0.5">
-                                                          {item.selectedSize ? `Size: ${item.selectedSize}` : ''} {item.selectedColor ? `Color: ${item.selectedColor}` : ''}
-                                                        </p>
-                                                        <p className="text-[9px] font-bold text-foreground/60 uppercase mt-0.5">Qty {item.quantity}</p>
-                                                        
-                                                        {/* Product Star Rating under Title */}
-                                                        <div className="flex items-center gap-0.5 mt-1">
-                                                          {[1, 2, 3, 4, 5].map((star) => (
-                                                            <Star key={star} className={`w-2.5 h-2.5 ${star <= (item.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-foreground/20'}`} />
-                                                          ))}
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                    <div className="text-right shrink-0">
-                                                      <p className="text-xs font-bold text-foreground font-mono">${(item.priceAtPurchase * item.quantity).toLocaleString()}</p>
-                                                      {isDelivered && (
-                                                        <button
-                                                          onClick={() => {
-                                                            if (showForm) {
-                                                              setActiveReviewId(null);
-                                                            } else {
-                                                              setActiveReviewId(reviewId);
-                                                              setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
-                                                            }
-                                                          }}
-                                                          className="text-[8px] border border-border text-foreground hover:bg-secondary px-2.5 py-1 rounded-[4px] font-bold uppercase tracking-widest cursor-pointer transition-colors mt-2 block ml-auto"
-                                                        >
-                                                          {showForm ? "Cancel" : "Write Review"}
-                                                        </button>
-                                                      )}
-                                                    </div>
-                                                  </div>
-
-                                                  {/* Review Form */}
-                                                  {showForm && (
-                                                    <div className="bg-secondary border border-border rounded-[4px] p-4 mt-2 space-y-4">
-                                                      <span className="text-[9px] font-black uppercase tracking-widest text-foreground flex items-center gap-1.5">
-                                                        <Check className="w-3.5 h-3.5 text-green-600" /> Verified Purchase Review
-                                                      </span>
-                                                      {reviewSuccessMessage ? (
-                                                        <div className="p-3 bg-green-50 border border-green-200 text-green-800 text-[10px] uppercase font-bold tracking-widest text-center rounded-[2px]">
-                                                          {reviewSuccessMessage}
-                                                        </div>
-                                                      ) : (
-                                                        <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber)} className="space-y-3">
-                                                          <div className="space-y-1">
-                                                            <label className="text-[8px] font-bold uppercase tracking-wider text-foreground block">Rating</label>
-                                                            <div className="flex gap-1.5">
-                                                              {[1, 2, 3, 4, 5].map((star) => (
-                                                                <button type="button" key={star} onClick={() => setReviewForm({ ...reviewForm, rating: star })} className="p-0.5 cursor-pointer hover:scale-110 transition-transform">
-                                                                  <Star className={`w-4 h-4 ${star <= reviewForm.rating ? "fill-yellow-400 text-yellow-400" : "text-foreground/20"}`} />
-                                                                </button>
-                                                              ))}
-                                                            </div>
-                                                          </div>
-                                                          <div className="space-y-1">
-                                                            <label className="text-[8px] font-bold uppercase tracking-wider text-foreground">Headline Title</label>
-                                                            <input placeholder="e.g. Absolutely Outstanding!" className={inputClass} value={reviewForm.title} onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })} />
-                                                          </div>
-                                                          <div className="space-y-1">
-                                                            <label className="text-[8px] font-bold uppercase tracking-wider text-foreground">Review Comments</label>
-                                                            <textarea placeholder="Detail your experience..." rows={3} className={`${inputClass} resize-none`} value={reviewForm.comment} onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })} />
-                                                          </div>
-                                                          <button type="submit" disabled={submittingReview} className="w-full bg-primary text-background py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all cursor-pointer">
-                                                            {submittingReview ? "Submitting..." : "Submit Review"}
-                                                          </button>
-                                                        </form>
-                                                      )}
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              );
-                                            })}
+                        {isExpanded && (
+                          <div className="border-t border-neutral-200 bg-neutral-50 p-6 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                            
+                            {/* Left Column: ORDER DETAIL */}
+                            <div className="space-y-4">
+                              <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-black border-b border-neutral-200 pb-1.5">Order Detail</h4>
+                              
+                              {/* Line Items */}
+                              <div className="space-y-3">
+                                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Line Items</p>
+                                <div className="divide-y divide-neutral-200 bg-white border border-neutral-200 rounded-[12px] p-4 space-y-4">
+                                  {(order.items || []).map((item, idx) => {
+                                    const reviewId = `${order.id}-${item.productId}`;
+                                    const showForm = activeReviewId === reviewId;
+                                    return (
+                                      <div key={idx} className="pt-4 first:pt-0 space-y-3">
+                                        <div className="flex justify-between items-center gap-4">
+                                          <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-12 h-16 rounded-[4px] border border-neutral-200 overflow-hidden bg-neutral-100 shrink-0 relative">
+                                              <Image src={item.image || "/placeholder.jpg"} alt={item.name || "Product image"} fill className="object-cover" />
+                                            </div>
+                                            <div className="min-w-0">
+                                              <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
+                                              
+                                              {/* Product Variant Details (Color / Size Selection) */}
+                                              {item.selectedVariant && (
+                                                <p className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest mt-0.5">
+                                                  {item.selectedVariant.title || 
+                                                    (item.selectedVariant.options ? Object.entries(item.selectedVariant.options).map(([k, v]) => `${k}: ${v}`).join(' | ') : '')
+                                                  }
+                                                </p>
+                                              )}
+                                              {item.sku && (
+                                                <p className="text-[8px] font-mono text-neutral-400 mt-0.5">SKU: {item.sku}</p>
+                                              )}
+                                              
+                                              <p className="text-[9px] font-bold text-neutral-600 uppercase mt-0.5">Qty {item.quantity}</p>
+                                              
+                                              {/* Product Star Rating under Title */}
+                                              <div className="flex items-center gap-0.5 mt-1">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                  <Star key={star} className={`w-2.5 h-2.5 ${star <= (item.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-neutral-200'}`} />
+                                                ))}
+                                              </div>
+                                            </div>
                                           </div>
-                                        </div>
-
-                                        <div className="border-t border-border pt-4 space-y-2">
-                                          <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50">Order Amount</span>
-                                            <span className="text-[13px] font-black text-foreground font-mono">${order.total.toLocaleString()}</span>
-                                          </div>
-                                          <div className="space-y-1">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-foreground/50 block">Delivery Address</span>
-                                            <p className="text-[10px] font-semibold text-foreground uppercase tracking-wider leading-relaxed">
-                                              {order.shippingAddress?.fullName || userData.name}<br />
-                                              {order.shippingAddress?.street}, {order.shippingAddress?.city}<br />
-                                              {order.shippingAddress?.country || "Pakistan"}
+                                          <div className="text-right shrink-0">
+                                            <p className="text-xs font-black text-black font-mono">
+                                              {order.financials?.currency || 'Rs.'}{(item.priceAtPurchase * item.quantity).toLocaleString()}
                                             </p>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Right Column: TRACKING HISTORY */}
-                                      <div className="space-y-4">
-                                        <div className="flex items-center justify-between border-b border-border pb-1.5">
-                                          <h4 className="text-[10px] font-black uppercase tracking-[0.15em] text-foreground/60">Tracking History</h4>
-                                          <span className="text-[8px] font-bold text-foreground/45 uppercase tracking-widest">Updated: {formatOrderDate(order.date)}</span>
-                                        </div>
-
-                                        <div className="space-y-6">
-                                          <h3 className="text-[18px] font-black text-foreground uppercase tracking-wide">{order.status}</h3>
-                                          
-                                          {/* Horizontal Stepper Progress Indicator */}
-                                          <div className="relative pt-6 pb-2 px-2">
-                                            {/* Background Connecting Line */}
-                                            <div className="absolute left-4 right-4 top-[32px] h-[3px] bg-border" />
-                                            
-                                            {/* Foreground Green Progress Line */}
-                                            <div 
-                                              className="absolute left-4 top-[32px] h-[3px] bg-green-500 transition-all duration-500" 
-                                              style={{ width: `calc(${currentStepIndex >= 0 ? (currentStepIndex / (stepperSteps.length - 1)) * 100 : 0}% - 8px)` }}
-                                            />
-                                            
-                                            <div className="flex justify-between items-center relative z-10">
-                                              {stepperSteps.map((step, idx) => {
-                                                const active = idx <= currentStepIndex;
-                                                return (
-                                                  <div key={idx} className="flex flex-col items-center gap-2.5">
-                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[9px] font-black transition-all duration-300 ${
-                                                      active 
-                                                        ? 'bg-green-500 text-white border-green-500 scale-110 shadow-sm' 
-                                                        : 'bg-background text-foreground/30 border-border'
-                                                    }`}>
-                                                      {active ? "✓" : idx + 1}
-                                                    </div>
-                                                    <span className={`text-[8px] font-black uppercase tracking-wider text-center max-w-[64px] leading-tight ${active ? 'text-foreground' : 'text-foreground/40'}`}>
-                                                      {step}
-                                                    </span>
-                                                  </div>
-                                                );
-                                              })}
-                                            </div>
-                                          </div>
-
-                                          {/* Cancel request button if pending */}
-                                          {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
-                                            <div className="pt-4 text-right">
+                                            {isDelivered && (
                                               <button
-                                                onClick={(e) => {
-                                                  e.preventDefault();
-                                                  e.stopPropagation();
-                                                  handleAction("cancelOrder", { orderId: order.id });
+                                                onClick={() => {
+                                                  if (showForm) {
+                                                    setActiveReviewId(null);
+                                                  } else {
+                                                    setActiveReviewId(reviewId);
+                                                    setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
+                                                  }
                                                 }}
-                                                className="text-[9px] font-black bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-[4px] uppercase tracking-widest hover:bg-red-100 transition-all cursor-pointer"
+                                                className="text-[8px] border border-neutral-300 text-black hover:bg-neutral-50 px-2.5 py-1 rounded-[4px] font-black uppercase tracking-widest cursor-pointer transition-colors mt-2 block ml-auto"
                                               >
-                                                Request Cancellation
+                                                {showForm ? "Cancel" : "Write Review"}
                                               </button>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* Review Form */}
+                                        {showForm && (
+                                          <div className="bg-neutral-50 border border-neutral-200 rounded-[12px] p-4 mt-2 space-y-4">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-black flex items-center gap-1.5">
+                                              <Check className="w-3.5 h-3.5 text-green-600" /> Verified Purchase Review
+                                            </span>
+                                            {reviewSuccessMessage ? (
+                                              <div className="p-3 bg-green-50 border border-green-200 text-green-800 text-[10px] uppercase font-bold tracking-widest text-center rounded-[2px]">
+                                                {reviewSuccessMessage}
+                                              </div>
+                                            ) : (
+                                              <form onSubmit={(e) => handleReviewSubmit(e, item.productId, order.orderNumber)} className="space-y-3">
+                                                <div className="space-y-1">
+                                                  <label className="text-[8px] font-bold uppercase tracking-wider text-black block">Rating</label>
+                                                  <div className="flex items-center gap-1">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                      <button
+                                                        key={star}
+                                                        type="button"
+                                                        onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                                                        className="p-1 cursor-pointer hover:scale-110 transition-transform"
+                                                      >
+                                                        <Star className={`w-5 h-5 ${star <= reviewForm.rating ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-neutral-200'}`} />
+                                                      </button>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                                <div className="space-y-1">
+                                                  <label className="text-[8px] font-bold uppercase tracking-wider text-black block">Review Title</label>
+                                                  <input
+                                                    className="w-full bg-white border border-neutral-200 rounded-[4px] px-3 py-2 text-[10px] font-semibold outline-none focus:border-black text-black"
+                                                    placeholder="Example: Great quality!"
+                                                    value={reviewForm.title}
+                                                    onChange={e => setReviewForm({ ...reviewForm, title: e.target.value })}
+                                                    required
+                                                  />
+                                                </div>
+                                                <div className="space-y-1">
+                                                  <label className="text-[8px] font-bold uppercase tracking-wider text-black block">Comments</label>
+                                                  <textarea
+                                                    className="w-full bg-white border border-neutral-200 rounded-[4px] px-3 py-2 text-[10px] font-semibold outline-none focus:border-black text-black min-h-[60px] resize-y"
+                                                    placeholder="Tell us what you liked or disliked..."
+                                                    value={reviewForm.comment}
+                                                    onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                                                    required
+                                                  />
+                                                </div>
+                                                <button
+                                                  type="submit"
+                                                  disabled={submittingReview}
+                                                  className="w-full bg-black text-white hover:bg-neutral-800 py-2.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest transition-colors cursor-pointer"
+                                                >
+                                                  {submittingReview ? "Submitting..." : "Submit Review"}
+                                                </button>
+                                              </form>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+
+                              <div className="flex justify-between items-center border-t border-neutral-200 pt-4">
+                                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-400">Order Amount</span>
+                                <span className="text-[13px] font-black text-black font-mono">
+                                  {order.financials?.currency || 'Rs.'}{order.total?.toLocaleString()}
+                                </span>
+                              </div>
+
+                              <div className="pt-2">
+                                <span className="text-[9px] font-black uppercase tracking-wider text-neutral-400 block mb-1">Delivery Address</span>
+                                <p className="text-[10px] font-medium text-black uppercase tracking-wider leading-relaxed">
+                                  {order.shippingAddress ? (
+                                    <>
+                                      {order.shippingAddress.fullName}<br/>
+                                      {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.country}
+                                    </>
+                                  ) : "No address specified"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Right Column: TRACKING HISTORY */}
+                            <div className="space-y-4 border-t md:border-t-0 md:border-l border-neutral-200 pt-6 md:pt-0 md:pl-8">
+                              <div className="flex justify-between items-center border-b border-neutral-200 pb-1.5">
+                                <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-black">Tracking History</h4>
+                                <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-widest">Updated: {formatOrderDate(order.date)}</span>
+                              </div>
+
+                              <div className="space-y-6">
+                                <h3 className="text-[18px] font-black text-black uppercase tracking-wide">{order.status}</h3>
+                                
+                                {/* Robust Stepper Timeline Progress Bar */}
+                                <div className="pt-2 pb-10">
+                                  <div className="flex items-center w-full justify-between relative">
+                                    {stepperSteps.map((step, idx) => {
+                                      const isCompleted = idx <= currentStepIndex;
+                                      const isLast = idx === stepperSteps.length - 1;
+                                      return (
+                                        <div key={idx} className="flex-1 flex items-center">
+                                          {/* Step Node */}
+                                          <div className="flex flex-col items-center relative">
+                                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 transition-all ${
+                                              isCompleted 
+                                                ? 'bg-green-600 text-white shadow-sm' 
+                                                : 'bg-white text-neutral-300 border border-neutral-200'
+                                            }`}>
+                                              {isCompleted ? "✓" : idx + 1}
                                             </div>
+                                            <span className={`absolute top-8 text-[8px] font-black uppercase tracking-wider text-center w-16 -translate-x-1/2 left-1/2 leading-tight ${
+                                              isCompleted ? 'text-black font-extrabold' : 'text-neutral-400'
+                                            }`}>
+                                              {step}
+                                            </span>
+                                          </div>
+                                          
+                                          {/* Connecting Line Segment */}
+                                          {!isLast && (
+                                            <div className={`flex-1 h-[3px] mx-1.5 transition-all ${
+                                              isCompleted && (idx < currentStepIndex)
+                                                ? 'bg-green-600'
+                                                : 'bg-neutral-100'
+                                            }`} />
                                           )}
                                         </div>
-                                      </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
 
-                                    </div>
-                                  </motion.div>
+                                {/* Cancel request button if pending */}
+                                {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
+                                  <div className="pt-4 text-right">
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleAction("cancelOrder", { orderId: order.id });
+                                      }}
+                                      className="text-[9px] font-black bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-[4px] uppercase tracking-widest hover:bg-red-100 transition-all cursor-pointer"
+                                    >
+                                      Request Cancellation
+                                    </button>
+                                  </div>
                                 )}
-                              </AnimatePresence>
+                              </div>
+                            </div>
+
+                          </div>
+                        )}
                       </div>
                     );
                   })
