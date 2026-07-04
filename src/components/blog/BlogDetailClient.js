@@ -151,50 +151,67 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
     useEffect(() => {
        const allContent = post.content || "";
 
-      if (!allContent) {
-         setTocSections([]);
-         return;
-      }
+       if (!allContent) {
+          setTocSections([]);
+          return;
+       }
 
-      try {
-         const parser = new DOMParser();
-         const doc = parser.parseFromString(allContent, "text/html");
-         const headings = Array.from(doc.querySelectorAll("h1, h2, h3"));
-         const extracted = headings.map((el, i) => {
-            const text = el.textContent.trim();
-            const id = `toc-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${i}`;
-            return { id, title: text };
-         });
-         setTocSections(extracted);
-      } catch (e) {
-         setTocSections([]);
-      }
-   }, [post]);
+       try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(allContent, "text/html");
+          const headings = Array.from(doc.querySelectorAll("h1, h2, h3"));
+          const extracted = headings.map((el, i) => {
+             const text = el.textContent.trim();
+             const id = `toc-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${i}`;
+             return { id, title: text };
+          });
+          setTocSections(extracted);
+       } catch (e) {
+          setTocSections([]);
+       }
+    }, [post]);
 
-   // Add IDs to elements in the rendered blog content after mount
-   useEffect(() => {
-      if (tocSections.length === 0) return;
-      const contentEl = document.getElementById("blog-main-content");
-      if (!contentEl) return;
-      const headings = contentEl.querySelectorAll("h1, h2, h3");
-      headings.forEach((el, i) => {
-         if (tocSections[i]) el.id = tocSections[i].id;
-      });
-   }, [tocSections, post.content]);
+    // Add IDs to elements in the rendered blog content after mount with safety delay
+    useEffect(() => {
+       if (tocSections.length === 0) return;
+       
+       const assignIds = () => {
+          const contentEl = document.querySelector(".blog-content");
+          if (!contentEl) return;
+          const headings = contentEl.querySelectorAll("h1, h2, h3");
+          headings.forEach((el, i) => {
+             if (tocSections[i]) {
+                el.id = tocSections[i].id;
+             }
+          });
+       };
 
-    const scrollToSection = (id) => {
-       const element = document.getElementById(id);
-       if (!element) return;
-       const navbarHeight = 90;
-       const bodyRect = document.body.getBoundingClientRect().top;
-       const elementRect = element.getBoundingClientRect().top;
-       const elementPosition = elementRect - bodyRect;
-       const offsetPosition = elementPosition - navbarHeight;
-       window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth"
-       });
-    };
+       assignIds();
+       const timer = setTimeout(assignIds, 100);
+       return () => clearTimeout(timer);
+    }, [tocSections, post.content]);
+
+     const scrollToSection = (id, title) => {
+        let element = document.getElementById(id);
+        if (!element && title) {
+           // Fallback: search headings in .blog-content for matching text
+           const contentEl = document.querySelector(".blog-content");
+           if (contentEl) {
+              const headings = Array.from(contentEl.querySelectorAll("h1, h2, h3"));
+              element = headings.find(h => h.textContent.trim() === title);
+           }
+        }
+        if (!element) return;
+        const navbarHeight = 90;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - navbarHeight;
+        window.scrollTo({
+           top: offsetPosition,
+           behavior: "smooth"
+        });
+     };
 
    return (
       <main className="bg-white min-h-screen selection:bg-black selection:text-white">
@@ -419,10 +436,10 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                    tocSections.map((section) => (
                                       <button
                                          key={section.id}
-                                         onClick={() => scrollToSection(section.id)}
+                                         onClick={() => scrollToSection(section.id, section.title)}
                                          className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
                                       >
-                                         <span className="text-xs font-medium text-black group-hover:underline transition-all text-left leading-relaxed">
+                                         <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
                                             {section.title}
                                          </span>
                                          <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
