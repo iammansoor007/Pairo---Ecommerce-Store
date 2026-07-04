@@ -177,21 +177,21 @@ export default function UserOrderDetailPage() {
              <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12 select-none">
                <div className="relative">
                  {/* Background Connectors */}
-                 <div className="absolute left-[12.5%] right-[12.5%] top-[18px] h-[2px] bg-neutral-200 -z-10" />
-                 <div className="absolute right-[12.5%] top-[18px] bottom-[18px] w-[2px] bg-neutral-200 -z-10" />
-                 <div className="absolute left-[37.5%] right-[12.5%] bottom-[18px] h-[2px] bg-neutral-200 -z-10" />
+                 <div className="absolute left-[12.5%] right-[12.5%] top-[16px] h-[2px] bg-neutral-200 -z-10" />
+                 <div className="absolute right-[12.5%] top-[16px] bottom-[16px] w-[2px] bg-neutral-200 -z-10" />
+                 <div className="absolute left-[37.5%] right-[12.5%] bottom-[16px] h-[2px] bg-neutral-200 -z-10" />
 
                  {/* Active Connector Overlays */}
                  <div 
-                   className="absolute left-[12.5%] top-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                   className="absolute left-[12.5%] top-[16px] h-[2px] bg-black -z-10 transition-all duration-500" 
                    style={{ width: `calc(${row1Progress * 75}%)` }} 
                  />
                  <div 
-                   className="absolute right-[12.5%] top-[18px] w-[2px] bg-black -z-10 transition-all duration-500" 
-                   style={{ height: currentStep >= 4 ? 'calc(100% - 36px)' : '0px' }} 
+                   className="absolute right-[12.5%] top-[16px] w-[2px] bg-black -z-10 transition-all duration-500" 
+                   style={{ height: currentStep >= 4 ? 'calc(100% - 32px)' : '0px' }} 
                  />
                  <div 
-                   className="absolute right-[12.5%] bottom-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                   className="absolute right-[12.5%] bottom-[16px] h-[2px] bg-black -z-10 transition-all duration-500" 
                    style={{ width: `calc(${row2Progress * 50}%)` }} 
                  />
 
@@ -202,18 +202,18 @@ export default function UserOrderDetailPage() {
                      return (
                        <div key={idx} className={`${item.col} ${item.row} flex flex-col items-center text-center relative`}>
                           {/* Node Circle */}
-                          <div className={`w-9 h-9 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                            isCurrent ? 'bg-black text-white border-black scale-110 shadow-md ring-4 ring-black/10' :
+                          <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-[11px] font-medium transition-all duration-300 ${
+                            isCurrent ? 'bg-black text-white border-black scale-105 shadow-sm ring-4 ring-black/5' :
                             isCompleted ? 'bg-black text-white border-black' :
-                            'bg-white text-black border-neutral-300'
+                            'bg-white text-neutral-400 border-neutral-200'
                           }`}>
                             {idx + 1}
                           </div>
                           
                           {/* Step Label */}
-                          <span className={`text-[9px] font-black uppercase tracking-wider mt-2.5 max-w-[85px] line-clamp-2 ${
-                            isCurrent ? 'text-black font-black' : 
-                            isCompleted ? 'text-black' : 'text-neutral-400'
+                          <span className={`text-[10px] uppercase tracking-wide mt-2 max-w-[85px] line-clamp-2 transition-colors ${
+                            isCurrent ? 'text-black font-semibold' : 
+                            isCompleted ? 'text-black font-medium' : 'text-neutral-400 font-normal'
                           }`}>
                             {item.step}
                           </span>
@@ -413,14 +413,25 @@ export default function UserOrderDetailPage() {
                       }];
                       return timelineEvents.map((event, i) => (
                         <div key={i} className="flex gap-4 sm:gap-6 relative">
-                           <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 rounded-full bg-black shadow-lg z-10" />
-                              {i !== timelineEvents.length - 1 && <div className="w-[1px] h-full bg-black/10 absolute top-3" />}
+                           <div className="flex flex-col items-center relative shrink-0 w-3">
+                              <div className="w-3 h-3 rounded-full bg-black shadow-sm z-10" />
+                              {i !== timelineEvents.length - 1 && (
+                                <div className="w-[1px] absolute top-3 bottom-0 bg-black/20 left-1/2 -translate-x-1/2" />
+                              )}
                            </div>
                            <div className="space-y-1 pb-4">
-                              <p className="text-xs font-bold uppercase tracking-widest text-black">{event.status}</p>
-                              <p className="text-xs text-black leading-relaxed">{event.message}</p>
-                              <p className="text-[9px] font-bold text-black uppercase tracking-widest">{new Date(event.timestamp).toLocaleDateString()}</p>
+                              <p className="text-xs font-semibold uppercase tracking-wider text-black">{event.status}</p>
+                              <p className="text-xs text-black/90 leading-relaxed font-medium">{event.message}</p>
+                              <p className="text-[9px] font-semibold text-black uppercase tracking-wider">
+                                 {new Date(event.timestamp).toLocaleString("en-US", {
+                                   month: "short",
+                                   day: "numeric",
+                                   year: "numeric",
+                                   hour: "numeric",
+                                   minute: "2-digit",
+                                   hour12: true
+                                 })}
+                              </p>
                            </div>
                         </div>
                       ));

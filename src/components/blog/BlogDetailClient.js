@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Share2, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import { getProductUrl } from "@/lib/routes";
 
 const SectionHeader = ({ number, title }) => (
@@ -115,8 +115,12 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       restDelta: 0.001
    });
 
-   // Dynamically extract H2 headings from all post content for the sidebar TOC
-   const [tocSections, setTocSections] = useState([]);
+    // FAQ State
+    const [openFaqIdx, setOpenFaqIdx] = useState(null);
+    const [shared, setShared] = useState(false);
+
+    // Dynamically extract H2 headings from all post content for the sidebar TOC
+    const [tocSections, setTocSections] = useState([]);
 
     useEffect(() => {
        const allContent = post.content || "";
@@ -152,9 +156,19 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       });
    }, [tocSections]);
 
-   const scrollToSection = (id) => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
-   };
+    const scrollToSection = (id) => {
+       const element = document.getElementById(id);
+       if (!element) return;
+       const navbarHeight = 90;
+       const bodyRect = document.body.getBoundingClientRect().top;
+       const elementRect = element.getBoundingClientRect().top;
+       const elementPosition = elementRect - bodyRect;
+       const offsetPosition = elementPosition - navbarHeight;
+       window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+       });
+    };
 
    return (
       <main className="bg-white min-h-screen selection:bg-black selection:text-white">
@@ -194,33 +208,35 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       `}} />
          <motion.div className="fixed top-0 left-0 right-0 h-0.5 bg-black origin-left z-[100]" style={{ scaleX }} />
 
-         <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-5 pb-2 border-b border-black/5">
-            <div className="flex justify-between items-center">
-               <Link href="/blog" className="flex items-center gap-2 text-black font-bold text-[9px] uppercase tracking-[0.2em] hover:opacity-50 transition-all">
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  Archive Index
-               </Link>
-               <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-2 text-black hover:opacity-75 transition-all font-bold text-[9px] uppercase tracking-[0.2em]">
-                     <Share2 className="w-3.5 h-3.5" />
-                     Share Story
-                  </button>
-               </div>
-            </div>
-         </div>
+          <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-5 pb-2 border-b border-b-black/5">
+             <div className="flex justify-between items-center">
+                <Link href="/blog" className="flex items-center gap-2 text-black font-bold text-[9px] uppercase tracking-[0.2em] hover:opacity-50 transition-all">
+                   <ArrowLeft className="w-3.5 h-3.5" />
+                   /blog
+                </Link>
+                <div className="flex items-center gap-4">
+                   <button 
+                      onClick={() => {
+                         navigator.clipboard.writeText(window.location.href);
+                         setShared(true);
+                         setTimeout(() => setShared(false), 2000);
+                      }}
+                      className="flex items-center gap-2 text-black hover:opacity-75 transition-all font-bold text-[9px] uppercase tracking-[0.2em]"
+                   >
+                      <Share2 className="w-3.5 h-3.5" />
+                      {shared ? "Link Copied" : "Share Story"}
+                   </button>
+                </div>
+             </div>
+          </div>
 
-         <header className="pt-10 pb-8 md:pt-14 md:pb-10 border-b border-black/5">
-            <div className="container mx-auto px-2 sm:px-4 md:px-8">
-               <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[9px] font-black tracking-[0.25em] text-black uppercase">{post.category}</span>
-                  <div className="w-5 h-px bg-black/20" />
-                  <span className="text-[9px] font-black tracking-[0.25em] text-black uppercase">{postDate}</span>
-               </div>
-               <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-4 max-w-4xl">
-                  {post.title}
-               </h1>
-            </div>
-         </header>
+          <header className="pt-10 pb-8 md:pt-14 md:pb-10 border-b border-black/5">
+             <div className="container mx-auto px-2 sm:px-4 md:px-8">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-4 max-w-4xl">
+                   {post.title}
+                </h1>
+             </div>
+          </header>
 
          <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
@@ -240,8 +256,54 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                         </section>
                      )}
 
-                     {/* Only General Content is rendered now */}
-                  </div>
+                      {/* FAQ Section */}
+                      {post.faqs && post.faqs.length > 0 && (
+                         <section id="faq" className="pt-12 border-t border-black/10 space-y-6">
+                            <div className="space-y-1">
+                               <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">FAQ</span>
+                               <h2 className="text-lg md:text-xl font-bold heading-font text-black uppercase">Frequently Asked Questions</h2>
+                            </div>
+                            <div className="divide-y divide-black/10 border-y border-black/10">
+                               {post.faqs.map((faq, idx) => {
+                                  const isOpen = openFaqIdx === idx;
+                                  return (
+                                     <div key={idx} className="py-4">
+                                        <button
+                                           type="button"
+                                           onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                                           className="w-full flex justify-between items-center text-left py-2 group focus:outline-none"
+                                        >
+                                           <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-black group-hover:opacity-75 transition-opacity pr-4">
+                                              {faq.question}
+                                           </span>
+                                           <span className="text-xs font-light text-black shrink-0">
+                                              {isOpen ? "—" : "+"}
+                                           </span>
+                                        </button>
+                                        <AnimatePresence initial={false}>
+                                           {isOpen && (
+                                              <motion.div
+                                                 initial={{ height: 0, opacity: 0 }}
+                                                 animate={{ height: "auto", opacity: 1 }}
+                                                 exit={{ height: 0, opacity: 0 }}
+                                                 transition={{ duration: 0.2, ease: "easeInOut" }}
+                                                 className="overflow-hidden"
+                                              >
+                                                 <p className="text-xs sm:text-sm text-black/80 leading-relaxed font-medium pt-2 pb-4 pr-6">
+                                                    {faq.answer}
+                                                 </p>
+                                              </motion.div>
+                                           )}
+                                        </AnimatePresence>
+                                     </div>
+                                  );
+                               })}
+                            </div>
+                         </section>
+                      )}
+
+                      {/* Only General Content is rendered now */}
+                   </div>
                </div>
 
                <div className="lg:col-span-4 relative">
@@ -258,46 +320,47 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                  </p>
                               </div>
                            )}
-                           <div className={`${post.excerpt ? 'pt-4 border-t border-black/5' : ''} flex flex-col gap-2`}>
-                              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                 <span className="font-medium text-black">Writer</span>
-                                 <span className="font-black">{post.author || "Pairo Studio"}</span>
-                              </div>
-                              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                 <span className="font-medium text-black">Published</span>
-                                 <span className="font-black">{postDate}</span>
-                              </div>
-                              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                 <span className="font-medium text-black">Category</span>
-                                 <span className="font-black">{post.category || "Journal"}</span>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
+                            <div className={`${post.excerpt ? 'pt-4 border-t border-black/5' : ''} flex flex-col gap-2`}>
+                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                  <span className="font-medium text-black">Author</span>
+                                  <span className="font-black">{post.author || "Pairo Studio"}</span>
+                               </div>
+                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                  <span className="font-medium text-black">Published</span>
+                                  <span className="font-black">{postDate}</span>
+                               </div>
+                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                  <span className="font-medium text-black">Category</span>
+                                  <span className="font-black">{post.category || "Journal"}</span>
+                               </div>
+                            </div>
+                         </div>
+                      </div>
 
-                     {post.showSidebarIndex !== false && (
-                        <div className="space-y-5">
-                           <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">INDEX</span>
-                           <div className="flex flex-col gap-3">
-                              {tocSections.length > 0 ? (
-                                 tocSections.map((section) => (
-                                    <button
-                                       key={section.id}
-                                       onClick={() => scrollToSection(section.id)}
-                                       className="group flex items-center justify-between text-left"
-                                    >
-                                       <span className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-all line-clamp-1">
-                                          {section.title}
-                                       </span>
-                                       <ArrowRight className="w-3 h-3 text-black/10 group-hover:text-black transition-all shrink-0" />
-                                    </button>
-                                 ))
-                              ) : (
-                                 <p className="text-[10px] text-black/40 italic font-mono uppercase tracking-wider">No sections found</p>
-                              )}
-                           </div>
-                        </div>
-                     )}
+                      {post.showSidebarIndex !== false && (
+                         <div className="space-y-5">
+                            <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">Table of Contents</span>
+                            <div className="flex flex-col gap-3">
+                               {tocSections.length > 0 ? (
+                                  tocSections.map((section) => (
+                                     <button
+                                        key={section.id}
+                                        onClick={() => scrollToSection(section.id)}
+                                        className="group flex items-center justify-between text-left"
+                                     >
+                                        <span className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-all text-left leading-snug">
+                                           {section.title}
+                                        </span>
+                                        <ArrowRight className="w-3 h-3 text-black/10 group-hover:text-black transition-all shrink-0" />
+                                     </button>
+                                  ))
+                               ) : (
+                                  <p className="text-[10px] text-black/40 italic font-mono uppercase tracking-wider">No sections found</p>
+                               )}
+                            </div>
+                         </div>
+                      )}
+
                      {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
                         <div id="archive" className="space-y-4 pt-6 border-t border-black/5">
                            <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">SHOP PIECE</span>
@@ -366,22 +429,6 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
             </div>
          </section>
 
-         <section className="py-12 md:py-16 bg-white border-t border-black/5">
-            <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center space-y-4">
-               <span className="text-black text-[8px] font-black uppercase tracking-[0.25em]">NEXT ENTRY</span>
-               {posts.length > 0 && (
-                  <Link href={`/blog/${posts[0].slug}`} className="group block">
-                     <h2 className="text-lg md:text-2xl font-extrabold heading-font tracking-tight uppercase text-black leading-tight transition-all duration-700 group-hover:opacity-70">
-                        {posts[0].title}
-                     </h2>
-                     <div className="mt-4 inline-flex items-center gap-2 text-black font-bold text-[8px] uppercase tracking-[0.2em] group-hover:gap-4 transition-all">
-                        Read next story
-                        <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-                     </div>
-                  </Link>
-               )}
-            </div>
-         </section>
       </main>
    );
 }

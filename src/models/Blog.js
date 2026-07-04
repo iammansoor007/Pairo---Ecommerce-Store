@@ -39,7 +39,11 @@ const BlogSchema = new mongoose.Schema({
     twitterDescription: String,
     twitterImage: String,
     structuredData: String // JSON-LD
-  }
+  },
+  faqs: [{
+    question: String,
+    answer: String
+  }]
 }, { timestamps: true });
 
 delete mongoose.models.Blog;

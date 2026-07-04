@@ -55,7 +55,8 @@ export default function BlogForm({ blogId }) {
          twitterDescription: "",
          twitterImage: "",
          structuredData: ""
-      }
+      },
+      faqs: []
    });
 
    const [categories, setCategories] = useState([]);
@@ -98,7 +99,8 @@ export default function BlogForm({ blogId }) {
                      twitterTitle: "", twitterDescription: "", twitterImage: "",
                      structuredData: "",
                      ...(data.seo || {})
-                   }
+                   },
+                   faqs: data.faqs || []
                 }));
             }
             setLoading(false);
@@ -229,9 +231,20 @@ export default function BlogForm({ blogId }) {
                   >
                      SEO Settings
                   </button>
+                  <button
+                     type="button"
+                     onClick={() => setActiveFormTab("faq")}
+                     className={`px-4 py-1.5 text-[13px] font-bold transition-all rounded ${
+                        activeFormTab === "faq"
+                           ? "bg-white text-[#2271b1] shadow-sm border border-[#ccd0d4]/60"
+                           : "text-gray-600 hover:text-black hover:bg-[#f6f7f7]/50"
+                     }`}
+                  >
+                     FAQ Settings
+                  </button>
                </div>
 
-               {activeFormTab === "content" ? (
+               {activeFormTab === "content" && (
                   <>
                      {/* Content Meta Box (General) */}
                      <div className="bg-white border border-[#c3c4c7] shadow-sm">
@@ -256,7 +269,9 @@ export default function BlogForm({ blogId }) {
                         </div>
                      </div>
                   </>
-               ) : (
+               )}
+
+               {activeFormTab === "seo" && (
                   <div className="bg-white border border-[#c3c4c7] shadow-sm p-6">
                      <h2 className="text-[14px] font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2">SEO Configurations</h2>
                      <SEOConfigPanel
@@ -268,6 +283,79 @@ export default function BlogForm({ blogId }) {
                         parentImage={formData.image}
                         parentType="blog"
                      />
+                  </div>
+               )}
+
+               {activeFormTab === "faq" && (
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm p-6 space-y-6">
+                     <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h2 className="text-[14px] font-bold text-gray-700">Frequently Asked Questions</h2>
+                        <button
+                           type="button"
+                           onClick={() => {
+                              const faqs = [...(formData.faqs || [])];
+                              faqs.push({ question: "", answer: "" });
+                              setFormData({ ...formData, faqs });
+                           }}
+                           className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-[3px] text-[11px] font-bold transition-colors"
+                        >
+                           Add FAQ Item
+                        </button>
+                     </div>
+                     
+                     {(!formData.faqs || formData.faqs.length === 0) ? (
+                        <div className="text-center py-10 text-gray-400 text-xs">
+                           No FAQ items have been added to this blog post yet. Click &quot;Add FAQ Item&quot; to begin.
+                        </div>
+                     ) : (
+                        <div className="space-y-4">
+                           {formData.faqs.map((faq, idx) => (
+                              <div key={idx} className="border border-[#ccd0d4] rounded-[3px] p-4 bg-[#fcfcfc] space-y-3 relative group">
+                                 <div className="flex justify-between items-center">
+                                    <span className="text-xs font-bold text-gray-600">FAQ Item #{idx + 1}</span>
+                                    <button
+                                       type="button"
+                                       onClick={() => {
+                                          const faqs = formData.faqs.filter((_, i) => i !== idx);
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                       className="text-red-600 hover:text-red-800 text-[11px] font-bold"
+                                    >
+                                       Delete
+                                    </button>
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-gray-600 block">Question</label>
+                                    <input
+                                       type="text"
+                                       className="w-full border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[12px] outline-none focus:border-[#2271b1]"
+                                       placeholder="e.g. What leather is used for this product?"
+                                       value={faq.question}
+                                       onChange={(e) => {
+                                          const faqs = [...formData.faqs];
+                                          faqs[idx].question = e.target.value;
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                    />
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-gray-600 block">Answer</label>
+                                    <textarea
+                                       rows={3}
+                                       className="w-full border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[12px] outline-none focus:border-[#2271b1] resize-none"
+                                       placeholder="Enter the detailed answer..."
+                                       value={faq.answer}
+                                       onChange={(e) => {
+                                          const faqs = [...formData.faqs];
+                                          faqs[idx].answer = e.target.value;
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                    />
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+                     )}
                   </div>
                )}
             </div>
