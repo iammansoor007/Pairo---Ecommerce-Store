@@ -167,28 +167,28 @@ export default function ContactSection({
             {/* Atelier Info */}
             <div className="space-y-6">
               <motion.div variants={itemVariants} className="space-y-5">
-                <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-black uppercase block">
+                <span className="text-[10px] md:text-[11px] font-semibold tracking-[0.3em] text-black uppercase block">
                   {officeLabel}
                 </span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black heading-font tracking-tight uppercase leading-[1.05] text-black">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tight uppercase leading-[1.05] text-black">
                   {officeTitle}
                 </h2>
                 
                 {/* Location Info & Hours */}
                 <div className="border-t border-b border-black py-8 space-y-6">
                   <div className="space-y-2">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Atelier Location</p>
-                    <p className="text-lg sm:text-xl text-black font-semibold leading-relaxed max-w-sm font-sans">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Atelier Location</p>
+                    <p className="text-lg sm:text-xl text-black font-normal leading-relaxed max-w-sm font-sans">
                       {address}
                     </p>
-                    <p className="text-[10px] font-mono tracking-wider text-black/60 font-semibold pt-1">
+                    <p className="text-[10px] font-mono tracking-wider text-black/60 font-normal pt-1">
                       Florence, Italy • 43.7696° N, 11.2558° E
                     </p>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-8 pt-6 border-t border-black/20">
                     <div className="space-y-2">
-                      <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Opening Hours</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Opening Hours</p>
                       <ul className="text-xs text-black space-y-1 font-medium font-sans">
                         {hoursLines.map((line, idx) => (
                           <li key={idx}>{line}</li>
@@ -196,7 +196,7 @@ export default function ContactSection({
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Bespoke Fittings</p>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Bespoke Fittings</p>
                       <p className="text-xs text-black font-sans leading-relaxed">
                         {bespokeNotice}
                       </p>
@@ -209,14 +209,29 @@ export default function ContactSection({
             {/* Channels Grid */}
             <div className="grid sm:grid-cols-2 gap-8 border-b border-black pb-8">
               {channels.map((channel, i) => {
+                const val = channel.value || "";
+                const href = val.includes("@")
+                  ? `mailto:${val}`
+                  : /^[\d\s\+\-\(\)]+$/.test(val.trim())
+                    ? `tel:${val.replace(/\s/g, "")}`
+                    : val.startsWith("http") ? val : null;
                 return (
                   <motion.div 
                     key={i} 
                     variants={itemVariants} 
                     className="space-y-1.5"
                   >
-                    <p className="text-[9px] font-extrabold text-black uppercase tracking-[0.2em]">{channel.label}</p>
-                    <p className="text-sm font-extrabold text-black font-sans tracking-tight break-all">{channel.value}</p>
+                    <p className="text-[9px] font-semibold text-black uppercase tracking-[0.2em]">{channel.label}</p>
+                    {href ? (
+                      <a
+                        href={href}
+                        className="text-sm font-medium text-black font-sans tracking-tight break-all hover:underline underline-offset-2 transition-all"
+                      >
+                        {val}
+                      </a>
+                    ) : (
+                      <p className="text-sm font-medium text-black font-sans tracking-tight break-all">{val}</p>
+                    )}
                   </motion.div>
                 );
               })}
@@ -224,7 +239,7 @@ export default function ContactSection({
 
             {/* Social Links */}
             <motion.div variants={itemVariants} className="space-y-4">
-              <span className="text-[10px] font-bold tracking-[0.25em] text-black uppercase block">{socialLabel}</span>
+              <span className="text-[10px] font-semibold tracking-[0.25em] text-black uppercase block">{socialLabel}</span>
               <div className="flex flex-wrap gap-4">
                 {(Array.isArray(socialLinks) && socialLinks.length > 0
                   ? socialLinks.filter(s => s.url && s.platform)
