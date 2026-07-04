@@ -666,7 +666,7 @@ function FooterTab({ config, onChange, dbCategories, dbBlogs, dbPages }) {
                 </select>
                 {fc.privacyPageSlug && (
                   <p className="text-[11px] text-[#2271b1] mt-1">
-                    Link will go to: <strong>/pages/{fc.privacyPageSlug}</strong>
+                    Link will go to: <strong>/{fc.privacyPageSlug}</strong>
                   </p>
                 )}
               </td>
@@ -689,7 +689,7 @@ function FooterTab({ config, onChange, dbCategories, dbBlogs, dbPages }) {
                 </select>
                 {fc.termsPageSlug && (
                   <p className="text-[11px] text-[#2271b1] mt-1">
-                    Link will go to: <strong>/pages/{fc.termsPageSlug}</strong>
+                    Link will go to: <strong>/{fc.termsPageSlug}</strong>
                   </p>
                 )}
               </td>

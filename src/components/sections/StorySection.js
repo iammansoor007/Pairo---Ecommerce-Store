@@ -32,8 +32,8 @@ export default function StorySection({
   };
 
   return (
-    <section className="py-12 md:py-16">
-      <div className="mx-4 md:mx-8 bg-background border border-border rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
+    <section className="container mx-auto px-2 sm:px-4 md:px-8 py-12 md:py-16">
+      <div className="bg-background border border-border rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <motion.div 
             initial="hidden"

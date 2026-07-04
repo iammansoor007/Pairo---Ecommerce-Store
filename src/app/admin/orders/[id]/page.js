@@ -82,6 +82,86 @@ export default function OrderDetailPage() {
     }
   };
 
+  const getNextStatusInfo = (status) => {
+    switch (status) {
+      case 'Pending':
+        return { nextStatus: 'Confirmed', label: 'Confirm Order' };
+      case 'Confirmed':
+        return { nextStatus: 'Processing', label: 'Start Processing' };
+      case 'Processing':
+        return { nextStatus: 'Packed', label: 'Mark as Packed' };
+      case 'Packed':
+        return { nextStatus: 'Shipped', label: 'Ship Order' };
+      case 'Shipped':
+        return { nextStatus: 'Out for Delivery', label: 'Mark Out for Delivery' };
+      case 'Out for Delivery':
+        return { nextStatus: 'Delivered', label: 'Mark as Delivered' };
+      default:
+        return null;
+    }
+  };
+
+  const renderProgressButton = () => {
+    const info = getNextStatusInfo(order?.status);
+    if (!info) {
+      if (order?.status === 'Delivered') {
+        return (
+          <div className="w-full text-center py-2 bg-green-50 border border-green-200 text-green-700 text-xs font-bold uppercase rounded-[3px]">
+            Delivered
+          </div>
+        );
+      }
+      return null;
+    }
+
+    return (
+      <button
+        onClick={() => updateStatus(info.nextStatus)}
+        disabled={updating}
+        className="w-full bg-[#2271b1] text-white py-2 rounded-[3px] font-bold text-xs uppercase hover:bg-[#135e96] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {updating ? "Updating..." : info.label}
+      </button>
+    );
+  };
+
+  const renderCancelRefundButton = () => {
+    if (!order) return null;
+    if (order.status === 'Refunded') {
+      return (
+        <div className="w-full text-center py-2 bg-gray-50 border border-gray-200 text-gray-500 text-xs font-bold uppercase rounded-[3px]">
+          Refunded
+        </div>
+      );
+    }
+
+    if (order.status === 'Cancelled') {
+      return (
+        <button
+          onClick={() => updateStatus('Refunded')}
+          disabled={updating}
+          className="w-full bg-[#2271b1] text-white py-2 rounded-[3px] font-bold text-xs uppercase hover:bg-[#135e96] transition-colors shadow-sm disabled:opacity-50"
+        >
+          {updating ? "Updating..." : "Process Refund"}
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => {
+          if (confirm("Are you sure you want to cancel this order?")) {
+            updateStatus('Cancelled');
+          }
+        }}
+        disabled={updating}
+        className="w-full border border-red-500 text-red-600 py-2 rounded-[3px] font-bold text-xs uppercase hover:bg-red-50 transition-colors disabled:opacity-50"
+      >
+        {updating ? "Updating..." : "Cancel Order"}
+      </button>
+    );
+  };
+
   if (loading) return (
     <AdminPageLayout title="Order Details" breadcrumbs={[{ label: "WooCommerce", href: "/admin/orders" }, { label: "Orders", href: "/admin/orders" }, { label: "Loading" }]}>
        <div className="p-20 text-center text-[13px] text-gray-500 italic bg-white border border-[#ccd0d4]">Loading order details...</div>
@@ -376,32 +456,19 @@ export default function OrderDetailPage() {
                 <h2 className="text-[14px] font-bold text-[#1d2327]">Order Status</h2>
               </div>
               <div className="p-4 space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Status</label>
-                  <select
-                    className="w-full border border-[#8c8f94] rounded-[3px] px-2 py-1.5 text-[13px] outline-none bg-white focus:border-[#2271b1]"
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    disabled={updating}
-                  >
-                    {[
-                      "Pending", "Confirmed", "Processing", "Packed", "Shipped", "Out for Delivery", "Delivered", "Cancelled", "Refunded",
-                    ].map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-center justify-between text-[11px] text-[#646970]">
-                  <span>
-                    Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}
+                <div className="flex justify-between items-center text-[11px] text-[#646970] border-b border-gray-100 pb-3">
+                  <span className="font-bold">Current Status:</span>
+                  <span className="font-mono font-bold text-[#1d2327] bg-gray-100 px-2.5 py-0.5 rounded text-[11px] uppercase">
+                    {order.status}
                   </span>
-                  <button
-                    onClick={() => updateStatus(selectedStatus)}
-                    disabled={updating || selectedStatus === order.status}
-                    className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {updating ? "Saving..." : "Update"}
-                  </button>
+                </div>
+                <div className="space-y-3 pt-1">
+                  {renderProgressButton()}
+                  {renderCancelRefundButton()}
+                </div>
+                <div className="text-[11px] text-[#646970] pt-2 flex justify-between">
+                  <span>Created: {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}</span>
+                  <span>Time: {order.createdAt ? new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}</span>
                 </div>
               </div>
             </div>

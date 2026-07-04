@@ -32,6 +32,16 @@ export default function ProfileOrdersPage() {
     fetchOrders();
   }, []);
 
+  const getStatusColor = (status) => {
+    if (status === 'Delivered' || status === 'Completed') {
+      return 'bg-black text-white';
+    }
+    if (status === 'Cancelled' || status === 'Refunded') {
+      return 'bg-neutral-50 text-neutral-400 border border-neutral-200/60 line-through';
+    }
+    return 'bg-neutral-100 text-black border border-black/5';
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Delivered': return <CheckCircle2 className="w-3.5 h-3.5 text-black" />;
@@ -97,9 +107,9 @@ export default function ProfileOrdersPage() {
                           </div>
                        </div>
                        <div className="flex items-center gap-2">
-                          <span className={`px-2.5 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' : 'bg-neutral-100 text-black border border-black/5'}`}>
-                             {order.status}
-                          </span>
+                           <span className={`px-2.5 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] rounded-[2px] ${getStatusColor(order.status)}`}>
+                              {order.status}
+                           </span>
                        </div>
                     </div>
 

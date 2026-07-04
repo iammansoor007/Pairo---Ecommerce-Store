@@ -176,7 +176,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       `}} />
       <motion.div className="fixed top-0 left-0 right-0 h-0.5 bg-black origin-left z-[100]" style={{ scaleX }} />
 
-      <div className="container mx-auto px-4 md:px-8 pt-5 pb-2 border-b border-black/5">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-5 pb-2 border-b border-black/5">
          <div className="flex justify-between items-center">
             <Link href="/blog" className="flex items-center gap-2 text-black font-bold text-[9px] uppercase tracking-[0.2em] hover:opacity-50 transition-all">
                <ArrowLeft className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       </div>
 
       <header className="pt-10 pb-8 md:pt-14 md:pb-10 border-b border-black/5">
-         <div className="container mx-auto px-4 md:px-12">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8">
             <div className="flex items-center gap-2 mb-3">
                <span className="text-[9px] font-bold tracking-[0.3em] text-black/30 uppercase">{post.category}</span>
                <div className="w-5 h-px bg-black/10" />
@@ -207,7 +207,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
          </div>
       </header>
 
-      <div className="container mx-auto px-4 md:px-12 py-8 md:py-12">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
             <div id="blog-main-content" className="lg:col-span-8">
                <div className="aspect-[16/9] rounded-[12px] md:rounded-[16px] overflow-hidden border border-black/5 shadow-sm mb-10">
@@ -352,7 +352,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       </div>
 
       <section className="bg-[#FBFBFB] py-12 md:py-16 border-y border-black/5 overflow-hidden">
-         <div className="container mx-auto px-4 md:px-12">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8">
             <div className="flex items-end justify-between mb-8">
                <div className="space-y-1">
                   <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">DISCOVER MORE</span>
@@ -375,8 +375,8 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
          </div>
       </section>
 
-      <footer className="py-12 md:py-16 bg-white">
-         <div className="container mx-auto px-4 md:px-8 text-center space-y-4">
+      <section className="py-12 md:py-16 bg-white border-t border-black/5">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center space-y-4">
             <span className="text-black/20 text-[8px] font-bold uppercase tracking-[0.3em]">NEXT ENTRY</span>
             {posts.length > 0 && (
                <Link href={`/blog/${posts[0].slug}`} className="group block">
@@ -390,7 +390,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                </Link>
             )}
          </div>
-      </footer>
+      </section>
     </main>
   );
 }

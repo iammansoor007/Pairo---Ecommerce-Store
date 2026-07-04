@@ -78,22 +78,22 @@ async function seedLegalPages() {
 
     const pageDefinitions = [
       {
-        slug: "terms",
+        slug: "terms-and-conditions",
         title: "Terms & Conditions",
         file: "terms.txt"
       },
       {
-        slug: "privacy",
+        slug: "privacy-policy",
         title: "Privacy Policy",
         file: "privacy.txt"
       },
       {
-        slug: "shipping",
+        slug: "shipping-policy",
         title: "Shipping & Delivery",
         file: "shipping.txt"
       },
       {
-        slug: "refund-policy",
+        slug: "return-refund-policy",
         title: "Return & Refund Policy",
         file: "refundpolicy.tsxt"
       }
@@ -178,33 +178,7 @@ async function seedLegalPages() {
 
     console.log("All legal pages seeded successfully!");
 
-    // Seed redirects for flexible URLs
-    const redirectsCollection = db.collection("redirects");
-    const redirectDefs = [
-      { oldPath: "/refund", newPath: "/refund-policy", statusCode: 301 },
-      { oldPath: "/refundpolicy", newPath: "/refund-policy", statusCode: 301 },
-      { oldPath: "/privacy-policy", newPath: "/privacy", statusCode: 301 },
-      { oldPath: "/terms-and-conditions", newPath: "/terms", statusCode: 301 }
-    ];
-
-    for (const r of redirectDefs) {
-      console.log(`Setting redirect: ${r.oldPath} -> ${r.newPath}...`);
-      await redirectsCollection.updateOne(
-        { oldPath: r.oldPath },
-        {
-          $set: {
-            newPath: r.newPath,
-            statusCode: r.statusCode,
-            updatedAt: new Date()
-          },
-          $setOnInsert: {
-            createdAt: new Date()
-          }
-        },
-        { upsert: true }
-      );
-    }
-    console.log("All page redirects configured!");
+    console.log("Skipping redirects seeding as requested (direct slug access only).");
 
     process.exit(0);
   } catch (err) {

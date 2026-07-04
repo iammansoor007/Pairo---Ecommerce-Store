@@ -103,7 +103,7 @@ export default async function BlogArchive() {
         />
       )}
       <section className="pt-16 pb-10 md:pt-24 md:pb-12 border-b border-border">
-         <div className="container mx-auto px-4 md:px-8">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                <div className="space-y-4 max-w-3xl">
                   <div className="inline-flex items-center bg-foreground text-background px-3 py-1 rounded-md">
@@ -123,7 +123,7 @@ export default async function BlogArchive() {
       </section>
 
       <section className="py-10 md:py-16">
-         <div className="container mx-auto px-4 md:px-8">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-12">
                {posts.map((post) => (
                   <BlogCard key={post.id} post={post} />
@@ -133,7 +133,7 @@ export default async function BlogArchive() {
       </section>
 
       <section className="py-12 md:py-20 bg-secondary border-t border-border">
-         <div className="container mx-auto px-4 md:px-8 text-center max-w-4xl">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center max-w-4xl">
             <span className="text-foreground/50 text-[9px] font-bold uppercase tracking-[0.5em] mb-8 block">THE ELITE LIST</span>
             <h2 className="text-3xl md:text-5xl font-bold heading-font tracking-tighter text-foreground uppercase mb-12">
                Subscribe to receive <br /> exclusive archive previews.

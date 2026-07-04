@@ -220,14 +220,13 @@ export default function ProfilePage() {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'Delivered': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'Cancelled': return 'bg-red-50 text-red-600 border border-red-100';
-      case 'Confirmed': return 'bg-blue-50 text-blue-700 border border-blue-100';
-      case 'Shipped':
-      case 'Out for Delivery': return 'bg-purple-50 text-purple-700 border border-purple-100';
-      default: return 'bg-orange-50 text-orange-700 border border-orange-100';
+    if (status === 'Delivered' || status === 'Completed') {
+      return 'bg-black text-white';
     }
+    if (status === 'Cancelled' || status === 'Refunded') {
+      return 'bg-neutral-50 text-neutral-400 border border-neutral-200/60 line-through';
+    }
+    return 'bg-neutral-100 text-black border border-black/5';
   };
 
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
@@ -484,15 +483,14 @@ export default function ProfilePage() {
                     const isExpanded = expandedOrderId === order.id;
                     const isDelivered = order.status === 'Delivered' || order.status === 'Completed' || order.payment?.status === 'Paid';
                     
-                    // Stepper status mapping
-                    const timelineOrder = orderTimelines[order.id];
-                    const stepperSteps = ['Pending', 'Confirmed', 'In transit', 'Out for delivery', 'Delivered'];
-                    
-                    let currentStepIndex = 0;
-                    if (order.status === 'Confirmed') currentStepIndex = 1;
-                    else if (['Processing', 'Packed', 'Shipped'].includes(order.status)) currentStepIndex = 2;
-                    else if (order.status === 'Out for Delivery') currentStepIndex = 3;
-                    else if (order.status === 'Delivered') currentStepIndex = 4;
+                     // Stepper status mapping
+                     const timelineOrder = orderTimelines[order.id];
+                     const stepperSteps = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+                     
+                     let currentStepIndex = stepperSteps.indexOf(order.status);
+                     if (currentStepIndex === -1 && order.status === 'Completed') {
+                       currentStepIndex = 6;
+                     }
 
                     return (
                       <div
@@ -757,42 +755,44 @@ export default function ProfilePage() {
                                 <h3 className="text-[18px] font-black text-black uppercase tracking-wide">{order.status}</h3>
                                 
                                 {/* Robust Stepper Timeline Progress Bar */}
-                                <div className="pt-2 pb-10">
-                                  <div className="flex items-center w-full justify-between relative">
-                                    {stepperSteps.map((step, idx) => {
-                                      const isCompleted = idx <= currentStepIndex;
-                                      const isLast = idx === stepperSteps.length - 1;
-                                      return (
-                                        <div key={idx} className="flex-1 flex items-center">
-                                          {/* Step Node */}
-                                          <div className="flex flex-col items-center relative">
-                                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 transition-all ${
-                                              isCompleted 
-                                                ? 'bg-green-600 text-white shadow-sm' 
-                                                : 'bg-white text-neutral-300 border border-neutral-200'
-                                            }`}>
-                                              {isCompleted ? "✓" : idx + 1}
+                                {!['Cancelled', 'Refunded'].includes(order.status) && (
+                                  <div className="pt-2 pb-10">
+                                    <div className="flex items-center w-full justify-between relative">
+                                      {stepperSteps.map((step, idx) => {
+                                        const isCompleted = idx <= currentStepIndex;
+                                        const isLast = idx === stepperSteps.length - 1;
+                                        return (
+                                          <div key={idx} className="flex-1 flex items-center">
+                                            {/* Step Node */}
+                                            <div className="flex flex-col items-center relative">
+                                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 transition-all ${
+                                                isCompleted 
+                                                  ? 'bg-green-600 text-white shadow-sm' 
+                                                  : 'bg-white text-neutral-300 border border-neutral-200'
+                                              }`}>
+                                                {isCompleted ? "✓" : idx + 1}
+                                              </div>
+                                              <span className={`absolute top-8 text-[8px] font-black uppercase tracking-wider text-center w-16 -translate-x-1/2 left-1/2 leading-tight ${
+                                                isCompleted ? 'text-black font-extrabold' : 'text-neutral-400'
+                                              }`}>
+                                                {step}
+                                              </span>
                                             </div>
-                                            <span className={`absolute top-8 text-[8px] font-black uppercase tracking-wider text-center w-16 -translate-x-1/2 left-1/2 leading-tight ${
-                                              isCompleted ? 'text-black font-extrabold' : 'text-neutral-400'
-                                            }`}>
-                                              {step}
-                                            </span>
+                                            
+                                            {/* Connecting Line Segment */}
+                                            {!isLast && (
+                                              <div className={`flex-1 h-[3px] mx-1.5 transition-all ${
+                                                isCompleted && (idx < currentStepIndex)
+                                                  ? 'bg-green-600'
+                                                  : 'bg-neutral-100'
+                                              }`} />
+                                            )}
                                           </div>
-                                          
-                                          {/* Connecting Line Segment */}
-                                          {!isLast && (
-                                            <div className={`flex-1 h-[3px] mx-1.5 transition-all ${
-                                              isCompleted && (idx < currentStepIndex)
-                                                ? 'bg-green-600'
-                                                : 'bg-neutral-100'
-                                            }`} />
-                                          )}
-                                        </div>
-                                      );
-                                    })}
+                                        );
+                                      })}
+                                    </div>
                                   </div>
-                                </div>
+                                )}
 
                                 {/* Cancel request button if pending */}
                                 {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (

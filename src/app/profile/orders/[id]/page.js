@@ -114,8 +114,21 @@ export default function UserOrderDetailPage() {
   if (loading) return <div className="p-20 text-center font-bold text-sm tracking-widest uppercase animate-pulse">Retrieving Order Intelligence...</div>;
   if (!order) return <div className="p-20 text-center font-bold text-sm text-red-500 uppercase tracking-widest">Order not found.</div>;
 
-  const steps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
-  const currentStep = steps.indexOf(order.status);
+  const getStatusColor = (status) => {
+    if (status === 'Delivered' || status === 'Completed') {
+      return 'bg-black text-white';
+    }
+    if (status === 'Cancelled' || status === 'Refunded') {
+      return 'bg-neutral-50 text-neutral-400 border border-neutral-200/60 line-through';
+    }
+    return 'bg-neutral-100 text-black border border-black/5';
+  };
+
+  const steps = ['Pending', 'Confirmed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+  let currentStep = steps.indexOf(order.status);
+  if (currentStep === -1 && order.status === 'Completed') {
+    currentStep = 6;
+  }
 
   return (
     <div className="bg-white min-h-screen text-black pb-32">
@@ -132,9 +145,9 @@ export default function UserOrderDetailPage() {
              <h1 className="text-[24px] font-bold uppercase tracking-[0.1em] text-black">{order.orderNumber}</h1>
           </div>
           <div className="flex items-center gap-4">
-             <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-[2px] ${order.status === 'Delivered' ? 'bg-black text-white' : 'bg-neutral-100 text-black border border-black/5'}`}>
-                {order.status}
-             </span>
+              <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-[2px] ${getStatusColor(order.status)}`}>
+                 {order.status}
+              </span>
              {['Pending', 'Confirmed'].includes(order.status) && (
                <button 
                 onClick={handleCancel}
@@ -148,46 +161,48 @@ export default function UserOrderDetailPage() {
         </div>
 
         {/* Visual Progress Stepper */}
-        <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12">
-          {/* Active status label for mobile */}
-          <div className="text-center mb-5 sm:hidden">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-black text-white px-3 py-1.5 rounded-[2px] shadow-sm">
-              Status: {order.status}
-            </span>
-          </div>
+        {!['Cancelled', 'Refunded'].includes(order.status) && (
+          <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12">
+            {/* Active status label for mobile */}
+            <div className="text-center mb-5 sm:hidden">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-black text-white px-3 py-1.5 rounded-[2px] shadow-sm">
+                Status: {order.status}
+              </span>
+            </div>
 
-          <div className="relative px-3">
-            {/* Connector Line */}
-            <div className="absolute left-3 right-3 top-[12px] -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
-            <div 
-              className="absolute left-3 top-[12px] -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
-              style={{ width: `calc(${currentStep >= 0 ? (currentStep / 4) * 100 : 0}% - 6px)` }}
-            />
+            <div className="relative px-3">
+              {/* Connector Line */}
+              <div className="absolute left-3 right-3 top-[12px] -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
+              <div 
+                className="absolute left-3 top-[12px] -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
+                style={{ width: `calc(${currentStep >= 0 ? (currentStep / 6) * 100 : 0}% - 6px)` }}
+              />
 
-            <div className="flex justify-between items-start relative z-10">
-              {steps.map((step, idx) => {
-                const active = idx <= currentStep;
-                const isCurrent = idx === currentStep;
-                return (
-                  <div key={idx} className="flex flex-col items-center">
-                    <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                      isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
-                      active ? 'bg-black text-white border-black' :
-                      'bg-white text-black border-black/25'
-                    }`}>
-                      {idx + 1}
+              <div className="flex justify-between items-start relative z-10">
+                {steps.map((step, idx) => {
+                  const active = idx <= currentStep;
+                  const isCurrent = idx === currentStep;
+                  return (
+                    <div key={idx} className="flex flex-col items-center">
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                        isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
+                        active ? 'bg-black text-white border-black' :
+                        'bg-white text-black border-black/25'
+                      }`}>
+                        {idx + 1}
+                      </div>
+                      <span className={`hidden sm:inline-block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2.5 transition-colors ${
+                        active ? 'text-black font-black' : 'text-black'
+                      }`}>
+                        {step}
+                      </span>
                     </div>
-                    <span className={`hidden sm:inline-block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2.5 transition-colors ${
-                      active ? 'text-black font-black' : 'text-black'
-                    }`}>
-                      {step}
-                    </span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
            

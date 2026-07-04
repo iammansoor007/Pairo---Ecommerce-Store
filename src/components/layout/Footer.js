@@ -128,7 +128,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
         <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
         <ul className="space-y-3">
           {pages.map(page => {
-            const href = page.slug ? `/pages/${page.slug}` : '#';
+            const href = page.slug ? `/${page.slug}` : '#';
             return (
               <li key={page._id?.toString()}>
                 <Link href={href} className="text-white/80 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-colors block">
@@ -425,7 +425,9 @@ export default function Footer() {
 
       <div className="container mx-auto px-2 sm:px-4 md:px-8 relative z-20">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-10 border-t border-white/10">
-          <p className="text-white/50 text-[9px] font-bold uppercase tracking-widest">{copyrightText}</p>
+          <p className="text-white/50 text-[9px] font-bold uppercase tracking-widest">
+            {copyrightText} | Designed by <a href="https://mohsindesigns.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white underline transition-colors">Mohsin Designs</a>
+          </p>
           <div className="flex gap-10">
             <Link href={privacyUrl} className="text-white/50 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-colors">Privacy</Link>
             <Link href={termsUrl} className="text-white/50 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-colors">Terms</Link>

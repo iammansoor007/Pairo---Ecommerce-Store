@@ -711,7 +711,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
 
   return (
     <div className="bg-white min-h-screen">
-      <div className="container mx-auto px-4 md:px-8 py-4 md:py-8">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-8">
         {currentDbCategory && currentDbCategory.banner ? (
           <>
             <div className="relative w-full h-[280px] sm:h-[340px] md:h-[400px] mb-12 overflow-hidden rounded-[var(--radius,16px)] group">
