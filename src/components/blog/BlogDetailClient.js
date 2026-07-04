@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight, Share2, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Share2, ArrowUpRight, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { motion, useScroll, useSpring, AnimatePresence } from "framer-motion";
 import { getProductUrl } from "@/lib/routes";
 
@@ -347,50 +347,48 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                         </section>
                      )}
 
-                      {/* FAQ Section */}
-                      {post.faqs && post.faqs.length > 0 && (
-                         <section id="faq" className="pt-8 border-t border-black/5 space-y-5">
-                            <div>
-                               <h2 className="text-sm font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
-                            </div>
-                            <div className="divide-y divide-black/[0.06] border-y border-black/[0.06]">
-                               {post.faqs.map((faq, idx) => {
-                                  const isOpen = openFaqIdx === idx;
-                                  return (
-                                     <div key={idx} className="py-3.5">
-                                        <button
-                                           type="button"
-                                           onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
-                                           className="w-full flex justify-between items-center text-left py-1 group focus:outline-none"
-                                        >
-                                           <span className="text-xs sm:text-sm font-semibold text-black group-hover:opacity-70 transition-opacity pr-4 leading-snug">
-                                              {faq.question}
-                                           </span>
-                                           <span className="text-xs font-semibold text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-2">
-                                              {isOpen ? "—" : "+"}
-                                           </span>
-                                        </button>
-                                        <AnimatePresence initial={false}>
-                                           {isOpen && (
-                                              <motion.div
-                                                 initial={{ height: 0, opacity: 0 }}
-                                                 animate={{ height: "auto", opacity: 1 }}
-                                                 exit={{ height: 0, opacity: 0 }}
-                                                 transition={{ duration: 0.2, ease: "easeInOut" }}
-                                                 className="overflow-hidden"
-                                              >
-                                                 <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium pt-2 pb-1">
-                                                    {faq.answer}
-                                                 </p>
-                                              </motion.div>
-                                           )}
-                                        </AnimatePresence>
-                                     </div>
-                                  );
-                               })}
-                            </div>
-                         </section>
-                      )}
+                       {/* FAQ Section */}
+                       {post.faqs && post.faqs.length > 0 && (
+                          <section id="faq" className="pt-8 border-t border-black/5 space-y-5">
+                             <div>
+                                <h2 className="text-sm font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
+                             </div>
+                             <div className="border-t border-black/[0.06] divide-y divide-black/[0.06]">
+                                {post.faqs.map((faq, idx) => {
+                                   const isOpen = openFaqIdx === idx;
+                                   return (
+                                      <div key={idx} className="py-4">
+                                         <button
+                                            type="button"
+                                            onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                                            className="w-full flex justify-between items-center text-left group focus:outline-none"
+                                         >
+                                            <span className="text-sm font-semibold text-black group-hover:opacity-75 transition-opacity pr-6 leading-snug">
+                                               {faq.question}
+                                            </span>
+                                            <ChevronDown className={`w-4 h-4 text-neutral-400 group-hover:text-black transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+                                         </button>
+                                         <AnimatePresence initial={false}>
+                                            {isOpen && (
+                                               <motion.div
+                                                  initial={{ height: 0, opacity: 0 }}
+                                                  animate={{ height: "auto", opacity: 1 }}
+                                                  exit={{ height: 0, opacity: 0 }}
+                                                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                                                  className="overflow-hidden"
+                                               >
+                                                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium pt-3 pb-1 pr-6">
+                                                     {faq.answer}
+                                                  </p>
+                                               </motion.div>
+                                            )}
+                                         </AnimatePresence>
+                                      </div>
+                                   );
+                                })}
+                             </div>
+                          </section>
+                       )}
 
                    </div>
                </div>
@@ -428,33 +426,33 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                           </div>
                        </div>
 
-                       {post.showSidebarIndex !== false && (
-                          <div className="space-y-3 pt-6 border-t border-black/5">
-                             <span className="text-[10px] font-black uppercase tracking-[0.15em] text-black block mb-1">Table of Contents</span>
-                             <div className="flex flex-col gap-2">
-                                {tocSections.length > 0 ? (
-                                   tocSections.map((section) => (
-                                      <button
-                                         key={section.id}
-                                         onClick={() => scrollToSection(section.id, section.title)}
-                                         className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
-                                      >
-                                         <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
-                                            {section.title}
-                                         </span>
-                                         <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
-                                      </button>
-                                   ))
-                                ) : (
-                                   <p className="text-[10px] text-neutral-400 italic">No sections found</p>
-                                )}
-                             </div>
-                          </div>
-                       )}
+                        {post.showSidebarIndex !== false && (
+                           <div className="space-y-3 pt-6 border-t border-black/5">
+                              <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
+                              <div className="flex flex-col gap-2">
+                                 {tocSections.length > 0 ? (
+                                    tocSections.map((section) => (
+                                       <button
+                                          key={section.id}
+                                          onClick={() => scrollToSection(section.id, section.title)}
+                                          className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
+                                       >
+                                          <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
+                                             {section.title}
+                                          </span>
+                                          <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
+                                       </button>
+                                    ))
+                                 ) : (
+                                    <p className="text-[10px] text-neutral-400 italic">No sections found</p>
+                                 )}
+                              </div>
+                           </div>
+                        )}
 
-                     {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
-                        <div id="archive" className="space-y-4 pt-6 border-t border-black/5">
-                           <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">SHOP PIECE</span>
+                      {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
+                         <div id="archive" className="space-y-4 pt-6 border-t border-black/5">
+                            <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">SHOP PIECE</span>
                            <Link href={getProductUrl(featuredProduct)} className="block aspect-square rounded-[4px] overflow-hidden border border-black/5 group cursor-pointer relative">
                               <img src={featuredProduct.images?.[0] || featuredProduct.image} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                            </Link>
