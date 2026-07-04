@@ -119,7 +119,7 @@ export default function UserOrderDetailPage() {
       return 'bg-black text-white';
     }
     if (status === 'Cancelled' || status === 'Refunded') {
-      return 'bg-neutral-50 text-neutral-400 border border-neutral-200/60 line-through';
+      return 'bg-neutral-50 text-black border border-black/15 line-through';
     }
     return 'bg-neutral-100 text-black border border-black/5';
   };
@@ -138,7 +138,7 @@ export default function UserOrderDetailPage() {
           <div className="space-y-4">
              <Link 
                href="/profile/orders" 
-               className="text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-black transition-colors flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-white shadow-sm w-fit"
+               className="text-[9px] font-black uppercase tracking-widest text-black hover:opacity-75 transition-opacity flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-white shadow-sm w-fit"
              >
                 <ChevronLeft className="w-3.5 h-3.5" /> Back to History
              </Link>

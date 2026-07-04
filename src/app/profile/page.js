@@ -506,25 +506,25 @@ export default function ProfilePage() {
                         >
                           {/* Col 1: Order Number */}
                           <div className="space-y-1 md:col-span-2 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Order Number</p>
+                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Order Number</p>
                             <p className="text-[11px] font-black text-foreground font-mono">#{order.orderNumber}</p>
                           </div>
 
                           {/* Col 2: Tracking ID */}
                           <div className="space-y-1 md:col-span-3 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Tracking ID</p>
+                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Tracking ID</p>
                             <p className="text-[11px] font-bold text-foreground font-mono truncate" title={order.trackingId}>{order.trackingId || "N/A"}</p>
                           </div>
 
                           {/* Col 3: Creation Date */}
                           <div className="space-y-1 md:col-span-3 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Creation Date</p>
+                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Creation Date</p>
                             <p className="text-[10px] font-bold text-foreground font-mono">{formatOrderDate(order.date)}</p>
                           </div>
 
                           {/* Col 4: Product Rating */}
                           <div className="space-y-1 col-span-2 md:col-span-2 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-foreground/50 tracking-wider">Product Rating</p>
+                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Product Rating</p>
                             <div
                               className="flex items-center gap-0.5"
                               onMouseLeave={() => setOrderHoverRatings(prev => ({ ...prev, [order.id]: 0 }))}
@@ -562,7 +562,7 @@ export default function ProfilePage() {
                                     }`}
                                   >
                                     <Star className={`w-3 h-3 transition-colors ${
-                                      isFilled ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-foreground/20'
+                                      isFilled ? 'fill-yellow-400 text-yellow-400' : 'fill-none text-black/20'
                                     }`} />
                                   </button>
                                 );
@@ -578,7 +578,7 @@ export default function ProfilePage() {
                           </div>
 
                           {/* Col 6: Chevron */}
-                          <div className="flex md:col-span-1 justify-end text-neutral-500 min-w-0">
+                          <div className="flex md:col-span-1 justify-end text-black min-w-0">
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                         </div>
@@ -593,8 +593,8 @@ export default function ProfilePage() {
                               
                               {/* Line Items */}
                               <div className="space-y-3">
-                                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-wider">Line Items</p>
-                                <div className="divide-y divide-neutral-200 bg-white border border-neutral-200 rounded-[12px] p-4 space-y-4">
+                                <p className="text-[9px] font-black uppercase text-black tracking-wider">Line Items</p>
+                                <div className="divide-y divide-neutral-200 bg-white border border-neutral-200 rounded-[4px] p-4 space-y-4">
                                   {(order.items || []).map((item, idx) => {
                                     const reviewId = `${order.id}-${item.productId}`;
                                     const showForm = activeReviewId === reviewId;
@@ -618,17 +618,17 @@ export default function ProfilePage() {
                                               
                                               {/* Product Variant Details (Color / Size Selection) */}
                                               {item.selectedVariant && (
-                                                <p className="text-[8px] font-bold text-neutral-500 uppercase tracking-widest mt-0.5">
+                                                <p className="text-[8px] font-bold text-black uppercase tracking-widest mt-0.5">
                                                   {item.selectedVariant.title || 
                                                     (item.selectedVariant.options ? Object.entries(item.selectedVariant.options).map(([k, v]) => `${k}: ${v}`).join(' | ') : '')
                                                   }
                                                 </p>
                                               )}
                                               {item.sku && (
-                                                <p className="text-[8px] font-mono text-neutral-400 mt-0.5">SKU: {item.sku}</p>
+                                                <p className="text-[8px] font-mono text-black mt-0.5">SKU: {item.sku}</p>
                                               )}
                                               
-                                              <p className="text-[9px] font-bold text-neutral-600 uppercase mt-0.5">Qty {item.quantity}</p>
+                                              <p className="text-[9px] font-bold text-black uppercase mt-0.5">Qty {item.quantity}</p>
                                               
                                               {/* Product Star Rating under Title */}
                                               <div className="flex items-center gap-0.5 mt-1">
@@ -725,14 +725,14 @@ export default function ProfilePage() {
                               </div>
 
                               <div className="flex justify-between items-center border-t border-neutral-200 pt-4">
-                                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-400">Order Amount</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.1em] text-black">Order Amount</span>
                                 <span className="text-[13px] font-black text-black font-mono">
                                   {formatCurrency(order.financials?.currency)}{order.total?.toLocaleString()}
                                 </span>
                               </div>
 
                               <div className="pt-2">
-                                <span className="text-[9px] font-black uppercase tracking-wider text-neutral-400 block mb-1">Delivery Address</span>
+                                <span className="text-[9px] font-black uppercase tracking-wider text-black block mb-1">Delivery Address</span>
                                 <p className="text-[10px] font-medium text-black uppercase tracking-wider leading-relaxed">
                                   {order.shippingAddress ? (
                                     <>
@@ -748,7 +748,7 @@ export default function ProfilePage() {
                             <div className="space-y-4 border-t md:border-t-0 md:border-l border-neutral-200 pt-6 md:pt-0 md:pl-8">
                               <div className="flex justify-between items-center border-b border-neutral-200 pb-1.5">
                                 <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-black">Tracking History</h4>
-                                <span className="text-[8px] font-bold text-neutral-400 uppercase tracking-widest">Updated: {formatOrderDate(order.date)}</span>
+                                <span className="text-[8px] font-bold text-black uppercase tracking-widest">Updated: {formatOrderDate(order.date)}</span>
                               </div>
 
                               <div className="space-y-6">
@@ -776,7 +776,7 @@ export default function ProfilePage() {
                                             {/* Step label */}
                                             <span className={`text-[9px] font-bold uppercase tracking-wider ${
                                               isCurrent ? 'text-black font-black' : 
-                                              isCompleted ? 'text-neutral-500' : 'text-neutral-300'
+                                              isCompleted ? 'text-black' : 'text-neutral-500'
                                             }`}>
                                               {step}
                                             </span>

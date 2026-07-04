@@ -37,7 +37,7 @@ export default function ProfileOrdersPage() {
       return 'bg-black text-white';
     }
     if (status === 'Cancelled' || status === 'Refunded') {
-      return 'bg-neutral-50 text-neutral-400 border border-neutral-200/60 line-through';
+      return 'bg-neutral-50 text-black border border-black/15 line-through';
     }
     return 'bg-neutral-100 text-black border border-black/5';
   };
@@ -45,9 +45,9 @@ export default function ProfileOrdersPage() {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'Delivered': return <CheckCircle2 className="w-3.5 h-3.5 text-black" />;
-      case 'Shipped': return <Truck className="w-3.5 h-3.5 text-neutral-500" />;
-      case 'Cancelled': return <Clock className="w-3.5 h-3.5 text-neutral-400" />;
-      default: return <Package className="w-3.5 h-3.5 text-neutral-600" />;
+      case 'Shipped': return <Truck className="w-3.5 h-3.5 text-black" />;
+      case 'Cancelled': return <Clock className="w-3.5 h-3.5 text-black" />;
+      default: return <Package className="w-3.5 h-3.5 text-black" />;
     }
   };
 
@@ -97,12 +97,12 @@ export default function ProfileOrdersPage() {
                     <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-black/[0.04]">
                        <div className="flex items-center gap-4">
                           <div>
-                             <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest">Order Number</p>
+                             <p className="text-[9px] font-bold text-black uppercase tracking-widest">Order Number</p>
                              <p className="text-xs font-black text-black font-mono mt-0.5">{order.orderNumber}</p>
                           </div>
                           <div className="h-6 w-[1px] bg-black/10" />
                           <div>
-                             <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest">Acquired On</p>
+                             <p className="text-[9px] font-bold text-black uppercase tracking-widest">Acquired On</p>
                              <p className="text-xs font-bold text-black font-mono mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
                           </div>
                        </div>
@@ -122,7 +122,7 @@ export default function ProfileOrdersPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                                <h4 className="text-xs font-bold uppercase tracking-wider text-black truncate">{item.name}</h4>
-                               <p className="text-[9px] font-bold text-black/70 uppercase mt-0.5">Qty {item.quantity}</p>
+                               <p className="text-[9px] font-bold text-black uppercase mt-0.5">Qty {item.quantity}</p>
                             </div>
                             <div className="text-right shrink-0">
                                <p className="text-xs font-bold text-black font-mono">${item.priceAtPurchase.toLocaleString()}</p>
@@ -134,7 +134,7 @@ export default function ProfileOrdersPage() {
                     {/* Card Footer: Total & Navigation */}
                     <div className="flex justify-between items-center pt-4 border-t border-black/[0.04]">
                        <div>
-                          <p className="text-[9px] font-bold text-black/70 uppercase tracking-widest">Total Amount</p>
+                          <p className="text-[9px] font-bold text-black uppercase tracking-widest">Total Amount</p>
                           <p className="text-[15px] font-black text-black font-mono mt-0.5">${order.financials.total.toLocaleString()}</p>
                        </div>
                        <div className="flex items-center gap-3">
