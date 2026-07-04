@@ -38,8 +38,62 @@ export default function CartPage() {
 
   if (!isCartLoaded) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-white">
-        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-16">
+          {/* Header Skeleton */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-neutral-200 pb-6 mb-8 md:mb-12">
+            <div className="space-y-2">
+              <div className="w-48 h-8 bg-neutral-100 animate-pulse rounded-[4px]" />
+              <div className="w-32 h-4 bg-neutral-100 animate-pulse rounded-[4px]" />
+            </div>
+            <div className="w-28 h-4 bg-neutral-100 animate-pulse rounded-[4px] mt-4 sm:mt-0" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Left Column Skeleton */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="hidden md:grid grid-cols-12 border-b border-black/5 pb-3">
+                <div className="col-span-7"><div className="w-16 h-3 bg-neutral-100 animate-pulse rounded-[2px]" /></div>
+                <div className="col-span-3"><div className="w-16 h-3 bg-neutral-100 animate-pulse rounded-[2px] mx-auto" /></div>
+                <div className="col-span-2"><div className="w-16 h-3 bg-neutral-100 animate-pulse rounded-[2px] ml-auto" /></div>
+              </div>
+
+              <div className="divide-y divide-black/5">
+                {[1, 2].map((i) => (
+                  <div key={i} className="grid grid-cols-1 md:grid-cols-12 gap-4 py-6 items-center first:pt-0">
+                    <div className="col-span-1 md:col-span-7 flex gap-4 sm:gap-6 min-w-0">
+                      <div className="w-16 sm:w-20 aspect-[3/4] rounded-lg bg-neutral-100 animate-pulse shrink-0 border border-black/5" />
+                      <div className="flex-1 flex flex-col justify-center min-w-0 space-y-2">
+                        <div className="w-3/4 h-4 bg-neutral-100 animate-pulse rounded-[4px]" />
+                        <div className="w-1/2 h-3 bg-neutral-100 animate-pulse rounded-[4px]" />
+                        <div className="w-1/4 h-3 bg-neutral-100 animate-pulse rounded-[4px]" />
+                      </div>
+                    </div>
+                    <div className="col-span-1 md:col-span-3 flex justify-start md:justify-center">
+                      <div className="w-24 h-9 bg-neutral-100 animate-pulse rounded-[4px]" />
+                    </div>
+                    <div className="col-span-1 md:col-span-2 text-left md:text-right">
+                      <div className="w-16 h-4 bg-neutral-100 animate-pulse rounded-[4px] md:ml-auto" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Column Skeleton */}
+            <div className="lg:col-span-4 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6">
+              <div className="w-24 h-4 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+              <div className="space-y-4 pt-2">
+                <div className="flex justify-between"><div className="w-16 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /><div className="w-12 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /></div>
+                <div className="flex justify-between"><div className="w-16 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /><div className="w-20 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /></div>
+                <div className="flex justify-between"><div className="w-16 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /><div className="w-20 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" /></div>
+                <div className="pt-4 border-t border-neutral-200 flex justify-between"><div className="w-24 h-4 bg-neutral-200/60 animate-pulse rounded-[4px]" /><div className="w-16 h-6 bg-neutral-200/60 animate-pulse rounded-[4px]" /></div>
+              </div>
+              <div className="w-full h-10 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+              <div className="w-full h-12 bg-neutral-200/60 animate-pulse rounded-[4px] pt-2" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

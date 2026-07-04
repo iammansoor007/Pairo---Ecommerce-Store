@@ -6,13 +6,19 @@ import { useSession } from "next-auth/react";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
+  const [prevStorageKey, setPrevStorageKey] = useState("");
 
   // Dynamic storage key based on user ID
   const storageKey = session?.user?.id ? `pairo-cart-${session.user.id}` : "pairo-cart-guest";
+
+  if (storageKey !== prevStorageKey) {
+    setPrevStorageKey(storageKey);
+    setIsCartLoaded(false);
+  }
 
   // Load cart from localStorage when storageKey changes
   useEffect(() => {
@@ -290,7 +296,7 @@ export function CartProvider({ children }) {
         setSelectedShipping,
         affiliateDiscount,
         affiliateDiscountAmount,
-        isCartLoaded
+        isCartLoaded: isCartLoaded && status !== "loading"
       }}
     >
       {children}

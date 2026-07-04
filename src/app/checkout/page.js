@@ -438,8 +438,65 @@ export default function CheckoutPage() {
 
   if (!isCartLoaded) {
     return (
-      <div className="min-h-screen bg-white text-black flex items-center justify-center">
-        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white">
+        <main className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Left Form Column Skeleton */}
+            <div className="lg:col-span-7 space-y-8">
+              {/* Contact Info */}
+              <section className="space-y-4">
+                <div className="flex justify-between items-baseline">
+                  <div className="w-16 h-4 bg-neutral-100 animate-pulse rounded-[4px]" />
+                  <div className="w-12 h-3 bg-neutral-100 animate-pulse rounded-[2px]" />
+                </div>
+                <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+              </section>
+
+              {/* Delivery Info */}
+              <section className="space-y-4">
+                <div className="w-16 h-4 bg-neutral-100 animate-pulse rounded-[4px]" />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                    <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                  </div>
+                  <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                    <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                    <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                  </div>
+                  <div className="w-full h-10 bg-neutral-100 animate-pulse rounded-[4px]" />
+                </div>
+              </section>
+            </div>
+
+            {/* Right Summary Column Skeleton */}
+            <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6">
+              <div className="w-24 h-4 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+              <div className="space-y-4 pt-2">
+                {[1, 2].map((i) => (
+                  <div key={i} className="flex gap-4 items-center">
+                    <div className="w-10 h-12 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+                    <div className="flex-1 space-y-1.5">
+                      <div className="w-1/2 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" />
+                      <div className="w-1/4 h-2 bg-neutral-200/60 animate-pulse rounded-[2px]" />
+                    </div>
+                    <div className="w-12 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" />
+                  </div>
+                ))}
+                <div className="pt-4 border-t border-neutral-200 flex justify-between">
+                  <div className="w-16 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" />
+                  <div className="w-12 h-3 bg-neutral-200/60 animate-pulse rounded-[2px]" />
+                </div>
+                <div className="flex justify-between">
+                  <div className="w-24 h-4 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+                  <div className="w-16 h-6 bg-neutral-200/60 animate-pulse rounded-[4px]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
