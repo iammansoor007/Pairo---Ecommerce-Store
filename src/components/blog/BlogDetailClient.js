@@ -7,48 +7,46 @@ import { motion, useScroll, useSpring } from "framer-motion";
 import { getProductUrl } from "@/lib/routes";
 
 const SectionHeader = ({ number, title }) => (
-  <div className="flex items-center gap-3 mb-6">
-     <div className="flex items-center justify-center w-6 h-6 rounded-full border border-black text-[8px] font-bold">
-        {number}
-     </div>
-     <h2 className="text-lg md:text-xl font-bold heading-font uppercase tracking-tight text-black">
+  <div className="flex items-end gap-3 mb-6 border-b border-black/10 pb-2">
+     <span className="text-[10px] font-mono font-bold text-neutral-400">
+        {number} //
+     </span>
+     <h2 className="text-xs sm:text-sm font-black heading-font uppercase tracking-wider text-black leading-none">
         {title}
      </h2>
-     <div className="flex-1 h-px bg-black/5" />
   </div>
 );
 
 const BlogCard = ({ post }) => (
   <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
-    <div className="relative aspect-square bg-[#F7F7F7] rounded-[16px] md:rounded-[20px] overflow-hidden border border-black/5">
-       <div className="absolute inset-0">
-          <img 
-            src={post.image} 
-            alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-          />
-       </div>
-       <div className="absolute top-2 left-2 z-10">
-          <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[7px] font-bold px-2 py-1 rounded-md tracking-[0.1em] uppercase shadow-lg">
-            {post.category}
-          </span>
-       </div>
-       <div className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black text-white flex items-center justify-center translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
-          <ArrowUpRight className="w-3.5 h-3.5" />
-       </div>
+    {/* Portrait Image Container - Premium Sharp Corners */}
+    <div className="relative aspect-[3/4] bg-neutral-50 overflow-hidden border border-black/5 rounded-[4px]">
+      <img 
+        src={post.image} 
+        alt={post.title}
+        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+        loading="lazy"
+      />
     </div>
-    <div className="mt-2.5 space-y-1 px-0.5">
-       <p 
-          style={{ fontFamily: "var(--brand-font)" }}
-          className="text-lg md:text-xl font-bold uppercase tracking-wider text-black/80 group-hover:text-black transition-colors truncate"
-       >
-          {post.title}
-       </p>
-       <div className="flex items-center justify-between border-t border-black/[0.03] pt-1.5">
-          <span className="text-[8px] md:text-[10px] font-bold text-black uppercase tracking-tight">
-             {post.date}
-          </span>
-       </div>
+
+    {/* Metadata Block */}
+    <div className="mt-3.5 space-y-1 px-0.5">
+      <div className="flex items-center gap-2">
+        <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+          {post.category || "JOURNAL"}
+        </span>
+        <span className="w-1 h-1 rounded-full bg-black/10" />
+        <span className="text-[9px] font-bold text-neutral-400 tracking-wider">
+          {post.date}
+        </span>
+      </div>
+      
+      <h3 
+        style={{ fontFamily: "var(--brand-font)" }}
+        className="text-[13px] font-black uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
+      >
+        {post.title}
+      </h3>
     </div>
   </Link>
 );
@@ -163,15 +161,36 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
   return (
     <main className="bg-white min-h-screen selection:bg-black selection:text-white">
       <style dangerouslySetInnerHTML={{__html: `
+        .blog-content {
+          font-family: var(--body-font), sans-serif !important;
+          font-size: 14px !important;
+          line-height: 1.8 !important;
+          color: #262626 !important;
+        }
+        .blog-content p {
+          margin-bottom: 1.25rem !important;
+        }
+        .blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4 {
+          font-family: var(--brand-font), sans-serif !important;
+          text-transform: uppercase !important;
+          margin-top: 2rem !important;
+          margin-bottom: 1rem !important;
+          color: black !important;
+          font-weight: 800 !important;
+          letter-spacing: -0.01em !important;
+        }
+        .blog-content h1 { font-size: 22px !important; }
+        .blog-content h2 { font-size: 18px !important; }
+        .blog-content h3 { font-size: 16px !important; }
+        .blog-content h4 { font-size: 14px !important; }
         .blog-content a {
-          color: #4A3B2F !important;
+          color: #1a1a1a !important;
           text-decoration: underline !important;
           font-weight: 600 !important;
           transition: all 0.2s ease-in-out !important;
         }
         .blog-content a:hover {
-          color: #2c221a !important;
-          opacity: 1 !important;
+          opacity: 0.7 !important;
         }
       `}} />
       <motion.div className="fixed top-0 left-0 right-0 h-0.5 bg-black origin-left z-[100]" style={{ scaleX }} />
@@ -198,7 +217,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                <div className="w-5 h-px bg-black/10" />
                <span className="text-[9px] font-bold tracking-[0.3em] text-black/30 uppercase">{postDate}</span>
             </div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-black uppercase leading-tight mb-4 max-w-4xl">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-4 max-w-4xl">
                {post.title}
             </h1>
             <p className="text-black/30 text-[8px] font-bold uppercase tracking-[0.2em]">
@@ -210,7 +229,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
             <div id="blog-main-content" className="lg:col-span-8">
-               <div className="aspect-[16/9] rounded-[12px] md:rounded-[16px] overflow-hidden border border-black/5 shadow-sm mb-10">
+               <div className="aspect-[16/9] rounded-[4px] overflow-hidden border border-black/5 shadow-sm mb-10">
                   <img src={post.image} alt={post.imageAlts?.[post.image] || post.title || "Blog Image"} className="w-full h-full object-cover" />
                </div>
 
@@ -292,11 +311,10 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                        </div>
                     </div>
                   )}
-
-                  {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
+                   {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
                     <div id="archive" className="space-y-4 pt-6 border-t border-black/5">
                        <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">SHOP PIECE</span>
-                       <Link href={getProductUrl(featuredProduct)} className="block aspect-square rounded-[8px] overflow-hidden border border-black/5 group cursor-pointer relative">
+                       <Link href={getProductUrl(featuredProduct)} className="block aspect-square rounded-[4px] overflow-hidden border border-black/5 group cursor-pointer relative">
                           <img src={featuredProduct.images?.[0] || featuredProduct.image} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                        </Link>
                        <div className="space-y-1">
@@ -309,7 +327,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                        <div className="space-y-2.5">
                           <Link 
                              href={getProductUrl(featuredProduct)}
-                             className="flex items-center justify-center gap-2 w-full bg-black text-white py-3.5 rounded-xl font-bold text-[9px] uppercase tracking-[0.2em] hover:bg-black/80 transition-all shadow-lg active:scale-[0.98]"
+                             className="flex items-center justify-center gap-2 w-full bg-black text-white py-3.5 rounded-[4px] font-bold text-[9px] uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all shadow-lg active:scale-[0.98]"
                           >
                              Go to product
                              <ArrowRight className="w-3.5 h-3.5" />
@@ -317,13 +335,13 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                           <div className="grid grid-cols-2 gap-2">
                              <button 
                                 onClick={handleAddToCart}
-                                className="flex items-center justify-center gap-2 w-full border border-black text-black py-3.5 rounded-xl font-bold text-[9px] uppercase tracking-[0.1em] hover:bg-black hover:text-white transition-all active:scale-[0.98]"
+                                className="flex items-center justify-center gap-2 w-full border border-black text-black py-3.5 rounded-[4px] font-bold text-[9px] uppercase tracking-[0.1em] hover:bg-black hover:text-white transition-all active:scale-[0.98]"
                              >
                                 Add to cart
                              </button>
                              <button 
                                 onClick={handleBuyNow}
-                                className="flex items-center justify-center gap-2 w-full bg-[#111] text-white py-3.5 rounded-xl font-bold text-[9px] uppercase tracking-[0.1em] hover:bg-black transition-all shadow-md active:scale-[0.98]"
+                                className="flex items-center justify-center gap-2 w-full bg-[#111] text-white py-3.5 rounded-[4px] font-bold text-[9px] uppercase tracking-[0.1em] hover:bg-black transition-all shadow-md active:scale-[0.98]"
                              >
                                 Buy now
                              </button>
@@ -335,7 +353,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                   {post.showSidebarIndex === false && post.showFeaturedProduct === false && (
                     <div className="space-y-5">
                        <span className="text-[8px] font-bold tracking-[0.2em] text-black/30 uppercase">BLOG OVERVIEW</span>
-                       <div className="p-5 bg-gray-50 rounded-2xl border border-black/[0.03] space-y-4">
+                       <div className="p-5 bg-gray-50 rounded-[4px] border border-black/[0.03] space-y-4">
                           <h4 className="text-[10px] font-bold uppercase tracking-wider text-black">About this Article</h4>
                           <p className="text-xs md:text-sm text-black/60 leading-relaxed font-medium">
                              {post.excerpt || "This article showcases Pairo's premium leather artisanal design, deep-rooted heritage, and unique craftsmanship."}
