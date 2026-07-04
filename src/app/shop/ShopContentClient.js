@@ -59,17 +59,18 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   }, []);
 
   // Proactively scroll to the product grid top BEFORE any state change.
-  // This runs synchronously so the viewport is repositioned before React
-  // re-renders (and potentially collapses the page height), preventing the
-  // browser from force-snapping the scroll position to the footer.
+  // Always scrolls unconditionally — if we only scrolled "when past the grid"
+  // the condition could be false on the last (short) page and we'd miss it,
+  // letting React re-render first and collapse the page height before we moved.
   const scrollToGridTop = () => {
     if (typeof window === "undefined") return;
     const el = document.getElementById("product-grid-main");
     if (!el) return;
     const gridTop = el.getBoundingClientRect().top + window.scrollY - 120;
-    if (window.scrollY > gridTop + 10) {
-      window.scrollTo({ top: gridTop, behavior: "instant" });
-    }
+    // Always scroll — unconditionally. This fires synchronously before React's
+    // batched state update re-renders the grid, so the viewport is already at
+    // the grid top when the new (possibly shorter) product list paints.
+    window.scrollTo({ top: Math.max(0, gridTop), behavior: "instant" });
   };
 
   useEffect(() => {
@@ -872,7 +873,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
             {renderFilterSections(false)}
           </aside>
 
-          <main id="product-grid-main" className="lg:col-span-9 min-h-[800px]">
+          <main id="product-grid-main" className="lg:col-span-9 min-h-[200vh]">
             {loading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
                 {[1, 2, 3, 4, 5, 6].map(i => (
