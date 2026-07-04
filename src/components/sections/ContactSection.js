@@ -148,114 +148,76 @@ export default function ContactSection({
 
       <div className="container mx-auto px-2 sm:px-4 md:px-8 relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 lg:gap-24 items-start">
-          
           {/* Left Side: Contact Info */}
           <motion.div 
             initial="hidden" 
             whileInView="visible" 
             viewport={{ once: true }} 
             variants={containerVariants} 
-            className="lg:col-span-5 space-y-12"
+            className="lg:col-span-5 space-y-10"
           >
             {/* Atelier Info */}
-            <div className="space-y-8">
-              <motion.div variants={itemVariants} className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                  <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-foreground/90 uppercase">
-                    {officeLabel}
-                  </span>
-                </div>
+            <div className="space-y-6">
+              <motion.div variants={itemVariants} className="space-y-5">
+                <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-foreground/40 uppercase block">
+                  {officeLabel}
+                </span>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-black heading-font tracking-tight uppercase leading-[1.05] text-foreground">
                   {officeTitle}
                 </h2>
                 
-                {/* Location Card */}
-                <div className="p-6 rounded-[28px] bg-secondary/50 backdrop-blur-md border border-border/80 shadow-[0_15px_30px_rgba(0,0,0,0.02)] space-y-4 relative overflow-hidden group">
-                  <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-primary text-background flex items-center justify-center shrink-0 shadow-lg shadow-primary/10">
-                      <MapPin className="w-5 h-5" />
+                {/* Location Info & Hours */}
+                <div className="border-t border-b border-border/80 py-8 space-y-6">
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Atelier Location</p>
+                    <p className="text-lg sm:text-xl text-foreground font-semibold leading-relaxed max-w-sm font-sans">
+                      {address}
+                    </p>
+                    <p className="text-[10px] font-mono tracking-wider text-foreground/40 font-semibold pt-1">
+                      Florence, Italy • 43.7696° N, 11.2558° E
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-8 pt-6 border-t border-border/40">
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Opening Hours</p>
+                      <ul className="text-xs text-foreground/75 space-y-1 font-medium font-sans">
+                        <li>Mon – Fri: 10:00 – 19:00</li>
+                        <li>Sat: 11:00 – 18:00</li>
+                        <li>Sun: Closed</li>
+                      </ul>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/40">Our Address</p>
-                      <p className="text-base sm:text-lg text-foreground font-semibold leading-relaxed max-w-sm">
-                        {address}
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Bespoke Fittings</p>
+                      <p className="text-xs text-foreground/75 font-sans leading-relaxed">
+                        By appointment only. Please contact us to schedule your private fitting.
                       </p>
                     </div>
                   </div>
-                  
-                  {/* Coordinates Badge */}
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-background/80 border border-border text-[9px] font-mono tracking-widest text-foreground/75 font-semibold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    43.7696° N, 11.2558° E
-                  </div>
-                </div>
-
-                {/* Abstract Interactive-Looking Visual Map Placeholder */}
-                <div className="relative h-[200px] md:h-[240px] rounded-[28px] overflow-hidden border border-border bg-[#F9F9F9] shadow-inner group">
-                  {/* Abstract Grid Map Background */}
-                  <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:20px_20px]" />
-                  
-                  {/* Styled Map Rivers/Streets (Minimalist SVG Lines) */}
-                  <svg className="absolute inset-0 w-full h-full text-foreground/10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M-50 80 Q100 60 200 130 T450 110" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                    <path d="M60 -50 L120 250" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M220 -50 L180 250" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
-                    <path d="M-50 140 H500" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M120 120 L280 -50" stroke="currentColor" strokeWidth="2" />
-                  </svg>
-                  
-                  {/* Pulse Indicator for Florence Boutique */}
-                  <div className="absolute top-[120px] left-[150px] sm:left-[200px] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-                    <span className="absolute w-12 h-12 rounded-full bg-primary/10 animate-ping" style={{ animationDuration: '3s' }} />
-                    <span className="absolute w-8 h-8 rounded-full bg-primary/20 animate-ping" style={{ animationDuration: '2s' }} />
-                    <div className="w-4 h-4 rounded-full bg-primary border-2 border-background shadow-lg z-10 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-background" />
-                    </div>
-                  </div>
-
-                  {/* Tiny Location Tag overlay */}
-                  <div className="absolute top-1/2 left-[180px] sm:left-[230px] -translate-y-1/2 bg-background border border-border px-3 py-1.5 rounded-xl shadow-lg z-20 pointer-events-none group-hover:scale-105 transition-transform duration-300">
-                    <p className="text-[9px] font-black uppercase tracking-wider text-foreground">Pairo Atelier</p>
-                    <p className="text-[8px] text-foreground/60 font-semibold uppercase">Florence, IT</p>
-                  </div>
-                  
-                  {/* Subtle Gradient vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
                 </div>
               </motion.div>
             </div>
 
             {/* Channels Grid */}
-            <div className="grid sm:grid-cols-2 gap-6">
+            <div className="grid sm:grid-cols-2 gap-8 border-b border-border/80 pb-8">
               {channels.map((channel, i) => {
-                const isPhone = channel.label.toLowerCase().includes("press") || 
-                                channel.label.toLowerCase().includes("call") || 
-                                channel.label.toLowerCase().includes("phone");
-                const Icon = isPhone ? Phone : Mail;
                 return (
                   <motion.div 
                     key={i} 
                     variants={itemVariants} 
-                    className="p-4 md:p-5 rounded-3xl bg-secondary/30 border border-border/60 space-y-3 hover:border-primary/20 hover:bg-secondary/50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.02)] transition-all duration-300 group"
+                    className="space-y-1.5"
                   >
-                    <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-bold text-foreground/80 uppercase tracking-widest">{channel.label}</span>
-                      <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-background transition-all duration-300">
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                    </div>
-                    <p className="text-xs md:text-sm font-semibold tracking-tight text-foreground break-all">{channel.value}</p>
+                    <p className="text-[9px] font-bold text-foreground/45 uppercase tracking-[0.2em]">{channel.label}</p>
+                    <p className="text-sm font-bold text-foreground font-sans tracking-tight break-all">{channel.value}</p>
                   </motion.div>
                 );
               })}
             </div>
 
             {/* Social Links */}
-            <motion.div variants={itemVariants} className="space-y-6 pt-8 border-t border-border">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-foreground/85 uppercase">{socialLabel}</span>
-              <div className="flex flex-wrap gap-4">
+            <motion.div variants={itemVariants} className="space-y-4">
+              <span className="text-[10px] font-bold tracking-[0.25em] text-foreground/45 uppercase block">{socialLabel}</span>
+              <div className="flex flex-wrap gap-x-8 gap-y-2">
                 {(Array.isArray(socialLinks) && socialLinks.length > 0
                   ? socialLinks.filter(s => s.url && s.platform)
                   : [
@@ -264,17 +226,15 @@ export default function ContactSection({
                       { platform: "linkedin", url: "#" },
                     ]
                 ).map((s, i) => {
-                  const Icon = CONTACT_SOCIAL_ICONS[s.platform?.toLowerCase()] || InstagramIcon;
                   return (
                     <a
                       key={i}
                       href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={s.platform}
-                      className="w-12 h-12 rounded-full border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-background hover:border-primary transition-all duration-300 hover:-translate-y-1 shadow-sm"
+                      className="text-xs font-bold text-foreground/60 hover:text-foreground uppercase tracking-[0.15em] transition-colors"
                     >
-                      <Icon />
+                      {s.platform}
                     </a>
                   );
                 })}
