@@ -166,7 +166,7 @@ export default function ProfilePage() {
 
   if (!session || !userData) return null;
 
-  const inputClass = "w-full bg-background border border-border rounded-[12px] px-4 py-3 text-[11px] font-semibold focus:border-primary outline-none transition-all text-foreground";
+  const inputClass = "w-full bg-white border border-black/10 rounded-[4px] px-4 py-3 text-[11px] font-semibold focus:border-black outline-none transition-all text-black";
 
   const getInitials = (name) => {
     if (!name) return "PA";
@@ -232,14 +232,14 @@ export default function ProfilePage() {
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] text-black font-sans selection:bg-primary selection:text-background py-8">
+    <div className="min-h-screen bg-[#FAF9F6] text-black font-sans selection:bg-primary selection:text-background py-8">
       <div className="container mx-auto px-2 sm:px-4 md:px-8">
         <div className="w-full mx-auto">
           {/* Main Dashboard Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            {/* Left Column: Sidebar (4 cols) */}
-            <div className="lg:col-span-4 space-y-6">
+            {/* Left Column: Sidebar (3 cols) */}
+            <div className="lg:col-span-3 space-y-6">
 
               {/* Feedback alert */}
               {feedback && (
@@ -253,10 +253,10 @@ export default function ProfilePage() {
               )}
 
               {/* User Profile Card */}
-              <div className="bg-white border border-neutral-200 p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+              <div className="bg-white border border-neutral-200/60 p-6 rounded-[4px] shadow-sm">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
-                  <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center text-lg font-black uppercase shadow-md border border-neutral-200 shrink-0">
+                  <div className="w-14 h-14 rounded-[4px] bg-black text-white flex items-center justify-center text-base font-black uppercase shadow-sm border border-neutral-200 shrink-0">
                     {initials}
                   </div>
                   <div>
@@ -298,13 +298,13 @@ export default function ProfilePage() {
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleAction("updateInfo", infoForm)}
-                          className="flex-1 bg-black text-white py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
+                          className="flex-1 bg-black text-white py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingInfo(false)}
-                          className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
+                          className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -314,13 +314,13 @@ export default function ProfilePage() {
                     <div className="flex flex-col gap-2.5">
                       <button
                         onClick={() => setEditingInfo(true)}
-                        className="w-full border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
                         <User className="w-3.5 h-3.5" /> Edit Profile
                       </button>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                       >
                         <LogOut className="w-3.5 h-3.5" /> Sign Out
                       </button>
@@ -330,29 +330,29 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Statistics Block (2x2 Grid) - reference style */}
-              <div className="bg-white border border-neutral-200 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+              <div className="bg-white border border-neutral-200/60 rounded-[4px] shadow-sm overflow-hidden">
                 <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-neutral-200 bg-white text-center">
                   <div className="p-4 space-y-1 bg-white">
                     <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
-                    <p className="text-[9px] font-bold text-orange-600 uppercase tracking-widest">Pending</p>
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Pending</p>
                   </div>
                   <div className="p-4 space-y-1 bg-white">
                     <p className="text-2xl font-black text-black font-mono">{confirmedCount}</p>
-                    <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Confirmed</p>
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Confirmed</p>
                   </div>
                   <div className="p-4 space-y-1 bg-white">
                     <p className="text-2xl font-black text-black font-mono">{dispatchedCount}</p>
-                    <p className="text-[9px] font-bold text-purple-600 uppercase tracking-widest">Dispatched</p>
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Dispatched</p>
                   </div>
                   <div className="p-4 space-y-1 bg-white">
                     <p className="text-2xl font-black text-black font-mono">{deliveredCount}</p>
-                    <p className="text-[9px] font-bold text-green-600 uppercase tracking-widest">Delivered</p>
+                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Delivered</p>
                   </div>
                 </div>
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-white border border-neutral-200 p-6 rounded-[20px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+              <div className="space-y-4 bg-white border border-neutral-200/60 p-6 rounded-[4px] shadow-sm">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
@@ -371,7 +371,7 @@ export default function ProfilePage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-4 bg-background rounded-[12px] border border-border space-y-3">
+                      <div className="p-4 bg-background rounded-[4px] border border-border space-y-3">
                         <div className="space-y-1">
                           <label className="text-[9px] font-black uppercase tracking-[0.25em] text-foreground">Recipient Name</label>
                           <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                         </div>
                         <button
                           onClick={() => handleAction("addAddress", addressForm)}
-                          className="w-full bg-primary text-background py-3 rounded-[12px] text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all cursor-pointer shadow-sm"
+                          className="w-full bg-primary text-background py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all cursor-pointer shadow-sm"
                         >
                           Save Address
                         </button>
@@ -403,12 +403,12 @@ export default function ProfilePage() {
 
                 <div className="space-y-3">
                   {!userData.addresses?.length ? (
-                    <p className="text-[9px] text-foreground/50 uppercase tracking-widest text-center py-4 bg-background border border-border rounded-[12px]">
+                    <p className="text-[9px] text-foreground/50 uppercase tracking-widest text-center py-4 bg-background border border-border rounded-[4px]">
                       No addresses saved.
                     </p>
                   ) : (
                     userData.addresses.map((addr) => (
-                      <div key={addr._id} className="p-4 bg-background border border-border rounded-[12px] flex justify-between items-start shadow-sm">
+                      <div key={addr._id} className="p-4 bg-background border border-border rounded-[4px] flex justify-between items-start shadow-sm">
                         <div className="min-w-0">
                           <p className="text-[10px] font-bold uppercase text-foreground truncate">{addr.fullName}</p>
                           <p className="text-[9px] text-foreground/60 uppercase tracking-wider leading-relaxed mt-0.5 truncate">
@@ -430,15 +430,15 @@ export default function ProfilePage() {
 
             </div>
 
-             {/* Right Column: Main Content (8 cols) */}
-            <div className="lg:col-span-8 space-y-4">
+             {/* Right Column: Main Content (9 cols) */}
+            <div className="lg:col-span-9 space-y-4">
 
               {/* Header Navigation Tab + Search Bar */}
-              <div className="bg-white p-3 rounded-[16px] border border-neutral-200 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-                <div className="flex gap-2 p-1 bg-neutral-100 rounded-[30px] border border-neutral-200">
+              <div className="bg-white p-3 rounded-[4px] border border-neutral-200/60 shadow-sm flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                <div className="flex gap-2 p-1 bg-neutral-50 rounded-[4px] border border-neutral-200/60">
                   <button
                     onClick={() => setActiveTab("active")}
-                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[25px] transition-all cursor-pointer ${
+                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[2px] transition-all cursor-pointer ${
                       activeTab === "active"
                         ? "bg-black text-white shadow-sm"
                         : "text-neutral-400 hover:text-black"
@@ -448,7 +448,7 @@ export default function ProfilePage() {
                   </button>
                   <button
                     onClick={() => setActiveTab("previous")}
-                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[25px] transition-all cursor-pointer ${
+                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[2px] transition-all cursor-pointer ${
                       activeTab === "previous"
                         ? "bg-black text-white shadow-sm"
                         : "text-neutral-400 hover:text-black"
@@ -466,7 +466,7 @@ export default function ProfilePage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search Order Here"
-                    className="w-full bg-neutral-50 border border-neutral-200 rounded-[30px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
+                    className="w-full bg-neutral-50 border border-neutral-200 rounded-[4px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -495,7 +495,7 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-neutral-200 rounded-[16px] bg-white transition-all shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden ${
+                        className={`border border-neutral-200 rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
                           isExpanded ? 'border-neutral-300 ring-1 ring-black/[0.02]' : 'hover:border-neutral-300'
                         }`}
                       >
@@ -572,7 +572,7 @@ export default function ProfilePage() {
 
                           {/* Col 5: Status Badge */}
                           <div className="flex md:col-span-1 md:justify-center min-w-0">
-                            <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] rounded-full ${getStatusColor(order.status)}`}>
+                            <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] rounded-[2px] ${getStatusColor(order.status)}`}>
                               {order.status}
                             </span>
                           </div>
@@ -754,39 +754,32 @@ export default function ProfilePage() {
                               <div className="space-y-6">
                                 <h3 className="text-[18px] font-black text-black uppercase tracking-wide">{order.status}</h3>
                                 
-                                {/* Robust Stepper Timeline Progress Bar */}
+                                {/* Robust Stepper Timeline Progress Bar - Vertical Layout to avoid overlapping */}
                                 {!['Cancelled', 'Refunded'].includes(order.status) && (
-                                  <div className="pt-2 pb-10">
-                                    <div className="flex items-center w-full justify-between relative">
+                                  <div className="pt-2 pl-2 relative">
+                                    {/* Connector Line */}
+                                    <div className="absolute left-[11.5px] top-[10px] bottom-[10px] w-[1px] bg-neutral-200" />
+                                    
+                                    <div className="flex flex-col gap-6 relative">
                                       {stepperSteps.map((step, idx) => {
                                         const isCompleted = idx <= currentStepIndex;
-                                        const isLast = idx === stepperSteps.length - 1;
+                                        const isCurrent = idx === currentStepIndex;
                                         return (
-                                          <div key={idx} className="flex-1 flex items-center">
-                                            {/* Step Node */}
-                                            <div className="flex flex-col items-center relative">
-                                              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black shrink-0 transition-all ${
-                                                isCompleted 
-                                                  ? 'bg-green-600 text-white shadow-sm' 
-                                                  : 'bg-white text-neutral-300 border border-neutral-200'
-                                              }`}>
-                                                {isCompleted ? "✓" : idx + 1}
-                                              </div>
-                                              <span className={`absolute top-8 text-[8px] font-black uppercase tracking-wider text-center w-16 -translate-x-1/2 left-1/2 leading-tight ${
-                                                isCompleted ? 'text-black font-extrabold' : 'text-neutral-400'
-                                              }`}>
-                                                {step}
-                                              </span>
-                                            </div>
+                                          <div key={idx} className="flex items-center gap-4">
+                                            {/* Node Circle */}
+                                            <div className={`w-[7px] h-[7px] rounded-full shrink-0 z-10 transition-all ${
+                                              isCurrent ? 'bg-black ring-4 ring-black/10 scale-125' :
+                                              isCompleted ? 'bg-black' :
+                                              'bg-white border border-neutral-300'
+                                            }`} />
                                             
-                                            {/* Connecting Line Segment */}
-                                            {!isLast && (
-                                              <div className={`flex-1 h-[3px] mx-1.5 transition-all ${
-                                                isCompleted && (idx < currentStepIndex)
-                                                  ? 'bg-green-600'
-                                                  : 'bg-neutral-100'
-                                              }`} />
-                                            )}
+                                            {/* Step label */}
+                                            <span className={`text-[9px] font-bold uppercase tracking-wider ${
+                                              isCurrent ? 'text-black font-black' : 
+                                              isCompleted ? 'text-neutral-500' : 'text-neutral-300'
+                                            }`}>
+                                              {step}
+                                            </span>
                                           </div>
                                         );
                                       })}
