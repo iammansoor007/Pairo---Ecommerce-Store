@@ -37,24 +37,24 @@ const BlogCard = ({ post }) => (
     </div>
 
     {/* Metadata Block */}
-    <div className="mt-4 space-y-1.5 px-0.5">
+    <div className="mt-3.5 space-y-1 px-0.5">
       <div className="flex items-center gap-2">
         {post.category && (
           <>
-            <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+            <span className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
               {post.category}
             </span>
             <span className="w-1 h-1 rounded-full bg-black/10" />
           </>
         )}
-        <span className="text-[9px] font-bold text-neutral-400 tracking-wider">
+        <span className="text-[10px] font-semibold text-neutral-400 tracking-wider">
           {post.date}
         </span>
       </div>
       
       <h3 
         style={{ fontFamily: "var(--brand-font)" }}
-        className="text-[15px] sm:text-[17px] font-black uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
+        className="text-[14px] sm:text-[15px] font-bold uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
       >
         {post.title}
       </h3>
@@ -97,32 +97,32 @@ export default async function BlogArchive() {
           dangerouslySetInnerHTML={{ __html: escapeJsonLd(structuredData) }}
         />
       )}
-      <section className="pt-24 pb-12 border-b border-black/[0.06]">
+      <section className="pt-14 pb-8 border-b border-black/[0.06]">
          <div className="container mx-auto px-2 sm:px-4 md:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-               <div className="space-y-3 max-w-3xl">
-                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-neutral-400">
+               <div className="space-y-1.5 max-w-3xl">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-400">
                      Pairo Archive & Journal
                   </p>
-                  <h1 className="text-[36px] md:text-[60px] font-extrabold heading-font tracking-tight text-black uppercase leading-none">
+                  <h1 className="text-[24px] md:text-[36px] font-bold heading-font tracking-tight text-black uppercase leading-none">
                      EDITORIAL STORIES
                   </h1>
                </div>
                <div className="text-right">
-                  <span className="text-[9px] font-bold tracking-[0.25em] text-neutral-400 uppercase block">VOLUME 2026 // EDITION 0.1</span>
+                  <span className="text-[10px] font-semibold tracking-wider text-neutral-400 uppercase block">VOLUME 2026 // EDITION 0.1</span>
                </div>
             </div>
          </div>
       </section>
 
-      <section className="py-12 md:py-20">
+      <section className="py-8 md:py-12">
          <div className="container mx-auto px-2 sm:px-4 md:px-8">
             {posts.length === 0 ? (
-              <div className="text-center py-20 bg-neutral-50 rounded-[4px] border border-black/[0.04]">
-                <p className="text-xs font-black uppercase tracking-wider text-neutral-400">No Editorial Stories Published Yet</p>
+              <div className="text-center py-12 bg-neutral-50 rounded-[4px] border border-black/[0.04]">
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">No Editorial Stories Published Yet</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-8">
                  {posts.map((post) => (
                     <BlogCard key={post.id} post={post} />
                  ))}
@@ -131,10 +131,10 @@ export default async function BlogArchive() {
          </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-[#FAF9F6] border-t border-black/[0.06]">
+      <section className="py-12 md:py-16 bg-[#FAF9F6] border-t border-black/[0.06]">
          <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center max-w-xl">
-            <span className="text-neutral-400 text-[9px] font-black uppercase tracking-[0.4em] mb-4 block">THE ELITE LIST</span>
-            <h2 className="text-2xl md:text-[32px] font-extrabold heading-font tracking-tight text-black uppercase mb-8 leading-tight">
+            <span className="text-neutral-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-3 block">THE ELITE LIST</span>
+            <h2 className="text-xl md:text-[26px] font-bold heading-font tracking-tight text-black uppercase mb-6 leading-tight">
                Subscribe to receive <br /> exclusive archive previews.
             </h2>
             <BlogNewsletterForm />
