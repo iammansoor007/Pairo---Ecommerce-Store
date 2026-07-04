@@ -12,9 +12,11 @@ const BlogCard = ({ post, readMoreLabel }) => (
       <div className="absolute inset-0">
         <Image src={post.image || "/placeholder.jpg"} alt={post.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
       </div>
-      <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
-        <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category || "JOURNAL"}</span>
-      </div>
+      {post.category && (
+        <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
+          <span className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category}</span>
+        </div>
+      )}
       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-black text-white flex items-center justify-center translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
         <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />

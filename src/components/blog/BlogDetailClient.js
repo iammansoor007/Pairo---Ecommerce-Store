@@ -32,10 +32,14 @@ const BlogCard = ({ post }) => (
       {/* Metadata Block */}
       <div className="mt-3.5 space-y-1 px-0.5">
          <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
-               {post.category || "JOURNAL"}
-            </span>
-            <span className="w-1 h-1 rounded-full bg-black/10" />
+            {post.category && (
+               <>
+                  <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+                     {post.category}
+                  </span>
+                  <span className="w-1 h-1 rounded-full bg-black/10" />
+               </>
+            )}
             <span className="text-[9px] font-bold text-neutral-400 tracking-wider">
                {post.date}
             </span>
@@ -118,6 +122,28 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
     // FAQ State
     const [openFaqIdx, setOpenFaqIdx] = useState(null);
     const [shared, setShared] = useState(false);
+    const [showShareMenu, setShowShareMenu] = useState(false);
+
+    const handleWebShare = async () => {
+       const shareData = {
+          title: post.title,
+          text: post.excerpt || post.title,
+          url: window.location.href
+       };
+       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          try {
+             await navigator.share(shareData);
+             return;
+          } catch (err) {
+             if (err.name !== "AbortError") {
+                console.error(err);
+             } else {
+                return;
+             }
+          }
+       }
+       setShowShareMenu(!showShareMenu);
+    };
 
     // Dynamically extract H2 headings from all post content for the sidebar TOC
     const [tocSections, setTocSections] = useState([]);
@@ -212,20 +238,68 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
              <div className="flex justify-between items-center">
                 <Link href="/blog" className="flex items-center gap-2 text-black font-bold text-[9px] uppercase tracking-[0.2em] hover:opacity-50 transition-all">
                    <ArrowLeft className="w-3.5 h-3.5" />
-                   /blog
+                   blog
                 </Link>
-                <div className="flex items-center gap-4">
+                <div className="relative">
                    <button 
-                      onClick={() => {
-                         navigator.clipboard.writeText(window.location.href);
-                         setShared(true);
-                         setTimeout(() => setShared(false), 2000);
-                      }}
+                      onClick={handleWebShare}
                       className="flex items-center gap-2 text-black hover:opacity-75 transition-all font-bold text-[9px] uppercase tracking-[0.2em]"
                    >
                       <Share2 className="w-3.5 h-3.5" />
-                      {shared ? "Link Copied" : "Share Story"}
+                      Share Story
                    </button>
+                   <AnimatePresence>
+                      {showShareMenu && (
+                         <>
+                            <div className="fixed inset-0 z-40" onClick={() => setShowShareMenu(false)} />
+                            <motion.div 
+                               initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                               animate={{ opacity: 1, y: 0, scale: 1 }}
+                               exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                               className="absolute right-0 mt-2 w-48 bg-white border border-black/10 rounded-[4px] shadow-lg p-1.5 z-50 flex flex-col gap-0.5"
+                            >
+                               <button 
+                                  onClick={() => {
+                                     navigator.clipboard.writeText(window.location.href);
+                                     setShared(true);
+                                     setShowShareMenu(false);
+                                     setTimeout(() => setShared(false), 2000);
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold text-black hover:bg-neutral-50 rounded-[2px] transition-colors flex items-center justify-between"
+                               >
+                                  <span>{shared ? "Link Copied!" : "Copy Link"}</span>
+                               </button>
+                               <a 
+                                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + " - " + window.location.href)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold text-black hover:bg-neutral-50 rounded-[2px] transition-colors"
+                                  onClick={() => setShowShareMenu(false)}
+                               >
+                                  WhatsApp
+                               </a>
+                               <a 
+                                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold text-black hover:bg-neutral-50 rounded-[2px] transition-colors"
+                                  onClick={() => setShowShareMenu(false)}
+                               >
+                                  X / Twitter
+                               </a>
+                               <a 
+                                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold text-black hover:bg-neutral-50 rounded-[2px] transition-colors"
+                                  onClick={() => setShowShareMenu(false)}
+                               >
+                                  Facebook
+                               </a>
+                            </motion.div>
+                         </>
+                      )}
+                   </AnimatePresence>
                 </div>
              </div>
           </div>
@@ -302,40 +376,41 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                          </section>
                       )}
 
-                      {/* Only General Content is rendered now */}
                    </div>
                </div>
 
-               <div className="lg:col-span-4 relative">
-                  <aside className="sticky top-24 space-y-8 pl-6 border-l border-black/5">
-                     {/* Article Overview Widget - High-end Editorial Style */}
-                     <div className="space-y-4">
-                        <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">Article Overview</span>
-                        <div className="p-6 bg-white border border-black/10 rounded-[4px] space-y-5 shadow-sm">
-                           {post.excerpt && (
-                              <div className="space-y-1.5">
-                                 <h4 className="text-[10px] font-black uppercase tracking-wider text-black">Synopsis</h4>
-                                 <p className="text-[11px] text-black leading-relaxed font-medium">
-                                    {post.excerpt}
-                                 </p>
-                              </div>
-                           )}
-                            <div className={`${post.excerpt ? 'pt-4 border-t border-black/5' : ''} flex flex-col gap-2`}>
-                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                  <span className="font-medium text-black">Author</span>
-                                  <span className="font-black">{post.author || "Pairo Studio"}</span>
+                <div className="lg:col-span-4 relative">
+                   <aside className="sticky top-24 space-y-8 lg:pl-6 lg:border-l lg:border-black/5 border-t border-t-black/5 lg:border-t-0 pt-8 lg:pt-0 mt-8 lg:mt-0">
+                      {/* Article Overview Widget - High-end Editorial Style */}
+                      <div className="space-y-4">
+                         <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">Article Overview</span>
+                         <div className="p-6 bg-white border border-black/10 rounded-[4px] space-y-5 shadow-sm">
+                            {post.excerpt && (
+                               <div className="space-y-1.5">
+                                  <h4 className="text-[10px] font-black uppercase tracking-wider text-black">Synopsis</h4>
+                                  <p className="text-[11px] text-black leading-relaxed font-medium">
+                                     {post.excerpt}
+                                  </p>
                                </div>
-                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                  <span className="font-medium text-black">Published</span>
-                                  <span className="font-black">{postDate}</span>
-                               </div>
-                               <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                  <span className="font-medium text-black">Category</span>
-                                  <span className="font-black">{post.category || "Journal"}</span>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
+                            )}
+                             <div className={`${post.excerpt ? 'pt-4 border-t border-black/5' : ''} flex flex-col gap-2`}>
+                                <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                   <span className="font-medium text-black">Author</span>
+                                   <span className="font-black">{post.author || "Pairo Studio"}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                   <span className="font-medium text-black">Published</span>
+                                   <span className="font-black">{postDate}</span>
+                                </div>
+                                {post.category && (
+                                   <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
+                                      <span className="font-medium text-black">Category</span>
+                                      <span className="font-black">{post.category}</span>
+                                   </div>
+                                )}
+                             </div>
+                          </div>
+                       </div>
 
                       {post.showSidebarIndex !== false && (
                          <div className="space-y-5">

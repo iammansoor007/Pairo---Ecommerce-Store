@@ -39,10 +39,14 @@ const BlogCard = ({ post }) => (
     {/* Metadata Block */}
     <div className="mt-4 space-y-1.5 px-0.5">
       <div className="flex items-center gap-2">
-        <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
-          {post.category || "JOURNAL"}
-        </span>
-        <span className="w-1 h-1 rounded-full bg-black/10" />
+        {post.category && (
+          <>
+            <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+              {post.category}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-black/10" />
+          </>
+        )}
         <span className="text-[9px] font-bold text-neutral-400 tracking-wider">
           {post.date}
         </span>
