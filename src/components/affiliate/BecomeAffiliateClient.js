@@ -1,8 +1,116 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { toast } from "react-hot-toast";
-import { User, MapPin, Globe, Award, Upload, ArrowRight, ArrowLeft, Loader2, Check, Camera, RefreshCw } from "lucide-react";
+import { User, MapPin, Globe, Award, Upload, ArrowRight, ArrowLeft, Loader2, Check, Camera, RefreshCw, ChevronDown, Search } from "lucide-react";
+
+function SearchableDropdown({
+  label,
+  placeholder,
+  value,
+  onChange,
+  options = [],
+  loading = false,
+  required = false,
+  labelClass
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setSearchTerm(value || "");
+  }, [value]);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm) return options;
+    return options.filter(opt => {
+      const name = typeof opt === 'string' ? opt : opt.name;
+      return name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  }, [options, searchTerm]);
+
+  return (
+    <div className="space-y-1 relative" ref={dropdownRef}>
+      <label className={labelClass}>{label}</label>
+      {loading ? (
+        <div className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-[3px] text-[12px] text-gray-400 bg-white">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading options…
+        </div>
+      ) : (
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <Search className="w-3.5 h-3.5" />
+          </span>
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={searchTerm}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchTerm(val);
+              setIsOpen(true);
+              const found = options.find(opt => {
+                const name = typeof opt === 'string' ? opt : opt.name;
+                return name.toLowerCase() === val.toLowerCase();
+              });
+              onChange(val, found);
+            }}
+            onFocus={() => setIsOpen(true)}
+            className="w-full px-4 pl-9 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:outline-none text-[13px] transition-all"
+            required={required}
+          />
+          <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+          </span>
+
+          {isOpen && (
+            <div className="absolute z-[1000] left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-white border border-gray-300 rounded-[3px] shadow-lg animate-in fade-in slide-in-from-top-1 duration-100 divide-y divide-gray-100">
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((opt, idx) => {
+                  const name = typeof opt === 'string' ? opt : opt.name;
+                  const isSelected = name.toLowerCase() === (value || "").toLowerCase();
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm(name);
+                        onChange(name, opt);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
+                        isSelected 
+                          ? 'bg-black text-white' 
+                          : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {name}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="px-4 py-3 text-[10px] text-gray-400 uppercase tracking-widest text-center italic bg-white">
+                  No matching options
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function BecomeAffiliateClient() {
   const [step, setStep] = useState(1);
@@ -18,7 +126,9 @@ export default function BecomeAffiliateClient() {
     referralCode: "",
     
     country: "",
+    countryCode: "",
     state: "",
+    stateCode: "",
     city: "",
     zipCode: "",
     street: "",
@@ -39,6 +149,13 @@ export default function BecomeAffiliateClient() {
     audienceSize: "",
     experience: "",
   });
+
+  // Location cascade state
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   const [idFiles, setIdFiles] = useState([]);
   const [profilePhotoFile, setProfilePhotoFile] = useState(null);
@@ -96,6 +213,42 @@ export default function BecomeAffiliateClient() {
     }
   }, [step]);
 
+  // Load all countries on mount
+  useEffect(() => {
+    fetch("/api/locations")
+      .then(r => r.json())
+      .then(d => { if (d.success) setCountries(d.data); })
+      .catch(console.error);
+  }, []);
+
+  // Load states when country changes
+  useEffect(() => {
+    if (!formData.countryCode) { setStates([]); setCities([]); return; }
+    setLoadingStates(true);
+    fetch(`/api/locations?countryCode=${formData.countryCode}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) setStates(d.data);
+        else setStates([]);
+      })
+      .catch(() => setStates([]))
+      .finally(() => setLoadingStates(false));
+  }, [formData.countryCode]);
+
+  // Load cities when state changes
+  useEffect(() => {
+    if (!formData.countryCode || !formData.stateCode) { setCities([]); return; }
+    setLoadingCities(true);
+    fetch(`/api/locations?countryCode=${formData.countryCode}&stateCode=${formData.stateCode}`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) setCities(d.data);
+        else setCities([]);
+      })
+      .catch(() => setCities([]))
+      .finally(() => setLoadingCities(false));
+  }, [formData.countryCode, formData.stateCode]);
+
   const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -134,66 +287,120 @@ export default function BecomeAffiliateClient() {
     }
   };
 
-  const nextStep = async () => {
-    if (step === 1) {
-      if (!formData.name || !formData.email || !formData.phone || !formData.dob) {
-        toast.error("Please fill in all personal details.");
-        return;
-      }
-      // Validate referral code format if provided
-      if (formData.referralCode && !/^[A-Za-z0-9_-]+$/.test(formData.referralCode)) {
-        toast.error("Referral code may only contain letters, numbers, hyphens, and underscores.");
-        return;
-      }
-      // Check uniqueness if a code is entered
-      if (formData.referralCode) {
-        setCheckingCode(true);
-        try {
-          const checkRes = await fetch(`/api/affiliate/check-code?code=${encodeURIComponent(formData.referralCode)}`);
-          const checkData = await checkRes.json();
-          if (checkData.taken) {
-            toast.error("That referral code is already taken. Please choose another.");
-            setCheckingCode(false);
-            return;
-          }
-          setCodeAvailable(true);
-        } catch { /* allow continue on network error */ }
-        finally { setCheckingCode(false); }
-      }
-    } else if (step === 2) {
-      if (!formData.country || !formData.state || !formData.city || !formData.zipCode || !formData.street) {
-        toast.error("Please fill in your complete address.");
-        return;
-      }
-      if (!formData.accountHolder || !formData.bankName || !formData.accountNumber) {
-        toast.error("Please fill in your primary bank account details.");
-        return;
-      }
-    } else if (step === 4) {
-      if (!selfieFile) {
-        toast.error("Please capture your live selfie to verify your identity.");
-        return;
-      }
-    }
-    setStep((prev) => prev + 1);
-  };
+   const nextStep = async () => {
+     if (step === 1) {
+       if (!formData.name || !formData.email || !formData.phone || !formData.dob) {
+         toast.error("Please fill in all personal details.");
+         return;
+       }
+       
+       // Email pattern validation
+       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+       if (!emailRegex.test(formData.email)) {
+         toast.error("Please enter a valid email address.");
+         return;
+       }
+
+       // Phone pattern validation (minimum 7 digits, basic phone chars)
+       const phoneRegex = /^\+?[0-9\s\-()]{7,20}$/;
+       if (!phoneRegex.test(formData.phone)) {
+         toast.error("Please enter a valid phone number (minimum 7 digits).");
+         return;
+       }
+
+       // Age 18+ verification
+       const dobDate = new Date(formData.dob);
+       const today = new Date();
+       let age = today.getFullYear() - dobDate.getFullYear();
+       const monthDiff = today.getMonth() - dobDate.getMonth();
+       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+         age--;
+       }
+       if (age < 18) {
+         toast.error("You must be at least 18 years old to join our affiliate program.");
+         return;
+       }
+
+       // Validate referral code format if provided
+       if (formData.referralCode && !/^[A-Za-z0-9_-]+$/.test(formData.referralCode)) {
+         toast.error("Referral code may only contain letters, numbers, hyphens, and underscores.");
+         return;
+       }
+       // Check uniqueness if a code is entered
+       if (formData.referralCode) {
+         setCheckingCode(true);
+         try {
+           const checkRes = await fetch(`/api/affiliate/check-code?code=${encodeURIComponent(formData.referralCode)}`);
+           const checkData = await checkRes.json();
+           if (checkData.taken) {
+             toast.error("That referral code is already taken. Please choose another.");
+             setCheckingCode(false);
+             return;
+           }
+           setCodeAvailable(true);
+         } catch { /* allow continue on network error */ }
+         finally { setCheckingCode(false); }
+       }
+     } else if (step === 2) {
+       if (!formData.country || !formData.state || !formData.city || !formData.zipCode || !formData.street) {
+         toast.error("Please fill in your complete address.");
+         return;
+       }
+       if (formData.zipCode.trim().length < 3) {
+         toast.error("Please enter a valid Zip/Postal Code.");
+         return;
+       }
+       if (!formData.accountHolder || !formData.bankName || !formData.accountNumber) {
+         toast.error("Please fill in your primary bank account details.");
+         return;
+       }
+       if (!bankDocFile) {
+         toast.error("Please upload your Bank Verification Document.");
+         return;
+       }
+       if (bankDocFile.size > 5 * 1024 * 1024) {
+         toast.error("Bank Verification Document must be smaller than 5MB.");
+         return;
+       }
+     } else if (step === 4) {
+       if (!selfieFile) {
+         toast.error("Please capture your live selfie to verify your identity.");
+         return;
+       }
+     }
+     setStep((prev) => prev + 1);
+   };
 
   const prevStep = () => setStep((prev) => prev - 1);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.promotionStrategy || !formData.audienceSize || !formData.experience) {
-      toast.error("Please complete the marketing questionnaire.");
-      return;
-    }
-    if (idFiles.length === 0) {
-      toast.error("Please upload your identity verification document (PDF, JPG or PNG).");
-      return;
-    }
-    if (!selfieFile) {
-      toast.error("Please capture your live selfie to verify your identity.");
-      return;
-    }
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     if (!formData.promotionStrategy || !formData.audienceSize || !formData.experience) {
+       toast.error("Please complete the marketing questionnaire.");
+       return;
+     }
+     if (!bankDocFile) {
+       toast.error("Please upload your bank verification document.");
+       return;
+     }
+     if (bankDocFile.size > 5 * 1024 * 1024) {
+       toast.error("Bank Verification Document must be smaller than 5MB.");
+       return;
+     }
+     if (idFiles.length === 0) {
+       toast.error("Please upload your identity verification document (PDF, JPG or PNG).");
+       return;
+     }
+     for (const file of idFiles) {
+       if (file.size > 5 * 1024 * 1024) {
+         toast.error(`Identity Document "${file.name}" must be smaller than 5MB.`);
+         return;
+       }
+     }
+     if (!selfieFile) {
+       toast.error("Please capture your live selfie to verify your identity.");
+       return;
+     }
 
     setLoading(true);
     const dataToSend = new FormData();
@@ -349,28 +556,90 @@ export default function BecomeAffiliateClient() {
                     className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">City *</label>
-                  <input 
-                    type="text" 
-                    name="city" 
-                    value={formData.city} 
-                    onChange={handleInputChange} 
+                <div className="space-y-1 md:col-span-3">
+                  <SearchableDropdown
+                    label="Country *"
+                    placeholder="Search Country…"
+                    value={formData.country}
+                    options={countries}
+                    labelClass="text-[11px] uppercase tracking-wider font-semibold text-gray-500"
                     required
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    onChange={(val, matched) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        country: val,
+                        countryCode: matched ? matched.isoCode : "",
+                        state: "", stateCode: "", city: ""
+                      }));
+                    }}
                   />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">State/Province *</label>
-                  <input 
-                    type="text" 
-                    name="state" 
-                    value={formData.state} 
-                    onChange={handleInputChange} 
-                    required
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
-                  />
-                </div>
+                {states.length > 0 ? (
+                  <div className="space-y-1">
+                    <SearchableDropdown
+                      label="State/Province *"
+                      placeholder="Search State/Province…"
+                      value={formData.state}
+                      options={states}
+                      loading={loadingStates}
+                      labelClass="text-[11px] uppercase tracking-wider font-semibold text-gray-500"
+                      required
+                      onChange={(val, matched) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          state: val,
+                          stateCode: matched ? matched.isoCode : "",
+                          city: ""
+                        }));
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">State/Province *</label>
+                    <input 
+                      type="text" 
+                      name="state" 
+                      value={formData.state} 
+                      onChange={handleInputChange} 
+                      required
+                      placeholder="State / Province"
+                      className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:outline-none text-[13px] transition-all"
+                    />
+                  </div>
+                )}
+                {cities.length > 0 ? (
+                  <div className="space-y-1">
+                    <SearchableDropdown
+                      label="City *"
+                      placeholder="Search City…"
+                      value={formData.city}
+                      options={cities}
+                      loading={loadingCities}
+                      labelClass="text-[11px] uppercase tracking-wider font-semibold text-gray-500"
+                      required
+                      onChange={(val) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          city: val
+                        }));
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">City *</label>
+                    <input 
+                      type="text" 
+                      name="city" 
+                      value={formData.city} 
+                      onChange={handleInputChange} 
+                      required
+                      placeholder="City"
+                      className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:outline-none text-[13px] transition-all"
+                    />
+                  </div>
+                )}
                 <div className="space-y-1">
                   <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Zip/Postal Code *</label>
                   <input 
@@ -379,19 +648,8 @@ export default function BecomeAffiliateClient() {
                     value={formData.zipCode} 
                     onChange={handleInputChange} 
                     required
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
-                  />
-                </div>
-                <div className="space-y-1 md:col-span-3">
-                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Country *</label>
-                  <input 
-                    type="text" 
-                    name="country" 
-                    value={formData.country} 
-                    onChange={handleInputChange} 
-                    required
-                    placeholder="e.g. United States" 
-                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:ring-1 focus:ring-black focus:outline-none text-[13px] transition-all"
+                    placeholder="Zip / Postal Code"
+                    className="w-full px-4 py-3 rounded-[3px] border border-gray-300 bg-white focus:border-black focus:outline-none text-[13px] transition-all"
                   />
                 </div>
               </div>
@@ -471,14 +729,15 @@ export default function BecomeAffiliateClient() {
                   />
                 </div>
                 <div className="space-y-1 md:col-span-2">
-                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Bank Verification Document <span className="text-neutral-300 font-normal normal-case">(optional but recommended)</span></label>
+                  <label className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Bank Verification Document *</label>
                   <input
                     type="file"
                     accept="image/jpeg,image/png,application/pdf"
                     onChange={e => setBankDocFile(e.target.files?.[0] || null)}
+                    required
                     className="w-full text-[12px] text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-[3px] file:border file:border-gray-200 file:bg-white file:text-[12px] file:font-medium hover:file:bg-gray-50"
                   />
-                  <p className="text-[10px] text-neutral-400">Bank statement, voided cheque, or bank letter. PDF, JPG, or PNG. Max 5MB.</p>
+                  <p className="text-[10px] text-red-500 font-medium">Required. Bank statement, voided cheque, or bank letter. PDF, JPG, or PNG. Max 5MB.</p>
                 </div>
               </div>
             </div>

@@ -349,21 +349,66 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                        {/* FAQ Section */}
                        {post.faqs && post.faqs.length > 0 && (
-                          <section id="faq" className="pt-10 border-t border-black/5 space-y-5">
-                             <div>
-                                <h2 className="text-sm font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
+                          <section id="faq" className="pt-12 border-t border-black/5 space-y-6">
+                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-4 border-b border-black/[0.06]">
+                                <div className="space-y-1">
+                                   <span className="text-[10px] font-bold tracking-[0.25em] text-neutral-400 uppercase">INQUIRIES</span>
+                                   <h2 className="text-xl font-extrabold heading-font text-black uppercase tracking-tight">Frequently Asked Questions</h2>
+                                </div>
+                                <p className="text-xs text-neutral-500 max-w-xs font-medium leading-relaxed">
+                                   Common queries regarding materials, custom sizing, care instructions, and delivery timelines.
+                                </p>
                              </div>
-                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                {post.faqs.map((faq, idx) => (
-                                   <div key={idx} className="p-5 bg-[#FAF9F6] border border-black/[0.03] rounded-[4px] space-y-2 hover:border-black/[0.08] transition-colors">
-                                      <h3 className="text-xs sm:text-sm font-bold text-black leading-snug uppercase tracking-wide">
-                                         {faq.question}
-                                      </h3>
-                                      <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium">
-                                         {faq.answer}
-                                      </p>
-                                   </div>
-                                ))}
+                             
+                             <div className="space-y-3">
+                                {post.faqs.map((faq, idx) => {
+                                   const isOpen = openFaqIdx === idx;
+                                   return (
+                                      <div 
+                                         key={idx} 
+                                         className={`border border-black/5 rounded-[4px] transition-all duration-300 overflow-hidden ${
+                                            isOpen ? "bg-[#FAF9F6] border-black/10 shadow-sm" : "bg-white hover:bg-neutral-50/50"
+                                         }`}
+                                      >
+                                         <button
+                                            type="button"
+                                            onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                                            className="w-full flex justify-between items-center text-left p-5 group focus:outline-none"
+                                         >
+                                            <div className="flex items-center">
+                                               <span className="font-mono text-[9px] font-bold text-neutral-400 mr-4 tracking-wider">
+                                                  {String(idx + 1).padStart(2, '0')} //
+                                               </span>
+                                               <span className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-opacity pr-4 leading-snug">
+                                                  {faq.question}
+                                               </span>
+                                            </div>
+                                            <div className={`w-6 h-6 rounded-full border border-black/5 flex items-center justify-center transition-all duration-300 ${
+                                               isOpen ? "bg-black border-black text-white rotate-180" : "bg-white text-black group-hover:border-black/20"
+                                            }`}>
+                                               <ChevronDown className="w-3.5 h-3.5" />
+                                            </div>
+                                         </button>
+                                         
+                                         <AnimatePresence initial={false}>
+                                            {isOpen && (
+                                               <motion.div
+                                                  initial={{ height: 0, opacity: 0 }}
+                                                  animate={{ height: "auto", opacity: 1 }}
+                                                  exit={{ height: 0, opacity: 0 }}
+                                                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                                               >
+                                                  <div className="px-5 pb-5 pl-[45px] border-t border-black/[0.03] pt-4">
+                                                     <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium">
+                                                        {faq.answer}
+                                                     </p>
+                                                  </div>
+                                               </motion.div>
+                                            )}
+                                         </AnimatePresence>
+                                      </div>
+                                   );
+                                })}
                              </div>
                           </section>
                        )}
