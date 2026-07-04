@@ -209,11 +209,11 @@ export default function Footer() {
 
   // ── Brand section ──
   const footerBrandName = brand?.footerBrandName || 'PAIRO';
-  const copyrightText = brand?.copyrightText || 'PAIRO — ALL RIGHTS RESERVED © 2026.';
+  const copyrightText = 'PAIRO — ALL RIGHTS RESERVED © 2026.';
   const cleanPrivacySlug = fc.privacyPageSlug ? fc.privacyPageSlug.replace(/^\/?pages\//, '').replace(/^\//, '') : (brand?.privacyUrl?.replace(/^\//, '') || 'privacy-policy');
-  const cleanTermsSlug   = fc.termsPageSlug   ? fc.termsPageSlug.replace(/^\/?pages\//, '').replace(/^\//, '')   : (brand?.termsUrl?.replace(/^\//, '')   || 'terms-and-conditions');
+  const cleanTermsSlug = fc.termsPageSlug ? fc.termsPageSlug.replace(/^\/?pages\//, '').replace(/^\//, '') : (brand?.termsUrl?.replace(/^\//, '') || 'terms-and-conditions');
   const privacyUrl = `/${cleanPrivacySlug}`;
-  const termsUrl   = `/${cleanTermsSlug}`;
+  const termsUrl = `/${cleanTermsSlug}`;
 
   // ── Footer Logo ──
   const footerLogoUrl = fc.logoUrl;

@@ -1,14 +1,24 @@
 import Link from "next/link";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import Page from "@/models/Page";
 import { ChevronRight } from "lucide-react";
+import { resolveSEOMetadata } from "@/lib/seo-resolver";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Collections | Pairo",
-  description: "Browse all Pairo collections — premium shearling and leather jackets crafted for modern wear.",
-};
+export async function generateMetadata() {
+  await dbConnect();
+  const page = await Page.findOne({ slug: "collections", tenantId: "DEFAULT_STORE" }).lean();
+  const { metadata } = resolveSEOMetadata({
+    entity: page || {},
+    type: "page",
+    fallbackTitle: "Collections | Pairo Store",
+    fallbackDesc: "Browse all Pairo collections — premium shearling and leather jackets crafted for modern wear.",
+    path: "/collections"
+  });
+  return metadata;
+}
 
 export default async function CollectionsPage() {
   await dbConnect();

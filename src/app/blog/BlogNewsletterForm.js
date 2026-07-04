@@ -32,7 +32,7 @@ export default function BlogNewsletterForm() {
   };
 
   return (
-    <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-4 justify-center">
+    <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-3 justify-center w-full max-w-md mx-auto">
        <input 
           type="email" 
           required
@@ -40,12 +40,12 @@ export default function BlogNewsletterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={submitting}
-          className="bg-background border border-foreground/15 text-foreground px-8 py-4 rounded-full w-full md:w-96 text-xs font-bold tracking-widest focus:outline-none focus:border-foreground transition-colors placeholder-foreground/40 disabled:opacity-50"
+          className="bg-white border border-black/15 text-black px-5 py-3.5 rounded-[4px] w-full text-[10px] font-bold tracking-widest focus:outline-none focus:border-black transition-colors placeholder-black/30 disabled:opacity-50 uppercase"
        />
        <button 
           type="submit"
           disabled={submitting}
-          className="bg-foreground text-background px-10 py-4 rounded-full font-bold text-xs uppercase tracking-[0.2em] hover:bg-foreground/90 transition-all disabled:opacity-50"
+          className="bg-black text-white px-8 py-3.5 rounded-[4px] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-neutral-900 transition-all disabled:opacity-50 whitespace-nowrap"
        >
           {submitting ? "Joining..." : "Join Archive"}
        </button>

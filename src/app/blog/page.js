@@ -26,41 +26,34 @@ export async function generateMetadata() {
 
 const BlogCard = ({ post }) => (
   <Link href={`/blog/${post.slug}`} className="group cursor-pointer w-full block">
-    <div className="relative aspect-square bg-secondary rounded-[16px] md:rounded-[24px] overflow-hidden border border-border">
-       <div className="absolute inset-0">
-          <img 
-            src={post.image} 
-            alt={post.title}
-            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-          />
-       </div>
-       <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
-          <span className="bg-foreground/80 backdrop-blur-md text-background text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">
-            {post.category || "JOURNAL"}
-          </span>
-       </div>
-       <div className="absolute inset-0 bg-foreground/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-       <div className="absolute bottom-3 right-3 md:bottom-4 md:right-4 w-8 h-8 md:w-10 md:h-10 rounded-full bg-foreground text-background flex items-center justify-center translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
-          <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5" />
-       </div>
+    {/* Portrait Image Container - Premium Sharp Corners */}
+    <div className="relative aspect-[3/4] bg-neutral-50 overflow-hidden border border-black/5 rounded-[4px]">
+      <img 
+        src={post.image} 
+        alt={post.title}
+        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-103"
+        loading="lazy"
+      />
     </div>
 
-    <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-       <p 
-          style={{ fontFamily: "var(--brand-font)" }}
-          className="text-lg md:text-xl font-bold uppercase tracking-wider text-foreground/85 group-hover:text-foreground transition-colors truncate"
-       >
-          {post.title}
-       </p>
-       
-       <div className="flex items-center justify-between border-t border-border pt-2 md:pt-3">
-          <span className="text-[10px] md:text-sm font-bold text-foreground uppercase tracking-tight">
-             {post.date}
-          </span>
-          <span className="text-[7px] md:text-[9px] font-bold text-foreground/60 uppercase tracking-[0.1em]">
-             Read Story
-          </span>
-       </div>
+    {/* Metadata Block */}
+    <div className="mt-4 space-y-1.5 px-0.5">
+      <div className="flex items-center gap-2">
+        <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+          {post.category || "JOURNAL"}
+        </span>
+        <span className="w-1 h-1 rounded-full bg-black/10" />
+        <span className="text-[9px] font-bold text-neutral-400 tracking-wider">
+          {post.date}
+        </span>
+      </div>
+      
+      <h3 
+        style={{ fontFamily: "var(--brand-font)" }}
+        className="text-[15px] sm:text-[17px] font-black uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
+      >
+        {post.title}
+      </h3>
     </div>
   </Link>
 );
@@ -83,8 +76,6 @@ export default async function BlogArchive() {
     date: new Date(b.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   }));
 
-
-
   const page = await Page.findOne({ slug: "blog", status: "Published" }).lean();
   const { structuredData } = resolveSEOMetadata({
     entity: page || {},
@@ -95,47 +86,51 @@ export default async function BlogArchive() {
   });
 
   return (
-    <main className="bg-white min-h-screen">
+    <main className="bg-white min-h-screen text-black">
       {structuredData && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: escapeJsonLd(structuredData) }}
         />
       )}
-      <section className="pt-16 pb-10 md:pt-24 md:pb-12 border-b border-border">
+      <section className="pt-24 pb-12 border-b border-black/[0.06]">
          <div className="container mx-auto px-2 sm:px-4 md:px-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-               <div className="space-y-4 max-w-3xl">
-                  <div className="inline-flex items-center bg-foreground text-background px-3 py-1 rounded-md">
-                     <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] uppercase">
-                        PAIRO ARCHIVE INDEX
-                     </span>
-                  </div>
-                  <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold heading-font tracking-tighter text-foreground uppercase leading-[0.85]">
-                     Editorial <br /> Stories
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+               <div className="space-y-3 max-w-3xl">
+                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-neutral-400">
+                     Pairo Archive & Journal
+                  </p>
+                  <h1 className="text-[36px] md:text-[60px] font-extrabold heading-font tracking-tight text-black uppercase leading-none">
+                     EDITORIAL STORIES
                   </h1>
                </div>
-               <div className="hidden md:block">
-                  <span className="text-[10px] font-bold tracking-[0.4em] text-foreground/45 uppercase">VOLUME 2026 // EDITION 0.1</span>
+               <div className="text-right">
+                  <span className="text-[9px] font-bold tracking-[0.25em] text-neutral-400 uppercase block">VOLUME 2026 // EDITION 0.1</span>
                </div>
             </div>
          </div>
       </section>
 
-      <section className="py-10 md:py-16">
+      <section className="py-12 md:py-20">
          <div className="container mx-auto px-2 sm:px-4 md:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-12">
-               {posts.map((post) => (
-                  <BlogCard key={post.id} post={post} />
-               ))}
-            </div>
+            {posts.length === 0 ? (
+              <div className="text-center py-20 bg-neutral-50 rounded-[4px] border border-black/[0.04]">
+                <p className="text-xs font-black uppercase tracking-wider text-neutral-400">No Editorial Stories Published Yet</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-8">
+                 {posts.map((post) => (
+                    <BlogCard key={post.id} post={post} />
+                 ))}
+              </div>
+            )}
          </div>
       </section>
 
-      <section className="py-12 md:py-20 bg-secondary border-t border-border">
-         <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center max-w-4xl">
-            <span className="text-foreground/50 text-[9px] font-bold uppercase tracking-[0.5em] mb-8 block">THE ELITE LIST</span>
-            <h2 className="text-3xl md:text-5xl font-bold heading-font tracking-tighter text-foreground uppercase mb-12">
+      <section className="py-16 md:py-24 bg-[#FAF9F6] border-t border-black/[0.06]">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8 text-center max-w-xl">
+            <span className="text-neutral-400 text-[9px] font-black uppercase tracking-[0.4em] mb-4 block">THE ELITE LIST</span>
+            <h2 className="text-2xl md:text-[32px] font-extrabold heading-font tracking-tight text-black uppercase mb-8 leading-tight">
                Subscribe to receive <br /> exclusive archive previews.
             </h2>
             <BlogNewsletterForm />
