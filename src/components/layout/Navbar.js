@@ -532,7 +532,7 @@ export default function Navbar() {
                                         href={sub.href}
                                         target={sub.openInNewTab ? '_blank' : undefined}
                                         onClick={() => setIsOpen(false)}
-                                        className="text-lg font-bold text-black/60 hover:text-black uppercase tracking-wide block"
+                                        className="text-lg font-semibold text-black hover:text-primary uppercase tracking-wide block"
                                       >
                                         {sub.name}
                                       </Link>
@@ -547,7 +547,7 @@ export default function Navbar() {
                                         key={cat.slug || cat.name} 
                                         href={getCategoryUrl(cat)} 
                                         onClick={() => setIsOpen(false)}
-                                        className="text-lg font-bold text-black/60 hover:text-black uppercase tracking-wide block"
+                                        className="text-lg font-semibold text-black hover:text-primary uppercase tracking-wide block"
                                       >
                                         {cat.name}
                                       </Link>
@@ -562,7 +562,7 @@ export default function Navbar() {
                                         key={prod._id}
                                         href={getProductUrl(prod)}
                                         onClick={() => setIsOpen(false)}
-                                        className="text-lg font-bold text-black/60 hover:text-black uppercase tracking-wide block truncate"
+                                        className="text-lg font-semibold text-black hover:text-primary uppercase tracking-wide block truncate"
                                       >
                                         {prod.name}
                                       </Link>
