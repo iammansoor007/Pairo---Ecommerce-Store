@@ -31,7 +31,10 @@ const BlogCard = ({ post, readMoreLabel }) => (
       </p>
       <div className="flex items-center justify-between border-t border-black/[0.03] pt-2 md:pt-3">
         <span className="text-[10px] md:text-sm font-bold text-black uppercase tracking-tight">{post.date}</span>
-        <span className="text-[7px] md:text-[9px] font-bold text-black/40 uppercase tracking-[0.1em]">{readMoreLabel}</span>
+        <span className="text-[10px] md:text-xs font-bold text-black/80 group-hover:text-black transition-all duration-300 uppercase tracking-wider flex items-center gap-1">
+          {readMoreLabel}
+          <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+        </span>
       </div>
     </div>
   </Link>

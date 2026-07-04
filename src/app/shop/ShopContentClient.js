@@ -574,7 +574,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
       {/* Categories */}
       <div className="pb-8 border-b border-border">
         <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">Categories</p>
-        <div className="flex flex-col gap-3 text-xs">
+        <div className="flex flex-col gap-3 text-sm">
 
           {allCategories.map((cat) => {
             const dbCat = dbCategories.find(c => c.name.toLowerCase() === cat.toLowerCase());
@@ -591,10 +591,10 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                   handleCategorySelect(dbCat ? dbCat.slug : cat.toLowerCase());
                   if (isMobile) setShowFilters(false);
                 }}
-                className={`flex items-center justify-between py-1 w-full text-left transition-all ${isSelected ? "font-bold text-foreground" : "text-foreground/65 hover:text-foreground"}`}
+                className={`flex items-center justify-between py-1 w-full text-left transition-all ${isSelected ? "font-bold text-foreground" : "text-foreground/75 hover:text-foreground"}`}
               >
-                <span>{cat}</span>
-                <span className="text-foreground/50 text-[10px]">
+                <span className="font-semibold uppercase tracking-wider text-[11px] sm:text-xs">{cat}</span>
+                <span className="text-foreground/50 text-[10px] sm:text-[11px]">
                   {products.filter(p => {
                     const pCat = p.category || '';
                     const pCats = p.categories || [];

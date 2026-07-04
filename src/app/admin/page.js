@@ -72,8 +72,8 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="font-sans text-[#3c434a] bg-[#f0f2f1] min-h-screen p-4 md:p-8">
-      <div className="max-w-[1200px] mx-auto">
+    <div className="font-sans text-[#3c434a] bg-[#f0f2f1] min-h-screen p-4 md:p-6">
+      <div className="w-full">
         {/* Welcome Panel */}
         <div className="bg-[#1d2327] text-white p-8 mb-8 relative overflow-hidden rounded-[2px] shadow-sm">
           <div className="relative z-10 max-w-2xl">

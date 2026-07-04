@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import * as LucideIcons from "lucide-react";
 
-export default function MarqueeSection({ items: propItems, speed = 35, className = "" }) {
+export default function MarqueeSection({ items: propItems, speed = 75, className = "" }) {
   const defaultItems = [
     { text: "ELITE SHEARLING COLLECTION", icon: "Star" },
     { text: "HANDCRAFTED LUXURY", icon: "Star" },
@@ -27,7 +27,7 @@ export default function MarqueeSection({ items: propItems, speed = 35, className
 
   return (
     <div className={`absolute bottom-0 left-0 w-full z-30 pointer-events-none ${className}`}>
-      <div className="bg-white/90 backdrop-blur-md border-t border-black/5 py-3.5 overflow-hidden flex items-center">
+      <div className="bg-white/90 backdrop-blur-md py-3.5 overflow-hidden flex items-center">
         <motion.div 
           animate={{ x: [0, -1000] }}
           transition={{ duration: speed, repeat: Infinity, ease: "linear" }}

@@ -466,9 +466,8 @@ export default function TaxSettingsPage() {
 
       </div>
 
-      {/* WordPress Admin Settings Footer / Save Changes Bar */}
       <div className="fixed bottom-0 left-[160px] right-0 z-40 bg-white border-t border-[#c3c4c7] shadow-lg">
-        <div className="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-3.5">
+        <div className="w-full flex items-center justify-between px-6 py-3.5">
           <p className="text-[12px] text-[#646970] italic">Make sure to save changes for settings to take effect instantly.</p>
           <button
             type="button"

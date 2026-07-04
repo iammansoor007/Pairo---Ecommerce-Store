@@ -158,24 +158,71 @@ export default function ContactSection({
             className="lg:col-span-5 space-y-12"
           >
             {/* Atelier Info */}
-            <div className="space-y-6">
-              <motion.div variants={itemVariants} className="space-y-4">
+            <div className="space-y-8">
+              <motion.div variants={itemVariants} className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-foreground/85 uppercase">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                  <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-foreground/90 uppercase">
                     {officeLabel}
                   </span>
                 </div>
-                <p className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter uppercase leading-[1.1] text-foreground">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black heading-font tracking-tight uppercase leading-[1.05] text-foreground">
                   {officeTitle}
-                </p>
-                <div className="flex items-start gap-4 pt-6 border-t border-border/80">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-primary shrink-0 shadow-sm">
-                    <MapPin className="w-4 h-4" />
+                </h2>
+                
+                {/* Location Card */}
+                <div className="p-6 rounded-[28px] bg-secondary/50 backdrop-blur-md border border-border/80 shadow-[0_15px_30px_rgba(0,0,0,0.02)] space-y-4 relative overflow-hidden group">
+                  <div className="absolute -right-8 -bottom-8 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary text-background flex items-center justify-center shrink-0 shadow-lg shadow-primary/10">
+                      <MapPin className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/40">Our Address</p>
+                      <p className="text-base sm:text-lg text-foreground font-semibold leading-relaxed max-w-sm">
+                        {address}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-lg text-foreground leading-relaxed max-w-md font-normal pt-1">
-                    {address}
-                  </p>
+                  
+                  {/* Coordinates Badge */}
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-background/80 border border-border text-[9px] font-mono tracking-widest text-foreground/75 font-semibold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    43.7696° N, 11.2558° E
+                  </div>
+                </div>
+
+                {/* Abstract Interactive-Looking Visual Map Placeholder */}
+                <div className="relative h-[200px] md:h-[240px] rounded-[28px] overflow-hidden border border-border bg-[#F9F9F9] shadow-inner group">
+                  {/* Abstract Grid Map Background */}
+                  <div className="absolute inset-0 opacity-[0.07] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:20px_20px]" />
+                  
+                  {/* Styled Map Rivers/Streets (Minimalist SVG Lines) */}
+                  <svg className="absolute inset-0 w-full h-full text-foreground/10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M-50 80 Q100 60 200 130 T450 110" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M60 -50 L120 250" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M220 -50 L180 250" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" />
+                    <path d="M-50 140 H500" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M120 120 L280 -50" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                  
+                  {/* Pulse Indicator for Florence Boutique */}
+                  <div className="absolute top-[120px] left-[150px] sm:left-[200px] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                    <span className="absolute w-12 h-12 rounded-full bg-primary/10 animate-ping" style={{ animationDuration: '3s' }} />
+                    <span className="absolute w-8 h-8 rounded-full bg-primary/20 animate-ping" style={{ animationDuration: '2s' }} />
+                    <div className="w-4 h-4 rounded-full bg-primary border-2 border-background shadow-lg z-10 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 rounded-full bg-background" />
+                    </div>
+                  </div>
+
+                  {/* Tiny Location Tag overlay */}
+                  <div className="absolute top-1/2 left-[180px] sm:left-[230px] -translate-y-1/2 bg-background border border-border px-3 py-1.5 rounded-xl shadow-lg z-20 pointer-events-none group-hover:scale-105 transition-transform duration-300">
+                    <p className="text-[9px] font-black uppercase tracking-wider text-foreground">Pairo Atelier</p>
+                    <p className="text-[8px] text-foreground/60 font-semibold uppercase">Florence, IT</p>
+                  </div>
+                  
+                  {/* Subtle Gradient vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent pointer-events-none" />
                 </div>
               </motion.div>
             </div>

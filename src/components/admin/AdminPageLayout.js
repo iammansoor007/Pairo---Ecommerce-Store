@@ -13,8 +13,8 @@ export default function AdminPageLayout({
   children 
 }) {
   return (
-    <div className="bg-[#f0f2f1] min-h-screen p-4 md:p-8 font-sans text-[#2c3338]">
-      <div className="max-w-[1200px] mx-auto space-y-6">
+    <div className="bg-[#f0f2f1] min-h-screen p-4 md:p-6 font-sans text-[#2c3338]">
+      <div className="w-full space-y-6">
         
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-[12px] text-[#646970] mb-2">
