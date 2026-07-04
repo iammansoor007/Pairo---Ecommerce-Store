@@ -754,38 +754,69 @@ export default function ProfilePage() {
                               <div className="space-y-6">
                                 <h3 className="text-[18px] font-black text-black uppercase tracking-wide">{order.status}</h3>
                                 
-                                {/* Robust Stepper Timeline Progress Bar - Vertical Layout to avoid overlapping */}
-                                {!['Cancelled', 'Refunded'].includes(order.status) && (
-                                  <div className="pt-2 pl-2 relative">
-                                    {/* Connector Line */}
-                                    <div className="absolute left-[11.5px] top-[10px] bottom-[10px] w-[1px] bg-neutral-200" />
-                                    
-                                    <div className="flex flex-col gap-6 relative">
-                                      {stepperSteps.map((step, idx) => {
-                                        const isCompleted = idx <= currentStepIndex;
-                                        const isCurrent = idx === currentStepIndex;
-                                        return (
-                                          <div key={idx} className="flex items-center gap-4">
-                                            {/* Node Circle */}
-                                            <div className={`w-[7px] h-[7px] rounded-full shrink-0 z-10 transition-all ${
-                                              isCurrent ? 'bg-black ring-4 ring-black/10 scale-125' :
-                                              isCompleted ? 'bg-black' :
-                                              'bg-white border border-neutral-300'
-                                            }`} />
-                                            
-                                            {/* Step label */}
-                                            <span className={`text-[9px] font-bold uppercase tracking-wider ${
-                                              isCurrent ? 'text-black font-black' : 
-                                              isCompleted ? 'text-black' : 'text-neutral-500'
-                                            }`}>
-                                              {step}
-                                            </span>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                )}
+                                 {/* Premium Snake Path Stepper Timeline - Fills horizontal space */}
+                                 {!['Cancelled', 'Refunded'].includes(order.status) && (() => {
+                                   const row1Progress = Math.min(Math.max(currentStepIndex, 0), 3) / 3;
+                                   const row2Progress = Math.min(Math.max(currentStepIndex - 4, 0), 2) / 2;
+                                   const stepsPositions = [
+                                     { step: 'Pending', col: 'col-start-1', row: 'row-start-1' },
+                                     { step: 'Confirmed', col: 'col-start-2', row: 'row-start-1' },
+                                     { step: 'Processing', col: 'col-start-3', row: 'row-start-1' },
+                                     { step: 'Packed', col: 'col-start-4', row: 'row-start-1' },
+                                     { step: 'Shipped', col: 'col-start-4', row: 'row-start-2' },
+                                     { step: 'Out for Delivery', col: 'col-start-3', row: 'row-start-2' },
+                                     { step: 'Delivered', col: 'col-start-2', row: 'row-start-2' }
+                                   ];
+                                   return (
+                                     <div className="pt-4 relative select-none">
+                                       {/* Background Connectors */}
+                                       <div className="absolute left-[12.5%] right-[12.5%] top-[18px] h-[2px] bg-neutral-200 -z-10" />
+                                       <div className="absolute right-[12.5%] top-[18px] bottom-[18px] w-[2px] bg-neutral-200 -z-10" />
+                                       <div className="absolute left-[37.5%] right-[12.5%] bottom-[18px] h-[2px] bg-neutral-200 -z-10" />
+
+                                       {/* Active Connector Overlays */}
+                                       <div 
+                                         className="absolute left-[12.5%] top-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                                         style={{ width: `calc(${row1Progress * 75}%)` }} 
+                                       />
+                                       <div 
+                                         className="absolute right-[12.5%] top-[18px] w-[2px] bg-black -z-10 transition-all duration-500" 
+                                         style={{ height: currentStepIndex >= 4 ? 'calc(100% - 36px)' : '0px' }} 
+                                       />
+                                       <div 
+                                         className="absolute right-[12.5%] bottom-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                                         style={{ width: `calc(${row2Progress * 50}%)` }} 
+                                       />
+
+                                       <div className="grid grid-cols-4 gap-y-12 gap-x-2 relative">
+                                         {stepsPositions.map((item, idx) => {
+                                           const isCompleted = idx <= currentStepIndex;
+                                           const isCurrent = idx === currentStepIndex;
+                                           return (
+                                             <div key={idx} className={`${item.col} ${item.row} flex flex-col items-center text-center relative`}>
+                                                {/* Node Circle */}
+                                                <div className={`w-9 h-9 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                                                  isCurrent ? 'bg-black text-white border-black scale-110 shadow-md ring-4 ring-black/10' :
+                                                  isCompleted ? 'bg-black text-white border-black' :
+                                                  'bg-white text-black border-neutral-300'
+                                                }`}>
+                                                  {idx + 1}
+                                                </div>
+                                                
+                                                {/* Step Label */}
+                                                <span className={`text-[9px] font-black uppercase tracking-wider mt-2.5 max-w-[85px] line-clamp-2 ${
+                                                  isCurrent ? 'text-black font-black' : 
+                                                  isCompleted ? 'text-black' : 'text-neutral-400'
+                                                }`}>
+                                                  {item.step}
+                                                </span>
+                                             </div>
+                                           );
+                                         })}
+                                       </div>
+                                     </div>
+                                   );
+                                 })()}
 
                                 {/* Cancel request button if pending */}
                                 {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (

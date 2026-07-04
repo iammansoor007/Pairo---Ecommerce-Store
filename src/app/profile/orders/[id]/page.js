@@ -160,49 +160,71 @@ export default function UserOrderDetailPage() {
           </div>
         </div>
 
-        {/* Visual Progress Stepper */}
-        {!['Cancelled', 'Refunded'].includes(order.status) && (
-          <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12">
-            {/* Active status label for mobile */}
-            <div className="text-center mb-5 sm:hidden">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-black text-white px-3 py-1.5 rounded-[2px] shadow-sm">
-                Status: {order.status}
-              </span>
-            </div>
+         {/* Visual Progress Stepper */}
+         {!['Cancelled', 'Refunded'].includes(order.status) && (() => {
+           const row1Progress = Math.min(Math.max(currentStep, 0), 3) / 3;
+           const row2Progress = Math.min(Math.max(currentStep - 4, 0), 2) / 2;
+           const stepsPositions = [
+             { step: 'Pending', col: 'col-start-1', row: 'row-start-1' },
+             { step: 'Confirmed', col: 'col-start-2', row: 'row-start-1' },
+             { step: 'Processing', col: 'col-start-3', row: 'row-start-1' },
+             { step: 'Packed', col: 'col-start-4', row: 'row-start-1' },
+             { step: 'Shipped', col: 'col-start-4', row: 'row-start-2' },
+             { step: 'Out for Delivery', col: 'col-start-3', row: 'row-start-2' },
+             { step: 'Delivered', col: 'col-start-2', row: 'row-start-2' }
+           ];
+           return (
+             <div className="bg-[#FAF9F6] border border-black/[0.05] rounded-[4px] p-6 mb-12 select-none">
+               <div className="relative">
+                 {/* Background Connectors */}
+                 <div className="absolute left-[12.5%] right-[12.5%] top-[18px] h-[2px] bg-neutral-200 -z-10" />
+                 <div className="absolute right-[12.5%] top-[18px] bottom-[18px] w-[2px] bg-neutral-200 -z-10" />
+                 <div className="absolute left-[37.5%] right-[12.5%] bottom-[18px] h-[2px] bg-neutral-200 -z-10" />
 
-            <div className="relative px-3">
-              {/* Connector Line */}
-              <div className="absolute left-3 right-3 top-[12px] -translate-y-1/2 h-[2px] bg-black/10 -z-0" />
-              <div 
-                className="absolute left-3 top-[12px] -translate-y-1/2 h-[2px] bg-black transition-all duration-500" 
-                style={{ width: `calc(${currentStep >= 0 ? (currentStep / 6) * 100 : 0}% - 6px)` }}
-              />
+                 {/* Active Connector Overlays */}
+                 <div 
+                   className="absolute left-[12.5%] top-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                   style={{ width: `calc(${row1Progress * 75}%)` }} 
+                 />
+                 <div 
+                   className="absolute right-[12.5%] top-[18px] w-[2px] bg-black -z-10 transition-all duration-500" 
+                   style={{ height: currentStep >= 4 ? 'calc(100% - 36px)' : '0px' }} 
+                 />
+                 <div 
+                   className="absolute right-[12.5%] bottom-[18px] h-[2px] bg-black -z-10 transition-all duration-500" 
+                   style={{ width: `calc(${row2Progress * 50}%)` }} 
+                 />
 
-              <div className="flex justify-between items-start relative z-10">
-                {steps.map((step, idx) => {
-                  const active = idx <= currentStep;
-                  const isCurrent = idx === currentStep;
-                  return (
-                    <div key={idx} className="flex flex-col items-center">
-                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                        isCurrent ? 'bg-black text-white border-black scale-110 shadow-md' :
-                        active ? 'bg-black text-white border-black' :
-                        'bg-white text-black border-black/25'
-                      }`}>
-                        {idx + 1}
-                      </div>
-                      <span className={`hidden sm:inline-block text-[8px] sm:text-[9px] font-bold uppercase tracking-wider mt-2.5 transition-colors ${
-                        active ? 'text-black font-black' : 'text-black'
-                      }`}>
-                        {step}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
+                 <div className="grid grid-cols-4 gap-y-12 gap-x-2 relative">
+                   {stepsPositions.map((item, idx) => {
+                     const isCompleted = idx <= currentStep;
+                     const isCurrent = idx === currentStep;
+                     return (
+                       <div key={idx} className={`${item.col} ${item.row} flex flex-col items-center text-center relative`}>
+                          {/* Node Circle */}
+                          <div className={`w-9 h-9 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                            isCurrent ? 'bg-black text-white border-black scale-110 shadow-md ring-4 ring-black/10' :
+                            isCompleted ? 'bg-black text-white border-black' :
+                            'bg-white text-black border-neutral-300'
+                          }`}>
+                            {idx + 1}
+                          </div>
+                          
+                          {/* Step Label */}
+                          <span className={`text-[9px] font-black uppercase tracking-wider mt-2.5 max-w-[85px] line-clamp-2 ${
+                            isCurrent ? 'text-black font-black' : 
+                            isCompleted ? 'text-black' : 'text-neutral-400'
+                          }`}>
+                            {item.step}
+                          </span>
+                       </div>
+                     );
+                   })}
+                 </div>
+               </div>
+             </div>
+           );
+         })()}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
            
