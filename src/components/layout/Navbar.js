@@ -173,8 +173,11 @@ export default function Navbar() {
   };
 
   const siteData = useSiteData();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { cartCount } = useCart();
+
+  const showProfile = mounted && status === "authenticated";
+  const showLoginText = mounted && status === "unauthenticated";
 
   // --- Resolve dynamic data ---
   const dbCategories = siteData?._dbCategories || [];
@@ -452,17 +455,17 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href={mounted && session ? "/profile" : "/login"}
-                className={`hidden lg:flex items-center gap-3 p-2 hover:bg-black/5 rounded-full transition-all group ${mounted && session ? "pr-2 -mr-2" : "pr-4 -mr-4"}`}
+                href={showProfile ? "/profile" : "/login"}
+                className={`hidden lg:flex items-center gap-3 p-2 hover:bg-black/5 rounded-full transition-all group ${showProfile ? "pr-2 -mr-2" : "pr-4 -mr-4"}`}
               >
                 <div className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center">
-                  {mounted && session ? (
-                    <span className="text-xs font-bold uppercase">{session.user.name?.charAt(0) || 'U'}</span>
+                  {showProfile ? (
+                    <span className="text-xs font-bold uppercase">{session?.user?.name?.charAt(0) || 'U'}</span>
                   ) : (
                     <User className="w-4 h-4" />
                   )}
                 </div>
-                {mounted && !session && <span className="text-[10px] font-bold uppercase tracking-widest text-black/60 group-hover:text-black">Login</span>}
+                {showLoginText && <span className="text-[10px] font-bold uppercase tracking-widest text-black/60 group-hover:text-black">Login</span>}
               </Link>
 
               <button className="lg:hidden p-3 -mr-3 hover:bg-black/5 rounded-full" onClick={() => setIsOpen(true)}>
@@ -588,11 +591,11 @@ export default function Navbar() {
 
             <div className="p-8 bg-white border-t border-black/5">
               <Link
-                href={mounted && session ? "/profile" : "/login"}
+                href={showProfile ? "/profile" : "/login"}
                 onClick={() => setIsOpen(false)}
                 className="w-full bg-black text-white flex items-center justify-center gap-4 py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px]"
               >
-                {mounted && session ? (
+                {showProfile ? (
                   <><User className="w-4 h-4" /> Profile</>
                 ) : (
                   <><LogIn className="w-4 h-4" /> Sign In</>
