@@ -204,6 +204,8 @@ export const SECTION_SCHEMAS = {
       { name: "officeLabel", label: "Office Label", type: "text" },
       { name: "officeTitle", label: "Office Title", type: "text" },
       { name: "address", label: "Physical Address", type: "textarea" },
+      { name: "officeHours", label: "Opening Hours (one per line)", type: "textarea" },
+      { name: "bespokeFittingText", label: "Bespoke Fittings Notice", type: "textarea" },
       { name: "channels", label: "Contact Channels", type: "repeater", fields: [
         { name: "label", label: "Channel Label", type: "text" },
         { name: "value", label: "Channel Value (Email/Phone)", type: "text" }

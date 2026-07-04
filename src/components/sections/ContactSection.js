@@ -80,6 +80,8 @@ export default function ContactSection({
   officeLabel = "HEADQUARTERS",
   officeTitle = "VISIT THE ATELIER",
   address = "123 Artisan Row, Florence, Italy 50123",
+  officeHours = "",
+  bespokeFittingText = "",
   channels = [
     { label: "General Inquiries", value: "concierge@pairo.com" },
     { label: "Press & Media", value: "press@pairo.com" }
@@ -140,6 +142,12 @@ export default function ContactSection({
     visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } }
   };
 
+  const hoursLines = officeHours 
+    ? officeHours.split("\n").filter(Boolean) 
+    : ["Mon – Fri: 10:00 – 19:00", "Sat: 11:00 – 18:00", "Sun: Closed"];
+
+  const bespokeNotice = bespokeFittingText || "By appointment only. Please contact us to schedule your private fitting.";
+
   return (
     <section id="contact-form" className="py-20 md:py-28 relative overflow-hidden bg-background">
       {/* Background Ambient Glows for premium Glassmorphism */}
@@ -159,38 +167,38 @@ export default function ContactSection({
             {/* Atelier Info */}
             <div className="space-y-6">
               <motion.div variants={itemVariants} className="space-y-5">
-                <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-foreground/40 uppercase block">
+                <span className="text-[10px] md:text-[11px] font-extrabold tracking-[0.3em] text-black uppercase block">
                   {officeLabel}
                 </span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black heading-font tracking-tight uppercase leading-[1.05] text-foreground">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black heading-font tracking-tight uppercase leading-[1.05] text-black">
                   {officeTitle}
                 </h2>
                 
                 {/* Location Info & Hours */}
-                <div className="border-t border-b border-border/80 py-8 space-y-6">
+                <div className="border-t border-b border-black py-8 space-y-6">
                   <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Atelier Location</p>
-                    <p className="text-lg sm:text-xl text-foreground font-semibold leading-relaxed max-w-sm font-sans">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Atelier Location</p>
+                    <p className="text-lg sm:text-xl text-black font-semibold leading-relaxed max-w-sm font-sans">
                       {address}
                     </p>
-                    <p className="text-[10px] font-mono tracking-wider text-foreground/40 font-semibold pt-1">
+                    <p className="text-[10px] font-mono tracking-wider text-black/60 font-semibold pt-1">
                       Florence, Italy • 43.7696° N, 11.2558° E
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-8 pt-6 border-t border-border/40">
+                  <div className="grid grid-cols-2 gap-8 pt-6 border-t border-black/20">
                     <div className="space-y-2">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Opening Hours</p>
-                      <ul className="text-xs text-foreground/75 space-y-1 font-medium font-sans">
-                        <li>Mon – Fri: 10:00 – 19:00</li>
-                        <li>Sat: 11:00 – 18:00</li>
-                        <li>Sun: Closed</li>
+                      <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Opening Hours</p>
+                      <ul className="text-xs text-black space-y-1 font-medium font-sans">
+                        {hoursLines.map((line, idx) => (
+                          <li key={idx}>{line}</li>
+                        ))}
                       </ul>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/45">Bespoke Fittings</p>
-                      <p className="text-xs text-foreground/75 font-sans leading-relaxed">
-                        By appointment only. Please contact us to schedule your private fitting.
+                      <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-black">Bespoke Fittings</p>
+                      <p className="text-xs text-black font-sans leading-relaxed">
+                        {bespokeNotice}
                       </p>
                     </div>
                   </div>
@@ -199,7 +207,7 @@ export default function ContactSection({
             </div>
 
             {/* Channels Grid */}
-            <div className="grid sm:grid-cols-2 gap-8 border-b border-border/80 pb-8">
+            <div className="grid sm:grid-cols-2 gap-8 border-b border-black pb-8">
               {channels.map((channel, i) => {
                 return (
                   <motion.div 
@@ -207,8 +215,8 @@ export default function ContactSection({
                     variants={itemVariants} 
                     className="space-y-1.5"
                   >
-                    <p className="text-[9px] font-bold text-foreground/45 uppercase tracking-[0.2em]">{channel.label}</p>
-                    <p className="text-sm font-bold text-foreground font-sans tracking-tight break-all">{channel.value}</p>
+                    <p className="text-[9px] font-extrabold text-black uppercase tracking-[0.2em]">{channel.label}</p>
+                    <p className="text-sm font-extrabold text-black font-sans tracking-tight break-all">{channel.value}</p>
                   </motion.div>
                 );
               })}
@@ -216,8 +224,8 @@ export default function ContactSection({
 
             {/* Social Links */}
             <motion.div variants={itemVariants} className="space-y-4">
-              <span className="text-[10px] font-bold tracking-[0.25em] text-foreground/45 uppercase block">{socialLabel}</span>
-              <div className="flex flex-wrap gap-x-8 gap-y-2">
+              <span className="text-[10px] font-bold tracking-[0.25em] text-black uppercase block">{socialLabel}</span>
+              <div className="flex flex-wrap gap-4">
                 {(Array.isArray(socialLinks) && socialLinks.length > 0
                   ? socialLinks.filter(s => s.url && s.platform)
                   : [
@@ -226,15 +234,17 @@ export default function ContactSection({
                       { platform: "linkedin", url: "#" },
                     ]
                 ).map((s, i) => {
+                  const Icon = CONTACT_SOCIAL_ICONS[s.platform?.toLowerCase()] || InstagramIcon;
                   return (
                     <a
                       key={i}
                       href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-bold text-foreground/60 hover:text-foreground uppercase tracking-[0.15em] transition-colors"
+                      aria-label={s.platform}
+                      className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1 shadow-sm"
                     >
-                      {s.platform}
+                      <Icon />
                     </a>
                   );
                 })}
@@ -267,9 +277,9 @@ export default function ContactSection({
                 <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/70 ml-1">Name</label>
+                      <label className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-black ml-1">Name</label>
                       <div className="relative">
-                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-black/60 pointer-events-none">
                           <User className="w-4 h-4" />
                         </div>
                         <input 
@@ -283,9 +293,9 @@ export default function ContactSection({
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/70 ml-1">Email Address</label>
+                      <label className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-black ml-1">Email Address</label>
                       <div className="relative">
-                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-black/60 pointer-events-none">
                           <Mail className="w-4 h-4" />
                         </div>
                         <input 
@@ -301,9 +311,9 @@ export default function ContactSection({
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/70 ml-1">Subject</label>
+                    <label className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-black ml-1">Subject</label>
                     <div className="relative">
-                      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-black/60 pointer-events-none">
                         <Tag className="w-4 h-4" />
                       </div>
                       <select 
@@ -315,16 +325,16 @@ export default function ContactSection({
                           <option key={sub} className="bg-background text-foreground">{sub}</option>
                         ))}
                       </select>
-                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/40">
+                      <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-black/60">
                         <ChevronDown className="w-4 h-4" />
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.15em] text-foreground/70 ml-1">Message</label>
+                    <label className="text-[10px] font-extrabold uppercase tracking-[0.15em] text-black ml-1">Message</label>
                     <div className="relative">
-                      <div className="absolute left-5 top-[18px] text-foreground/40 pointer-events-none">
+                      <div className="absolute left-5 top-[18px] text-black/60 pointer-events-none">
                         <MessageSquare className="w-4 h-4" />
                       </div>
                       <textarea 
