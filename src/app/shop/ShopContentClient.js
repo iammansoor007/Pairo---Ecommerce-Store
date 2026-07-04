@@ -54,13 +54,23 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   // Enforce manual scroll restoration on mount to prevent Next.js layout jumps on route mutations
   useEffect(() => {
     if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
-      const originalScrollRestoration = window.history.scrollRestoration;
       window.history.scrollRestoration = "manual";
-      return () => {
-        window.history.scrollRestoration = originalScrollRestoration;
-      };
     }
   }, []);
+
+  // Proactively scroll to the product grid top BEFORE any state change.
+  // This runs synchronously so the viewport is repositioned before React
+  // re-renders (and potentially collapses the page height), preventing the
+  // browser from force-snapping the scroll position to the footer.
+  const scrollToGridTop = () => {
+    if (typeof window === "undefined") return;
+    const el = document.getElementById("product-grid-main");
+    if (!el) return;
+    const gridTop = el.getBoundingClientRect().top + window.scrollY - 120;
+    if (window.scrollY > gridTop + 10) {
+      window.scrollTo({ top: gridTop, behavior: "instant" });
+    }
+  };
 
   useEffect(() => {
     if (products.length > 0) return;
@@ -308,6 +318,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     return () => clearTimeout(handler);
   }, [sliderValue]);
 
+  // No reactive scroll effects needed — scrollToGridTop() is called proactively
+  // before each state update that changes the product grid contents.
+
   const filteredProducts = useMemo(() => {
     let result = products;
 
@@ -428,25 +441,34 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     currentPage * ITEMS_PER_PAGE
   );
 
+  const goToPage = (page) => {
+    scrollToGridTop();
+    setCurrentPage(page);
+  };
+
   const toggleColor = (color) => {
+    scrollToGridTop();
     setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
     setCurrentPage(1);
   };
 
   const toggleSize = (size) => {
+    scrollToGridTop();
     setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
     setCurrentPage(1);
   };
 
   const handleCategorySelect = (catName) => {
+    window.scrollTo({ top: 0, behavior: "instant" });
     setCurrentPage(1);
     const basePath = catName ? `/collections/${catName.toLowerCase()}` : '/shop';
     startTransition(() => {
-      router.push(basePath);
+      router.push(basePath, { scroll: false });
     });
   };
 
   const toggleType = (type) => {
+    scrollToGridTop();
     setSelectedTypes(prev => {
       const newTypes = prev.includes(type)
         ? prev.filter(t => t !== type)
@@ -467,6 +489,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   };
 
   const toggleCustomAttr = (attrName, value) => {
+    scrollToGridTop();
     setSelectedCustomAttrs(prev => {
       const current = prev[attrName] || [];
       const updated = current.includes(value)
@@ -482,6 +505,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   };
 
   const resetFilters = () => {
+    window.scrollTo({ top: 0, behavior: "instant" });
     setSliderValue(priceLimits.max);
     setMaxPrice(priceLimits.max);
     setSelectedColors([]);
@@ -493,7 +517,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     setSortBy("Most Popular");
     setCurrentPage(1);
     startTransition(() => {
-      router.push('/shop');
+      router.push('/shop', { scroll: false });
     });
   };
 
@@ -520,6 +544,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
             type="text"
             value={searchQuery}
             onChange={(e) => {
+              scrollToGridTop();
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
@@ -757,7 +782,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                   <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest hidden sm:inline">Sort by:</span>
                   <select
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => { scrollToGridTop(); setSortBy(e.target.value); setCurrentPage(1); }}
                     className="font-bold text-sm bg-transparent focus:outline-none cursor-pointer uppercase pr-8 text-foreground"
                   >
                     <option>Most Popular</option>
@@ -814,7 +839,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest hidden sm:inline">Sort by:</span>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => { scrollToGridTop(); setSortBy(e.target.value); setCurrentPage(1); }}
                   className="font-bold text-sm bg-transparent focus:outline-none cursor-pointer uppercase pr-8 text-foreground"
                 >
                   <option>Most Popular</option>
@@ -847,7 +872,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
             {renderFilterSections(false)}
           </aside>
 
-          <main className="lg:col-span-9 min-h-[800px]">
+          <main id="product-grid-main" className="lg:col-span-9 min-h-[800px]">
             {loading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -880,7 +905,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               <div className="mt-20 flex items-center justify-center gap-12 border-t border-border pt-12">
                 <button
                   type="button"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() => goToPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                   className={`text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === 1 ? "opacity-10 cursor-not-allowed" : "text-foreground hover:text-foreground/75"
                     }`}
@@ -892,7 +917,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                     <button
                       key={i + 1}
                       type="button"
-                      onClick={() => setCurrentPage(i + 1)}
+                      onClick={() => goToPage(i + 1)}
                       className={`w-8 h-8 text-sm font-bold transition-all rounded-full ${currentPage === i + 1
                         ? "bg-foreground text-background"
                         : "text-foreground/50 hover:text-foreground hover:bg-foreground/10"
@@ -904,7 +929,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 </div>
                 <button
                   type="button"
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                   className={`text-[10px] font-bold uppercase tracking-widest transition-all ${currentPage === totalPages ? "opacity-10 cursor-not-allowed" : "text-foreground hover:text-foreground/75"
                     }`}
