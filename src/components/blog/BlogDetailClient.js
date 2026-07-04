@@ -332,25 +332,24 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                       {/* FAQ Section */}
                       {post.faqs && post.faqs.length > 0 && (
-                         <section id="faq" className="pt-6 border-t border-black/5 space-y-4">
-                            <div className="space-y-0.5">
-                               <span className="text-[8px] font-black tracking-[0.25em] text-neutral-400 uppercase">FAQ</span>
-                               <h2 className="text-xs font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
+                         <section id="faq" className="pt-8 border-t border-black/5 space-y-5">
+                            <div>
+                               <h2 className="text-sm font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
                             </div>
-                            <div className="divide-y divide-black/5 border-y border-black/5">
+                            <div className="divide-y divide-black/[0.06] border-y border-black/[0.06]">
                                {post.faqs.map((faq, idx) => {
                                   const isOpen = openFaqIdx === idx;
                                   return (
-                                     <div key={idx} className="py-2.5">
+                                     <div key={idx} className="py-3.5">
                                         <button
                                            type="button"
                                            onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
-                                           className="w-full flex justify-between items-center text-left py-1.5 group focus:outline-none"
+                                           className="w-full flex justify-between items-center text-left py-1 group focus:outline-none"
                                         >
-                                           <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-black group-hover:opacity-75 transition-opacity pr-4">
+                                           <span className="text-xs sm:text-sm font-semibold text-black group-hover:opacity-70 transition-opacity pr-4 leading-snug">
                                               {faq.question}
                                            </span>
-                                           <span className="text-xs font-medium text-black shrink-0">
+                                           <span className="text-xs font-semibold text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-2">
                                               {isOpen ? "—" : "+"}
                                            </span>
                                         </button>
@@ -363,7 +362,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                                  transition={{ duration: 0.2, ease: "easeInOut" }}
                                                  className="overflow-hidden"
                                               >
-                                                 <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed font-medium pt-2 pb-3 pr-6">
+                                                 <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium pt-2 pb-1">
                                                     {faq.answer}
                                                  </p>
                                               </motion.div>
@@ -414,7 +413,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                        {post.showSidebarIndex !== false && (
                           <div className="space-y-3 pt-6 border-t border-black/5">
-                             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 block mb-1">Table of Contents</span>
+                             <span className="text-[10px] font-black uppercase tracking-[0.15em] text-black block mb-1">Table of Contents</span>
                              <div className="flex flex-col gap-2">
                                 {tocSections.length > 0 ? (
                                    tocSections.map((section) => (
@@ -423,10 +422,10 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                          onClick={() => scrollToSection(section.id)}
                                          className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
                                       >
-                                         <span className="text-xs font-semibold text-neutral-700 group-hover:text-black transition-colors text-left leading-relaxed">
+                                         <span className="text-xs font-medium text-black group-hover:underline transition-all text-left leading-relaxed">
                                             {section.title}
                                          </span>
-                                         <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-black transition-colors shrink-0 ml-3" />
+                                         <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
                                       </button>
                                    ))
                                 ) : (
