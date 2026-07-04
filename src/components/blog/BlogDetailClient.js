@@ -304,22 +304,22 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
              </div>
           </div>
 
-          <header className="pt-10 pb-8 md:pt-14 md:pb-10 border-b border-black/5">
+          <header className="pt-6 pb-4 md:pt-8 md:pb-6 border-b border-black/5">
              <div className="container mx-auto px-2 sm:px-4 md:px-8">
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-4 max-w-4xl">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-2 max-w-4xl">
                    {post.title}
                 </h1>
              </div>
           </header>
 
-         <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
+         <div className="container mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14">
                <div id="blog-main-content" className="lg:col-span-8">
-                  <div className="aspect-[16/9] rounded-[4px] overflow-hidden border border-black/5 shadow-sm mb-10">
+                  <div className="aspect-[16/9] rounded-[4px] overflow-hidden border border-black/5 shadow-sm mb-6">
                      <img src={post.image} alt={post.imageAlts?.[post.image] || post.title || "Blog Image"} className="w-full h-full object-cover" />
                   </div>
 
-                  <div className="w-full space-y-12 md:space-y-16">
+                  <div className="w-full space-y-8 md:space-y-12">
                      {/* General Content */}
                      {post.content && (
                         <section id="general" className="scroll-mt-32">
@@ -332,25 +332,25 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                       {/* FAQ Section */}
                       {post.faqs && post.faqs.length > 0 && (
-                         <section id="faq" className="pt-12 border-t border-black/10 space-y-6">
-                            <div className="space-y-1">
-                               <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">FAQ</span>
-                               <h2 className="text-lg md:text-xl font-bold heading-font text-black uppercase">Frequently Asked Questions</h2>
+                         <section id="faq" className="pt-6 border-t border-black/5 space-y-4">
+                            <div className="space-y-0.5">
+                               <span className="text-[8px] font-black tracking-[0.25em] text-neutral-400 uppercase">FAQ</span>
+                               <h2 className="text-xs font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
                             </div>
-                            <div className="divide-y divide-black/10 border-y border-black/10">
+                            <div className="divide-y divide-black/5 border-y border-black/5">
                                {post.faqs.map((faq, idx) => {
                                   const isOpen = openFaqIdx === idx;
                                   return (
-                                     <div key={idx} className="py-4">
+                                     <div key={idx} className="py-2.5">
                                         <button
                                            type="button"
                                            onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
-                                           className="w-full flex justify-between items-center text-left py-2 group focus:outline-none"
+                                           className="w-full flex justify-between items-center text-left py-1.5 group focus:outline-none"
                                         >
-                                           <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-black group-hover:opacity-75 transition-opacity pr-4">
+                                           <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-black group-hover:opacity-75 transition-opacity pr-4">
                                               {faq.question}
                                            </span>
-                                           <span className="text-xs font-light text-black shrink-0">
+                                           <span className="text-xs font-medium text-black shrink-0">
                                               {isOpen ? "—" : "+"}
                                            </span>
                                         </button>
@@ -363,7 +363,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                                  transition={{ duration: 0.2, ease: "easeInOut" }}
                                                  className="overflow-hidden"
                                               >
-                                                 <p className="text-xs sm:text-sm text-black/80 leading-relaxed font-medium pt-2 pb-4 pr-6">
+                                                 <p className="text-xs sm:text-sm text-neutral-700 leading-relaxed font-medium pt-2 pb-3 pr-6">
                                                     {faq.answer}
                                                  </p>
                                               </motion.div>
@@ -381,31 +381,31 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                 <div className="lg:col-span-4 relative">
                    <aside className="sticky top-24 space-y-8 lg:pl-6 lg:border-l lg:border-black/5 border-t border-t-black/5 lg:border-t-0 pt-8 lg:pt-0 mt-8 lg:mt-0">
-                      {/* Article Overview Widget - High-end Editorial Style */}
-                      <div className="space-y-4">
-                         <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">Article Overview</span>
-                         <div className="p-6 bg-white border border-black/10 rounded-[4px] space-y-5 shadow-sm">
+                      {/* Article Overview Widget */}
+                      <div className="space-y-3">
+                         <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Article Overview</span>
+                         <div className="p-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] space-y-4">
                             {post.excerpt && (
-                               <div className="space-y-1.5">
-                                  <h4 className="text-[10px] font-black uppercase tracking-wider text-black">Synopsis</h4>
-                                  <p className="text-[11px] text-black leading-relaxed font-medium">
+                               <div className="space-y-1">
+                                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-black">Synopsis</h4>
+                                  <p className="text-xs text-neutral-700 leading-relaxed font-medium">
                                      {post.excerpt}
                                   </p>
                                </div>
                             )}
-                             <div className={`${post.excerpt ? 'pt-4 border-t border-black/5' : ''} flex flex-col gap-2`}>
-                                <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                   <span className="font-medium text-black">Author</span>
-                                   <span className="font-black">{post.author || "Pairo Studio"}</span>
+                             <div className={`${post.excerpt ? 'pt-3.5 border-t border-black/5' : ''} flex flex-col gap-2.5`}>
+                                <div className="flex justify-between items-center text-xs text-black">
+                                   <span className="font-medium text-neutral-500">Author</span>
+                                   <span className="font-semibold">{post.author || "Pairo Studio"}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                   <span className="font-medium text-black">Published</span>
-                                   <span className="font-black">{postDate}</span>
+                                <div className="flex justify-between items-center text-xs text-black">
+                                   <span className="font-medium text-neutral-500">Published</span>
+                                   <span className="font-semibold">{postDate}</span>
                                 </div>
                                 {post.category && (
-                                   <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider text-black">
-                                      <span className="font-medium text-black">Category</span>
-                                      <span className="font-black">{post.category}</span>
+                                   <div className="flex justify-between items-center text-xs text-black">
+                                      <span className="font-medium text-neutral-500">Category</span>
+                                      <span className="font-semibold">{post.category}</span>
                                    </div>
                                 )}
                              </div>
