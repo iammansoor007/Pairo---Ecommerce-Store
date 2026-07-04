@@ -166,7 +166,7 @@ export default function ProfilePage() {
 
   if (!session || !userData) return null;
 
-  const inputClass = "w-full bg-white border border-black/10 rounded-[4px] px-4 py-3 text-[11px] font-semibold focus:border-black outline-none transition-all text-black";
+  const inputClass = "w-full bg-white border border-black/10 rounded-[4px] px-4 py-3 text-sm font-medium focus:border-black outline-none transition-all text-black";
 
   const getInitials = (name) => {
     if (!name) return "PA";
@@ -243,7 +243,7 @@ export default function ProfilePage() {
 
               {/* Feedback alert */}
               {feedback && (
-                <div className={`p-4 rounded-[4px] border text-[10px] font-black uppercase tracking-widest text-center shadow-sm ${
+                <div className={`p-3.5 rounded-[4px] border text-xs font-medium text-center ${
                   feedback.type === 'success'
                     ? 'bg-green-50 text-green-700 border-green-100'
                     : 'bg-red-50 text-red-600 border-red-100'
@@ -253,18 +253,18 @@ export default function ProfilePage() {
               )}
 
               {/* User Profile Card */}
-              <div className="bg-white border border-neutral-200/60 p-6 rounded-[4px] shadow-sm">
+              <div className="bg-white border border-neutral-100 p-6 rounded-[4px]">
                 <div className="flex flex-col items-center text-center gap-3 pb-5">
                   {/* Initials Avatar */}
-                  <div className="w-14 h-14 rounded-[4px] bg-black text-white flex items-center justify-center text-base font-black uppercase shadow-sm border border-neutral-200 shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold shrink-0">
                     {initials}
                   </div>
                   <div>
-                    <h2 className="text-[15px] font-black uppercase tracking-wider text-black">{userData.name}</h2>
+                    <h2 className="text-base font-semibold text-black">{userData.name}</h2>
                     {userData.addresses?.[0]?.phone && (
-                      <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{userData.addresses[0].phone}</p>
+                      <p className="text-sm text-neutral-400 mt-0.5">{userData.addresses[0].phone}</p>
                     )}
-                    <p className="text-[11px] text-neutral-500 font-mono mt-0.5">{userData.email}</p>
+                    <p className="text-sm text-neutral-400 mt-0.5">{userData.email}</p>
                     {userData.pendingEmail && (
                       <div className="mt-3 p-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-[4px] text-[8px] font-bold uppercase tracking-wider leading-relaxed shadow-sm">
                         Verification pending for:<br/>
@@ -274,11 +274,11 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-neutral-200">
+                <div className="pt-4 border-t border-neutral-100">
                   {editingInfo ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Full Name</label>
+                        <label className="text-sm text-neutral-500">Full Name</label>
                         <input
                           className={inputClass}
                           value={infoForm.name}
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-black">Email Address</label>
+                        <label className="text-sm text-neutral-500">Email Address</label>
                         <input
                           className={inputClass}
                           value={infoForm.email}
@@ -295,71 +295,71 @@ export default function ProfilePage() {
                           placeholder="Email"
                         />
                       </div>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           onClick={() => handleAction("updateInfo", infoForm)}
-                          className="flex-1 bg-black text-white py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
+                          className="flex-1 bg-black text-white py-2.5 rounded-[4px] text-sm font-medium hover:bg-neutral-800 transition-all cursor-pointer"
                         >
                           Save
                         </button>
                         <button
                           onClick={() => setEditingInfo(false)}
-                          className="flex-1 border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer"
+                          className="flex-1 border border-neutral-200 text-neutral-600 hover:bg-neutral-50 py-2.5 rounded-[4px] text-sm font-medium transition-all cursor-pointer"
                         >
                           Cancel
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-2.5">
+                    <div className="flex flex-col gap-2">
                       <button
                         onClick={() => setEditingInfo(true)}
-                        className="w-full border border-black/15 text-black hover:bg-neutral-50 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full border border-neutral-200 text-black hover:bg-neutral-50 py-2.5 rounded-[4px] text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
-                        <User className="w-3.5 h-3.5" /> Edit Profile
+                        <User className="w-4 h-4" /> Edit Profile
                       </button>
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full bg-black text-white hover:bg-neutral-800 py-2.5 rounded-[4px] text-sm font-medium transition-all cursor-pointer flex items-center justify-center gap-2"
                       >
-                        <LogOut className="w-3.5 h-3.5" /> Sign Out
+                        <LogOut className="w-4 h-4" /> Sign Out
                       </button>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Order Statistics Block (2x2 Grid) - reference style */}
-              <div className="bg-white border border-neutral-200/60 rounded-[4px] shadow-sm overflow-hidden">
-                <div className="grid grid-cols-2 gap-0 divide-x divide-y divide-neutral-200 bg-white text-center">
-                  <div className="p-4 space-y-1 bg-white">
-                    <p className="text-2xl font-black text-black font-mono">{pendingCount}</p>
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Pending</p>
+              {/* Order Statistics Block (2x2 Grid) */}
+              <div className="bg-white border border-neutral-100 rounded-[4px] overflow-hidden">
+                <div className="grid grid-cols-2 divide-x divide-y divide-neutral-100 text-center">
+                  <div className="p-4 space-y-1">
+                    <p className="text-2xl font-semibold text-black">{pendingCount}</p>
+                    <p className="text-xs text-neutral-400">Pending</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
-                    <p className="text-2xl font-black text-black font-mono">{confirmedCount}</p>
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Confirmed</p>
+                  <div className="p-4 space-y-1">
+                    <p className="text-2xl font-semibold text-black">{confirmedCount}</p>
+                    <p className="text-xs text-neutral-400">Confirmed</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
-                    <p className="text-2xl font-black text-black font-mono">{dispatchedCount}</p>
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Dispatched</p>
+                  <div className="p-4 space-y-1">
+                    <p className="text-2xl font-semibold text-black">{dispatchedCount}</p>
+                    <p className="text-xs text-neutral-400">Dispatched</p>
                   </div>
-                  <div className="p-4 space-y-1 bg-white">
-                    <p className="text-2xl font-black text-black font-mono">{deliveredCount}</p>
-                    <p className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">Delivered</p>
+                  <div className="p-4 space-y-1">
+                    <p className="text-2xl font-semibold text-black">{deliveredCount}</p>
+                    <p className="text-xs text-neutral-400">Delivered</p>
                   </div>
                 </div>
               </div>
 
               {/* Saved Locations Block */}
-              <div className="space-y-4 bg-white border border-neutral-200/60 p-6 rounded-[4px] shadow-sm">
+              <div className="space-y-4 bg-white border border-neutral-100 p-6 rounded-[4px]">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[11px] font-black uppercase tracking-[0.1em] text-foreground flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
+                  <h2 className="text-sm font-semibold text-black flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Saved Addresses</h2>
                   <button
                     onClick={() => setShowAddressForm(!showAddressForm)}
-                    className="text-[9px] font-black uppercase tracking-widest text-foreground hover:underline underline-offset-4 cursor-pointer"
+                    className="text-sm text-neutral-400 hover:text-black transition-colors cursor-pointer"
                   >
-                    {showAddressForm ? "Cancel" : "Add New"}
+                    {showAddressForm ? "Cancel" : "+ Add"}
                   </button>
                 </div>
 
@@ -371,28 +371,28 @@ export default function ProfilePage() {
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="p-4 bg-background rounded-[4px] border border-border space-y-3">
+                      <div className="p-4 bg-neutral-50 rounded-[4px] border border-neutral-100 space-y-3">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase tracking-[0.25em] text-foreground">Recipient Name</label>
+                          <label className="text-sm text-neutral-500">Recipient Name</label>
                           <input placeholder="Full Name" className={inputClass} value={addressForm.fullName} onChange={e => setAddressForm({ ...addressForm, fullName: e.target.value })} />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-black uppercase tracking-[0.25em] text-foreground">Street Address</label>
+                          <label className="text-sm text-neutral-500">Street Address</label>
                           <input placeholder="Street" className={inputClass} value={addressForm.street} onChange={e => setAddressForm({ ...addressForm, street: e.target.value })} />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <label className="text-[9px] font-black uppercase tracking-[0.25em] text-foreground">City</label>
+                            <label className="text-sm text-neutral-500">City</label>
                             <input placeholder="City" className={inputClass} value={addressForm.city} onChange={e => setAddressForm({ ...addressForm, city: e.target.value })} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[9px] font-black uppercase tracking-[0.25em] text-foreground">Zip Code</label>
+                            <label className="text-sm text-neutral-500">Zip Code</label>
                             <input placeholder="Zip Code" className={inputClass} value={addressForm.zipCode} onChange={e => setAddressForm({ ...addressForm, zipCode: e.target.value })} />
                           </div>
                         </div>
                         <button
                           onClick={() => handleAction("addAddress", addressForm)}
-                          className="w-full bg-black text-white py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
+                          className="w-full bg-black text-white py-2.5 rounded-[4px] text-sm font-medium hover:bg-neutral-800 transition-all cursor-pointer"
                         >
                           Save Address
                         </button>
@@ -401,23 +401,23 @@ export default function ProfilePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {!userData.addresses?.length ? (
-                    <p className="text-[9px] text-foreground/50 uppercase tracking-widest text-center py-4 bg-background border border-border rounded-[4px]">
-                      No addresses saved.
+                    <p className="text-sm text-neutral-400 text-center py-4">
+                      No addresses saved yet.
                     </p>
                   ) : (
                     userData.addresses.map((addr) => (
-                      <div key={addr._id} className="p-4 bg-background border border-border rounded-[4px] flex justify-between items-start shadow-sm">
+                      <div key={addr._id} className="p-3.5 bg-neutral-50 border border-neutral-100 rounded-[4px] flex justify-between items-start">
                         <div className="min-w-0">
-                          <p className="text-[10px] font-bold uppercase text-foreground truncate">{addr.fullName}</p>
-                          <p className="text-[9px] text-foreground/60 uppercase tracking-wider leading-relaxed mt-0.5 truncate">
+                          <p className="text-sm font-medium text-black truncate">{addr.fullName}</p>
+                          <p className="text-sm text-neutral-400 leading-relaxed mt-0.5 truncate">
                             {addr.street}, {addr.city}
                           </p>
                         </div>
                         <button
                           onClick={() => handleAction("deleteAddress", { id: addr._id })}
-                          className="text-foreground hover:text-red-600 transition-colors p-1 cursor-pointer shrink-0"
+                          className="text-neutral-300 hover:text-red-500 transition-colors p-1 cursor-pointer shrink-0"
                           aria-label="Delete address"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -434,13 +434,13 @@ export default function ProfilePage() {
             <div className="lg:col-span-9 space-y-4">
 
               {/* Header Navigation Tab + Search Bar */}
-              <div className="bg-white p-3 rounded-[4px] border border-neutral-200/60 shadow-sm flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-                <div className="flex gap-2 p-1 bg-neutral-50 rounded-[4px] border border-neutral-200/60">
+              <div className="bg-white p-3 rounded-[4px] border border-neutral-100 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+                <div className="flex gap-1 p-1 bg-neutral-50 rounded-[4px]">
                   <button
                     onClick={() => setActiveTab("active")}
-                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[2px] transition-all cursor-pointer ${
+                    className={`px-4 py-2 text-sm font-medium rounded-[3px] transition-all cursor-pointer ${
                       activeTab === "active"
-                        ? "bg-black text-white shadow-sm"
+                        ? "bg-black text-white"
                         : "text-neutral-400 hover:text-black"
                     }`}
                   >
@@ -448,9 +448,9 @@ export default function ProfilePage() {
                   </button>
                   <button
                     onClick={() => setActiveTab("previous")}
-                    className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-[2px] transition-all cursor-pointer ${
+                    className={`px-4 py-2 text-sm font-medium rounded-[3px] transition-all cursor-pointer ${
                       activeTab === "previous"
-                        ? "bg-black text-white shadow-sm"
+                        ? "bg-black text-white"
                         : "text-neutral-400 hover:text-black"
                     }`}
                   >
@@ -459,14 +459,14 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Search Bar */}
-                <div className="relative w-full sm:w-64">
-                  <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <div className="relative w-full sm:w-56">
+                  <Search className="w-3.5 h-3.5 text-neutral-300 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search Order Here"
-                    className="w-full bg-neutral-50 border border-neutral-200 rounded-[4px] pl-10 pr-4 py-2.5 text-xs font-semibold placeholder:text-neutral-400 focus:border-black outline-none transition-colors text-black"
+                    placeholder="Search orders..."
+                    className="w-full bg-neutral-50 border border-neutral-100 rounded-[4px] pl-9 pr-4 py-2 text-sm font-medium placeholder:text-neutral-300 focus:border-neutral-300 outline-none transition-colors text-black"
                   />
                 </div>
               </div>
@@ -474,9 +474,9 @@ export default function ProfilePage() {
               {/* Order List Rows */}
               <div className="space-y-3">
                 {filteredOrders.length === 0 ? (
-                  <div className="py-20 text-center border border-dashed border-[#eaeefc] rounded-[20px] bg-white space-y-4">
-                    <ShoppingBag className="w-12 h-12 text-neutral-200 mx-auto" />
-                    <p className="text-[10px] text-neutral-400 uppercase tracking-[0.2em] font-bold">No orders matched your criteria.</p>
+                  <div className="py-16 text-center border border-dashed border-neutral-100 rounded-[4px] bg-white space-y-3">
+                    <ShoppingBag className="w-10 h-10 text-neutral-200 mx-auto" />
+                    <p className="text-xs text-neutral-400">No orders matched your criteria.</p>
                   </div>
                 ) : (
                   filteredOrders.map((order, i) => {
@@ -495,36 +495,36 @@ export default function ProfilePage() {
                     return (
                       <div
                         key={order.id}
-                        className={`border border-neutral-200 rounded-[4px] bg-white transition-all shadow-sm overflow-hidden ${
-                          isExpanded ? 'border-neutral-300 ring-1 ring-black/[0.02]' : 'hover:border-neutral-300'
+                        className={`border rounded-[4px] bg-white transition-all overflow-hidden ${
+                          isExpanded ? 'border-neutral-200' : 'border-neutral-100 hover:border-neutral-200'
                         }`}
                       >
-                        {/* Summary Header Row (Table format matching mockup) */}
+                        {/* Summary Header Row */}
                         <div
                           onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                          className="px-6 py-5 grid grid-cols-2 md:grid-cols-12 items-center gap-4 cursor-pointer hover:bg-neutral-50 transition-colors select-none text-left"
+                          className="px-5 py-4 grid grid-cols-2 md:grid-cols-12 items-center gap-4 cursor-pointer hover:bg-neutral-50/50 transition-colors select-none text-left"
                         >
                           {/* Col 1: Order Number */}
-                          <div className="space-y-1 md:col-span-2 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Order Number</p>
-                            <p className="text-[11px] font-black text-foreground font-mono">#{order.orderNumber}</p>
+                          <div className="space-y-0.5 md:col-span-2 min-w-0">
+                            <p className="text-xs text-neutral-400">Order</p>
+                            <p className="text-sm font-semibold text-black font-mono">#{order.orderNumber}</p>
                           </div>
 
                           {/* Col 2: Tracking ID */}
-                          <div className="space-y-1 md:col-span-3 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Tracking ID</p>
-                            <p className="text-[11px] font-bold text-foreground font-mono truncate" title={order.trackingId}>{order.trackingId || "N/A"}</p>
+                          <div className="space-y-0.5 md:col-span-3 min-w-0">
+                            <p className="text-xs text-neutral-400">Tracking</p>
+                            <p className="text-sm font-medium text-black font-mono truncate" title={order.trackingId}>{order.trackingId || "—"}</p>
                           </div>
 
                           {/* Col 3: Creation Date */}
-                          <div className="space-y-1 md:col-span-3 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Creation Date</p>
-                            <p className="text-[10px] font-bold text-foreground font-mono">{formatOrderDate(order.date)}</p>
+                          <div className="space-y-0.5 md:col-span-3 min-w-0">
+                            <p className="text-xs text-neutral-400">Date</p>
+                            <p className="text-sm font-medium text-black">{formatOrderDate(order.date)}</p>
                           </div>
 
                           {/* Col 4: Product Rating */}
-                          <div className="space-y-1 col-span-2 md:col-span-2 min-w-0">
-                            <p className="text-[8px] font-black uppercase text-black tracking-wider">Product Rating</p>
+                          <div className="space-y-0.5 col-span-2 md:col-span-2 min-w-0">
+                            <p className="text-xs text-neutral-400">Rating</p>
                             <div
                               className="flex items-center gap-0.5"
                               onMouseLeave={() => setOrderHoverRatings(prev => ({ ...prev, [order.id]: 0 }))}
@@ -585,16 +585,15 @@ export default function ProfilePage() {
 
                         {/* Expanded Items & Info Area */}
                         {isExpanded && (
-                          <div className="border-t border-neutral-200 bg-neutral-50 p-6 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                          <div className="border-t border-neutral-100 bg-neutral-50/50 p-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                             
                             {/* Left Column: ORDER DETAIL */}
                             <div className="space-y-4">
-                              <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-black border-b border-neutral-200 pb-1.5">Order Detail</h4>
+                              <h4 className="text-sm font-semibold text-black border-b border-neutral-100 pb-2">Order Items</h4>
                               
                               {/* Line Items */}
                               <div className="space-y-3">
-                                <p className="text-[9px] font-black uppercase text-black tracking-wider">Line Items</p>
-                                <div className="divide-y divide-neutral-200 bg-white border border-neutral-200 rounded-[4px] p-4 space-y-4">
+                                <div className="divide-y divide-neutral-100 bg-white border border-neutral-100 rounded-[4px] p-4 space-y-4">
                                   {(order.items || []).map((item, idx) => {
                                     const reviewId = `${order.id}-${item.productId}`;
                                     const showForm = activeReviewId === reviewId;
@@ -614,21 +613,21 @@ export default function ProfilePage() {
                                               />
                                             </div>
                                             <div className="min-w-0">
-                                              <p className="text-[11px] font-bold text-black uppercase tracking-wider truncate">{item.name}</p>
+                                              <p className="text-sm font-medium text-black truncate">{item.name}</p>
                                               
-                                              {/* Product Variant Details (Color / Size Selection) */}
+                                              {/* Product Variant Details */}
                                               {item.selectedVariant && (
-                                                <p className="text-[8px] font-bold text-black uppercase tracking-widest mt-0.5">
+                                                <p className="text-xs text-neutral-400 mt-0.5">
                                                   {item.selectedVariant.title || 
-                                                    (item.selectedVariant.options ? Object.entries(item.selectedVariant.options).map(([k, v]) => `${k}: ${v}`).join(' | ') : '')
+                                                    (item.selectedVariant.options ? Object.entries(item.selectedVariant.options).map(([k, v]) => `${k}: ${v}`).join(' · ') : '')
                                                   }
                                                 </p>
                                               )}
                                               {item.sku && (
-                                                <p className="text-[8px] font-mono text-black mt-0.5">SKU: {item.sku}</p>
+                                                <p className="text-xs text-neutral-400 mt-0.5">SKU: {item.sku}</p>
                                               )}
                                               
-                                              <p className="text-[9px] font-bold text-black uppercase mt-0.5">Qty {item.quantity}</p>
+                                              <p className="text-xs text-neutral-400 mt-0.5">Qty {item.quantity}</p>
                                               
                                               {/* Product Star Rating under Title */}
                                               <div className="flex items-center gap-0.5 mt-1">
@@ -639,31 +638,31 @@ export default function ProfilePage() {
                                             </div>
                                           </div>
                                           <div className="text-right shrink-0">
-                                            <p className="text-xs font-black text-black font-mono">
-                                              {formatCurrency(order.financials?.currency)}{(item.priceAtPurchase * item.quantity).toLocaleString()}
-                                            </p>
-                                            {isDelivered && (
-                                              <button
-                                                onClick={() => {
-                                                  if (showForm) {
-                                                    setActiveReviewId(null);
-                                                  } else {
-                                                    setActiveReviewId(reviewId);
-                                                    setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
-                                                  }
-                                                }}
-                                                className="text-[8px] border border-neutral-300 text-black hover:bg-neutral-50 px-2.5 py-1 rounded-[4px] font-black uppercase tracking-widest cursor-pointer transition-colors mt-2 block ml-auto"
-                                              >
-                                                {showForm ? "Cancel" : "Write Review"}
-                                              </button>
-                                            )}
+                                             <p className="text-sm font-medium text-black">
+                                               {formatCurrency(order.financials?.currency)}{(item.priceAtPurchase * item.quantity).toLocaleString()}
+                                             </p>
+                                             {isDelivered && (
+                                               <button
+                                                 onClick={() => {
+                                                   if (showForm) {
+                                                     setActiveReviewId(null);
+                                                   } else {
+                                                     setActiveReviewId(reviewId);
+                                                     setReviewForm({ rating: 5, title: "", comment: "", customerName: userData.name, recommend: true });
+                                                   }
+                                                 }}
+                                                 className="text-xs border border-neutral-200 text-neutral-500 hover:text-black hover:border-neutral-400 px-2 py-1 rounded-[4px] font-medium cursor-pointer transition-colors mt-2 block ml-auto"
+                                               >
+                                                 {showForm ? "Cancel" : "Review"}
+                                               </button>
+                                             )}
                                           </div>
                                         </div>
 
                                         {/* Review Form */}
                                         {showForm && (
                                           <div className="bg-neutral-50 border border-neutral-200 rounded-[12px] p-4 mt-2 space-y-4">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-black flex items-center gap-1.5">
+                                            <span className="text-[9px] font-semibold uppercase tracking-wide text-black flex items-center gap-1.5">
                                               <Check className="w-3.5 h-3.5 text-green-600" /> Verified Purchase Review
                                             </span>
                                             {reviewSuccessMessage ? (
