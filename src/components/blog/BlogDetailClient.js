@@ -145,7 +145,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
        setShowShareMenu(!showShareMenu);
     };
 
-    // Dynamically extract H2 headings from all post content for the sidebar TOC
+    // Dynamically extract H1, H2, H3 headings from all post content for the sidebar TOC
     const [tocSections, setTocSections] = useState([]);
 
     useEffect(() => {
@@ -159,8 +159,8 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       try {
          const parser = new DOMParser();
          const doc = parser.parseFromString(allContent, "text/html");
-         const h2s = Array.from(doc.querySelectorAll("h2"));
-         const extracted = h2s.map((el, i) => {
+         const headings = Array.from(doc.querySelectorAll("h1, h2, h3"));
+         const extracted = headings.map((el, i) => {
             const text = el.textContent.trim();
             const id = `toc-${text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${i}`;
             return { id, title: text };
@@ -171,16 +171,16 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
       }
    }, [post]);
 
-   // Add IDs to H2 elements in the rendered blog content after mount
+   // Add IDs to elements in the rendered blog content after mount
    useEffect(() => {
       if (tocSections.length === 0) return;
       const contentEl = document.getElementById("blog-main-content");
       if (!contentEl) return;
-      const h2s = contentEl.querySelectorAll("h2");
-      h2s.forEach((el, i) => {
+      const headings = contentEl.querySelectorAll("h1, h2, h3");
+      headings.forEach((el, i) => {
          if (tocSections[i]) el.id = tocSections[i].id;
       });
-   }, [tocSections]);
+   }, [tocSections, post.content]);
 
     const scrollToSection = (id) => {
        const element = document.getElementById(id);
@@ -412,29 +412,29 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                           </div>
                        </div>
 
-                      {post.showSidebarIndex !== false && (
-                         <div className="space-y-5">
-                            <span className="text-[8px] font-black tracking-[0.25em] text-black uppercase">Table of Contents</span>
-                            <div className="flex flex-col gap-3">
-                               {tocSections.length > 0 ? (
-                                  tocSections.map((section) => (
-                                     <button
-                                        key={section.id}
-                                        onClick={() => scrollToSection(section.id)}
-                                        className="group flex items-center justify-between text-left"
-                                     >
-                                        <span className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-all text-left leading-snug">
-                                           {section.title}
-                                        </span>
-                                        <ArrowRight className="w-3 h-3 text-black/10 group-hover:text-black transition-all shrink-0" />
-                                     </button>
-                                  ))
-                               ) : (
-                                  <p className="text-[10px] text-black/40 italic font-mono uppercase tracking-wider">No sections found</p>
-                               )}
-                            </div>
-                         </div>
-                      )}
+                       {post.showSidebarIndex !== false && (
+                          <div className="space-y-3 pt-6 border-t border-black/5">
+                             <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 block mb-1">Table of Contents</span>
+                             <div className="flex flex-col gap-2">
+                                {tocSections.length > 0 ? (
+                                   tocSections.map((section) => (
+                                      <button
+                                         key={section.id}
+                                         onClick={() => scrollToSection(section.id)}
+                                         className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
+                                      >
+                                         <span className="text-xs font-semibold text-neutral-700 group-hover:text-black transition-colors text-left leading-relaxed">
+                                            {section.title}
+                                         </span>
+                                         <ArrowRight className="w-3.5 h-3.5 text-neutral-300 group-hover:text-black transition-colors shrink-0 ml-3" />
+                                      </button>
+                                   ))
+                                ) : (
+                                   <p className="text-[10px] text-neutral-400 italic">No sections found</p>
+                                )}
+                             </div>
+                          </div>
+                       )}
 
                      {post.showFeaturedProduct !== false && featuredProduct && featuredProduct.id !== "default" && (
                         <div id="archive" className="space-y-4 pt-6 border-t border-black/5">
