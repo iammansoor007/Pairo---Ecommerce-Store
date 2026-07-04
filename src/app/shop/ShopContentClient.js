@@ -58,19 +58,24 @@ export default function ShopContentClient({ initialCategory = null, initialType 
     }
   }, []);
 
-  // Proactively scroll to the product grid top BEFORE any state change.
-  // Always scrolls unconditionally — if we only scrolled "when past the grid"
-  // the condition could be false on the last (short) page and we'd miss it,
-  // letting React re-render first and collapse the page height before we moved.
-  const scrollToGridTop = () => {
-    if (typeof window === "undefined") return;
+  // Smooth scroll to the product grid top, then fire state updates via onDone.
+  // The callback fires after a delay proportional to scroll distance so the
+  // viewport has moved safely up before React re-renders with fewer products.
+  const scrollToGridTop = (onDone) => {
+    if (typeof window === "undefined") { onDone?.(); return; }
     const el = document.getElementById("product-grid-main");
-    if (!el) return;
-    const gridTop = el.getBoundingClientRect().top + window.scrollY - 120;
-    // Always scroll — unconditionally. This fires synchronously before React's
-    // batched state update re-renders the grid, so the viewport is already at
-    // the grid top when the new (possibly shorter) product list paints.
-    window.scrollTo({ top: Math.max(0, gridTop), behavior: "instant" });
+    if (!el) { onDone?.(); return; }
+    const gridTop = Math.max(0, el.getBoundingClientRect().top + window.scrollY - 120);
+    const distance = Math.abs(window.scrollY - gridTop);
+    if (distance < 8) {
+      // Already at grid top — no scroll needed, fire immediately
+      onDone?.();
+      return;
+    }
+    window.scrollTo({ top: gridTop, behavior: "smooth" });
+    // Delay proportional to distance (roughly 600px/s), capped 80–450ms
+    const delay = Math.min(450, Math.max(80, distance * 0.45));
+    setTimeout(() => onDone?.(), delay);
   };
 
   useEffect(() => {
@@ -443,83 +448,86 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   );
 
   const goToPage = (page) => {
-    scrollToGridTop();
-    setCurrentPage(page);
+    scrollToGridTop(() => setCurrentPage(page));
   };
 
   const toggleColor = (color) => {
-    scrollToGridTop();
-    setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
-    setCurrentPage(1);
+    scrollToGridTop(() => {
+      setSelectedColors(prev => prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]);
+      setCurrentPage(1);
+    });
   };
 
   const toggleSize = (size) => {
-    scrollToGridTop();
-    setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
-    setCurrentPage(1);
+    scrollToGridTop(() => {
+      setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
+      setCurrentPage(1);
+    });
   };
 
   const handleCategorySelect = (catName) => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setCurrentPage(1);
-    const basePath = catName ? `/collections/${catName.toLowerCase()}` : '/shop';
-    startTransition(() => {
-      router.push(basePath, { scroll: false });
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      setCurrentPage(1);
+      const basePath = catName ? `/collections/${catName.toLowerCase()}` : '/shop';
+      startTransition(() => {
+        router.push(basePath, { scroll: false });
+      });
+    }, 300);
   };
 
   const toggleType = (type) => {
-    scrollToGridTop();
-    setSelectedTypes(prev => {
-      const newTypes = prev.includes(type)
-        ? prev.filter(t => t !== type)
-        : [...prev, type];
-
-      const params = new URLSearchParams(window.location.search);
-      if (newTypes.length === 1) {
-        params.set("type", newTypes[0].toLowerCase());
-      } else {
-        params.delete("type");
-      }
-      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
-      silentReplaceState(newUrl);
-
-      return newTypes;
+    scrollToGridTop(() => {
+      setSelectedTypes(prev => {
+        const newTypes = prev.includes(type)
+          ? prev.filter(t => t !== type)
+          : [...prev, type];
+        const params = new URLSearchParams(window.location.search);
+        if (newTypes.length === 1) {
+          params.set("type", newTypes[0].toLowerCase());
+        } else {
+          params.delete("type");
+        }
+        const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+        silentReplaceState(newUrl);
+        return newTypes;
+      });
+      setCurrentPage(1);
     });
-    setCurrentPage(1);
   };
 
   const toggleCustomAttr = (attrName, value) => {
-    scrollToGridTop();
-    setSelectedCustomAttrs(prev => {
-      const current = prev[attrName] || [];
-      const updated = current.includes(value)
-        ? current.filter(v => v !== value)
-        : [...current, value];
-      const newSelections = { ...prev, [attrName]: updated };
-      if (updated.length === 0) {
-        delete newSelections[attrName];
-      }
-      return newSelections;
+    scrollToGridTop(() => {
+      setSelectedCustomAttrs(prev => {
+        const current = prev[attrName] || [];
+        const updated = current.includes(value)
+          ? current.filter(v => v !== value)
+          : [...current, value];
+        const newSelections = { ...prev, [attrName]: updated };
+        if (updated.length === 0) delete newSelections[attrName];
+        return newSelections;
+      });
+      setCurrentPage(1);
     });
-    setCurrentPage(1);
   };
 
   const resetFilters = () => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setSliderValue(priceLimits.max);
-    setMaxPrice(priceLimits.max);
-    setSelectedColors([]);
-    setSelectedSizes([]);
-    setSelectedTypes([]);
-    setSelectedCategory("");
-    setSelectedCustomAttrs({});
-    setSearchQuery("");
-    setSortBy("Most Popular");
-    setCurrentPage(1);
-    startTransition(() => {
-      router.push('/shop', { scroll: false });
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => {
+      setSliderValue(priceLimits.max);
+      setMaxPrice(priceLimits.max);
+      setSelectedColors([]);
+      setSelectedSizes([]);
+      setSelectedTypes([]);
+      setSelectedCategory("");
+      setSelectedCustomAttrs({});
+      setSearchQuery("");
+      setSortBy("Most Popular");
+      setCurrentPage(1);
+      startTransition(() => {
+        router.push('/shop', { scroll: false });
+      });
+    }, 300);
   };
 
   const getActiveFilterCount = () => {
