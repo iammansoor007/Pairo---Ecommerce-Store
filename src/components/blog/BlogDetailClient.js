@@ -349,43 +349,21 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                        {/* FAQ Section */}
                        {post.faqs && post.faqs.length > 0 && (
-                          <section id="faq" className="pt-8 border-t border-black/5 space-y-5">
+                          <section id="faq" className="pt-10 border-t border-black/5 space-y-5">
                              <div>
                                 <h2 className="text-sm font-bold uppercase tracking-wider text-black">Frequently Asked Questions</h2>
                              </div>
-                             <div className="border-t border-black/[0.06] divide-y divide-black/[0.06]">
-                                {post.faqs.map((faq, idx) => {
-                                   const isOpen = openFaqIdx === idx;
-                                   return (
-                                      <div key={idx} className="py-4">
-                                         <button
-                                            type="button"
-                                            onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
-                                            className="w-full flex justify-between items-center text-left group focus:outline-none"
-                                         >
-                                            <span className="text-sm font-semibold text-black group-hover:opacity-75 transition-opacity pr-6 leading-snug">
-                                               {faq.question}
-                                            </span>
-                                            <ChevronDown className={`w-4 h-4 text-neutral-400 group-hover:text-black transition-transform duration-300 shrink-0 ${isOpen ? "rotate-180" : ""}`} />
-                                         </button>
-                                         <AnimatePresence initial={false}>
-                                            {isOpen && (
-                                               <motion.div
-                                                  initial={{ height: 0, opacity: 0 }}
-                                                  animate={{ height: "auto", opacity: 1 }}
-                                                  exit={{ height: 0, opacity: 0 }}
-                                                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                                                  className="overflow-hidden"
-                                               >
-                                                  <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium pt-3 pb-1 pr-6">
-                                                     {faq.answer}
-                                                  </p>
-                                               </motion.div>
-                                            )}
-                                         </AnimatePresence>
-                                      </div>
-                                   );
-                                })}
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                {post.faqs.map((faq, idx) => (
+                                   <div key={idx} className="p-5 bg-[#FAF9F6] border border-black/[0.03] rounded-[4px] space-y-2 hover:border-black/[0.08] transition-colors">
+                                      <h3 className="text-xs sm:text-sm font-bold text-black leading-snug uppercase tracking-wide">
+                                         {faq.question}
+                                      </h3>
+                                      <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-medium">
+                                         {faq.answer}
+                                      </p>
+                                   </div>
+                                ))}
                              </div>
                           </section>
                        )}
