@@ -132,7 +132,8 @@ export default function CheckoutPage() {
     setSelectedShipping,
     affiliateDiscount,
     affiliateDiscountAmount,
-    removeFromCart
+    removeFromCart,
+    isCartLoaded
   } = useCart();
   const { data: session } = useSession();
   const [profile, setProfile] = useState(null);
@@ -230,10 +231,10 @@ export default function CheckoutPage() {
   }, [session]);
 
   useEffect(() => {
-    if (cartItems.length === 0 && !isProcessing && !isSuccess) {
+    if (isCartLoaded && cartItems.length === 0 && !isProcessing && !isSuccess) {
       router.push("/cart");
     }
-  }, [cartItems, router, isProcessing, isSuccess]);
+  }, [isCartLoaded, cartItems, router, isProcessing, isSuccess]);
 
   const savedAddresses = useMemo(() => {
     if (!profile) return [];
@@ -434,6 +435,14 @@ export default function CheckoutPage() {
   const brandName = siteData?.siteSettings?.general?.brandName || "";
   const inputClass = "w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-[13px] placeholder:text-neutral-400 focus:border-black focus:ring-1 focus:ring-black outline-none transition-all duration-200 text-black";
   const labelClass = "block text-[11px] font-bold text-neutral-600 uppercase tracking-wider mb-1";
+
+  if (!isCartLoaded) {
+    return (
+      <div className="min-h-screen bg-white text-black flex items-center justify-center">
+        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen text-black font-sans selection:bg-black selection:text-white">

@@ -9,6 +9,7 @@ export function CartProvider({ children }) {
   const { data: session } = useSession();
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartLoaded, setIsCartLoaded] = useState(false);
 
   // Dynamic storage key based on user ID
   const storageKey = session?.user?.id ? `pairo-cart-${session.user.id}` : "pairo-cart-guest";
@@ -27,6 +28,7 @@ export function CartProvider({ children }) {
       } else {
         setCartItems([]);
       }
+      setIsCartLoaded(true);
     });
   }, [storageKey]);
 
@@ -287,7 +289,8 @@ export function CartProvider({ children }) {
         selectedShipping,
         setSelectedShipping,
         affiliateDiscount,
-        affiliateDiscountAmount
+        affiliateDiscountAmount,
+        isCartLoaded
       }}
     >
       {children}

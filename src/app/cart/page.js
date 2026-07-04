@@ -16,7 +16,8 @@ export default function CartPage() {
     appliedPromo, 
     discountTotal, 
     applyPromoCode, 
-    removePromoCode 
+    removePromoCode,
+    isCartLoaded
   } = useCart();
   const [promoCodeInput, setPromoCodeInput] = useState("");
   const [applying, setApplying] = useState(false);
@@ -34,6 +35,14 @@ export default function CartPage() {
       setPromoError(res.error);
     }
   };
+
+  if (!isCartLoaded) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-white">
+        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
