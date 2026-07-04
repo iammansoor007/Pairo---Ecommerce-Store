@@ -158,8 +158,8 @@ export default function ProfilePage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
+        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -232,7 +232,7 @@ export default function ProfilePage() {
   const timelineSteps = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-black font-sans selection:bg-primary selection:text-background py-8">
+    <div className="min-h-screen bg-[#FAF9F6] text-black font-sans selection:bg-black selection:text-white pt-2 pb-12">
       <div className="container mx-auto px-2 sm:px-4 md:px-8">
         <div className="w-full mx-auto">
           {/* Main Dashboard Content Layout */}
@@ -392,7 +392,7 @@ export default function ProfilePage() {
                         </div>
                         <button
                           onClick={() => handleAction("addAddress", addressForm)}
-                          className="w-full bg-primary text-background py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-90 transition-all cursor-pointer shadow-sm"
+                          className="w-full bg-black text-white py-3 rounded-[4px] text-[10px] font-black uppercase tracking-[0.2em] hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
                         >
                           Save Address
                         </button>

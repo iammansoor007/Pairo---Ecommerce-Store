@@ -242,33 +242,6 @@ export default function BlogForm({ blogId }) {
                         />
                      </div>
 
-                     {/* Heritage Section */}
-                     <div className="bg-white border border-[#c3c4c7] shadow-sm">
-                        <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 01: Heritage</div>
-                        <TiptapEditor
-                           content={formData.heritage}
-                           onChange={(html) => setFormData({ ...formData, heritage: html })}
-                        />
-                     </div>
-
-                     {/* Process Section */}
-                     <div className="bg-white border border-[#c3c4c7] shadow-sm">
-                        <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 02: Process</div>
-                        <TiptapEditor
-                           content={formData.process}
-                           onChange={(html) => setFormData({ ...formData, process: html })}
-                        />
-                     </div>
-
-                     {/* Style Section */}
-                     <div className="bg-white border border-[#c3c4c7] shadow-sm">
-                        <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Section 03: Style</div>
-                        <TiptapEditor
-                           content={formData.style}
-                           onChange={(html) => setFormData({ ...formData, style: html })}
-                        />
-                     </div>
-
                      {/* Excerpt Meta Box */}
                      <div className="bg-white border border-[#c3c4c7] shadow-sm">
                         <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Excerpt</div>

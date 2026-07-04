@@ -52,18 +52,18 @@ export default function ProfileOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-32">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-6 pb-12">
+    <div className="min-h-screen bg-[#FAF9F6] text-black pb-32 selection:bg-black selection:text-white">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-2 pb-12">
         <div className="w-full mx-auto space-y-12">
           
-          <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-8">
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-black/10 pb-4">
             <div className="space-y-1">
               <h1 className="text-xl sm:text-[24px] font-bold uppercase tracking-[0.1em] text-black">My Orders</h1>
               <p className="text-[10px] font-bold text-black/80 uppercase tracking-[0.2em]">Track your acquisitions and history</p>
             </div>
             <Link 
               href="/profile" 
-              className="text-[9px] font-black uppercase tracking-widest text-black hover:opacity-75 transition-opacity flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-[#FAF9F6] shadow-sm w-fit"
+              className="text-[9px] font-black uppercase tracking-widest text-black hover:opacity-75 transition-opacity flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-white shadow-sm w-fit"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </Link>

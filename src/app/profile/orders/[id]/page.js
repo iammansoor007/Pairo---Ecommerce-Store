@@ -131,14 +131,14 @@ export default function UserOrderDetailPage() {
   }
 
   return (
-    <div className="bg-white min-h-screen text-black pb-32">
-      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-6 pb-12">
+    <div className="bg-[#FAF9F6] min-h-screen text-black pb-32 selection:bg-black selection:text-white">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 pt-2 pb-12">
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-black/10 pb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-6 border-b border-black/10 pb-4">
           <div className="space-y-4">
              <Link 
                href="/profile/orders" 
-               className="text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-black transition-colors flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-[#FAF9F6] shadow-sm w-fit"
+               className="text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-black transition-colors flex items-center gap-1.5 border border-black/10 px-4 py-2 rounded-[4px] bg-white shadow-sm w-fit"
              >
                 <ChevronLeft className="w-3.5 h-3.5" /> Back to History
              </Link>
