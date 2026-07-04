@@ -22,6 +22,15 @@ export default async function ThemeStyle() {
   const h3 = Math.round(base * Math.pow(scale, 2));
   const h4 = Math.round(base * Math.pow(scale, 1));
 
+  // Map theme fonts to preloaded next/font variables to eliminate layout shift
+  const fontMap = {
+    'Inter': 'var(--font-inter)',
+    'Poppins': 'var(--font-poppins)',
+  };
+
+  const headingFontVal = fontMap[typography.headingFont] || `"${typography.headingFont}"`;
+  const bodyFontVal = fontMap[typography.bodyFont] || `"${typography.bodyFont}"`;
+
   // Generate CSS variables
   const cssVariables = `
     :root {
@@ -34,8 +43,8 @@ export default async function ThemeStyle() {
       --border: ${colors.border};
       --card: ${colors.card};
       
-      --brand-font: "${typography.headingFont}", sans-serif;
-      --body-font: "${typography.bodyFont}", sans-serif;
+      --brand-font: ${headingFontVal}, sans-serif;
+      --body-font: ${bodyFontVal}, sans-serif;
       
       --base-font-size: ${base}px;
       --h1-size: ${h1}px;
@@ -63,13 +72,18 @@ export default async function ThemeStyle() {
     }
   `;
 
-  // Dynamic Font Loading (Simplified)
-  const fontFamilies = [...new Set([typography.headingFont, typography.bodyFont])];
-  const googleFontsUrl = `https://fonts.googleapis.com/css2?${fontFamilies.map(f => `family=${f.replace(/\s+/g, '+')}:wght@300;400;500;600;700;800;900`).join('&')}&display=swap`;
+  // Dynamic Font Loading (Only for non-preloaded fonts)
+  const preloadedFonts = ['Inter', 'Poppins'];
+  const fontFamilies = [...new Set([typography.headingFont, typography.bodyFont])]
+    .filter(f => !preloadedFonts.includes(f));
+
+  const googleFontsUrl = fontFamilies.length > 0
+    ? `https://fonts.googleapis.com/css2?${fontFamilies.map(f => `family=${f.replace(/\s+/g, '+')}:wght@300;400;500;600;700;800;900`).join('&')}&display=block`
+    : null;
 
   return (
     <>
-      <link rel="stylesheet" href={googleFontsUrl} />
+      {googleFontsUrl && <link rel="stylesheet" href={googleFontsUrl} />}
       <style id="dynamic-theme-vars" dangerouslySetInnerHTML={{ __html: cssVariables }} />
     </>
   );
