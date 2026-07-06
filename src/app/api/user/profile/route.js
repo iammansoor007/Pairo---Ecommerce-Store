@@ -88,14 +88,28 @@ export async function POST(req) {
           const verificationUrl = `${siteUrl}/verify-email?token=${token}&type=change`;
           
           const { sendEmailVerification } = await import("@/lib/email");
-          await sendEmailVerification(newEmail, customer.name, verificationUrl);
-          
-          await customer.save();
-          return NextResponse.json({ 
-            message: "Profile updated. A verification link has been sent to your new email.", 
-            emailVerificationPending: true,
-            user: customer 
-          });
+          try {
+            await sendEmailVerification(newEmail, customer.name, verificationUrl);
+            await customer.save();
+            return NextResponse.json({ 
+              message: "Profile updated. A verification link has been sent to your new email.", 
+              emailVerificationPending: true,
+              user: customer 
+            });
+          } catch (emailError) {
+            console.error("[ProfileUpdate] ⚠️ Failed to send verification email for email change:", emailError);
+            // Fallback: update email directly without verification if email system is failing
+            customer.email = newEmail;
+            customer.pendingEmail = null;
+            customer.pendingEmailToken = null;
+            customer.pendingEmailTokenExpiry = null;
+            await customer.save();
+            return NextResponse.json({ 
+              message: "Profile updated successfully.", 
+              emailVerificationPending: false,
+              user: customer 
+            });
+          }
         }
         break;
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { 
   FileText, 
@@ -52,6 +52,115 @@ export default function AdminDashboard() {
     recentOrders: []
   });
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [updatingId, setUpdatingId] = useState(null);
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const [ordersRes, affiliatesRes, productsRes] = await Promise.all([
+        fetch("/api/admin/orders?status=Pending"),
+        fetch("/api/admin/affiliates/requests"),
+        fetch("/api/admin/products")
+      ]);
+
+      let orderNotices = [];
+      let affiliateNotices = [];
+      let productNotices = [];
+
+      if (ordersRes.ok) {
+        const data = await ordersRes.json();
+        if (data.success && Array.isArray(data.orders)) {
+          orderNotices = data.orders.map(order => ({
+            id: `order-${order._id}`,
+            type: "order",
+            targetId: order._id,
+            text: `New order request #${order.orderNumber} received from ${order.shippingAddress?.fullName || order.customer?.email || "Guest"}. (Total: $${order.financials?.total || 0})`,
+            actions: [
+              { label: "Confirm Order", action: () => handleOrderAction(order._id, "Confirmed") },
+              { label: "View Details", href: `/admin/orders/${order._id}` }
+            ]
+          }));
+        }
+      }
+
+      if (affiliatesRes.ok) {
+        const data = await affiliatesRes.json();
+        if (data.success && Array.isArray(data.applications)) {
+          affiliateNotices = data.applications.filter(app => app.status === "Pending").map(app => ({
+            id: `affiliate-${app._id}`,
+            type: "affiliate",
+            targetId: app._id,
+            text: `New affiliate request from ${app.name} (${app.email}) is pending review.`,
+            actions: [
+              { label: "Approve", action: () => handleAffiliateAction(app._id, "Approve") },
+              { label: "Reject", action: () => handleAffiliateAction(app._id, "Reject") }
+            ]
+          }));
+        }
+      }
+
+      if (productsRes.ok) {
+        const data = await productsRes.json();
+        const list = Array.isArray(data) ? data : [];
+        productNotices = list.filter(p => p.manageStock && p.stock <= (p.lowStockThreshold || 5)).map(p => ({
+          id: `product-${p._id}`,
+          type: "product",
+          targetId: p._id,
+          text: `Product '${p.name}' is running low in stock (${p.stock} units remaining).`,
+          actions: [
+            { label: "Restock / Edit", href: `/admin/products/${p._id}` }
+          ]
+        }));
+      }
+
+      setNotifications([...orderNotices, ...affiliateNotices, ...productNotices]);
+    } catch (err) {
+      console.error("Failed to load notifications", err);
+    }
+  }, []);
+
+  const handleOrderAction = async (id, status) => {
+    setUpdatingId(`order-${id}`);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        alert(`Order status updated to ${status}!`);
+        await fetchNotifications();
+      } else {
+        alert("Failed to update order.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleAffiliateAction = async (applicationId, action) => {
+    setUpdatingId(`affiliate-${applicationId}`);
+    try {
+      const res = await fetch("/api/admin/affiliates/requests", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId, action })
+      });
+      if (res.ok) {
+        alert(`Affiliate application ${action === 'Approve' ? 'approved' : 'rejected'} successfully!`);
+        await fetchNotifications();
+      } else {
+        const data = await res.json();
+        alert(`Failed: ${data.error || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/admin/analytics")
@@ -69,7 +178,9 @@ export default function AdminDashboard() {
         }
         setLoading(false);
       });
-  }, []);
+    
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   return (
     <div className="font-sans text-[#3c434a] bg-[#f0f2f1] min-h-screen p-4 md:p-6">
@@ -95,6 +206,57 @@ export default function AdminDashboard() {
              <ShoppingBag className="w-[400px] h-[400px]" />
           </div>
         </div>
+
+        {/* WP Admin Notices Section */}
+        {notifications.length > 0 && (
+          <div className="space-y-3 mb-8">
+            {notifications.map((notice) => {
+              let borderClass = "border-l-4 border-l-[#72aee6]"; // default info
+              if (notice.type === "product") borderClass = "border-l-4 border-l-[#d63638]"; // error red
+              if (notice.type === "order" || notice.type === "affiliate") borderClass = "border-l-4 border-l-[#f0b849]"; // warning yellow
+              
+              const isUpdating = updatingId === notice.id;
+
+              return (
+                <div key={notice.id} className={`bg-white border border-[#ccd0d4] rounded-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm ${borderClass} transition-all duration-300`}>
+                  <div className="flex items-center gap-3">
+                    <div className="text-[13px] text-[#2c3338] font-medium leading-relaxed">
+                      {notice.text}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {notice.actions.map((act, i) => {
+                      if (act.href) {
+                        return (
+                          <Link
+                            key={i}
+                            href={act.href}
+                            className="border border-[#8c8f94] text-[#2271b1] hover:text-[#135e96] bg-[#f6f7f7] hover:bg-[#f0f0f1] px-3 py-1 rounded-[3px] text-[12px] font-bold shadow-sm transition-all"
+                          >
+                            {act.label}
+                          </Link>
+                        );
+                      }
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          disabled={isUpdating}
+                          onClick={act.action}
+                          className={`border border-[#2271b1] text-white bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 px-3 py-1 rounded-[3px] text-[12px] font-bold shadow-sm transition-all cursor-pointer ${
+                            act.label === "Reject" ? "border-[#d63638] bg-[#d63638] hover:bg-[#bc0b0d]" : ""
+                          }`}
+                        >
+                          {isUpdating ? "Processing..." : act.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
           

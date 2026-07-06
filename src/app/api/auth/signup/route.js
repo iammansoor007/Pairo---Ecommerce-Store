@@ -44,12 +44,26 @@ export async function POST(req) {
 
         const siteUrl = process.env.NEXTAUTH_URL || "https://pairolifestyle.com";
         const verificationUrl = `${siteUrl}/verify-email?token=${token}`;
-        await sendEmailVerification(email, name, verificationUrl);
-
-        return NextResponse.json({
-          message: "Verification email resent. Please check your inbox.",
-          resent: true
-        }, { status: 200 });
+        try {
+          await sendEmailVerification(email, name, verificationUrl);
+          return NextResponse.json({
+            message: "Verification email resent. Please check your inbox.",
+            resent: true
+          }, { status: 200 });
+        } catch (emailError) {
+          console.error("[Signup] ⚠️ Failed to resend verification email:", emailError);
+          // Fallback: auto-verify existing customer so they can log in
+          existingCustomer.emailVerified = true;
+          existingCustomer.verificationToken = null;
+          existingCustomer.verificationTokenExpiry = null;
+          await existingCustomer.save();
+          console.log(`[Signup] 🛡️ Existing customer auto-verified due to resend email failure: ${existingCustomer._id}`);
+          return NextResponse.json({
+            message: "Account verified and ready to use!",
+            resent: false,
+            verified: true
+          }, { status: 200 });
+        }
       }
       return NextResponse.json({ message: "An account with this email already exists." }, { status: 400 });
     }
@@ -75,13 +89,26 @@ export async function POST(req) {
     // Send verification email
     const siteUrl = process.env.NEXTAUTH_URL || "https://pairolifestyle.com";
     const verificationUrl = `${siteUrl}/verify-email?token=${verificationToken}`;
-    await sendEmailVerification(email, name, verificationUrl);
-    console.log(`[Signup] ✅ Verification email dispatched to ${email}`);
-
-    return NextResponse.json({
-      message: "Account created. Please check your email to verify your account.",
-      pendingVerification: true
-    }, { status: 201 });
+    try {
+      await sendEmailVerification(email, name, verificationUrl);
+      console.log(`[Signup] ✅ Verification email dispatched to ${email}`);
+      return NextResponse.json({
+        message: "Account created. Please check your email to verify your account.",
+        pendingVerification: true
+      }, { status: 201 });
+    } catch (emailError) {
+      console.error("[Signup] ⚠️ Failed to send verification email:", emailError);
+      // Fallback: auto-verify customer so they are not locked out due to SMTP failure
+      customer.emailVerified = true;
+      customer.verificationToken = null;
+      customer.verificationTokenExpiry = null;
+      await customer.save();
+      console.log(`[Signup] 🛡️ Customer auto-verified due to email delivery failure: ${customer._id}`);
+      return NextResponse.json({
+        message: "Account created successfully!",
+        pendingVerification: false
+      }, { status: 201 });
+    }
 
   } catch (error) {
     console.error("[Signup] ❌ CRITICAL ERROR:", error);

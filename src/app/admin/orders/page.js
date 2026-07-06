@@ -18,6 +18,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [referralFilter, setReferralFilter] = useState("all");
   const [pagination, setPagination] = useState({ total: 0, pages: 1, currentPage: 1 });
   
   const [selectedIds, setSelectedIds] = useState([]);
@@ -100,8 +101,8 @@ export default function AdminOrdersPage() {
   };
 
   const toggleSelectAll = () => {
-     if (selectedIds.length === orders.length) setSelectedIds([]);
-     else setSelectedIds(orders.map(o => o._id));
+     if (selectedIds.length === displayedOrders.length) setSelectedIds([]);
+     else setSelectedIds(displayedOrders.map(o => o._id));
   };
 
   const getStatusBadge = (status) => {
@@ -115,6 +116,12 @@ export default function AdminOrdersPage() {
     };
     return styles[status] || 'bg-gray-100 text-gray-700 border-gray-300';
   };
+
+  const displayedOrders = orders.filter(order => {
+    if (referralFilter === "referred") return !!order.affiliateReferralCode;
+    if (referralFilter === "non-referred") return !order.affiliateReferralCode;
+    return true;
+  });
 
   return (
     <AdminPageLayout 
@@ -167,6 +174,15 @@ export default function AdminOrdersPage() {
             >
               Apply
             </button>
+            <select 
+              className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1.5 rounded-[3px] outline-none cursor-pointer focus:border-[#2271b1]" 
+              value={referralFilter} 
+              onChange={(e) => setReferralFilter(e.target.value)}
+            >
+              <option value="all">All referral states</option>
+              <option value="referred">Referred only</option>
+              <option value="non-referred">Non-referred</option>
+            </select>
           </div>
            
           <div className="flex items-center gap-2 w-full md:w-auto">
@@ -191,7 +207,7 @@ export default function AdminOrdersPage() {
           <table className="w-full text-left border-collapse text-[13px] min-w-[800px] font-sans">
             <thead>
               <tr className="border-b border-[#ccd0d4] bg-[#f6f7f7] text-[#2c3539]">
-                <th className="px-3 py-2.5 w-9 text-center align-middle"><input type="checkbox" checked={selectedIds.length > 0 && selectedIds.length === orders.length} onChange={toggleSelectAll} className="rounded-[2px] border-gray-300" /></th>
+                <th className="px-3 py-2.5 w-9 text-center align-middle"><input type="checkbox" checked={selectedIds.length > 0 && selectedIds.length === displayedOrders.length} onChange={toggleSelectAll} className="rounded-[2px] border-gray-300" /></th>
                 <th className="px-3 py-2.5 font-bold text-[#1d2327] w-auto">Order</th>
                 <th className="px-3 py-2.5 font-bold text-[#1d2327] w-36">Date</th>
                 <th className="px-3 py-2.5 font-bold text-[#1d2327] w-32">Status</th>
@@ -201,10 +217,10 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-[#f0f0f1] text-[#2c3539]">
               {loading ? (
                 <tr><td colSpan={5} className="p-8 text-center italic text-gray-400">Loading orders...</td></tr>
-              ) : orders.length === 0 ? (
+              ) : displayedOrders.length === 0 ? (
                 <tr><td colSpan={5} className="p-8 text-center italic text-gray-400">No orders found.</td></tr>
               ) : (
-                orders.map((order) => (
+                displayedOrders.map((order) => (
                   <tr key={order._id} className={`hover:bg-[#f6f7f7] group transition-colors ${selectedIds.includes(order._id) ? "bg-[#f0f6fa]" : ""}`}>
                     <td className="px-3 py-3.5 text-center align-top pt-4"><input type="checkbox" checked={selectedIds.includes(order._id)} onChange={() => toggleSelect(order._id)} className="rounded-[2px] border-gray-300" /></td>
                     <td className="px-3 py-3.5 align-top pt-4">

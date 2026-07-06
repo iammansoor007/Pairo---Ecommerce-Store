@@ -30,6 +30,8 @@ export default function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All categories");
+  const [selectedStock, setSelectedStock] = useState("All stock");
+  const [selectedType, setSelectedType] = useState("All types");
   const [categories, setCategories] = useState([]);
   const [view, setView] = useState("all"); 
   const [quickEditId, setQuickEditId] = useState(null);
@@ -185,7 +187,15 @@ export default function AdminProducts() {
                                const cat = categories.find(c => c._id === catId);
                                return cat?.name === selectedCategory;
                             });
-    return matchesSearch && matchesCategory;
+
+    const matchesStock = selectedStock === "All stock" ||
+                         (selectedStock === "In stock" && (!p.manageStock || p.stock > (p.lowStockThreshold || 5))) ||
+                         (selectedStock === "Low stock" && p.manageStock && p.stock > 0 && p.stock <= (p.lowStockThreshold || 5)) ||
+                         (selectedStock === "Out of stock" && p.manageStock && p.stock <= 0);
+
+    const matchesType = selectedType === "All types" || p.productType === selectedType;
+
+    return matchesSearch && matchesCategory && matchesStock && matchesType;
   });
 
   return (
@@ -245,6 +255,28 @@ export default function AdminProducts() {
               <option>All categories</option>
               {categories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
             </select>
+
+            <select 
+              className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1.5 rounded-[3px] outline-none cursor-pointer focus:border-[#2271b1] ml-1" 
+              value={selectedStock} 
+              onChange={(e) => setSelectedStock(e.target.value)}
+            >
+              <option>All stock</option>
+              <option>In stock</option>
+              <option>Low stock</option>
+              <option>Out of stock</option>
+            </select>
+
+            <select 
+              className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1.5 rounded-[3px] outline-none cursor-pointer focus:border-[#2271b1] ml-1" 
+              value={selectedType} 
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              <option>All types</option>
+              <option>Simple product</option>
+              <option>Variable product</option>
+            </select>
+
             <button 
               type="button"
               className="border border-[#8c8f94] text-[#3c434a] px-3 py-1.5 rounded-[3px] text-[13px] font-medium bg-[#f6f7f7] hover:bg-[#f0f0f1] cursor-pointer hover:text-[#000] active:bg-[#eee]"

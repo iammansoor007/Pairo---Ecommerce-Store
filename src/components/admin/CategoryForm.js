@@ -135,11 +135,11 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
          {/* Main Column */}
          <div className="lg:col-span-3 space-y-4">
             <div className="space-y-1">
-               <input
-                  required
-                  placeholder="Enter title here"
-                  className="w-full border border-[#c3c4c7] outline-none px-3 py-2 text-[20px] bg-white shadow-inner font-semibold"
-                  value={formData.name}
+                <input
+                   required
+                   placeholder="Enter title here"
+                   className="w-full border border-[#c3c4c7] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] rounded-lg outline-none px-4 py-2.5 text-[20px] bg-white shadow-sm font-semibold transition-all"
+                   value={formData.name}
                   onChange={(e) => {
                      const name = e.target.value;
                      const slug = name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');

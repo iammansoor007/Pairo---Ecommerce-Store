@@ -22,6 +22,7 @@ export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All categories");
   const [view, setView] = useState("all"); 
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkAction, setBulkAction] = useState("Bulk actions");
@@ -140,9 +141,11 @@ export default function AdminBlogs() {
      else setSelectedIds(filteredBlogs.map(b => b._id));
   };
 
-  const filteredBlogs = blogs.filter(b => 
-     b.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBlogs = blogs.filter(b => {
+     const matchesSearch = b.title?.toLowerCase().includes(searchTerm.toLowerCase());
+     const matchesCategory = selectedCategory === "All categories" || b.category === selectedCategory;
+     return matchesSearch && matchesCategory;
+  });
 
   return (
     <AdminPageLayout 
@@ -168,15 +171,26 @@ export default function AdminBlogs() {
 
         {/* Filter Bar */}
         <div className="bg-white border border-[#ccd0d4] p-3 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-           <div className="flex items-center gap-2">
-              <select className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1 rounded-[3px] outline-none" value={bulkAction} onChange={(e) => setBulkAction(e.target.value)}>
-                 <option>Bulk actions</option>
-                 <option>Duplicate</option>
-                 <option>Move to Trash</option>
-                 <option>Delete Permanently</option>
-              </select>
-              <button onClick={handleBulkAction} className="border border-[#8c8f94] text-[#3c434a] px-3 py-1 rounded-[3px] text-[13px] font-medium bg-[#f6f7f7] hover:bg-[#f0f0f1]">Apply</button>
-           </div>
+            <div className="flex flex-wrap items-center gap-2">
+               <select className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1 rounded-[3px] outline-none" value={bulkAction} onChange={(e) => setBulkAction(e.target.value)}>
+                  <option>Bulk actions</option>
+                  <option>Duplicate</option>
+                  <option>Move to Trash</option>
+                  <option>Delete Permanently</option>
+               </select>
+               <button onClick={handleBulkAction} className="border border-[#8c8f94] text-[#3c434a] px-3 py-1 rounded-[3px] text-[13px] font-medium bg-[#f6f7f7] hover:bg-[#f0f0f1]">Apply</button>
+               
+               <select 
+                 className="border border-[#8c8f94] bg-white text-[13px] px-2 py-1 rounded-[3px] outline-none cursor-pointer focus:border-[#2271b1] ml-2" 
+                 value={selectedCategory} 
+                 onChange={(e) => setSelectedCategory(e.target.value)}
+               >
+                 <option>All categories</option>
+                 {Array.from(new Set(blogs.map(b => b.category).filter(Boolean))).map(cat => (
+                   <option key={cat} value={cat}>{cat}</option>
+                 ))}
+               </select>
+            </div>
 
            <div className="flex items-center gap-2 w-full md:w-auto">
               <input 

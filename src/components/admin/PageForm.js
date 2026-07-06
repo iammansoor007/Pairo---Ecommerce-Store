@@ -537,7 +537,7 @@ export default function PageForm({ pageId }) {
                      <input
                         required
                         placeholder="Enter title here"
-                        className="w-full border border-[#c3c4c7] outline-none px-3 py-2 text-[20px] bg-white shadow-inner font-semibold post-title-input"
+                        className="w-full border border-[#c3c4c7] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] rounded-lg outline-none px-4 py-2.5 text-[20px] bg-white shadow-sm font-semibold transition-all"
                         value={page.title}
                         onChange={(e) => {
                            const val = e.target.value;
@@ -594,29 +594,31 @@ export default function PageForm({ pageId }) {
                   </div>
                </div>
 
-               {/* Content / SEO Tabs */}
-               <div className="flex border-b border-[#ccd0d4] gap-1 bg-[#f0f2f1] p-1 rounded w-fit">
-                  <button
-                     type="button"
-                     onClick={() => setActiveFormTab("content")}
-                     className={`px-4 py-1.5 text-[13px] font-bold transition-all rounded ${activeFormTab === "content"
-                        ? "bg-white text-[#2271b1] shadow-sm border border-[#ccd0d4]/60"
-                        : "text-gray-600 hover:text-black hover:bg-[#f6f7f7]/50"
-                        }`}
-                  >
-                     Content Editor
-                  </button>
-                  <button
-                     type="button"
-                     onClick={() => setActiveFormTab("seo")}
-                     className={`px-4 py-1.5 text-[13px] font-bold transition-all rounded ${activeFormTab === "seo"
-                        ? "bg-white text-[#2271b1] shadow-sm border border-[#ccd0d4]/60"
-                        : "text-gray-600 hover:text-black hover:bg-[#f6f7f7]/50"
-                        }`}
-                  >
-                     SEO Settings
-                  </button>
-               </div>
+                {/* Content / SEO Tabs */}
+                <div className="flex border-b border-[#ccd0d4] gap-6 select-none pb-0">
+                   <button
+                      type="button"
+                      onClick={() => setActiveFormTab("content")}
+                      className={`pb-2.5 text-[14px] font-bold transition-all border-b-2 -mb-[1px] cursor-pointer ${
+                         activeFormTab === "content"
+                            ? "border-[#2271b1] text-[#2271b1]"
+                            : "border-transparent text-gray-500 hover:text-black"
+                      }`}
+                   >
+                      Content Editor
+                   </button>
+                   <button
+                      type="button"
+                      onClick={() => setActiveFormTab("seo")}
+                      className={`pb-2.5 text-[14px] font-bold transition-all border-b-2 -mb-[1px] cursor-pointer ${
+                         activeFormTab === "seo"
+                            ? "border-[#2271b1] text-[#2271b1]"
+                            : "border-transparent text-gray-500 hover:text-black"
+                      }`}
+                   >
+                      SEO Settings
+                   </button>
+                </div>
 
                {activeFormTab === "content" ? (
                   /* Section Manager Meta Box */
@@ -679,18 +681,15 @@ export default function PageForm({ pageId }) {
                      </div>
                   </div>
                ) : (
-                  <div className="bg-white border border-[#c3c4c7] shadow-sm p-6">
-                     <h2 className="text-[14px] font-bold text-gray-700 mb-4 border-b border-gray-100 pb-2">SEO Configurations</h2>
-                     <SEOConfigPanel
-                        seo={page.seo || {}}
-                        onChange={newSeo => setPage(prev => ({ ...prev, seo: newSeo }))}
-                        parentTitle={page.title}
-                        parentDescription={page.description}
-                        parentSlug={page.slug}
-                        parentImage=""
-                        parentType="page"
-                     />
-                  </div>
+                  <SEOConfigPanel
+                     seo={page.seo || {}}
+                     onChange={newSeo => setPage(prev => ({ ...prev, seo: newSeo }))}
+                     parentTitle={page.title}
+                     parentDescription={page.description}
+                     parentSlug={page.slug}
+                     parentImage=""
+                     parentType="page"
+                  />
                )}
             </div>
 
