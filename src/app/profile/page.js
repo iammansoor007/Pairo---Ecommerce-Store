@@ -742,84 +742,119 @@ export default function ProfilePage() {
                                 </p>
                               </div>
                             </div>
-
                             {/* Right Column: TRACKING HISTORY */}
                             <div className="space-y-4 border-t md:border-t-0 md:border-l border-neutral-200 pt-6 md:pt-0 md:pl-8">
                               <div className="flex justify-between items-center border-b border-neutral-200 pb-1.5">
                                 <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-black">Tracking History</h4>
-                                <span className="text-[8px] font-bold text-black uppercase tracking-widest">Updated: {formatOrderDate(order.date)}</span>
+                                <span className="text-[8px] font-bold text-black uppercase tracking-widest">Order: #{order.orderNumber}</span>
                               </div>
 
-                              <div className="space-y-6">
-                                <h3 className="text-[18px] font-black text-black uppercase tracking-wide">{order.status}</h3>
-                                
-                                 {/* Premium Snake Path Stepper Timeline - Fills horizontal space */}
-                                 {!['Cancelled', 'Refunded'].includes(order.status) && (() => {
-                                   const row1Progress = Math.min(Math.max(currentStepIndex, 0), 3) / 3;
-                                   const row2Progress = Math.min(Math.max(currentStepIndex - 4, 0), 2) / 2;
-                                   const stepsPositions = [
-                                     { step: 'Pending', col: 'col-start-1', row: 'row-start-1' },
-                                     { step: 'Confirmed', col: 'col-start-2', row: 'row-start-1' },
-                                     { step: 'Processing', col: 'col-start-3', row: 'row-start-1' },
-                                     { step: 'Packed', col: 'col-start-4', row: 'row-start-1' },
-                                     { step: 'Shipped', col: 'col-start-4', row: 'row-start-2' },
-                                     { step: 'Out for Delivery', col: 'col-start-3', row: 'row-start-2' },
-                                     { step: 'Delivered', col: 'col-start-2', row: 'row-start-2' }
-                                   ];
-                                   return (
-                                     <div className="pt-4 relative select-none">
-                                       {/* Background Connectors */}
-                                       <div className="absolute left-[12.5%] right-[12.5%] top-[16px] h-[2px] bg-neutral-200 -z-10" />
-                                       <div className="absolute right-[12.5%] top-[16px] bottom-[16px] w-[2px] bg-neutral-200 -z-10" />
-                                       <div className="absolute left-[37.5%] right-[12.5%] bottom-[16px] h-[2px] bg-neutral-200 -z-10" />
+                              <div className="space-y-5">
+                                {/* Current status badge */}
+                                <div className="flex items-center gap-2">
+                                  <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] rounded-[2px] ${getStatusColor(order.status)}`}>
+                                    {order.status}
+                                  </span>
+                                  {!['Cancelled', 'Refunded'].includes(order.status) && (
+                                    <span className="text-[9px] text-neutral-400 font-medium">
+                                      Step {Math.max(currentStepIndex + 1, 1)} of {stepperSteps.length}
+                                    </span>
+                                  )}
+                                </div>
 
-                                       {/* Active Connector Overlays */}
-                                       <div 
-                                         className="absolute left-[12.5%] top-[16px] h-[2px] bg-black -z-10 transition-all duration-500" 
-                                         style={{ width: `calc(${row1Progress * 75}%)` }} 
-                                       />
-                                       <div 
-                                         className="absolute right-[12.5%] top-[16px] w-[2px] bg-black -z-10 transition-all duration-500" 
-                                         style={{ height: currentStepIndex >= 4 ? 'calc(100% - 32px)' : '0px' }} 
-                                       />
-                                       <div 
-                                         className="absolute right-[12.5%] bottom-[16px] h-[2px] bg-black -z-10 transition-all duration-500" 
-                                         style={{ width: `calc(${row2Progress * 50}%)` }} 
-                                       />
+                                {/* Cancelled / Refunded message */}
+                                {['Cancelled', 'Refunded'].includes(order.status) && (
+                                  <div className="p-3 bg-neutral-50 border border-neutral-100 rounded-[4px]">
+                                    <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wide">
+                                      This order has been {order.status.toLowerCase()}.
+                                    </p>
+                                  </div>
+                                )}
 
-                                       <div className="grid grid-cols-4 gap-y-12 gap-x-2 relative">
-                                         {stepsPositions.map((item, idx) => {
-                                           const isCompleted = idx <= currentStepIndex;
-                                           const isCurrent = idx === currentStepIndex;
-                                           return (
-                                             <div key={idx} className={`${item.col} ${item.row} flex flex-col items-center text-center relative`}>
-                                                {/* Node Circle */}
-                                                <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-[11px] font-medium transition-all duration-300 ${
-                                                  isCurrent ? 'bg-black text-white border-black scale-105 shadow-sm ring-4 ring-black/5' :
-                                                  isCompleted ? 'bg-black text-white border-black' :
-                                                  'bg-white text-neutral-400 border-neutral-200'
-                                                }`}>
-                                                  {idx + 1}
-                                                </div>
-                                                
-                                                {/* Step Label */}
-                                                <span className={`text-[10px] uppercase tracking-wide mt-2 max-w-[85px] line-clamp-2 transition-colors ${
-                                                  isCurrent ? 'text-black font-semibold' : 
-                                                  isCompleted ? 'text-black font-medium' : 'text-neutral-400 font-normal'
-                                                }`}>
-                                                  {item.step}
+                                {/* Vertical Timeline Stepper with connector lines & dates */}
+                                {!['Cancelled', 'Refunded'].includes(order.status) && (
+                                  <div className="relative">
+                                    {stepperSteps.map((step, idx) => {
+                                      const isCompleted = idx < currentStepIndex;
+                                      const isCurrent = idx === currentStepIndex;
+                                      const isLast = idx === stepperSteps.length - 1;
+
+                                      // Find matching timeline entry for this step
+                                      const timelineEntry = (order.timeline || []).find(t => t.status === step);
+                                      const stepDate = timelineEntry?.timestamp
+                                        ? formatOrderDate(timelineEntry.timestamp)
+                                        : (isCompleted && idx === 0)
+                                          ? formatOrderDate(order.date)
+                                          : null;
+
+                                      return (
+                                        <div key={step} className="flex items-stretch gap-4">
+                                          {/* Left column: circle + connector line */}
+                                          <div className="flex flex-col items-center" style={{ width: '28px', flexShrink: 0 }}>
+                                            {/* Step circle */}
+                                            <div className={`relative z-10 w-7 h-7 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 ${
+                                              isCurrent
+                                                ? 'bg-black border-black text-white shadow-[0_0_0_5px_rgba(0,0,0,0.07)]'
+                                                : isCompleted
+                                                  ? 'bg-black border-black text-white'
+                                                  : 'bg-white border-neutral-200 text-neutral-300'
+                                            }`}>
+                                              {isCompleted ? (
+                                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                              ) : isCurrent ? (
+                                                <span className="w-2 h-2 rounded-full bg-white block" />
+                                              ) : (
+                                                <span className="w-1.5 h-1.5 rounded-full bg-neutral-200 block" />
+                                              )}
+                                            </div>
+                                            {/* Vertical connector line (hidden for last item) */}
+                                            {!isLast && (
+                                              <div
+                                                className={`w-[2px] flex-1 mt-0 transition-colors duration-500 ${
+                                                  isCompleted ? 'bg-black' : 'bg-neutral-100'
+                                                }`}
+                                                style={{ minHeight: '28px' }}
+                                              />
+                                            )}
+                                          </div>
+
+                                          {/* Right column: step label + date */}
+                                          <div className={`flex-1 min-w-0 ${isLast ? 'pb-0' : 'pb-4'}`}>
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                              <p className={`text-[11px] font-bold uppercase tracking-[0.1em] leading-tight transition-colors ${
+                                                isCurrent ? 'text-black' :
+                                                isCompleted ? 'text-black' :
+                                                'text-neutral-300'
+                                              }`}>
+                                                {step}
+                                              </p>
+                                              {isCurrent && (
+                                                <span className="inline-block px-1.5 py-0.5 bg-black text-white text-[7px] font-black uppercase tracking-widest rounded-[2px]">
+                                                  Now
                                                 </span>
-                                             </div>
-                                           );
-                                         })}
-                                       </div>
-                                     </div>
-                                   );
-                                 })()}
+                                              )}
+                                            </div>
+                                            <p className={`text-[9px] mt-0.5 font-medium transition-colors ${
+                                              stepDate
+                                                ? isCurrent
+                                                  ? 'text-neutral-500'
+                                                  : 'text-neutral-400'
+                                                : 'text-neutral-200'
+                                            }`}>
+                                              {stepDate || (isCurrent ? 'In progress...' : '—')}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
 
                                 {/* Cancel request button if pending */}
                                 {['Pending', 'Confirmed', 'Processing'].includes(order.status) && (
-                                  <div className="pt-4 text-right">
+                                  <div className="pt-2 text-right">
                                     <button
                                       onClick={(e) => {
                                         e.preventDefault();
