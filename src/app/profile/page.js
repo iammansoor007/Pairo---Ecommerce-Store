@@ -826,7 +826,7 @@ export default function ProfilePage() {
                                               <p className={`text-[11px] font-bold uppercase tracking-[0.1em] leading-tight transition-colors ${
                                                 isCurrent ? 'text-black' :
                                                 isCompleted ? 'text-black' :
-                                                'text-neutral-300'
+                                                'text-neutral-400'
                                               }`}>
                                                 {step}
                                               </p>
@@ -839,9 +839,9 @@ export default function ProfilePage() {
                                             <p className={`text-[9px] mt-0.5 font-medium transition-colors ${
                                               stepDate
                                                 ? isCurrent
-                                                  ? 'text-neutral-500'
-                                                  : 'text-neutral-400'
-                                                : 'text-neutral-200'
+                                                  ? 'text-neutral-600'
+                                                  : 'text-neutral-500'
+                                                : 'text-neutral-400'
                                             }`}>
                                               {stepDate || (isCurrent ? 'In progress...' : '—')}
                                             </p>
