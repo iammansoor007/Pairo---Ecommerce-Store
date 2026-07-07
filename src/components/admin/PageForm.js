@@ -212,6 +212,16 @@ export default function PageForm({ pageId }) {
    const [loading, setLoading] = useState(true);
    const [saving, setSaving] = useState(false);
    const [activeFormTab, setActiveFormTab] = useState("content");
+
+   useEffect(() => {
+      if (typeof window !== 'undefined') {
+         const params = new URLSearchParams(window.location.search);
+         const tab = params.get("tab");
+         if (tab && (tab === "content" || tab === "seo")) {
+            setActiveFormTab(tab);
+         }
+      }
+   }, []);
    const [page, setPage] = useState(null);
    const [expandedSectionId, setExpandedSectionId] = useState(null);
    const [mediaPicker, setMediaPicker] = useState({ open: false, onSelect: null });

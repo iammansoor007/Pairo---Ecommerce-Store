@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import AdminSidebar from "@/components/admin/Sidebar";
+import AdminTopbar from "@/components/admin/Topbar";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { toast } from "react-hot-toast";
 
@@ -52,6 +53,7 @@ function AdminGuard({ children }) {
     <div className="min-h-screen bg-[#f0f0f1] font-sans selection:bg-[#2271b1] selection:text-white admin-dashboard-container">
       <AdminSidebar />
       <div className="pl-[160px] flex flex-col min-h-screen">
+        <AdminTopbar />
         <main className="flex-1 bg-[#f0f2f1]">
           {children}
         </main>

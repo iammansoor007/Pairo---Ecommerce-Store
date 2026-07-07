@@ -239,7 +239,49 @@ export default function ProductForm({ productId = null }) {
          }
       };
       fetchData();
-   }, [productId]);
+    }, [productId]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+           const params = new URLSearchParams(window.location.search);
+           const focus = params.get("focus");
+           const tab = params.get("tab");
+           
+           if (focus === "seo" || tab === "seo") {
+              setActiveFormTab("seo");
+           } else if (focus === "content" || tab === "content") {
+              setActiveFormTab("content");
+           }
+
+           if (focus === "pricing" || focus === "price" || tab === "general") {
+              setActiveTab("general");
+              setTimeout(() => {
+                 const el = document.getElementById("sale-price-input");
+                 if (el) {
+                    el.focus();
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                 }
+              }, 300);
+           } else if (focus === "stock" || focus === "inventory" || tab === "inventory") {
+              setActiveTab("inventory");
+              setTimeout(() => {
+                 const el = document.getElementById("stock-input");
+                 if (el) {
+                    el.focus();
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                 }
+              }, 300);
+           } else if (focus === "variants" || tab === "variants") {
+              setActiveTab("variants");
+           } else if (focus === "sizeguide" || focus === "size" || tab === "sizeguide") {
+              setActiveTab("sizeguide");
+           } else if (focus === "faqs" || tab === "faqs") {
+              setActiveTab("faqs");
+           } else if (focus === "stats" || tab === "stats") {
+              setActiveTab("stats");
+           }
+        }
+     }, [loading]);
 
    const handleSubmit = async (e) => {
       if (e) e.preventDefault();
@@ -640,7 +682,7 @@ export default function ProductForm({ productId = null }) {
                                        <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Sale price</label>
                                        <div className="flex-1 flex items-center gap-2 border border-gray-200 bg-gray-50/50 px-3 py-2 rounded-sm focus-within:border-[#2271b1] transition-colors">
                                           <span className="text-gray-400 text-[13px] font-bold">$</span>
-                                          <input className="w-full bg-transparent text-[14px] outline-none font-bold" placeholder="0.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+                                          <input id="sale-price-input" className="w-full bg-transparent text-[14px] outline-none font-bold" placeholder="0.00" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
                                        </div>
                                     </div>
                                     <div className="flex items-center gap-6 py-2 border-b border-gray-50">
@@ -671,7 +713,7 @@ export default function ProductForm({ productId = null }) {
                                     {formData.manageStock && (
                                        <div className="flex items-center gap-6 py-2">
                                           <label className="text-[12px] font-bold text-gray-400 uppercase w-40">Stock Quantity</label>
-                                          <input type="number" className="w-32 border border-gray-200 bg-gray-50/50 p-2 text-[14px] outline-none rounded-sm focus:border-[#2271b1]" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })} />
+                                          <input id="stock-input" type="number" className="w-32 border border-gray-200 bg-gray-50/50 p-2 text-[14px] outline-none rounded-sm focus:border-[#2271b1]" value={formData.stock} onChange={(e) => setFormData({ ...formData, stock: e.target.value })} />
                                        </div>
                                     )}
                                  </div>

@@ -112,6 +112,16 @@ export default function BlogForm({ blogId }) {
       fetchData();
    }, [blogId]);
 
+   useEffect(() => {
+      if (typeof window !== 'undefined') {
+         const params = new URLSearchParams(window.location.search);
+         const tab = params.get("tab");
+         if (tab && (tab === "content" || tab === "seo")) {
+            setActiveFormTab(tab);
+         }
+      }
+   }, []);
+
    const handleSubmit = async (e) => {
       e.preventDefault();
       setSaving(true);
