@@ -5,6 +5,7 @@ import { User, Bell, Search, LogOut, ChevronDown, Plus, X, Globe } from "lucide-
 import Link from "next/link";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function AdminTopbar() {
   const { data: session } = useSession();
@@ -27,14 +28,24 @@ export default function AdminTopbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
 
+  // Notification States for the WP Overlay Module
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [dismissedIds, setDismissedIds] = useState([]);
+
   // Refs for outside click dismissals
   const searchRef = useRef(null);
+  const dropdownRef = useRef(null);
   const profileRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
+      }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
       }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfile(false);
@@ -112,6 +123,121 @@ export default function AdminTopbar() {
     };
     fetchSearchData();
   }, []);
+
+  // Fetch Notifications
+  const fetchNotifications = async () => {
+    try {
+      const [ordersRes, affiliatesRes, productsRes] = await Promise.all([
+        fetch("/api/admin/orders?status=Pending").then(r => r.json().catch(() => ({}))),
+        fetch("/api/admin/affiliates/requests").then(r => r.json().catch(() => ({}))),
+        fetch("/api/admin/products").then(r => r.json().catch(() => ([])))
+      ]);
+
+      let list = [];
+
+      if (ordersRes?.success && Array.isArray(ordersRes.orders)) {
+        ordersRes.orders.forEach(order => {
+          list.push({
+            id: `order-${order._id}`,
+            type: "warning",
+            label: "Order",
+            text: `Order #${order.orderNumber} is pending confirmation.`,
+            actions: [
+              { label: "Confirm", action: () => handleOrderAction(order._id, "Confirmed") },
+              { label: "View", href: `/admin/orders/${order._id}` }
+            ]
+          });
+        });
+      }
+
+      if (affiliatesRes?.success && Array.isArray(affiliatesRes.applications)) {
+        affiliatesRes.applications.filter(app => app.status === "Pending").forEach(app => {
+          list.push({
+            id: `affiliate-${app._id}`,
+            type: "info",
+            label: "Affiliate",
+            text: `Request from ${app.name} is pending review.`,
+            actions: [
+              { label: "Approve", action: () => handleAffiliateAction(app._id, "Approve") },
+              { label: "Reject", action: () => handleAffiliateAction(app._id, "Reject") }
+            ]
+          });
+        });
+      }
+
+      const prodList = Array.isArray(productsRes) ? productsRes : [];
+      prodList.filter(p => p.manageStock && p.stock <= (p.lowStockThreshold || 5)).forEach(p => {
+        list.push({
+          id: `product-${p._id}`,
+          type: "error",
+          label: "Stock",
+          text: `'${p.name}' low stock (${p.stock} remaining).`,
+          actions: [
+            { label: "Edit", href: `/admin/products/${p._id}?focus=stock` }
+          ]
+        });
+      });
+
+      setNotifications(list);
+    } catch (err) {
+      console.error("Failed to load notifications", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 35000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleOrderAction = async (id, status) => {
+    setUpdatingId(`order-${id}`);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        toast.success(`Order status updated to ${status}!`);
+        await fetchNotifications();
+      } else {
+        toast.error("Failed to update order.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleAffiliateAction = async (applicationId, action) => {
+    setUpdatingId(`affiliate-${applicationId}`);
+    try {
+      const res = await fetch("/api/admin/affiliates/requests", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId, action })
+      });
+      if (res.ok) {
+        toast.success(`Affiliate application ${action === 'Approve' ? 'approved' : 'rejected'} successfully!`);
+        await fetchNotifications();
+      } else {
+        const data = await res.json();
+        toast.error(`Failed: ${data.error || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const dismissNotice = (id) => {
+    setDismissedIds(prev => [...prev, id]);
+  };
+
+  const visibleNotices = notifications.filter(n => !dismissedIds.includes(n.id));
 
   // Advanced Search & Action Dispatch Filter
   const searchResults = useMemo(() => {
@@ -518,9 +644,98 @@ export default function AdminTopbar() {
         )}
       </div>
 
-      {/* Right items: Howdy Profile menu */}
-      <div className="flex items-center gap-0 h-8" ref={profileRef}>
-        <div className="relative h-8 flex items-center">
+      {/* Right items: Howdy Profile & Notifications */}
+      <div className="flex items-center gap-0 h-8">
+        
+        {/* Notifications Dropdown (WP Overlay Notice Module) */}
+        <div className="relative h-8 flex items-center" ref={dropdownRef}>
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className={`flex items-center gap-1.5 px-3 h-full hover:bg-[#2c3338] transition-all text-[#f0f0f1] hover:text-[#72aee6] cursor-pointer ${
+              showNotifications ? "bg-[#2c3338] text-[#72aee6]" : ""
+            }`}
+          >
+            <Bell className="w-3.5 h-3.5" />
+            {visibleNotices.length > 0 && (
+              <span className="bg-[#d63638] text-white text-[9px] font-black px-1 py-0.5 rounded-full leading-none shrink-0">
+                {visibleNotices.length}
+              </span>
+            )}
+          </button>
+
+          {showNotifications && (
+            <div className="absolute top-full right-0 w-80 sm:w-96 bg-white border border-[#c3c4c7] shadow-xl py-0 z-[110] text-[13px] text-gray-700 rounded-none border-t-transparent text-left">
+              <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
+                <span className="text-[10px] font-bold text-[#1d2327] uppercase tracking-wider">Admin Notices</span>
+                {visibleNotices.length > 0 && (
+                  <span className="bg-[#d63638] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[2px]">
+                    {visibleNotices.length} Pending
+                  </span>
+                )}
+              </div>
+              <div className="max-h-[260px] overflow-y-auto divide-y divide-[#f0f0f1]">
+                {visibleNotices.length === 0 ? (
+                  <div className="p-4 text-center text-gray-400 text-xs italic">
+                    No active notifications.
+                  </div>
+                ) : (
+                  visibleNotices.map((notice) => {
+                    let borderClass = "border-l-[#72aee6]";
+                    if (notice.type === "warning") borderClass = "border-l-[#dba617]";
+                    if (notice.type === "error") borderClass = "border-l-[#d63638]";
+
+                    const isUpdating = updatingId === notice.id;
+
+                    return (
+                      <div key={notice.id} className={`p-3 pl-3 border-l-4 ${borderClass} hover:bg-[#f6f7f7] relative flex flex-col gap-1.5 transition-all`}>
+                        <div className="pr-5">
+                          <span className="font-bold text-[#1d2327] text-[11px] uppercase mr-1.5">[{notice.label}]</span>
+                          <span className="text-[12px] text-[#2c3338] leading-normal">{notice.text}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {notice.actions.map((act, i) => {
+                            if (act.href) {
+                              return (
+                                <Link
+                                  key={i}
+                                  href={act.href}
+                                  onClick={() => setShowNotifications(false)}
+                                  className="text-[#2271b1] hover:text-[#135e96] underline text-[11px] font-semibold"
+                                >
+                                  {act.label}
+                                </Link>
+                              );
+                            }
+                            return (
+                              <button
+                                key={i}
+                                type="button"
+                                disabled={isUpdating}
+                                onClick={act.action}
+                                className="text-[#2271b1] hover:text-[#135e96] underline text-[11px] font-semibold cursor-pointer disabled:opacity-50"
+                              >
+                                {isUpdating ? "Processing..." : act.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <button
+                          onClick={() => dismissNotice(notice.id)}
+                          className="absolute right-1.5 top-1.5 text-[#8c8f94] hover:text-black p-0.5 rounded-full cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* User Account / Profile Dropdown */}
+        <div className="relative h-8 flex items-center" ref={profileRef}>
           <button
             onMouseEnter={() => setShowProfile(true)}
             onClick={() => setShowProfile(!showProfile)}
