@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, Suspense } from "react";
 import AdminSidebar from "@/components/admin/Sidebar";
 import AdminTopbar from "@/components/admin/Topbar";
+import AdminNotices from "@/components/admin/AdminNotices";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { toast } from "react-hot-toast";
 
@@ -55,6 +56,9 @@ function AdminGuard({ children }) {
       <div className="pl-[160px] flex flex-col min-h-screen">
         <AdminTopbar />
         <main className="flex-1 bg-[#f0f2f1]">
+          <div className="p-4 md:p-6 pb-0">
+            <AdminNotices />
+          </div>
           {children}
         </main>
       </div>

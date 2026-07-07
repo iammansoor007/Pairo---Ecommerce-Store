@@ -322,8 +322,8 @@ export default function AffiliatesManagerClient({ userSession }) {
     >
       <div className="space-y-6 text-[#2c3338] font-sans">
 
-        {/* WP-Style Navigation Lifted to Top */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-[#ccd0d4] pb-3.5 mb-2">
+        {/* WP-Style Navigation Lifted to Top: Classic subsubsub */}
+        <ul className="subsubsub text-[13px] text-[#646970] flex flex-wrap gap-y-1.5 items-center mb-6 select-none leading-relaxed">
           {[
             { id: "overview", label: "Overview", count: null },
             { id: "requests", label: "Applications", count: applications.filter(a => a.status === 'Pending').length },
@@ -335,80 +335,52 @@ export default function AffiliatesManagerClient({ userSession }) {
             { id: "payouts", label: "Payout Requests", count: payouts.filter(p => p.status === 'Requested').length },
             { id: "analytics", label: "Analytics", count: null },
             { id: "settings", label: "Global Settings", count: null }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-3 py-1.5 text-[12px] font-bold rounded-[3px] transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeTab === tab.id
-                  ? "bg-[#2271b1] text-white shadow-sm"
-                  : "bg-white text-gray-600 hover:text-black border border-[#ccd0d4] hover:bg-[#f6f7f7]"
-              }`}
-            >
-              <span>{tab.label}</span>
-              {tab.count !== null && (
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                  activeTab === tab.id ? "bg-white/20 text-white" : "bg-neutral-100 text-neutral-500 border border-neutral-200"
-                }`}>
-                  {tab.count}
-                </span>
+          ].map((tab, idx, arr) => (
+            <li key={tab.id} className="flex items-center">
+              <button
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`font-semibold cursor-pointer text-left hover:text-[#2271b1] transition-all bg-transparent border-none p-0 outline-none ${
+                  activeTab === tab.id
+                    ? "text-[#1d2327] font-black"
+                    : "text-[#2271b1]"
+                }`}
+              >
+                {tab.label}
+                {tab.count !== null && (
+                  <span className="text-gray-400 font-medium ml-1">({tab.count})</span>
+                )}
+              </button>
+              {idx < arr.length - 1 && (
+                <span className="text-[#c3c4c7] mx-2">|</span>
               )}
-            </button>
+            </li>
           ))}
-        </div>
+        </ul>
 
         {/* Compact Summary Cards (Shown for all tabs except Overview) */}
         {activeTab !== "overview" && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div 
-              onClick={() => setActiveTab("list")}
-              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-[#2271b1] hover:shadow-md transition-all group"
-            >
-              <div className="p-1.5 bg-[#f0f6fb] text-[#2271b1] rounded-full group-hover:bg-[#2271b1] group-hover:text-white transition-all shrink-0">
-                <Users className="w-3.5 h-3.5" />
+            {[
+              { id: "list", label: "Active Partners", value: affiliates.length, icon: Users },
+              { id: "requests", label: "Pending Reviews", value: applications.filter(a => a.status === 'Pending').length, icon: CheckSquare },
+              { id: "payouts", label: "Pending Payouts", value: payouts.filter(p => p.status === 'Requested').length, icon: Coins },
+              { id: "settings", label: "Default Commission", value: `${settings.defaultCommissionRate}%`, icon: Settings }
+            ].map(card => (
+              <div 
+                key={card.id}
+                onClick={() => setActiveTab(card.id)}
+                className="bg-white border border-[#c3c4c7] flex flex-col cursor-pointer hover:border-gray-400 transition-all select-none shadow-sm"
+              >
+                <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 leading-none">
+                  {card.label}
+                </div>
+                <div className="p-3.5 flex items-center justify-between">
+                  <span className="text-xl font-bold text-[#1d2327]">{card.value}</span>
+                  <card.icon className="w-4 h-4 text-gray-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Active Partners</p>
-                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{affiliates.length}</p>
-              </div>
-            </div>
-            <div 
-              onClick={() => setActiveTab("requests")}
-              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-amber-500 hover:shadow-md transition-all group"
-            >
-              <div className="p-1.5 bg-amber-50 text-amber-700 rounded-full group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0">
-                <CheckSquare className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Pending Reviews</p>
-                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{applications.filter(a => a.status === 'Pending').length}</p>
-              </div>
-            </div>
-            <div 
-              onClick={() => setActiveTab("payouts")}
-              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-green-600 hover:shadow-md transition-all group"
-            >
-              <div className="p-1.5 bg-green-50 text-green-700 rounded-full group-hover:bg-green-600 group-hover:text-white transition-all shrink-0">
-                <Coins className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Pending Payouts</p>
-                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{payouts.filter(p => p.status === 'Requested').length}</p>
-              </div>
-            </div>
-            <div 
-              onClick={() => setActiveTab("settings")}
-              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-blue-600 hover:shadow-md transition-all group"
-            >
-              <div className="p-1.5 bg-blue-50 text-[#2271b1] rounded-full group-hover:bg-[#2271b1] group-hover:text-white transition-all shrink-0">
-                <Settings className="w-3.5 h-3.5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Default Commission</p>
-                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{settings.defaultCommissionRate}%</p>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
@@ -430,14 +402,14 @@ export default function AffiliatesManagerClient({ userSession }) {
                 <div 
                   key={label} 
                   onClick={() => setActiveTab(tab)}
-                  className="bg-white border border-[#ccd0d4] py-2.5 px-3 flex items-center gap-2.5 shadow-sm rounded-[3px] cursor-pointer hover:border-[#2271b1] hover:shadow-md transition-all group"
+                  className="bg-white border border-[#c3c4c7] flex flex-col cursor-pointer hover:border-gray-400 transition-all select-none shadow-sm"
                 >
-                  <div className="p-2 bg-[#f0f6fb] text-[#2271b1] rounded-full shrink-0 group-hover:bg-[#2271b1] group-hover:text-white transition-all">
-                    <Icon className="w-3.5 h-3.5" />
+                  <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 leading-none">
+                    {label}
                   </div>
-                  <div>
-                    <p className="text-[9px] font-bold text-[#646970] uppercase tracking-wider leading-none">{label}</p>
-                    <p className="text-base font-bold text-[#1d2327] mt-0.5 leading-none">{value}</p>
+                  <div className="p-3.5 flex items-center justify-between">
+                    <span className="text-xl font-bold text-[#1d2327]">{value}</span>
+                    <Icon className="w-4 h-4 text-gray-400" />
                   </div>
                 </div>
               ))}

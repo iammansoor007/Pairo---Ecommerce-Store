@@ -1,11 +1,10 @@
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
-import { User, Bell, Search, LogOut, ChevronDown, Plus, X, Globe, ClipboardList, Coins, AlertTriangle, ShieldCheck, FileText, ShoppingCart, MessageSquare, ArrowRight } from "lucide-react";
+import { User, Bell, Search, LogOut, ChevronDown, Plus, X, Globe } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
 
 export default function AdminTopbar() {
   const { data: session } = useSession();
@@ -28,23 +27,14 @@ export default function AdminTopbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
 
-  // Global Notification States
-  const [notifications, setNotifications] = useState([]);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [updatingId, setUpdatingId] = useState(null);
-
   // Refs for outside click dismissals
   const searchRef = useRef(null);
-  const dropdownRef = useRef(null);
   const profileRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchResults(false);
-      }
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowNotifications(false);
       }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setShowProfile(false);
@@ -122,111 +112,6 @@ export default function AdminTopbar() {
     };
     fetchSearchData();
   }, []);
-
-  // Fetch Notifications
-  const fetchNotifications = async () => {
-    try {
-      const [ordersRes, affiliatesRes, productsRes] = await Promise.all([
-        fetch("/api/admin/orders?status=Pending").then(r => r.json().catch(() => ({}))),
-        fetch("/api/admin/affiliates/requests").then(r => r.json().catch(() => ({}))),
-        fetch("/api/admin/products").then(r => r.json().catch(() => ([])))
-      ]);
-
-      let orderNotices = [];
-      let affiliateNotices = [];
-      let productNotices = [];
-
-      if (ordersRes?.success && Array.isArray(ordersRes.orders)) {
-        orderNotices = ordersRes.orders.map(order => ({
-          id: `order-${order._id}`,
-          type: "order",
-          targetId: order._id,
-          text: `New order request #${order.orderNumber} received from ${order.shippingAddress?.fullName || order.customer?.email || "Guest"}. (Total: $${order.financials?.total || 0})`,
-          actions: [
-            { label: "Confirm Order", action: () => handleOrderAction(order._id, "Confirmed") },
-            { label: "View Details", href: `/admin/orders/${order._id}` }
-          ]
-        }));
-      }
-
-      if (affiliatesRes?.success && Array.isArray(affiliatesRes.applications)) {
-        affiliateNotices = affiliatesRes.applications.filter(app => app.status === "Pending").map(app => ({
-          id: `affiliate-${app._id}`,
-          type: "affiliate",
-          targetId: app._id,
-          text: `New affiliate request from ${app.name} (${app.email}) is pending review.`,
-          actions: [
-            { label: "Approve", action: () => handleAffiliateAction(app._id, "Approve") },
-            { label: "Reject", action: () => handleAffiliateAction(app._id, "Reject") }
-          ]
-        }));
-      }
-
-      const prodList = Array.isArray(productsRes) ? productsRes : [];
-      productNotices = prodList.filter(p => p.manageStock && p.stock <= (p.lowStockThreshold || 5)).map(p => ({
-        id: `product-${p._id}`,
-        type: "product",
-        targetId: p._id,
-        text: `Product '${p.name}' is running low in stock (${p.stock} units remaining).`,
-        actions: [
-          { label: "Restock / Edit", href: `/admin/products/${p._id}` }
-        ]
-      }));
-
-      setNotifications([...orderNotices, ...affiliateNotices, ...productNotices]);
-    } catch (err) {
-      console.error("Failed to load notifications", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleOrderAction = async (id, status) => {
-    setUpdatingId(`order-${id}`);
-    try {
-      const res = await fetch(`/api/admin/orders/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
-      });
-      if (res.ok) {
-        toast.success(`Order status updated to ${status}!`);
-        await fetchNotifications();
-      } else {
-        toast.error("Failed to update order.");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const handleAffiliateAction = async (applicationId, action) => {
-    setUpdatingId(`affiliate-${applicationId}`);
-    try {
-      const res = await fetch("/api/admin/affiliates/requests", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ applicationId, action })
-      });
-      if (res.ok) {
-        toast.success(`Affiliate application ${action === 'Approve' ? 'approved' : 'rejected'} successfully!`);
-        await fetchNotifications();
-      } else {
-        const data = await res.json();
-        toast.error(`Failed: ${data.error || "Unknown error"}`);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUpdatingId(null);
-    }
-  };
 
   // Advanced Search & Action Dispatch Filter
   const searchResults = useMemo(() => {
@@ -561,48 +446,48 @@ export default function AdminTopbar() {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-[#ccd0d4] sticky top-0 z-[100] flex items-center justify-between px-6 font-sans">
+    <header className="h-8 bg-[#1d2327] sticky top-0 z-[100] flex items-center justify-between px-3 text-[#f0f0f1] font-sans select-none">
       
-      {/* Brand logo / home link */}
+      {/* Left items: Brand logo & Visit Site */}
       <div className="flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2.5 text-[#1d2327] hover:text-[#2271b1] transition-colors group">
-          <div className="w-8 h-8 bg-[#2271b1] rounded-md flex items-center justify-center shadow-sm">
-            <span className="text-white text-base font-black italic">P</span>
+        <Link href="/" className="flex items-center gap-2 hover:text-[#72aee6] transition-colors group px-2 py-1 h-8">
+          <div className="w-4 h-4 bg-white/20 rounded-sm flex items-center justify-center">
+            <span className="text-[10px] font-black italic text-white">P</span>
           </div>
-          <span className="text-[15px] font-bold tracking-tight hidden sm:block">Pairo Admin</span>
+          <span className="text-[13px] font-bold hidden sm:block">Pairo Admin</span>
+        </Link>
+        <Link href="/" target="_blank" className="flex items-center gap-1 hover:text-[#72aee6] text-[13px] transition-colors px-2 py-1 h-8">
+          <Globe className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Visit Store</span>
         </Link>
       </div>
 
-      {/* Global Spotlight Search & Command Palette */}
-      <div className="flex-1 max-w-[480px] mx-6 relative" ref={searchRef}>
-        <div className="relative bg-[#f6f7f7] border border-[#ccd0d4] rounded-[6px] px-3 py-1.5 flex items-center gap-2 hover:border-gray-400 focus-within:border-[#2271b1] focus-within:ring-2 focus-within:ring-[#2271b1]/15 transition-all">
-          <Search className="w-4 h-4 text-gray-400 shrink-0" />
+      {/* Center items: Global Spotlight Search Box */}
+      <div className="relative flex items-center h-8" ref={searchRef}>
+        <div className="flex items-center gap-1.5 bg-[#2c3338] border border-white/10 hover:border-white/30 rounded-[3px] px-2 py-0.5 transition-all">
+          <Search className="w-3 h-3 text-[#a7aaad]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setShowSearchResults(true)}
             onKeyDown={handleKeyDown}
-            placeholder="Search commands, pages, products, orders..."
-            className="w-full text-[13px] text-[#1d2327] bg-transparent outline-none border-none placeholder:text-gray-400"
+            placeholder="Search commands, products..."
+            className="w-48 sm:w-64 bg-transparent border-none text-[11px] text-[#f0f0f1] placeholder-[#a7aaad] outline-none h-5"
           />
           {searchQuery && (
-            <button 
-              type="button" 
-              onClick={() => setSearchQuery("")}
-              className="p-0.5 hover:bg-gray-200 rounded-full text-gray-400 hover:text-black shrink-0"
-            >
-              <X className="w-3.5 h-3.5" />
+            <button onClick={() => setSearchQuery("")} className="text-gray-400 hover:text-white">
+              <X className="w-3 h-3" />
             </button>
           )}
         </div>
 
         {/* Command Search Results Dropdown */}
         {showSearchResults && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#ccd0d4] rounded-[4px] shadow-xl max-h-[380px] overflow-y-auto z-[110] divide-y divide-[#ccd0d4]">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-[#2c3338] border border-white/10 shadow-2xl rounded-[3px] max-h-[300px] overflow-y-auto z-[110] divide-y divide-white/5 w-64 sm:w-80">
             {searchResults.length === 0 ? (
-              <div className="p-6 text-center text-gray-500 text-xs italic">
-                No matching records, pages, or commands found.
+              <div className="p-4 text-center text-[#a7aaad] text-[11px] italic">
+                No matches found.
               </div>
             ) : (
               searchResults.map((res, i) => (
@@ -613,17 +498,17 @@ export default function AdminTopbar() {
                     setShowSearchResults(false);
                     setSearchQuery("");
                   }}
-                  className="px-4 py-3 flex items-start justify-between gap-3 hover:bg-[#f6f7f7] transition-all group cursor-pointer text-left"
+                  className="px-3 py-2 flex items-start justify-between gap-2 hover:bg-[#353c42] transition-all group text-left cursor-pointer"
                 >
                   <div>
-                    <div className="text-[13px] font-bold text-[#1d2327] group-hover:text-[#2271b1] transition-colors">
+                    <div className="text-[12px] font-bold text-[#f0f0f1] group-hover:text-[#72aee6] leading-tight">
                       {res.title}
                     </div>
-                    <div className="text-[11px] text-gray-400 mt-0.5">
+                    <div className="text-[10px] text-[#a7aaad] mt-0.5 leading-snug">
                       {res.desc}
                     </div>
                   </div>
-                  <span className="text-[9px] font-black uppercase bg-[#2271b1]/10 text-[#2271b1] px-1.5 py-0.5 rounded-[2px] shrink-0">
+                  <span className="text-[8px] font-black uppercase bg-white/10 text-[#72aee6] px-1.5 py-0.5 rounded-[2px] shrink-0 self-center">
                     {res.category}
                   </span>
                 </Link>
@@ -633,136 +518,39 @@ export default function AdminTopbar() {
         )}
       </div>
 
-      {/* Global Actions Area: Notifications & Profile */}
-      <div className="flex items-center gap-4">
-        
-        {/* Notifications Icon (Bell) */}
-        <div className="relative" ref={dropdownRef}>
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className={`relative p-2 text-gray-500 hover:text-black rounded-full hover:bg-gray-100 transition-all ${
-              showNotifications ? "bg-gray-100 text-black" : ""
-            }`}
-          >
-            <Bell className="w-5 h-5" />
-            {notifications.length > 0 && (
-              <span className="absolute top-0.5 right-0.5 bg-[#d63638] text-white text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
-                {notifications.length}
-              </span>
-            )}
-          </button>
-
-          {/* Premium Notifications Dropdown */}
-          {showNotifications && (
-            <div className="absolute right-0 mt-2 w-[340px] md:w-[400px] bg-white border border-[#ccd0d4] shadow-2xl rounded-[6px] z-[110] animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="bg-[#f6f7f7] border-b border-[#ccd0d4] px-4 py-3 flex items-center justify-between rounded-t-[6px]">
-                <span className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wider">Notifications Panel</span>
-                {notifications.length > 0 && (
-                  <span className="bg-[#d63638] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {notifications.length} Pending
-                  </span>
-                )}
-              </div>
-              <div className="max-h-[320px] overflow-y-auto divide-y divide-[#f0f0f1]">
-                {notifications.length === 0 ? (
-                  <div className="p-8 text-center text-gray-400 text-xs italic">
-                    No new notification events.
-                  </div>
-                ) : (
-                  notifications.map((notice) => {
-                    let typeLabel = "Info";
-                    let typeColor = "bg-[#72aee6]";
-                    if (notice.type === "product") { typeLabel = "Stock"; typeColor = "bg-[#d63638]"; }
-                    if (notice.type === "order") { typeLabel = "Order"; typeColor = "bg-[#f0b849]"; }
-                    if (notice.type === "affiliate") { typeLabel = "Affiliate"; typeColor = "bg-[#2271b1]"; }
-                    
-                    const isUpdating = updatingId === notice.id;
-                    
-                    return (
-                      <div key={notice.id} className="p-4 space-y-3 hover:bg-[#f6f7f7] transition-all">
-                        <div className="flex items-start gap-2.5">
-                          <span className={`inline-block px-1.5 py-0.5 ${typeColor} text-white text-[9px] font-black uppercase rounded-[2px] tracking-wider shrink-0 mt-0.5`}>
-                            {typeLabel}
-                          </span>
-                          <p className="text-[12px] text-[#2c3338] font-medium leading-relaxed">
-                            {notice.text}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          {notice.actions.map((act, i) => {
-                            if (act.href) {
-                              return (
-                                <Link
-                                  key={i}
-                                  href={act.href}
-                                  onClick={() => setShowNotifications(false)}
-                                  className="border border-[#8c8f94] text-[#2271b1] hover:text-[#135e96] bg-[#f6f7f7] hover:bg-[#f0f0f1] px-2.5 py-1 rounded-[3px] text-[11px] font-bold shadow-sm transition-all"
-                                >
-                                  {act.label}
-                                </Link>
-                              );
-                            }
-                            return (
-                              <button
-                                key={i}
-                                type="button"
-                                disabled={isUpdating}
-                                onClick={async () => {
-                                  await act.action();
-                                }}
-                                className={`border border-[#2271b1] text-white bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 px-2.5 py-1 rounded-[3px] text-[11px] font-bold shadow-sm transition-all cursor-pointer ${
-                                  act.label === "Reject" ? "border-[#d63638] bg-[#d63638] hover:bg-[#bc0b0d]" : ""
-                                }`}
-                              >
-                                {isUpdating ? "Processing..." : act.label}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* User Account / Profile Dropdown */}
-        <div className="relative" ref={profileRef}>
+      {/* Right items: Howdy Profile menu */}
+      <div className="flex items-center gap-0 h-8" ref={profileRef}>
+        <div className="relative h-8 flex items-center">
           <button
             onMouseEnter={() => setShowProfile(true)}
             onClick={() => setShowProfile(!showProfile)}
-            className="flex items-center gap-2.5 pl-3 py-1 hover:text-[#2271b1] transition-colors"
+            className={`flex items-center gap-2 px-3 h-full hover:bg-[#2c3338] transition-all text-[#f0f0f1] hover:text-[#72aee6] ${showProfile ? 'bg-[#2c3338]' : ''}`}
           >
-            <div className="w-8 h-8 bg-neutral-100 border border-gray-200 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
-              <User className="w-4 h-4 text-[#8c8f94]" />
+            <span className="text-[13px]">Howdy, <span className="font-bold">{session?.user?.name || "Admin"}</span></span>
+            <div className="w-5 h-5 bg-white/10 rounded-full flex items-center justify-center overflow-hidden">
+              <User className="w-3.5 h-3.5 text-[#a7aaad]" />
             </div>
-            <span className="text-[13px] text-gray-700 font-bold hidden md:inline">
-              {session?.user?.name || "Admin"}
-            </span>
           </button>
 
           {showProfile && (
             <div
               onMouseLeave={() => setShowProfile(false)}
-              className="absolute top-full right-0 mt-2 w-52 bg-white border border-[#ccd0d4] shadow-2xl rounded-[6px] py-1.5 z-[101] text-[13px] text-gray-700 animate-in fade-in duration-100"
+              className="absolute top-full right-0 w-48 bg-[#2c3338] border border-transparent shadow-xl py-1 z-[101] text-[13px] border-t-white/10"
             >
-              <div className="px-4 py-3 border-b border-[#ccd0d4]/60 bg-neutral-50/50 mb-1">
-                <p className="font-bold text-black truncate">{session?.user?.name || "Administrator"}</p>
-                <p className="text-[11px] text-gray-400 truncate mt-0.5">{session?.user?.email}</p>
+              <div className="px-4 py-3 bg-[#2c3338] border-b border-white/5 mb-1 text-left">
+                <span className="font-bold text-white truncate block">{session?.user?.name || "Admin"}</span>
+                <span className="text-[#a7aaad] text-[11px] truncate block mt-0.5">{session?.user?.email}</span>
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="w-full text-left px-4 py-2 hover:bg-[#f6f7f7] hover:text-[#2271b1] transition-all flex items-center gap-2 font-bold cursor-pointer"
+                className="w-full text-left px-4 py-2 text-[#72aee6] hover:text-[#f0f0f1] hover:bg-[#353c42] transition-colors flex items-center gap-2"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
                 Log Out
               </button>
             </div>
           )}
         </div>
-
       </div>
 
     </header>
