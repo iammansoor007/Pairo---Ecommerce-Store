@@ -15,7 +15,8 @@ import {
   Clock,
   ArrowRight,
   Image as ImageIcon,
-  TrendingUp
+  TrendingUp,
+  Bell
 } from "lucide-react";
 
 // ── WordPress-Style Meta Box ───────────────────────────────
@@ -54,6 +55,18 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [updatingId, setUpdatingId] = useState(null);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const dropdownRef = React.useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const fetchNotifications = useCallback(async () => {
     try {
@@ -185,78 +198,98 @@ export default function AdminDashboard() {
   return (
     <div className="font-sans text-[#3c434a] bg-[#f0f2f1] min-h-screen p-4 md:p-6">
       <div className="w-full">
-        {/* Welcome Panel */}
-        <div className="bg-[#1d2327] text-white p-8 mb-8 relative overflow-hidden rounded-[2px] shadow-sm">
-          <div className="relative z-10 max-w-2xl">
-            <h1 className="text-[32px] font-light mb-4">Welcome to Pairo Store</h1>
-            <p className="text-[16px] text-gray-300 mb-6 leading-relaxed">
-              Manage your online store, write blog posts, and track your analytics from one central dashboard. 
-              Everything is set up and ready for you to grow your business.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/admin/products/new" className="bg-[#2271b1] hover:bg-[#135e96] text-white px-6 py-2.5 rounded-[3px] text-[14px] font-bold transition-all">
-                Add New Product
-              </Link>
-              <Link href="/admin/blogs/new" className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-2.5 rounded-[3px] text-[14px] font-bold transition-all">
-                Write Blog Post
-              </Link>
-            </div>
-          </div>
-          <div className="absolute right-[-100px] bottom-[-100px] opacity-10 pointer-events-none">
-             <ShoppingBag className="w-[400px] h-[400px]" />
+        {/* Header Bar with Notifications Bell */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-[23px] font-medium text-[#1d2327]">Dashboard</h1>
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 text-gray-500 hover:text-black bg-white border border-[#ccd0d4] rounded-[3px] shadow-sm hover:bg-[#f6f7f7] transition-all cursor-pointer flex items-center justify-center"
+            >
+              <Bell className="w-5 h-5" />
+              {notifications.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-[#d63638] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+
+            {/* Notifications Dropdown Module */}
+            {showNotifications && (
+              <div className="absolute right-0 mt-2 w-[340px] md:w-[420px] bg-white border border-[#ccd0d4] shadow-lg rounded-[3px] z-[100] animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="bg-[#f6f7f7] border-b border-[#ccd0d4] px-4 py-2.5 flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wider">Notifications</span>
+                  {notifications.length > 0 && (
+                    <span className="bg-[#2271b1] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {notifications.length} Pending
+                    </span>
+                  )}
+                </div>
+                <div className="max-h-[320px] overflow-y-auto divide-y divide-[#f0f0f1]">
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center text-gray-500 text-xs italic">
+                      No new notifications
+                    </div>
+                  ) : (
+                    notifications.map((notice) => {
+                      let typeLabel = "Info";
+                      let typeColor = "bg-[#72aee6]";
+                      if (notice.type === "product") { typeLabel = "Stock Alert"; typeColor = "bg-[#d63638]"; }
+                      if (notice.type === "order") { typeLabel = "Order"; typeColor = "bg-[#f0b849]"; }
+                      if (notice.type === "affiliate") { typeLabel = "Affiliate"; typeColor = "bg-[#3582c4]"; }
+                      
+                      const isUpdating = updatingId === notice.id;
+                      
+                      return (
+                        <div key={notice.id} className="p-4 space-y-3 hover:bg-[#f6f7f7] transition-colors">
+                          <div className="flex items-start gap-2.5">
+                            <span className={`inline-block px-1.5 py-0.5 ${typeColor} text-white text-[9px] font-black uppercase rounded-[2px] tracking-wider shrink-0 mt-0.5`}>
+                              {typeLabel}
+                            </span>
+                            <p className="text-[12px] text-[#2c3338] font-medium leading-relaxed">
+                              {notice.text}
+                            </p>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {notice.actions.map((act, i) => {
+                              if (act.href) {
+                                return (
+                                  <Link
+                                    key={i}
+                                    href={act.href}
+                                    onClick={() => setShowNotifications(false)}
+                                    className="border border-[#8c8f94] text-[#2271b1] hover:text-[#135e96] bg-[#f6f7f7] hover:bg-[#f0f0f1] px-2.5 py-1 rounded-[3px] text-[11px] font-bold shadow-sm transition-all"
+                                  >
+                                    {act.label}
+                                  </Link>
+                                );
+                              }
+                              return (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  disabled={isUpdating}
+                                  onClick={async () => {
+                                    await act.action();
+                                  }}
+                                  className={`border border-[#2271b1] text-white bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 px-2.5 py-1 rounded-[3px] text-[11px] font-bold shadow-sm transition-all cursor-pointer ${
+                                    act.label === "Reject" ? "border-[#d63638] bg-[#d63638] hover:bg-[#bc0b0d]" : ""
+                                  }`}
+                                >
+                                  {isUpdating ? "Processing..." : act.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* WP Admin Notices Section */}
-        {notifications.length > 0 && (
-          <div className="space-y-3 mb-8">
-            {notifications.map((notice) => {
-              let borderClass = "border-l-4 border-l-[#72aee6]"; // default info
-              if (notice.type === "product") borderClass = "border-l-4 border-l-[#d63638]"; // error red
-              if (notice.type === "order" || notice.type === "affiliate") borderClass = "border-l-4 border-l-[#f0b849]"; // warning yellow
-              
-              const isUpdating = updatingId === notice.id;
-
-              return (
-                <div key={notice.id} className={`bg-white border border-[#ccd0d4] rounded-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm ${borderClass} transition-all duration-300`}>
-                  <div className="flex items-center gap-3">
-                    <div className="text-[13px] text-[#2c3338] font-medium leading-relaxed">
-                      {notice.text}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    {notice.actions.map((act, i) => {
-                      if (act.href) {
-                        return (
-                          <Link
-                            key={i}
-                            href={act.href}
-                            className="border border-[#8c8f94] text-[#2271b1] hover:text-[#135e96] bg-[#f6f7f7] hover:bg-[#f0f0f1] px-3 py-1 rounded-[3px] text-[12px] font-bold shadow-sm transition-all"
-                          >
-                            {act.label}
-                          </Link>
-                        );
-                      }
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          disabled={isUpdating}
-                          onClick={act.action}
-                          className={`border border-[#2271b1] text-white bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 px-3 py-1 rounded-[3px] text-[12px] font-bold shadow-sm transition-all cursor-pointer ${
-                            act.label === "Reject" ? "border-[#d63638] bg-[#d63638] hover:bg-[#bc0b0d]" : ""
-                          }`}
-                        >
-                          {isUpdating ? "Processing..." : act.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
           

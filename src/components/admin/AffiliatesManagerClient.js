@@ -73,6 +73,20 @@ export default function AffiliatesManagerClient({ userSession }) {
   const [appStatusFilter, setAppStatusFilter] = useState("All");
   const [appSearchQuery, setAppSearchQuery] = useState("");
 
+  // List filter states
+  const [listSearchQuery, setListSearchQuery] = useState("");
+  const [listStatusFilter, setListStatusFilter] = useState("All");
+
+  // Payout filter states
+  const [payoutStatusFilter, setPayoutStatusFilter] = useState("All");
+  const [payoutSearchQuery, setPayoutSearchQuery] = useState("");
+
+  // Other search states
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
+  const [clickSearchQuery, setClickSearchQuery] = useState("");
+  const [commissionStatusFilter, setCommissionStatusFilter] = useState("All");
+  const [commissionSearchQuery, setCommissionSearchQuery] = useState("");
+
   // Referral Code states for review/edit modals
   const [reviewReferralCode, setReviewReferralCode] = useState("");
   const [editReferralCode, setEditReferralCode] = useState("");
@@ -308,48 +322,8 @@ export default function AffiliatesManagerClient({ userSession }) {
     >
       <div className="space-y-6 text-[#2c3338] font-sans">
 
-        {/* WP style Stats Summary Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
-            <div className="p-3 bg-[#f0f6fb] text-[#2271b1] rounded-full">
-              <Users className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold text-[#646970] uppercase">Active Partners</p>
-              <p className="text-xl font-bold text-[#1d2327]">{affiliates.length}</p>
-            </div>
-          </div>
-          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
-            <div className="p-3 bg-amber-50 text-amber-700 rounded-full">
-              <CheckSquare className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold text-[#646970] uppercase">Pending Reviews</p>
-              <p className="text-xl font-bold text-[#1d2327]">{applications.filter(a => a.status === 'Pending').length}</p>
-            </div>
-          </div>
-          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
-            <div className="p-3 bg-green-50 text-green-700 rounded-full">
-              <Coins className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold text-[#646970] uppercase">Pending Payouts</p>
-              <p className="text-xl font-bold text-[#1d2327]">{payouts.filter(p => p.status === 'Requested').length}</p>
-            </div>
-          </div>
-          <div className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-4 shadow-sm rounded-[3px]">
-            <div className="p-3 bg-blue-50 text-[#2271b1] rounded-full">
-              <Settings className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[11px] font-bold text-[#646970] uppercase">Default Commission</p>
-              <p className="text-xl font-bold text-[#1d2327]">{settings.defaultCommissionRate}%</p>
-            </div>
-          </div>
-        </div>
-
-        {/* WP-Style Subsubsub Navigation */}
-        <div className="flex flex-wrap items-center gap-1.5 text-[13px] text-[#646970] border-b border-[#ccd0d4] pb-2">
+        {/* WP-Style Navigation Lifted to Top */}
+        <div className="flex flex-wrap items-center gap-2 border-b border-[#ccd0d4] pb-3.5 mb-2">
           {[
             { id: "overview", label: "Overview", count: null },
             { id: "requests", label: "Applications", count: applications.filter(a => a.status === 'Pending').length },
@@ -361,96 +335,195 @@ export default function AffiliatesManagerClient({ userSession }) {
             { id: "payouts", label: "Payout Requests", count: payouts.filter(p => p.status === 'Requested').length },
             { id: "analytics", label: "Analytics", count: null },
             { id: "settings", label: "Global Settings", count: null }
-          ].map((tab, idx, arr) => (
-            <span key={tab.id} className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`transition-all focus:outline-none ${activeTab === tab.id
-                  ? "text-[#1d2327] font-bold"
-                  : "text-[#2271b1] hover:text-[#135e96]"
-                  }`}
-              >
-                {tab.label}
-              </button>
-              {tab.count !== null && <span className="text-[#8c8f94]">({tab.count})</span>}
-              {idx < arr.length - 1 && <span className="text-[#ccd0d4]">|</span>}
-            </span>
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 text-[12px] font-bold rounded-[3px] transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === tab.id
+                  ? "bg-[#2271b1] text-white shadow-sm"
+                  : "bg-white text-gray-600 hover:text-black border border-[#ccd0d4] hover:bg-[#f6f7f7]"
+              }`}
+            >
+              <span>{tab.label}</span>
+              {tab.count !== null && (
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                  activeTab === tab.id ? "bg-white/20 text-white" : "bg-neutral-100 text-neutral-500 border border-neutral-200"
+                }`}>
+                  {tab.count}
+                </span>
+              )}
+            </button>
           ))}
         </div>
 
+        {/* Compact Summary Cards (Shown for all tabs except Overview) */}
+        {activeTab !== "overview" && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div 
+              onClick={() => setActiveTab("list")}
+              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-[#2271b1] hover:shadow-md transition-all group"
+            >
+              <div className="p-1.5 bg-[#f0f6fb] text-[#2271b1] rounded-full group-hover:bg-[#2271b1] group-hover:text-white transition-all shrink-0">
+                <Users className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Active Partners</p>
+                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{affiliates.length}</p>
+              </div>
+            </div>
+            <div 
+              onClick={() => setActiveTab("requests")}
+              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-amber-500 hover:shadow-md transition-all group"
+            >
+              <div className="p-1.5 bg-amber-50 text-amber-700 rounded-full group-hover:bg-amber-500 group-hover:text-white transition-all shrink-0">
+                <CheckSquare className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Pending Reviews</p>
+                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{applications.filter(a => a.status === 'Pending').length}</p>
+              </div>
+            </div>
+            <div 
+              onClick={() => setActiveTab("payouts")}
+              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-green-600 hover:shadow-md transition-all group"
+            >
+              <div className="p-1.5 bg-green-50 text-green-700 rounded-full group-hover:bg-green-600 group-hover:text-white transition-all shrink-0">
+                <Coins className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Pending Payouts</p>
+                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{payouts.filter(p => p.status === 'Requested').length}</p>
+              </div>
+            </div>
+            <div 
+              onClick={() => setActiveTab("settings")}
+              className="bg-white border border-[#ccd0d4] py-2 px-3 flex items-center gap-3 shadow-sm rounded-[3px] cursor-pointer hover:border-blue-600 hover:shadow-md transition-all group"
+            >
+              <div className="p-1.5 bg-blue-50 text-[#2271b1] rounded-full group-hover:bg-[#2271b1] group-hover:text-white transition-all shrink-0">
+                <Settings className="w-3.5 h-3.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-[#646970] uppercase leading-none">Default Commission</p>
+                <p className="text-sm font-bold text-[#1d2327] mt-0.5">{settings.defaultCommissionRate}%</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tab: Overview */}
         {activeTab === "overview" && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in fade-in duration-200">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: "Total Affiliates", value: overviewStats?.stats?.totalAffiliates ?? affiliates.length, icon: Users },
-                { label: "Total Clicks", value: overviewStats?.stats?.totalClicks ?? 0, icon: MousePointerClick },
-                { label: "Referred Orders", value: overviewStats?.stats?.totalReferralOrders ?? 0, icon: ShoppingCart },
-                { label: "Conversion Rate", value: `${overviewStats?.stats?.conversionRate ?? 0}%`, icon: TrendingUp },
-                { label: "Total Revenue", value: `$${(overviewStats?.stats?.totalRevenue ?? 0).toFixed(2)}`, icon: DollarSign },
-                { label: "Commission Paid", value: `$${(overviewStats?.stats?.totalCommissionPaid ?? 0).toFixed(2)}`, icon: CreditCard },
-                { label: "Pending Commission", value: `$${(overviewStats?.stats?.pendingCommission ?? 0).toFixed(2)}`, icon: Coins },
-                { label: "Total Paid Out", value: `$${(overviewStats?.stats?.totalPaid ?? 0).toFixed(2)}`, icon: BarChart2 },
-              ].map(({ label, value, icon: Icon }) => (
-                <div key={label} className="bg-white border border-[#ccd0d4] p-4 flex items-center gap-3 shadow-sm rounded-[3px]">
-                  <div className="p-2.5 bg-[#f0f6fb] text-[#2271b1] rounded-full shrink-0"><Icon className="w-4 h-4" /></div>
+                { label: "Total Affiliates", value: overviewStats?.stats?.totalAffiliates ?? affiliates.length, icon: Users, tab: "list" },
+                { label: "Total Clicks", value: overviewStats?.stats?.totalClicks ?? 0, icon: MousePointerClick, tab: "conversions" },
+                { label: "Referred Orders", value: overviewStats?.stats?.totalReferralOrders ?? 0, icon: ShoppingCart, tab: "orders" },
+                { label: "Conversion Rate", value: `${overviewStats?.stats?.conversionRate ?? 0}%`, icon: TrendingUp, tab: "conversions" },
+                { label: "Total Revenue", value: `$${(overviewStats?.stats?.totalRevenue ?? 0).toFixed(2)}`, icon: DollarSign, tab: "analytics" },
+                { label: "Commission Paid", value: `$${(overviewStats?.stats?.totalCommissionPaid ?? 0).toFixed(2)}`, icon: CreditCard, tab: "commissions" },
+                { label: "Pending Commission", value: `$${(overviewStats?.stats?.pendingCommission ?? 0).toFixed(2)}`, icon: Coins, tab: "commissions" },
+                { label: "Total Paid Out", value: `$${(overviewStats?.stats?.totalPaid ?? 0).toFixed(2)}`, icon: BarChart2, tab: "payouts" },
+              ].map(({ label, value, icon: Icon, tab }) => (
+                <div 
+                  key={label} 
+                  onClick={() => setActiveTab(tab)}
+                  className="bg-white border border-[#ccd0d4] py-2.5 px-3 flex items-center gap-2.5 shadow-sm rounded-[3px] cursor-pointer hover:border-[#2271b1] hover:shadow-md transition-all group"
+                >
+                  <div className="p-2 bg-[#f0f6fb] text-[#2271b1] rounded-full shrink-0 group-hover:bg-[#2271b1] group-hover:text-white transition-all">
+                    <Icon className="w-3.5 h-3.5" />
+                  </div>
                   <div>
-                    <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider leading-tight">{label}</p>
-                    <p className="text-lg font-bold text-[#1d2327] mt-0.5">{value}</p>
+                    <p className="text-[9px] font-bold text-[#646970] uppercase tracking-wider leading-none">{label}</p>
+                    <p className="text-base font-bold text-[#1d2327] mt-0.5 leading-none">{value}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Top Affiliates */}
-            {overviewStats?.topAffiliates?.length > 0 && (
-              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-                <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4]"><h3 className="text-[13px] font-bold text-[#1d2327]">Top Performing Partners</h3></div>
-                <table className="w-full text-[13px]">
-                  <thead><tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
-                    <th className="px-4 py-2 text-left">Affiliate</th>
-                    <th className="px-4 py-2 text-left">Code</th>
-                    <th className="px-4 py-2 text-right">Lifetime Earnings</th>
-                  </tr></thead>
-                  <tbody className="divide-y divide-[#f0f0f1]">
-                    {overviewStats.topAffiliates.map(a => (
-                      <tr key={a._id} className="hover:bg-[#fbfbfb]">
-                        <td className="px-4 py-2.5 font-bold text-[#1d2327]">{a.name}</td>
-                        <td className="px-4 py-2.5 font-mono text-[12px]">{a.referralCode}</td>
-                        <td className="px-4 py-2.5 text-right font-bold">${(a.lifetimeEarnings ?? 0).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {/* Split Grid for Tables */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Top Performing Partners */}
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden flex flex-col">
+                <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4] flex justify-between items-center">
+                  <h3 className="text-[13px] font-bold text-[#1d2327] uppercase tracking-wider">Top Performing Partners</h3>
+                  <span className="text-[10px] font-bold bg-[#2271b1]/10 text-[#2271b1] px-2 py-0.5 rounded-[2px] uppercase">Lifetime</span>
+                </div>
+                {overviewStats?.topAffiliates?.length > 0 ? (
+                  <div className="overflow-x-auto flex-1">
+                    <table className="w-full text-[13px] border-collapse">
+                      <thead>
+                        <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
+                          <th className="px-4 py-2.5 text-left">Affiliate</th>
+                          <th className="px-4 py-2.5 text-left">Code</th>
+                          <th className="px-4 py-2.5 text-right">Earnings</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f1]">
+                        {overviewStats.topAffiliates.map(a => (
+                          <tr key={a._id} className="hover:bg-[#fbfbfb] transition-colors">
+                            <td className="px-4 py-3.5 font-bold text-[#1d2327] flex items-center gap-2">
+                              <div className="w-6 h-6 bg-[#f0f6fb] text-[#2271b1] rounded-full flex items-center justify-center font-bold text-[10px] uppercase shadow-inner">
+                                {a.name?.charAt(0)}
+                              </div>
+                              {a.name}
+                            </td>
+                            <td className="px-4 py-3.5 font-mono text-[12px] text-[#2271b1] font-semibold">{a.referralCode}</td>
+                            <td className="px-4 py-3.5 text-right font-bold text-neutral-800">${(a.lifetimeEarnings ?? 0).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center text-gray-400 italic flex-1 flex flex-col justify-center items-center">
+                    <Users className="w-6 h-6 mb-2 opacity-30" />
+                    <span>No partner performance records found.</span>
+                  </div>
+                )}
               </div>
-            )}
 
-            {/* Recent Orders */}
-            {overviewStats?.recentOrders?.length > 0 && (
-              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-                <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4]"><h3 className="text-[13px] font-bold text-[#1d2327]">Recent Referred Orders</h3></div>
-                <table className="w-full text-[13px]">
-                  <thead><tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
-                    <th className="px-4 py-2 text-left">Order</th>
-                    <th className="px-4 py-2 text-left">Ref Code</th>
-                    <th className="px-4 py-2 text-right">Total</th>
-                    <th className="px-4 py-2 text-right">Date</th>
-                  </tr></thead>
-                  <tbody className="divide-y divide-[#f0f0f1]">
-                    {overviewStats.recentOrders.map(o => (
-                      <tr key={o._id} className="hover:bg-[#fbfbfb]">
-                        <td className="px-4 py-2.5 font-mono font-bold text-[12px]">{o.orderNumber}</td>
-                        <td className="px-4 py-2.5 font-mono text-[12px]">{o.affiliateReferralCode}</td>
-                        <td className="px-4 py-2.5 text-right">${(o.financials?.total ?? 0).toFixed(2)}</td>
-                        <td className="px-4 py-2.5 text-right text-[#646970]">{new Date(o.createdAt).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              {/* Recent Referred Orders */}
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden flex flex-col">
+                <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4] flex justify-between items-center">
+                  <h3 className="text-[13px] font-bold text-[#1d2327] uppercase tracking-wider">Recent Referred Orders</h3>
+                  <span className="text-[10px] font-bold bg-green-50 text-green-700 px-2 py-0.5 rounded-[2px] uppercase">Latest</span>
+                </div>
+                {overviewStats?.recentOrders?.length > 0 ? (
+                  <div className="overflow-x-auto flex-1">
+                    <table className="w-full text-[13px] border-collapse">
+                      <thead>
+                        <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
+                          <th className="px-4 py-2.5 text-left">Order</th>
+                          <th className="px-4 py-2.5 text-left">Ref Code</th>
+                          <th className="px-4 py-2.5 text-right">Total</th>
+                          <th className="px-4 py-2.5 text-right">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f1]">
+                        {overviewStats.recentOrders.map(o => (
+                          <tr key={o._id} className="hover:bg-[#fbfbfb] transition-colors">
+                            <td className="px-4 py-3 font-mono font-bold text-[12px] text-[#2271b1]">{o.orderNumber}</td>
+                            <td className="px-4 py-3 font-mono text-[12px] text-neutral-600 font-semibold">{o.affiliateReferralCode}</td>
+                            <td className="px-4 py-3 text-right font-bold text-neutral-800">${(o.financials?.total ?? 0).toFixed(2)}</td>
+                            <td className="px-4 py-3 text-right text-gray-400 text-[12px]">{new Date(o.createdAt).toLocaleDateString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center text-gray-400 italic flex-1 flex flex-col justify-center items-center">
+                    <ShoppingCart className="w-6 h-6 mb-2 opacity-30" />
+                    <span>No referred orders tracked yet.</span>
+                  </div>
+                )}
               </div>
-            )}
+
+            </div>
 
             {!overviewStats && (
               <div className="bg-white border border-[#ccd0d4] p-12 text-center text-[#646970] rounded-[3px]">
@@ -460,6 +533,8 @@ export default function AffiliatesManagerClient({ userSession }) {
             )}
           </div>
         )}
+
+
 
         {/* Tab: Referral Links */}
         {activeTab === "links" && (
@@ -511,126 +586,205 @@ export default function AffiliatesManagerClient({ userSession }) {
         )}
 
         {/* Tab: Referred Orders */}
-        {activeTab === "orders" && (
-          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Order #</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Date</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Customer</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Ref Code</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Subtotal</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Ref Discount</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f0f1]">
-                {activityData.referredOrders?.length === 0 ? (
-                  <tr><td colSpan="7" className="p-8 text-center text-gray-400 italic">No referred orders yet.</td></tr>
-                ) : activityData.referredOrders?.map(o => (
-                  <tr key={o._id} className="hover:bg-[#fbfbfb]">
-                    <td className="px-4 py-2.5 font-mono font-bold text-[12px] text-[#2271b1]">{o.orderNumber}</td>
-                    <td className="px-4 py-2.5 text-[#646970]">{new Date(o.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-2.5 text-[12px]">{o.customer?.email || '—'}</td>
-                    <td className="px-4 py-2.5 font-mono font-bold">{o.affiliateReferralCode}</td>
-                    <td className="px-4 py-2.5 text-right">${(o.financials?.subtotal ?? 0).toFixed(2)}</td>
-                    <td className="px-4 py-2.5 text-right text-green-700 font-bold">
-                      {o.financials?.affiliateDiscountAmount > 0 ? `-$${o.financials.affiliateDiscountAmount.toFixed(2)}` : '—'}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-bold">${(o.financials?.total ?? 0).toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {activeTab === "orders" && (() => {
+          const filteredOrds = (activityData.referredOrders || []).filter(o => {
+            const q = orderSearchQuery.trim().toLowerCase();
+            return !q ||
+              o.orderNumber?.toLowerCase().includes(q) ||
+              o.affiliateReferralCode?.toLowerCase().includes(q) ||
+              o.customer?.email?.toLowerCase().includes(q);
+          });
+          return (
+            <div className="space-y-3">
+              <div className="flex justify-end">
+                <input
+                  type="text"
+                  value={orderSearchQuery}
+                  onChange={e => setOrderSearchQuery(e.target.value)}
+                  placeholder="Search orders by number, code, customer email..."
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-80 focus:outline-none focus:border-[#2271b1] shadow-sm bg-white"
+                />
+              </div>
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <table className="w-full text-left border-collapse text-[13px]">
+                  <thead>
+                    <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Order #</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Date</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Customer</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Ref Code</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Subtotal</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Ref Discount</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredOrds.length === 0 ? (
+                      <tr><td colSpan="7" className="p-8 text-center text-gray-400 italic">No referred orders match search.</td></tr>
+                    ) : filteredOrds.map(o => (
+                      <tr key={o._id} className="hover:bg-[#fbfbfb]">
+                        <td className="px-4 py-2.5 font-mono font-bold text-[12px] text-[#2271b1]">{o.orderNumber}</td>
+                        <td className="px-4 py-2.5 text-[#646970]">{new Date(o.createdAt).toLocaleDateString()}</td>
+                        <td className="px-4 py-2.5 text-[12px]">{o.customer?.email || '—'}</td>
+                        <td className="px-4 py-2.5 font-mono font-bold">{o.affiliateReferralCode}</td>
+                        <td className="px-4 py-2.5 text-right">${(o.financials?.subtotal ?? 0).toFixed(2)}</td>
+                        <td className="px-4 py-2.5 text-right text-green-700 font-bold">
+                          {o.financials?.affiliateDiscountAmount > 0 ? `-$${o.financials.affiliateDiscountAmount.toFixed(2)}` : '—'}
+                        </td>
+                        <td className="px-4 py-2.5 text-right font-bold">${(o.financials?.total ?? 0).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab: Conversions */}
-        {activeTab === "conversions" && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
-                <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Total Clicks</p>
-                <p className="text-2xl font-bold text-[#1d2327]">{activityData.clicks?.length ?? 0}</p>
+        {activeTab === "conversions" && (() => {
+          const filteredClks = (activityData.clicks || []).filter(c => {
+            const q = clickSearchQuery.trim().toLowerCase();
+            return !q ||
+              c.affiliateId?.name?.toLowerCase().includes(q) ||
+              c.affiliateId?.referralCode?.toLowerCase().includes(q) ||
+              c.referralCode?.toLowerCase().includes(q) ||
+              c.ipAddress?.toLowerCase().includes(q);
+          });
+          return (
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
+                  <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Total Clicks</p>
+                  <p className="text-2xl font-bold text-[#1d2327]">{activityData.clicks?.length ?? 0}</p>
+                </div>
+                <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
+                  <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Referred Orders</p>
+                  <p className="text-2xl font-bold text-[#1d2327]">{activityData.referredOrders?.length ?? 0}</p>
+                </div>
+                <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
+                  <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Conversion Rate</p>
+                  <p className="text-2xl font-bold text-[#1d2327]">
+                    {activityData.clicks?.length > 0
+                      ? `${((activityData.referredOrders?.length / activityData.clicks?.length) * 100).toFixed(1)}%`
+                      : '0%'}
+                  </p>
+                </div>
               </div>
-              <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
-                <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Referred Orders</p>
-                <p className="text-2xl font-bold text-[#1d2327]">{activityData.referredOrders?.length ?? 0}</p>
+              <div className="flex justify-end">
+                <input
+                  type="text"
+                  value={clickSearchQuery}
+                  onChange={e => setClickSearchQuery(e.target.value)}
+                  placeholder="Search clicks by code, name, IP..."
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-72 focus:outline-none focus:border-[#2271b1] shadow-sm bg-white"
+                />
               </div>
-              <div className="bg-white border border-[#ccd0d4] p-4 rounded-[3px] shadow-sm text-center">
-                <p className="text-[10px] font-bold text-[#646970] uppercase tracking-wider mb-1">Conversion Rate</p>
-                <p className="text-2xl font-bold text-[#1d2327]">
-                  {activityData.clicks?.length > 0
-                    ? `${((activityData.referredOrders?.length / activityData.clicks?.length) * 100).toFixed(1)}%`
-                    : '0%'}
-                </p>
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4]"><h3 className="text-[13px] font-bold">Recent Clicks</h3></div>
+                <table className="w-full text-[13px]">
+                  <thead><tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
+                    <th className="px-4 py-2 text-left">Date</th>
+                    <th className="px-4 py-2 text-left">Affiliate</th>
+                    <th className="px-4 py-2 text-left">Ref Code</th>
+                    <th className="px-4 py-2 text-left">IP / Source</th>
+                  </tr></thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredClks.length === 0 ? (
+                      <tr><td colSpan="4" className="p-6 text-center text-gray-400 italic">No clicks match filter.</td></tr>
+                    ) : filteredClks.slice(0, 50).map((c, i) => (
+                      <tr key={c._id || i} className="hover:bg-[#fbfbfb]">
+                        <td className="px-4 py-2 text-[#646970]">{new Date(c.createdAt).toLocaleString()}</td>
+                        <td className="px-4 py-2 font-medium">{c.affiliateId?.name || '—'}</td>
+                        <td className="px-4 py-2 font-mono">{c.affiliateId?.referralCode || c.referralCode || '—'}</td>
+                        <td className="px-4 py-2 font-mono text-[11px] text-[#646970]">{c.ipAddress || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-              <div className="px-4 py-3 bg-[#f6f7f7] border-b border-[#ccd0d4]"><h3 className="text-[13px] font-bold">Recent Clicks</h3></div>
-              <table className="w-full text-[13px]">
-                <thead><tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[11px] font-bold uppercase text-[#646970]">
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Affiliate</th>
-                  <th className="px-4 py-2 text-left">Ref Code</th>
-                  <th className="px-4 py-2 text-left">IP / Source</th>
-                </tr></thead>
-                <tbody className="divide-y divide-[#f0f0f1]">
-                  {activityData.clicks?.length === 0 ? (
-                    <tr><td colSpan="4" className="p-6 text-center text-gray-400 italic">No clicks tracked yet.</td></tr>
-                  ) : activityData.clicks?.slice(0, 50).map((c, i) => (
-                    <tr key={c._id || i} className="hover:bg-[#fbfbfb]">
-                      <td className="px-4 py-2 text-[#646970]">{new Date(c.createdAt).toLocaleString()}</td>
-                      <td className="px-4 py-2 font-medium">{c.affiliateId?.name || '—'}</td>
-                      <td className="px-4 py-2 font-mono">{c.affiliateId?.referralCode || c.referralCode || '—'}</td>
-                      <td className="px-4 py-2 font-mono text-[11px] text-[#646970]">{c.ipAddress || '—'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Tab: Commissions */}
-        {activeTab === "commissions" && (
-          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Order</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Rate</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Amount</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Status</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f0f1]">
-                {activityData.commissions?.length === 0 ? (
-                  <tr><td colSpan="6" className="p-8 text-center text-gray-400 italic">No commissions recorded yet.</td></tr>
-                ) : activityData.commissions?.map(c => (
-                  <tr key={c._id} className="hover:bg-[#fbfbfb]">
-                    <td className="px-4 py-2.5">
-                      <span className="font-bold text-[#1d2327]">{c.affiliateId?.name || 'Unknown'}</span>
-                      <div className="text-[11px] text-[#646970] font-mono">{c.affiliateId?.referralCode}</div>
-                    </td>
-                    <td className="px-4 py-2.5 font-mono text-[12px]">{c.orderNumber || '—'}</td>
-                    <td className="px-4 py-2.5">{c.commissionType === 'Fixed' ? `$${c.commissionRate}` : `${c.commissionRate}%`}</td>
-                    <td className="px-4 py-2.5 text-right font-bold text-[#1d2327]">${(c.commissionAmount ?? 0).toFixed(2)}</td>
-                    <td className="px-4 py-2.5">
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase ${c.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
-                        c.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-amber-700'
-                        }`}>{c.status}</span>
-                    </td>
-                    <td className="px-4 py-2.5 text-[#646970]">{new Date(c.createdAt).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {activeTab === "commissions" && (() => {
+          const filteredComms = (activityData.commissions || []).filter(c => {
+            const matchesStatus = commissionStatusFilter === "All" || c.status === commissionStatusFilter;
+            const q = commissionSearchQuery.trim().toLowerCase();
+            return matchesStatus && (!q ||
+              c.affiliateId?.name?.toLowerCase().includes(q) ||
+              c.affiliateId?.referralCode?.toLowerCase().includes(q) ||
+              c.orderNumber?.toLowerCase().includes(q));
+          });
+          return (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-1 bg-white border border-[#ccd0d4] rounded-[3px] p-1 shadow-sm">
+                  {["All", "Pending", "Approved", "Rejected"].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setCommissionStatusFilter(status)}
+                      className={`px-3 py-1 text-[11px] font-medium rounded-[2px] transition-all cursor-pointer ${
+                        commissionStatusFilter === status
+                          ? status === "Pending" ? "bg-[#fff2cc] text-[#d6b656] font-bold"
+                            : status === "Approved" ? "bg-[#d5e8d4] text-[#274e13] font-bold"
+                            : status === "Rejected" ? "bg-[#f8cecc] text-[#b85450] font-bold"
+                            : "bg-[#1d2327] text-white font-bold"
+                          : "text-[#646970] hover:bg-[#f6f7f7]"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={commissionSearchQuery}
+                  onChange={e => setCommissionSearchQuery(e.target.value)}
+                  placeholder="Search commissions..."
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-72 focus:outline-none focus:border-[#2271b1] shadow-sm bg-white"
+                />
+              </div>
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <table className="w-full text-left border-collapse text-[13px]">
+                  <thead>
+                    <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Order</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Rate</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] text-right">Amount</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Status</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredComms.length === 0 ? (
+                      <tr><td colSpan="6" className="p-8 text-center text-gray-400 italic">No commissions match filter.</td></tr>
+                    ) : filteredComms.map(c => (
+                      <tr key={c._id} className="hover:bg-[#fbfbfb]">
+                        <td className="px-4 py-2.5">
+                          <span className="font-bold text-[#1d2327]">{c.affiliateId?.name || 'Unknown'}</span>
+                          <div className="text-[11px] text-[#646970] font-mono">{c.affiliateId?.referralCode}</div>
+                        </td>
+                        <td className="px-4 py-2.5 font-mono text-[12px]">{c.orderNumber || '—'}</td>
+                        <td className="px-4 py-2.5">{c.commissionType === 'Fixed' ? `$${c.commissionRate}` : `${c.commissionRate}%`}</td>
+                        <td className="px-4 py-2.5 text-right font-bold text-[#1d2327]">${(c.commissionAmount ?? 0).toFixed(2)}</td>
+                        <td className="px-4 py-2.5">
+                          <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase ${c.status === 'Approved' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                            c.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-amber-700'
+                            }`}>{c.status}</span>
+                        </td>
+                        <td className="px-4 py-2.5 text-[#646970]">{new Date(c.createdAt).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab: Analytics */}
         {activeTab === "analytics" && (
@@ -821,160 +975,242 @@ export default function AffiliatesManagerClient({ userSession }) {
         })()}
 
         {/* Tab 2: Affiliates List */}
-        {activeTab === "list" && (
-          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Referral Code</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Direct Coupon</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Commission Rate</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Available Balance</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Lifetime Earnings</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
-                  <th className="px-4 py-3 w-28 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f0f1]">
-                {affiliates.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="p-8 text-center text-gray-400 italic">No active affiliates registered.</td>
-                  </tr>
-                ) : (
-                  affiliates.map(aff => (
-                    <tr key={aff._id} className="hover:bg-[#fbfbfb] transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="font-bold text-[#1d2327]">{aff.name}</span>
-                        <div className="text-[11px] text-[#646970] mt-0.5">{aff.email}</div>
-                      </td>
-                      <td className="px-4 py-3 font-mono font-semibold text-black">{aff.referralCode}</td>
-                      <td className="px-4 py-3 font-mono text-primary/60">{aff.couponCode || "—"}</td>
-                      <td className="px-4 py-3 font-bold text-black">
-                        {aff.commissionType === "Fixed" ? `$${aff.commissionRate} (Fixed)` : `${aff.commissionRate}%`}
-                      </td>
-                      <td className="px-4 py-3 font-bold text-[#1d2327]">${aff.balance?.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-[#646970]">${aff.lifetimeEarnings?.toFixed(2)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${aff.status === 'Active' ? 'bg-[#d5e8d4] text-[#274e13]' : 'bg-[#f8cecc] text-[#b85450]'
-                          }`}>
-                          {aff.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          onClick={() => {
-                            setSelectedAffiliate(aff);
-                            setEditReferralCode(aff.referralCode || "");
-                            setEditForm({
-                              name: aff.name || "",
-                              email: aff.email || "",
-                              phone: aff.phone || "",
-                              dob: aff.dob ? new Date(aff.dob).toISOString().split('T')[0] : "",
-                              commissionRate: aff.commissionRate ?? 5,
-                              commissionType: aff.commissionType || "Percentage",
-                              customerDiscountType: aff.customerDiscountType || "None",
-                              customerDiscountValue: aff.customerDiscountValue || 0,
-                              status: aff.status || "Active",
-                              couponCode: aff.couponCode || "",
-                              password: "",
-                              // Address
-                              street: aff.address?.street || "",
-                              city: aff.address?.city || "",
-                              state: aff.address?.state || "",
-                              zipCode: aff.address?.zipCode || "",
-                              country: aff.address?.country || "",
-                              // Banking
-                              accountHolder: aff.bankingInfo?.accountHolder || "",
-                              bankName: aff.bankingInfo?.bankName || "",
-                              accountNumber: aff.bankingInfo?.accountNumber || "",
-                              iban: aff.bankingInfo?.iban || "",
-                              swiftCode: aff.bankingInfo?.swiftCode || "",
-                              routingNumber: aff.bankingInfo?.routingNumber || "",
-                              paypalEmail: aff.bankingInfo?.paypalEmail || "",
-                              // Business
-                              companyName: aff.businessInfo?.companyName || "",
-                              website: aff.businessInfo?.website || "",
-                              createdAt: aff.createdAt ? new Date(aff.createdAt).toISOString().slice(0, 16) : "",
-                            });
-                          }}
-                          className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
-                        >
-                          Modify
-                        </button>
-                        <button
-                          onClick={() => setConfirmDeleteAffiliate(aff)}
-                          className="border border-[#b85450] text-[#b85450] bg-white px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f8cecc] transition-all shadow-sm ml-2"
-                        >
-                          Delete
-                        </button>
-                      </td>
+        {activeTab === "list" && (() => {
+          const filteredAffs = affiliates.filter(aff => {
+            const matchesStatus = listStatusFilter === "All" || aff.status === listStatusFilter;
+            const q = listSearchQuery.trim().toLowerCase();
+            return matchesStatus && (!q ||
+              aff.name?.toLowerCase().includes(q) ||
+              aff.email?.toLowerCase().includes(q) ||
+              aff.referralCode?.toLowerCase().includes(q) ||
+              aff.couponCode?.toLowerCase().includes(q));
+          });
+          return (
+            <div className="space-y-3">
+              {/* Filter Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-1 bg-white border border-[#ccd0d4] rounded-[3px] p-1 shadow-sm">
+                  {["All", "Active", "Suspended"].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setListStatusFilter(status)}
+                      className={`px-3 py-1 text-[11px] font-medium rounded-[2px] transition-all cursor-pointer ${
+                        listStatusFilter === status
+                          ? status === "Active" ? "bg-[#d5e8d4] text-[#274e13] font-bold"
+                            : status === "Suspended" ? "bg-[#f8cecc] text-[#b85450] font-bold"
+                            : "bg-[#1d2327] text-white font-bold"
+                          : "text-[#646970] hover:bg-[#f6f7f7]"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={listSearchQuery}
+                  onChange={e => setListSearchQuery(e.target.value)}
+                  placeholder="Search affiliates..."
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-72 focus:outline-none focus:border-[#2271b1] shadow-sm bg-white"
+                />
+              </div>
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <table className="w-full text-left border-collapse text-[13px]">
+                  <thead>
+                    <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Referral Code</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Direct Coupon</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-32">Commission Rate</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Available Balance</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Lifetime Earnings</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-24">Status</th>
+                      <th className="px-4 py-3 w-28 text-right"></th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredAffs.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="p-8 text-center text-gray-400 italic">No active affiliates match filter.</td>
+                      </tr>
+                    ) : (
+                      filteredAffs.map(aff => (
+                        <tr key={aff._id} className="hover:bg-[#fbfbfb] transition-colors">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-[#1d2327]">{aff.name}</span>
+                            <div className="text-[11px] text-[#646970] mt-0.5">{aff.email}</div>
+                          </td>
+                          <td className="px-4 py-3 font-mono font-semibold text-black">{aff.referralCode}</td>
+                          <td className="px-4 py-3 font-mono text-primary/60">{aff.couponCode || "—"}</td>
+                          <td className="px-4 py-3 font-bold text-black">
+                            {aff.commissionType === "Fixed" ? `$${aff.commissionRate} (Fixed)` : `${aff.commissionRate}%`}
+                          </td>
+                          <td className="px-4 py-3 font-bold text-[#1d2327]">${aff.balance?.toFixed(2)}</td>
+                          <td className="px-4 py-3 text-[#646970]">${aff.lifetimeEarnings?.toFixed(2)}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${aff.status === 'Active' ? 'bg-[#d5e8d4] text-[#274e13]' : 'bg-[#f8cecc] text-[#b85450]'
+                              }`}>
+                              {aff.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              onClick={() => {
+                                setSelectedAffiliate(aff);
+                                setEditReferralCode(aff.referralCode || "");
+                                setEditForm({
+                                  name: aff.name || "",
+                                  email: aff.email || "",
+                                  phone: aff.phone || "",
+                                  dob: aff.dob ? new Date(aff.dob).toISOString().split('T')[0] : "",
+                                  commissionRate: aff.commissionRate ?? 5,
+                                  commissionType: aff.commissionType || "Percentage",
+                                  customerDiscountType: aff.customerDiscountType || "None",
+                                  customerDiscountValue: aff.customerDiscountValue || 0,
+                                  status: aff.status || "Active",
+                                  couponCode: aff.couponCode || "",
+                                  password: "",
+                                  // Address
+                                  street: aff.address?.street || "",
+                                  city: aff.address?.city || "",
+                                  state: aff.address?.state || "",
+                                  zipCode: aff.address?.zipCode || "",
+                                  country: aff.address?.country || "",
+                                  // Banking
+                                  accountHolder: aff.bankingInfo?.accountHolder || "",
+                                  bankName: aff.bankingInfo?.bankName || "",
+                                  accountNumber: aff.bankingInfo?.accountNumber || "",
+                                  iban: aff.bankingInfo?.iban || "",
+                                  swiftCode: aff.bankingInfo?.swiftCode || "",
+                                  routingNumber: aff.bankingInfo?.routingNumber || "",
+                                  paypalEmail: aff.bankingInfo?.paypalEmail || "",
+                                  // Business
+                                  companyName: aff.businessInfo?.companyName || "",
+                                  website: aff.businessInfo?.website || "",
+                                  createdAt: aff.createdAt ? new Date(aff.createdAt).toISOString().slice(0, 16) : "",
+                                });
+                              }}
+                              className="bg-white border border-[#ccd0d4] text-[#2c3338] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f6f7f7] transition-all shadow-sm"
+                            >
+                              Modify
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteAffiliate(aff)}
+                              className="border border-[#b85450] text-[#b85450] bg-white px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f8cecc] transition-all shadow-sm ml-2"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab 3: Payouts */}
-        {activeTab === "payouts" && (
-          <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
-                  <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Amount</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-40">Method</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Date</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-28">Status</th>
-                  <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Reference ID</th>
-                  <th className="px-4 py-3 w-28 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f0f0f1]">
-                {payouts.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" className="p-8 text-center text-gray-400 italic">No payout requests registered.</td>
-                  </tr>
-                ) : (
-                  payouts.map(pay => (
-                    <tr key={pay._id} className="hover:bg-[#fbfbfb] transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="font-bold text-[#1d2327]">{pay.affiliateId?.name || "Deleted Affiliate"}</span>
-                        <div className="text-[11px] text-[#646970] mt-0.5">Code: {pay.affiliateId?.referralCode || "—"}</div>
-                      </td>
-                      <td className="px-4 py-3 font-bold text-[#1d2327]">${pay.amount?.toFixed(2)}</td>
-                      <td className="px-4 py-3 font-mono text-[#646970]">{pay.paymentMethod}</td>
-                      <td className="px-4 py-3 text-gray-600">{new Date(pay.createdAt).toLocaleDateString()}</td>
-                      <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${pay.status === 'Paid' ? 'bg-[#d5e8d4] text-[#274e13]' :
-                          pay.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
-                          }`}>
-                          {pay.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-[11px] text-gray-500">{pay.transactionId || "—"}</td>
-                      <td className="px-4 py-3 text-right">
-                        {pay.status === 'Requested' && (
-                          <button
-                            onClick={() => {
-                              setSelectedPayout(pay);
-                              setPayoutTxId(`TX-${Date.now()}`);
-                            }}
-                            className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f0f6fb] transition-all shadow-sm"
-                          >
-                            Process
-                          </button>
-                        )}
-                      </td>
+        {activeTab === "payouts" && (() => {
+          const filteredPays = payouts.filter(pay => {
+            const matchesStatus = payoutStatusFilter === "All" || pay.status === payoutStatusFilter;
+            const q = payoutSearchQuery.trim().toLowerCase();
+            return matchesStatus && (!q ||
+              pay.affiliateId?.name?.toLowerCase().includes(q) ||
+              pay.affiliateId?.email?.toLowerCase().includes(q) ||
+              pay.affiliateId?.referralCode?.toLowerCase().includes(q) ||
+              pay.transactionId?.toLowerCase().includes(q));
+          });
+          return (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-1 bg-white border border-[#ccd0d4] rounded-[3px] p-1 shadow-sm">
+                  {["All", "Requested", "Paid", "Rejected"].map(status => (
+                    <button
+                      key={status}
+                      type="button"
+                      onClick={() => setPayoutStatusFilter(status)}
+                      className={`px-3 py-1 text-[11px] font-medium rounded-[2px] transition-all cursor-pointer ${
+                        payoutStatusFilter === status
+                          ? status === "Requested" ? "bg-[#fff2cc] text-[#d6b656] font-bold"
+                            : status === "Paid" ? "bg-[#d5e8d4] text-[#274e13] font-bold"
+                            : status === "Rejected" ? "bg-[#f8cecc] text-[#b85450] font-bold"
+                            : "bg-[#1d2327] text-white font-bold"
+                          : "text-[#646970] hover:bg-[#f6f7f7]"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  value={payoutSearchQuery}
+                  onChange={e => setPayoutSearchQuery(e.target.value)}
+                  placeholder="Search payouts..."
+                  className="border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[13px] w-72 focus:outline-none focus:border-[#2271b1] shadow-sm bg-white"
+                />
+              </div>
+              <div className="bg-white border border-[#ccd0d4] shadow-sm rounded-[3px] overflow-hidden">
+                <table className="w-full text-left border-collapse text-[13px]">
+                  <thead>
+                    <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4] text-[#1d2327]">
+                      <th className="px-4 py-3 font-bold uppercase text-[11px]">Affiliate</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Amount</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-40">Method</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-36">Date</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-28">Status</th>
+                      <th className="px-4 py-3 font-bold uppercase text-[11px] w-48">Reference ID</th>
+                      <th className="px-4 py-3 w-28 text-right"></th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  </thead>
+                  <tbody className="divide-y divide-[#f0f0f1]">
+                    {filteredPays.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="p-8 text-center text-gray-400 italic">No payout requests match filter.</td>
+                      </tr>
+                    ) : (
+                      filteredPays.map(pay => (
+                        <tr key={pay._id} className="hover:bg-[#fbfbfb] transition-colors">
+                          <td className="px-4 py-3">
+                            <span className="font-bold text-[#1d2327]">{pay.affiliateId?.name || "Deleted Affiliate"}</span>
+                            <div className="text-[11px] text-[#646970] mt-0.5">Code: {pay.affiliateId?.referralCode || "—"}</div>
+                          </td>
+                          <td className="px-4 py-3 font-bold text-[#1d2327]">${pay.amount?.toFixed(2)}</td>
+                          <td className="px-4 py-3 font-mono text-[#646970]">{pay.paymentMethod}</td>
+                          <td className="px-4 py-3 text-gray-600">{new Date(pay.createdAt).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wider ${pay.status === 'Paid' ? 'bg-[#d5e8d4] text-[#274e13]' :
+                              pay.status === 'Rejected' ? 'bg-[#f8cecc] text-[#b85450]' : 'bg-[#fff2cc] text-[#d6b656]'
+                              }`}>
+                              {pay.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-mono text-[11px] text-gray-500">{pay.transactionId || "—"}</td>
+                          <td className="px-4 py-3 text-right">
+                            {pay.status === 'Requested' && (
+                              <button
+                                onClick={() => {
+                                  setSelectedPayout(pay);
+                                  setPayoutTxId(`TX-${Date.now()}`);
+                                }}
+                                className="bg-white border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded-[3px] text-[12px] font-bold hover:bg-[#f0f6fb] transition-all shadow-sm"
+                              >
+                                Process
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Tab 4: Settings (WordPress form layout) */}
         {activeTab === "settings" && (
