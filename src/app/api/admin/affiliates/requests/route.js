@@ -20,7 +20,7 @@ export async function GET(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const rawApplications = await AffiliateApplication.find()
+    const rawApplications = await AffiliateApplication.find({ emailVerified: true })
       .sort({ createdAt: -1 })
       .lean();
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Customer from "@/models/Customer";
+import AffiliateApplication from "@/models/AffiliateApplication";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -56,6 +57,30 @@ export async function GET(req) {
 
       console.log(`[VerifyEmail] ✅ Email changed and verified to: ${newEmail}`);
       return NextResponse.json({ message: "Email changed and verified successfully!" }, { status: 200 });
+    }
+
+    // 3. Try to find affiliate application with verification token
+    const affiliateApp = await AffiliateApplication.findOne({
+      verificationToken: token,
+      verificationTokenExpiry: { $gt: new Date() },
+    });
+
+    if (affiliateApp) {
+      affiliateApp.emailVerified = true;
+      affiliateApp.verificationToken = null;
+      affiliateApp.verificationTokenExpiry = null;
+      await affiliateApp.save();
+
+      // Dispatch "Application Received" email since email is now verified
+      try {
+        const { sendAffiliateApplicationReceived } = await import("@/lib/email");
+        await sendAffiliateApplicationReceived(affiliateApp.email, affiliateApp.name);
+      } catch (mailErr) {
+        console.error("[VerifyEmail] ⚠️ Failed to send affiliate application received email:", mailErr);
+      }
+
+      console.log(`[VerifyEmail] ✅ Affiliate application email verified for: ${affiliateApp.email}`);
+      return NextResponse.json({ message: "Affiliate email verified successfully! Our team will review your application shortly." }, { status: 200 });
     }
 
     return NextResponse.json({

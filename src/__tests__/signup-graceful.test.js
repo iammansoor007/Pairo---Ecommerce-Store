@@ -46,8 +46,8 @@ vi.mock("@/models/Customer", () => {
   };
 });
 
-describe("Signup Graceful SMTP Failure Handling (Mocked DB)", () => {
-  it("should successfully register customer and auto-verify when sendEmailVerification fails during creation", async () => {
+describe("Signup SMTP Failure Handling (Mocked DB)", () => {
+  it("should fail registration and return 500 when sendEmailVerification fails during creation", async () => {
     const req = {
       json: async () => ({
         name: "Graceful Test User",
@@ -57,14 +57,14 @@ describe("Signup Graceful SMTP Failure Handling (Mocked DB)", () => {
     };
 
     const response = await POST(req);
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(500);
 
     const body = await response.json();
-    expect(body.pendingVerification).toBe(false);
-    expect(body.message).toBe("Account created successfully!");
+    expect(body.message).toBe("Failed to send verification email. Please try again.");
+    expect(body.error).toBe("SMTP connection timeout");
   });
 
-  it("should auto-verify an existing unverified customer when resending verification email fails", async () => {
+  it("should fail resending and return 500 when resending verification email fails", async () => {
     const req = {
       json: async () => ({
         name: "Graceful Test User",
@@ -74,11 +74,10 @@ describe("Signup Graceful SMTP Failure Handling (Mocked DB)", () => {
     };
 
     const response = await POST(req);
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(500);
 
     const body = await response.json();
-    expect(body.resent).toBe(false);
-    expect(body.verified).toBe(true);
-    expect(body.message).toBe("Account verified and ready to use!");
+    expect(body.message).toBe("Failed to resend verification email. Please try again.");
+    expect(body.error).toBe("SMTP connection timeout");
   });
 });

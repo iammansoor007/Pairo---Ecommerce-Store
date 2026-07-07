@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/db";
 import Affiliate from "@/models/Affiliate";
 import AffiliateApplication from "@/models/AffiliateApplication";
-import { sendAffiliateApplicationReceived } from "@/lib/email";
+import { sendAffiliateApplicationReceived, sendAffiliateEmailVerification } from "@/lib/email";
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/affiliate/rateLimiter";
 import path from "path";
@@ -61,11 +61,39 @@ export async function POST(req) {
     }
 
     // 2. Check duplicate registrations
-    const existingApplication = await AffiliateApplication.findOne({ email, status: { $ne: 'Rejected' } }).lean();
+    const existingApplication = await AffiliateApplication.findOne({ email, status: { $ne: 'Rejected' } });
     const existingAffiliate = await Affiliate.findOne({ email }).lean();
 
-    if (existingApplication || existingAffiliate) {
-      return NextResponse.json({ error: "An active affiliate account or application with this email already exists." }, { status: 400 });
+    if (existingAffiliate) {
+      return NextResponse.json({ error: "An active affiliate account with this email already exists." }, { status: 400 });
+    }
+
+    if (existingApplication) {
+      if (!existingApplication.emailVerified) {
+        // Resend verification email
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+        const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+        
+        existingApplication.verificationToken = verificationToken;
+        existingApplication.verificationTokenExpiry = verificationTokenExpiry;
+        await existingApplication.save();
+
+        const siteUrl = process.env.NEXTAUTH_URL || "https://pairolifestyle.com";
+        const verificationUrl = `${siteUrl}/verify-email?token=${verificationToken}`;
+        
+        try {
+          await sendAffiliateEmailVerification(email, existingApplication.name, verificationUrl);
+          return NextResponse.json({ 
+            success: true, 
+            message: "Verification email resent. Please check your inbox.",
+            pendingVerification: true 
+          }, { status: 200 });
+        } catch (emailError) {
+          console.error("[Affiliate Register] ⚠️ Failed to resend verification email:", emailError);
+          return NextResponse.json({ error: "Failed to send verification email. Please try again." }, { status: 500 });
+        }
+      }
+      return NextResponse.json({ error: "An active affiliate application with this email already exists." }, { status: 400 });
     }
 
     // 3. Parse and validate referral code
@@ -201,7 +229,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "Please upload at least one valid identity verification document." }, { status: 400 });
     }
 
-    // 12. Save Application in DB
+    // 12. Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+    // 13. Save Application in DB
     const application = await AffiliateApplication.create({
       name,
       email,
@@ -217,19 +249,30 @@ export async function POST(req) {
       liveSelfie: liveSelfieFilename,
       bankVerificationDocument: bankDocFilename,
       status: 'Pending',
-      tenantId
+      tenantId,
+      emailVerified: false,
+      verificationToken,
+      verificationTokenExpiry
     });
 
     console.log(`[AffiliateAPI] Saved application for: ${email}. Code: ${referralCode}. Docs: ${uploadedDocs.length}`);
 
-    // 13. Dispatch notification email
+    // 14. Dispatch verification email
+    const siteUrl = process.env.NEXTAUTH_URL || "https://pairolifestyle.com";
+    const verificationUrl = `${siteUrl}/verify-email?token=${verificationToken}`;
     try {
-      await sendAffiliateApplicationReceived(email, name);
+      await sendAffiliateEmailVerification(email, name, verificationUrl);
+      return NextResponse.json({ 
+        success: true, 
+        message: "Application submitted. Please verify your email to complete registration.", 
+        pendingVerification: true,
+        applicationId: application._id, 
+        referralCode 
+      }, { status: 201 });
     } catch (mailErr) {
       console.error("[AffiliateAPI Email Error]", mailErr.message);
+      return NextResponse.json({ error: "Failed to send verification email. Please try again." }, { status: 500 });
     }
-
-    return NextResponse.json({ success: true, applicationId: application._id, referralCode }, { status: 201 });
 
   } catch (err) {
     console.error("[AffiliateAPI Registration Error]", err);

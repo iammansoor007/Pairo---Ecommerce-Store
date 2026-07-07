@@ -46,6 +46,9 @@ const AffiliateApplicationSchema = new mongoose.Schema({
   referralCode: { type: String, unique: true, sparse: true, index: true }, // Applicant's preferred code (editable by admin before approval)
   customerDiscountType: { type: String, enum: ['Percentage', 'Fixed', 'None'], default: 'None' },
   customerDiscountValue: { type: Number, default: 0 },
+  emailVerified: { type: Boolean, default: false },
+  verificationToken: { type: String, default: null },
+  verificationTokenExpiry: { type: Date, default: null },
   status: { type: String, enum: ['Pending', 'Under Review', 'Approved', 'Rejected'], default: 'Pending', index: true },
   rejectionReason: String,
   notes: String, // Internal admin comments
