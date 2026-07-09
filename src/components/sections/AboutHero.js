@@ -74,7 +74,7 @@ export default function AboutHero({
 
   return (
     <section className="container mx-auto px-2 sm:px-4 md:px-8 my-6 relative">
-      <div className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden shadow-2xl bg-black">
+      <div className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden rounded-[32px] md:rounded-[40px] shadow-2xl bg-black [transform:translateZ(0)]">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={currentSlide}
