@@ -66,10 +66,11 @@ export function cleanCompetitorDetails(jsonLd) {
 
   // Replace competitor URLs with Pairo Lifestyle URL
   str = str
-    .replace(/https?:\/\/excellentleathershop\.com/gi, "https://pairolifestyle.com")
-    .replace(/https?:\/\/primejackets\.com/gi, "https://pairolifestyle.com")
-    .replace(/https?:\/\/jacketsjunction\.com/gi, "https://pairolifestyle.com")
-    .replace(/https?:\/\/thejacketmaker\.com/gi, "https://pairolifestyle.com");
+    .replace(/https?:\/\/excellentleathershop\.com/gi, SITE_URL)
+    .replace(/https?:\/\/primejackets\.com/gi, SITE_URL)
+    .replace(/https?:\/\/jacketsjunction\.com/gi, SITE_URL)
+    .replace(/https?:\/\/thejacketmaker\.com/gi, SITE_URL)
+    .replace(/\/wp-content\/uploads\/[0-9]+\/[0-9]+\//gi, "/assets/");
 
   try {
     return JSON.parse(str);
@@ -123,6 +124,44 @@ export async function resolveSEOMetadata(options = {}) {
   } = options;
 
   const seo = entity.seo || {};
+
+  let siteConfig = null;
+  try {
+    const mongoose = require("mongoose");
+    if (mongoose.connection && mongoose.connection.readyState === 1) {
+      let SiteConfigModel;
+      try {
+        SiteConfigModel = mongoose.model("SiteConfig");
+      } catch {
+        SiteConfigModel = require("../models/SiteConfig").default || require("../models/SiteConfig");
+      }
+      siteConfig = await SiteConfigModel.findOne({ key: "main" }).lean();
+    }
+  } catch (err) {
+    console.error("[SEO Resolver] Failed to load SiteConfig", err.message);
+  }
+
+  const brandName = siteConfig?.brand?.name || "Pairo Lifestyle";
+  const brandDescription = siteConfig?.brand?.description || "Pairo Lifestyle is a premium clothing and leather apparel store dealing in custom tailored shearling coats, blazers, and jackets.";
+  const logoUrl = siteConfig?.brand?.logo || siteConfig?.brand?.faviconUrl || `${SITE_URL}/assets/pairo.webp`;
+  const logoUrlAbsolute = logoUrl.startsWith("http") ? logoUrl : `${SITE_URL}${logoUrl.startsWith("/") ? "" : "/"}${logoUrl}`;
+  const telephone = siteConfig?.brand?.whatsappNumber || siteConfig?.brand?.phone || "+1 847-999-3787";
+
+  const firstSlideImage = siteConfig?.hero?.slides?.[0]?.image || "/hero-image.png";
+  const heroImageUrl = firstSlideImage.startsWith("http") ? firstSlideImage : `${SITE_URL}${firstSlideImage.startsWith("/") ? "" : "/"}${firstSlideImage}`;
+
+  const socials = [];
+  if (siteConfig?.socials) {
+    siteConfig.socials.forEach(s => {
+      if (s.url && s.enabled !== false) {
+        socials.push(s.url);
+      }
+    });
+  }
+  if (socials.length === 0) {
+    socials.push("https://www.instagram.com/pairolifestyle");
+    socials.push("https://www.facebook.com/pairolifestyle");
+  }
 
   // 1. Core Titles and Descriptions (Sanitized)
   const metaTitle = sanitizeSEOString(seo.title || entity.name || entity.title || fallbackTitle);
@@ -209,16 +248,16 @@ export async function resolveSEOMetadata(options = {}) {
       const orgSchema = {
         "@id": `${SITE_URL}/#organization`,
         "@type": "Organization",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "logo": {
           "@id": `${SITE_URL}/#logo`,
           "@type": "ImageObject",
-          "caption": "Pairo Lifestyle",
-          "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+          "caption": brandName,
+          "contentUrl": logoUrlAbsolute,
           "height": 219,
           "inLanguage": "en-US",
-          "url": `${SITE_URL}/assets/pairo.webp`,
+          "url": logoUrlAbsolute,
           "width": 512
         }
       };
@@ -228,7 +267,7 @@ export async function resolveSEOMetadata(options = {}) {
         "@type": "WebSite",
         "alternateName": "Pairo",
         "inLanguage": "en-US",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "publisher": { "@id": `${SITE_URL}/#organization` }
       };
@@ -249,7 +288,7 @@ export async function resolveSEOMetadata(options = {}) {
         "dateModified": dateModified,
         "datePublished": datePublished,
         "inLanguage": "en-US",
-        "name": `${entity.name} | Pairo`,
+        "name": `${entity.name} | ${brandName}`,
         "url": prodUrl,
         "isPartOf": { "@id": `${SITE_URL}/#website` },
         "primaryImageOfPage": { "@id": `${prodUrl}/#primaryimage` }
@@ -429,7 +468,7 @@ export async function resolveSEOMetadata(options = {}) {
       const orgSchema = {
         "@id": `${SITE_URL}/#organization`,
         "@type": "Organization",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL
       };
 
@@ -438,7 +477,7 @@ export async function resolveSEOMetadata(options = {}) {
         "@type": "WebSite",
         "alternateName": "Pairo",
         "inLanguage": "en-US",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "publisher": { "@id": `${SITE_URL}/#organization` }
       };
@@ -558,7 +597,7 @@ export async function resolveSEOMetadata(options = {}) {
         "datePublished": datePublished,
         "description": entity.excerpt || metaDescription,
         "inLanguage": "en-US",
-        "name": `${entity.title} - Pairo Lifestyle Journal`,
+        "name": `${entity.title} - ${brandName} Journal`,
         "thumbnailUrl": ogImgUrl,
         "url": postUrl,
         "breadcrumb": { "@id": `${postUrl}/#breadcrumb` },
@@ -604,9 +643,9 @@ export async function resolveSEOMetadata(options = {}) {
       const websiteSchema = {
         "@id": `${SITE_URL}/#website`,
         "@type": "WebSite",
-        "description": "Premium Handcrafted Shearling & Leather Jackets",
+        "description": brandDescription,
         "inLanguage": "en-US",
-        "name": "Pairo Lifestyle Journal",
+        "name": `${brandName} Journal`,
         "url": `${SITE_URL}/`,
         "potentialAction": {
           "@type": "SearchAction",
@@ -626,33 +665,30 @@ export async function resolveSEOMetadata(options = {}) {
       const orgSchema = {
         "@id": `${SITE_URL}/#organization`,
         "@type": "Organization",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": `${SITE_URL}/`,
         "image": { "@id": `${SITE_URL}/#logo` },
         "logo": {
           "@type": "ImageObject",
           "@id": `${SITE_URL}/#logo`,
-          "url": `${SITE_URL}/assets/pairo.webp`,
-          "caption": "Pairo Lifestyle"
+          "url": logoUrlAbsolute,
+          "caption": brandName
         },
-        "sameAs": [
-          "https://www.instagram.com/pairolifestyle",
-          "https://www.facebook.com/pairolifestyle"
-        ]
+        "sameAs": socials
       };
 
       const personSchema = {
         "@id": authorId,
         "@type": "Person",
-        "description": "Editorial and fashion contributor at Pairo Lifestyle.",
+        "description": `Editorial and fashion contributor at ${brandName}.`,
         "name": authorName,
         "image": {
           "@id": `${SITE_URL}/#/schema/person/image/`,
           "@type": "ImageObject",
           "caption": authorName,
-          "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+          "contentUrl": logoUrlAbsolute,
           "inLanguage": "en-US",
-          "url": `${SITE_URL}/assets/pairo.webp`
+          "url": logoUrlAbsolute
         }
       };
 
@@ -664,7 +700,7 @@ export async function resolveSEOMetadata(options = {}) {
       const pageId = `${SITE_URL}/`;
       const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2025-08-18T09:21:09+00:00";
       const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : "2026-07-03T17:14:58+00:00";
-      const pageDesc = metaDescription || "Shop Premium Shearling Jackets and custom leather outerwear from Pairo Lifestyle. Discover affordable luxury, including handcrafted shearling coats, blazers, and trench coats.";
+      const pageDesc = metaDescription || brandDescription;
 
       const webpageSchema = {
         "@id": pageId,
@@ -673,8 +709,8 @@ export async function resolveSEOMetadata(options = {}) {
         "datePublished": datePublished,
         "description": pageDesc,
         "inLanguage": "en-US",
-        "name": metaTitle || "Pairo Lifestyle | Premium Handcrafted Shearling & Leather Jackets",
-        "thumbnailUrl": `${SITE_URL}/assets/pairo.webp`,
+        "name": metaTitle || `${brandName} | Premium Handcrafted Outerwear`,
+        "thumbnailUrl": heroImageUrl,
         "url": pageId,
         "about": { "@id": `${SITE_URL}/#organization` },
         "breadcrumb": { "@id": `${SITE_URL}/#breadcrumb` },
@@ -690,10 +726,10 @@ export async function resolveSEOMetadata(options = {}) {
       const primaryImageSchema = {
         "@id": `${SITE_URL}/#primaryimage`,
         "@type": "ImageObject",
-        "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+        "contentUrl": heroImageUrl,
         "height": 916,
         "inLanguage": "en-US",
-        "url": `${SITE_URL}/assets/pairo.webp`,
+        "url": heroImageUrl,
         "width": 1717
       };
 
@@ -713,7 +749,7 @@ export async function resolveSEOMetadata(options = {}) {
       const websiteSchema = {
         "@id": `${SITE_URL}/#website`,
         "@type": "WebSite",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": `${SITE_URL}/`,
         "publisher": { "@id": `${SITE_URL}/#organization` }
       };
@@ -721,18 +757,15 @@ export async function resolveSEOMetadata(options = {}) {
       const orgSchema = {
         "@id": `${SITE_URL}/#organization`,
         "@type": "Organization",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": `${SITE_URL}/`,
         "logo": {
           "@type": "ImageObject",
           "@id": `${SITE_URL}/#logo`,
-          "url": `${SITE_URL}/assets/pairo.webp`,
-          "caption": "Pairo Lifestyle"
+          "url": logoUrlAbsolute,
+          "caption": brandName
         },
-        "sameAs": [
-          "https://www.instagram.com/pairolifestyle",
-          "https://www.facebook.com/pairolifestyle"
-        ]
+        "sameAs": socials
       };
 
       structuredDataJson = {
@@ -744,13 +777,13 @@ export async function resolveSEOMetadata(options = {}) {
         "@context": "https://schema.org",
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "logo": {
           "@type": "ImageObject",
           "@id": `${SITE_URL}/#logo`,
-          "url": `${SITE_URL}/assets/pairo.webp`,
-          "caption": "Pairo Lifestyle"
+          "url": logoUrlAbsolute,
+          "caption": brandName
         }
       };
 
@@ -758,7 +791,7 @@ export async function resolveSEOMetadata(options = {}) {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "publisher": {
           "@id": `${SITE_URL}/#organization`
@@ -789,7 +822,7 @@ export async function resolveSEOMetadata(options = {}) {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/shop/#webpage`,
-        "name": "Shop - Pairo Lifestyle",
+        "name": `Shop - ${brandName}`,
         "url": `${SITE_URL}/shop`,
         "breadcrumb": {
           "@id": `${SITE_URL}/shop/#breadcrumb`
@@ -811,9 +844,9 @@ export async function resolveSEOMetadata(options = {}) {
       const websiteSchema = {
         "@id": `${SITE_URL}/#website`,
         "@type": "WebSite",
-        "description": "Premium Handcrafted Shearling & Leather Jackets",
+        "description": brandDescription,
         "inLanguage": "en-US",
-        "name": "Pairo Lifestyle",
+        "name": brandName,
         "url": SITE_URL,
         "potentialAction": {
           "@type": "SearchAction",
@@ -833,19 +866,16 @@ export async function resolveSEOMetadata(options = {}) {
       const orgSchema = {
         "@id": `${SITE_URL}/#organization`,
         "@type": "Organization",
-        "description": "Pairo Lifestyle is a premium clothing and leather apparel store dealing in custom tailored shearling coats, blazers, and jackets.",
-        "image": `${SITE_URL}/assets/pairo.webp`,
-        "logo": `${SITE_URL}/assets/pairo.webp`,
-        "name": "Pairo Lifestyle",
+        "description": brandDescription,
+        "image": logoUrlAbsolute,
+        "logo": logoUrlAbsolute,
+        "name": brandName,
         "url": SITE_URL,
         "contactPoint": {
           "@type": "ContactPoint",
-          "telephone": "+1 847-999-3787"
+          "telephone": telephone
         },
-        "sameAs": [
-          "https://www.facebook.com/pairolifestyle",
-          "https://www.instagram.com/pairolifestyle"
-        ]
+        "sameAs": socials
       };
 
       const webpageSchema = {
@@ -854,7 +884,7 @@ export async function resolveSEOMetadata(options = {}) {
         "dateModified": dateModified,
         "datePublished": datePublished,
         "inLanguage": "en-US",
-        "name": "Blogs | Pairo Lifestyle",
+        "name": `Blogs | ${brandName}`,
         "url": pageUrl,
         "breadcrumb": { "@id": `${pageUrl}/#breadcrumb` },
         "isPartOf": { "@id": `${SITE_URL}/#website` },
