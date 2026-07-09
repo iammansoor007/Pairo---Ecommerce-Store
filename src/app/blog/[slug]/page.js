@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
   const post = await Blog.findOne({ slug, isDeleted: { $ne: true } }).lean();
   if (!post) return { title: 'Post Not Found' };
 
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: post,
     type: "blog",
     path: currentPath
@@ -89,7 +89,7 @@ export default async function BlogDetail({ params }) {
 
   const postDate = new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: post,
     type: "blog",
     path: currentPath

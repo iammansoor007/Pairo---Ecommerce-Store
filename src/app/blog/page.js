@@ -13,7 +13,7 @@ export async function generateMetadata() {
   await dbConnect();
   const page = await Page.findOne({ slug: "blog" }).lean();
   
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: page || {},
     type: "page",
     fallbackTitle: "Journal | Pairo Editorial",
@@ -81,7 +81,7 @@ export default async function BlogArchive() {
   }));
 
   const page = await Page.findOne({ slug: "blog", status: "Published" }).lean();
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: page || {},
     type: "page",
     fallbackTitle: "Journal | Pairo Editorial",
@@ -104,8 +104,8 @@ export default async function BlogArchive() {
                   <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-400">
                      Pairo Archive & Journal
                   </p>
-                  <h1 className="text-[24px] md:text-[36px] font-bold heading-font tracking-tight text-black uppercase leading-none">
-                     EDITORIAL STORIES
+                  <h1 className="text-[24px] md:text-[36px] font-bold heading-font tracking-tight text-black leading-none">
+                     Editorial Stories
                   </h1>
                </div>
                <div className="text-right">

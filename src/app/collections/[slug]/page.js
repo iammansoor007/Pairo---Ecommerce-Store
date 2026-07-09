@@ -26,7 +26,7 @@ export async function generateMetadata({ params }) {
     return { title: "Category Not Found" };
   }
 
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: category,
     type: "category",
     path: currentPath
@@ -53,7 +53,7 @@ export default async function DynamicCategoryCatcherPage({ params, searchParams 
     notFound();
   }
 
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: category,
     type: "category",
     path: currentPath

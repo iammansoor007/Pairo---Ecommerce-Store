@@ -572,44 +572,45 @@ export default function ShopContentClient({ initialCategory = null, initialType 
       </div>
 
       {/* Categories */}
-      <div className="pb-8 border-b border-border">
-        <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">Categories</p>
-        <div className="flex flex-col gap-3 text-sm">
-
-          {allCategories.map((cat) => {
-            const dbCat = dbCategories.find(c => c.name.toLowerCase() === cat.toLowerCase());
-            const isSelected = selectedCategory && (
-              selectedCategory.toLowerCase() === cat.toLowerCase() ||
-              (dbCat && selectedCategory.toLowerCase() === dbCat.slug?.toLowerCase()) ||
-              (dbCat && selectedCategory === dbCat._id)
-            );
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => {
-                  handleCategorySelect(dbCat ? dbCat.slug : cat.toLowerCase());
-                  if (isMobile) setShowFilters(false);
-                }}
-                className={`flex items-center justify-between py-1 w-full text-left transition-all ${isSelected ? "font-bold text-foreground" : "text-foreground/75 hover:text-foreground"}`}
-              >
-                <span className="font-semibold uppercase tracking-wider text-[11px] sm:text-xs">{cat}</span>
-                <span className="text-foreground/50 text-[10px] sm:text-[11px]">
-                  {products.filter(p => {
-                    const pCat = p.category || '';
-                    const pCats = p.categories || [];
-                    const matchesString = pCat.toLowerCase() === cat.toLowerCase();
-                    const matchesId = dbCat && pCats.some(c =>
-                      (typeof c === 'object' && c !== null ? c._id === dbCat._id : c === dbCat._id)
-                    );
-                    return matchesString || matchesId;
-                  }).length}
-                </span>
-              </button>
-            );
-          })}
+      {allCategories.length > 0 && (
+        <div className="pb-8 border-b border-border">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">Categories</p>
+          <div className="flex flex-col gap-3 text-sm">
+            {allCategories.map((cat) => {
+              const dbCat = dbCategories.find(c => c.name.toLowerCase() === cat.toLowerCase());
+              const isSelected = selectedCategory && (
+                selectedCategory.toLowerCase() === cat.toLowerCase() ||
+                (dbCat && selectedCategory.toLowerCase() === dbCat.slug?.toLowerCase()) ||
+                (dbCat && selectedCategory === dbCat._id)
+              );
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    handleCategorySelect(dbCat ? dbCat.slug : cat.toLowerCase());
+                    if (isMobile) setShowFilters(false);
+                  }}
+                  className={`flex items-center justify-between py-1 w-full text-left transition-all ${isSelected ? "font-bold text-foreground" : "text-foreground/75 hover:text-foreground"}`}
+                >
+                  <span className="font-semibold uppercase tracking-wider text-[11px] sm:text-xs">{cat}</span>
+                  <span className="text-foreground/50 text-[10px] sm:text-[11px]">
+                    {products.filter(p => {
+                      const pCat = p.category || '';
+                      const pCats = p.categories || [];
+                      const matchesString = pCat.toLowerCase() === cat.toLowerCase();
+                      const matchesId = dbCat && pCats.some(c =>
+                        (typeof c === 'object' && c !== null ? c._id === dbCat._id : c === dbCat._id)
+                      );
+                      return matchesString || matchesId;
+                    }).length}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Price Range */}
       <div className="pb-8 border-b border-border">
@@ -634,98 +635,102 @@ export default function ShopContentClient({ initialCategory = null, initialType 
       </div>
 
       {/* Colors */}
-      <div className="pb-8 border-b border-border">
-        <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">
-          Colors
-          {selectedColors.length > 0 && (
-            <span className="ml-2 text-foreground">({selectedColors.length})</span>
-          )}
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {dynamicColors.map((colorObj) => {
-            const color = colorObj.label;
-            const hex = colorObj.hex;
-            const image = colorObj.image;
+      {dynamicColors.length > 0 && (
+        <div className="pb-8 border-b border-border">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">
+            Colors
+            {selectedColors.length > 0 && (
+              <span className="ml-2 text-foreground">({selectedColors.length})</span>
+            )}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {dynamicColors.map((colorObj) => {
+              const color = colorObj.label;
+              const hex = colorObj.hex;
+              const image = colorObj.image;
 
-            const colorMapFallback = {
-              "Black": "#1A1A1A",
-              "Brown": "#4A3B2F",
-              "Tan": "#D2B48C",
-              "Camel": "#C19A6B",
-              "Navy": "#1B2E3C",
-              "White": "#FFFFFF",
-              "Gray": "#808080",
-              "Red": "#8B0000",
-              "Green": "#2F4F2F"
-            };
+              const colorMapFallback = {
+                "Black": "#1A1A1A",
+                "Brown": "#4A3B2F",
+                "Tan": "#D2B48C",
+                "Camel": "#C19A6B",
+                "Navy": "#1B2E3C",
+                "White": "#FFFFFF",
+                "Gray": "#808080",
+                "Red": "#8B0000",
+                "Green": "#2F4F2F"
+              };
 
-            const swatchVal = {
-              hex: hex || colorMapFallback[color] || color.toLowerCase(),
-              colorMode: colorObj.colorMode || "single",
-              hex2: colorObj.hex2,
-              hex3: colorObj.hex3,
-              hex4: colorObj.hex4,
-              texture: colorObj.texture,
-              swatchType: colorObj.swatchType || (image ? "image" : "color"),
-              image: image
-            };
-            const swatchBg = getSwatchBackground(swatchVal);
+              const swatchVal = {
+                hex: hex || colorMapFallback[color] || color.toLowerCase(),
+                colorMode: colorObj.colorMode || "single",
+                hex2: colorObj.hex2,
+                hex3: colorObj.hex3,
+                hex4: colorObj.hex4,
+                texture: colorObj.texture,
+                swatchType: colorObj.swatchType || (image ? "image" : "color"),
+                image: image
+              };
+              const swatchBg = getSwatchBackground(swatchVal);
 
-            return (
-              <button
-                key={color}
-                type="button"
-                onClick={() => toggleColor(color)}
-                className="group relative"
-                title={color}
-              >
-                <div
-                  className={`w-8 h-8 rounded-full border transition-all ${selectedColors.includes(color)
-                    ? "ring-2 ring-primary ring-offset-2 scale-110"
-                    : "border-border hover:scale-110"
-                    }`}
-                  style={{
-                    background: swatchBg,
-                    backgroundSize: 'cover'
-                  }}
+              return (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => toggleColor(color)}
+                  className="group relative"
+                  title={color}
                 >
-                  {selectedColors.includes(color) && (
-                    <Check className={`w-4 h-4 m-auto ${color === 'White' || color === 'Tan' ? 'text-foreground' : 'text-background'}`} />
-                  )}
-                </div>
-                <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-foreground/75 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  {color}
-                </span>
-              </button>
-            );
-          })}
+                  <div
+                    className={`w-8 h-8 rounded-full border transition-all ${selectedColors.includes(color)
+                      ? "ring-2 ring-primary ring-offset-2 scale-110"
+                      : "border-border hover:scale-110"
+                      }`}
+                    style={{
+                      background: swatchBg,
+                      backgroundSize: 'cover'
+                    }}
+                  >
+                    {selectedColors.includes(color) && (
+                      <Check className={`w-4 h-4 m-auto ${color === 'White' || color === 'Tan' ? 'text-foreground' : 'text-background'}`} />
+                    )}
+                  </div>
+                  <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-foreground/75 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {color}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sizes */}
-      <div className="pb-8 border-b border-border">
-        <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">
-          Sizes
-          {selectedSizes.length > 0 && (
-            <span className="ml-2 text-foreground">({selectedSizes.length})</span>
-          )}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {dynamicSizes.map((size) => (
-            <button
-              key={size}
-              type="button"
-              onClick={() => toggleSize(size)}
-              className={`px-5 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${selectedSizes.includes(size)
-                ? "bg-foreground text-background border-foreground"
-                : "bg-transparent text-foreground/65 border-border hover:border-foreground/30 hover:text-foreground"
-                }`}
-            >
-              {size}
-            </button>
-          ))}
+      {dynamicSizes.length > 0 && (
+        <div className="pb-8 border-b border-border">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.2em] text-foreground/60 mb-6">
+            Sizes
+            {selectedSizes.length > 0 && (
+              <span className="ml-2 text-foreground">({selectedSizes.length})</span>
+            )}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {dynamicSizes.map((size) => (
+              <button
+                key={size}
+                type="button"
+                onClick={() => toggleSize(size)}
+                className={`px-5 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${selectedSizes.includes(size)
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-transparent text-foreground/65 border-border hover:border-foreground/30 hover:text-foreground"
+                  }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Reset Filters - Styled for High Visibility */}
       <button
@@ -749,11 +754,30 @@ export default function ShopContentClient({ initialCategory = null, initialType 
         {currentDbCategory && currentDbCategory.banner ? (
           <>
             <div className="relative w-full h-[280px] sm:h-[340px] md:h-[400px] mb-12 overflow-hidden rounded-[var(--radius,16px)] group">
-              <img
-                src={currentDbCategory.banner}
-                alt={currentDbCategory.name}
-                className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-              />
+              {currentDbCategory.mobileBanner ? (
+                <>
+                  <div className="block md:hidden absolute inset-0">
+                    <img
+                      src={currentDbCategory.mobileBanner}
+                      alt={currentDbCategory.name}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="hidden md:block absolute inset-0">
+                    <img
+                      src={currentDbCategory.banner}
+                      alt={currentDbCategory.name}
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                </>
+              ) : (
+                <img
+                  src={currentDbCategory.banner}
+                  alt={currentDbCategory.name}
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/20" />
 
               {/* Banner content — all 
@@ -768,7 +792,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 </div>
 
                 {/* Category name */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold heading-font tracking-tighter uppercase leading-none text-white mb-3">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold heading-font tracking-tighter leading-none text-white mb-3">
                   {currentDbCategory.name}
                 </h1>
 
@@ -832,12 +856,12 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                   <span className="text-foreground/90">Shop</span>
                 )}
               </div>
-              <p className="text-[22px] md:text-[30px] font-bold heading-font tracking-tighter uppercase leading-none text-foreground">
+              <h1 className="text-[22px] md:text-[30px] font-bold heading-font tracking-tighter leading-none text-foreground">
                 {selectedCategory
                   ? (currentDbCategory ? currentDbCategory.name : selectedCategory)
                   : (selectedTypes[0] || "Shop All")
                 }
-              </p>
+              </h1>
               <p className="text-sm text-foreground/60 font-medium">
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
                 {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} active filter${getActiveFilterCount() > 1 ? 's' : ''}`}

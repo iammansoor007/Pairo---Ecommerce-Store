@@ -7,6 +7,7 @@ export const SECTION_SCHEMAS = {
         { name: "title", label: "Title", type: "text" },
         { name: "subtitle", label: "Subtitle", type: "textarea" },
         { name: "image", label: "Image URL", type: "image" },
+        { name: "mobileImage", label: "Mobile Image URL", type: "image" },
         { name: "buttonText", label: "Button Text", type: "text" },
         { name: "link", label: "Button Link", type: "text" }
       ]},
@@ -111,8 +112,17 @@ export const SECTION_SCHEMAS = {
       { name: "subtitle", label: "Subtitle", type: "textarea" },
       { name: "label", label: "Label", type: "text" },
       { name: "image", label: "Background Image", type: "image" },
+      { name: "mobileImage", label: "Mobile Background Image", type: "image" },
       { name: "buttonText", label: "Button Text", type: "text" },
       { name: "link", label: "Button Link", type: "text" },
+      { name: "slides", label: "Slides (Optional - overrides fields above)", type: "repeater", fields: [
+        { name: "title", label: "Title", type: "text" },
+        { name: "subtitle", label: "Subtitle", type: "textarea" },
+        { name: "image", label: "Background Image", type: "image" },
+        { name: "mobileImage", label: "Mobile Background Image", type: "image" },
+        { name: "buttonText", label: "Button Text", type: "text" },
+        { name: "link", label: "Button Link", type: "text" }
+      ]},
       { name: "marqueeEnabled", label: "Enable Marquee", type: "select", options: [
         { label: "Yes", value: "true" },
         { label: "No", value: "false" }
@@ -185,8 +195,17 @@ export const SECTION_SCHEMAS = {
       { name: "subtitle", label: "Hero Subtitle", type: "textarea" },
       { name: "label", label: "Hero Label (Badge)", type: "text" },
       { name: "image", label: "Background Image", type: "image" },
+      { name: "mobileImage", label: "Mobile Background Image", type: "image" },
       { name: "buttonText", label: "CTA Button Text", type: "text" },
       { name: "link", label: "Button Link (URL or ID)", type: "text" },
+      { name: "slides", label: "Slides (Optional - overrides fields above)", type: "repeater", fields: [
+        { name: "title", label: "Title", type: "text" },
+        { name: "subtitle", label: "Subtitle", type: "textarea" },
+        { name: "image", label: "Background Image", type: "image" },
+        { name: "mobileImage", label: "Mobile Background Image", type: "image" },
+        { name: "buttonText", label: "Button Text", type: "text" },
+        { name: "link", label: "Button Link", type: "text" }
+      ]},
       { name: "marqueeEnabled", label: "Enable Marquee", type: "select", options: [
         { label: "Yes", value: "true" },
         { label: "No", value: "false" }

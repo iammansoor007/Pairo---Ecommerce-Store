@@ -49,7 +49,7 @@ export default function SuccessPage() {
   };
 
   const getEstimatedDelivery = () => {
-    return "15-20 days";
+    return "15–20 Working Days";
   };
 
   if (loading) {
@@ -183,7 +183,7 @@ export default function SuccessPage() {
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-black uppercase tracking-widest">Order #{orderNumber || order?.orderNumber}</p>
-                  <p className="text-base md:text-lg font-bold uppercase tracking-wider text-black">Thank you, {customerName}!</p>
+                  <h1 className="text-base md:text-lg font-bold tracking-wider text-black">Thank you, {customerName}!</h1>
                 </div>
               </div>
 

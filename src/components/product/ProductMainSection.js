@@ -121,9 +121,9 @@ export default function ProductMainSection({ product }) {
 
         {/* RIGHT SIDE: SCROLLABLE INFO - 40% */}
         <div className="lg:col-span-2 space-y-4 min-w-0 overflow-hidden lg:pt-1.5">
-          <p className="text-[20px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
+          <h1 className="text-[20px] md:text-[30px] font-medium heading-font tracking-tight leading-[1.2] text-primary">
             {product.name}
-          </p>
+          </h1>
 
           <div className="flex flex-wrap items-center gap-3">
             <p className="flex items-center gap-2 text-[13px] md:text-[14px] font-semibold text-primary/80">

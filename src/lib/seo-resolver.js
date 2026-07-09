@@ -39,8 +39,6 @@ export function validateAndParseJsonLd(jsonString) {
 
 /**
  * Safely stringifies and escapes JSON-LD objects to prevent script breakout injections.
- * Replacing '<' with '\u003c', '>' with '\u003e', and '/' with '\u002f' ensures that
- * any inner script tags written in reviews are safely escaped.
  */
 export function escapeJsonLd(data) {
   if (!data) return "";
@@ -52,11 +50,36 @@ export function escapeJsonLd(data) {
 }
 
 /**
- * Normalizes a URL to ensure uniqueness:
- * - lowercase pathname
- * - clean duplicate slashes
- * - strip trailing slash (except root)
- * - strips all query parameters EXCEPT 'category' and 'type' to prevent duplicates/tracking parameters in canonical tags
+ * Normalizes competitor brand references and URLs to Pairo.
+ */
+export function cleanCompetitorDetails(jsonLd) {
+  if (!jsonLd) return jsonLd;
+  let str = typeof jsonLd === "string" ? jsonLd : JSON.stringify(jsonLd);
+
+  // Replace competitor names with Pairo Lifestyle
+  str = str
+    .replace(/Excellent Leather Shop/gi, "Pairo Lifestyle")
+    .replace(/Prime Jackets/gi, "Pairo Lifestyle")
+    .replace(/Jackets Junction/gi, "Pairo Lifestyle")
+    .replace(/The Jacket Maker/gi, "Pairo Lifestyle")
+    .replace(/The Jacket M/gi, "Pairo Lifestyle");
+
+  // Replace competitor URLs with Pairo Lifestyle URL
+  str = str
+    .replace(/https?:\/\/excellentleathershop\.com/gi, "https://pairolifestyle.com")
+    .replace(/https?:\/\/primejackets\.com/gi, "https://pairolifestyle.com")
+    .replace(/https?:\/\/jacketsjunction\.com/gi, "https://pairolifestyle.com")
+    .replace(/https?:\/\/thejacketmaker\.com/gi, "https://pairolifestyle.com");
+
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return jsonLd;
+  }
+}
+
+/**
+ * Normalizes a URL to ensure uniqueness.
  */
 export function normalizeCanonicalUrl(url) {
   if (!url) return SITE_URL;
@@ -86,18 +109,9 @@ export function normalizeCanonicalUrl(url) {
 }
 
 /**
- * Centrally resolves SEO metadata for storefront routes.
- * 
- * @param {Object} options Configuration parameters:
- * @param {Object} options.entity The DB document (Product, Category, Blog, Page)
- * @param {string} options.type Entity type ('product', 'category', 'blog', 'page')
- * @param {string} options.fallbackTitle Default title if not configured
- * @param {string} options.fallbackDesc Default description if not configured
- * @param {string} options.fallbackImage Default social image
- * @param {string} options.path Storefront relative path (e.g. /product/shearling-jacket)
- * @returns {Object} Next.js Metadata object compatible with App Router
+ * Centrally resolves SEO metadata for storefront routes (Asynchronous).
  */
-export function resolveSEOMetadata(options = {}) {
+export async function resolveSEOMetadata(options = {}) {
   const {
     entity = {},
     type = "page",
@@ -120,10 +134,7 @@ export function resolveSEOMetadata(options = {}) {
     if (path) {
       canonical = path;
     } else if (type === "product" && entity.slug) {
-      const { getProductPrimaryCategorySlug } = require("./routes");
-      const categorySlugRaw = getProductPrimaryCategorySlug(entity);
-      const categorySlug = categorySlugRaw === 'uncategorized' ? 'shop' : categorySlugRaw;
-      canonical = `/${categorySlug}/${entity.slug}`;
+      canonical = `/product/${entity.slug}`;
     } else if (type === "blog" && entity.slug) {
       canonical = `/blog/${entity.slug}`;
     } else if (type === "category" && entity.slug) {
@@ -136,12 +147,11 @@ export function resolveSEOMetadata(options = {}) {
   }
   canonical = normalizeCanonicalUrl(canonical);
 
-  // 3. Robots controls (Forced noindex, nofollow for complete site except in Vitest tests)
-  const noIndex = process.env.NODE_ENV === 'test' ? (seo.noIndex === true || entity.status === "Draft") : true;
-  const noFollow = process.env.NODE_ENV === 'test' ? (seo.noFollow === true || entity.status === "Draft") : true;
+  // 3. Robots controls (Forced noindex, nofollow globally per user request)
+  const noIndex = true;
+  const noFollow = true;
 
-  // 4. OpenGraph and Twitter image fallback hierarchy:
-  // Custom SEO Image -> Entity Featured Image -> Global Site Image
+  // 4. OpenGraph and Twitter image fallback hierarchy
   const entityFeaturedImage = entity.image || (Array.isArray(entity.images) && entity.images[0]) || null;
   
   const ogImgUrlRaw = seo.ogImage || entityFeaturedImage || fallbackImage;
@@ -175,7 +185,7 @@ export function resolveSEOMetadata(options = {}) {
   let structuredDataJson = null;
   const parsedJsonLd = validateAndParseJsonLd(seo.structuredData);
   if (parsedJsonLd) {
-    structuredDataJson = parsedJsonLd;
+    structuredDataJson = cleanCompetitorDetails(parsedJsonLd);
   } else {
     // Generate fallback schemas
     if (type === "product" && entity.name) {
@@ -269,10 +279,62 @@ export function resolveSEOMetadata(options = {}) {
         ]
       };
 
+      // Query ProductQuestions asynchronously for FAQ Schema
+      let faqSchema = null;
+      try {
+        const mongoose = require("mongoose");
+        if (mongoose.connection && mongoose.connection.readyState === 1) {
+          let ProductQuestion;
+          try {
+            ProductQuestion = mongoose.model("ProductQuestion");
+          } catch {
+            ProductQuestion = require("../models/ProductQuestion").default || require("../models/ProductQuestion");
+          }
+
+          const questions = await ProductQuestion.find({
+            productId: entity._id || entity.id,
+            status: "Approved",
+            isDeleted: false
+          }).lean();
+
+          const qaList = questions
+            .filter(q => q.replies && q.replies.length > 0)
+            .map(q => {
+              const firstStaffReply = q.replies.find(r => r.isStaff || r.isAdmin);
+              if (firstStaffReply) {
+                return {
+                  "@type": "Question",
+                  "name": q.questionText || q.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": firstStaffReply.replyText || firstStaffReply.text
+                  }
+                };
+              }
+              return null;
+            })
+            .filter(Boolean);
+
+          if (qaList.length > 0) {
+            faqSchema = {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": qaList
+            };
+          }
+        }
+      } catch (e) {
+        console.error("[SEO Resolver] Failed to load Product FAQs:", e.message);
+      }
+
       structuredDataJson = {
         "@context": "https://schema.org",
         "@graph": [productSchema, breadcrumbSchema]
       };
+
+      if (faqSchema) {
+        structuredDataJson["@graph"].push(faqSchema);
+      }
     } else if (type === "category" && entity.name) {
       const categorySchema = {
         "@context": "https://schema.org",
@@ -319,6 +381,172 @@ export function resolveSEOMetadata(options = {}) {
           "name": entity.author || "Pairo Studio"
         }
       };
+    } else if (type === "home" || path === "/" || path === "/home") {
+      const orgSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "logo": {
+          "@type": "ImageObject",
+          "@id": `${SITE_URL}/#logo`,
+          "url": `${SITE_URL}/assets/pairo.webp`,
+          "caption": "Pairo Lifestyle"
+        },
+        "sameAs": [
+          "https://www.instagram.com/pairolifestyle",
+          "https://www.facebook.com/pairolifestyle"
+        ]
+      };
+
+      const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "publisher": {
+          "@id": `${SITE_URL}/#organization`
+        }
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [orgSchema, websiteSchema]
+      };
+    } else if (type === "shop" || path === "/shop") {
+      const shopSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${SITE_URL}/shop#collection`,
+        "name": "Shop All Handcrafted Shearling Jackets",
+        "description": "Browse the complete archival collection of Pairo's premium shearling and leather jackets.",
+        "url": `${SITE_URL}/shop`
+      };
+      
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+          { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${SITE_URL}/shop` }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [shopSchema, breadcrumbSchema]
+      };
+    } else if (type === "blog_list" || path === "/blog") {
+      const blogListSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${SITE_URL}/blog#collection`,
+        "name": "Editorial Journal - Pairo Lifestyle",
+        "description": "Explore the stories, craftsmanship, and heritage behind Pairo's archival shearling collection.",
+        "url": `${SITE_URL}/blog`
+      };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+          { "@type": "ListItem", "position": 2, "name": "Journal", "item": `${SITE_URL}/blog` }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [blogListSchema, breadcrumbSchema]
+      };
+    } else if (type === "contact" || path === "/contact") {
+      const contactSchema = {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "@id": `${SITE_URL}/contact#webpage`,
+        "name": "Contact Pairo - Direct Concierge Line",
+        "description": "Get in touch with Pairo Lifestyle atelier for bespoke fittings, sizing advice, and order inquiries.",
+        "url": `${SITE_URL}/contact`
+      };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+          { "@type": "ListItem", "position": 2, "name": "Contact", "item": `${SITE_URL}/contact` }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [contactSchema, breadcrumbSchema]
+      };
+    } else if (type === "about" || path === "/about") {
+      const aboutSchema = {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "@id": `${SITE_URL}/about#webpage`,
+        "name": "About Pairo Lifestyle - Artisanal Shearling Heritage",
+        "description": "Discover Pairo's journey in crafting the future of modern elegance, bridging heritage craftsmanship and contemporary design.",
+        "url": `${SITE_URL}/about`
+      };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+          { "@type": "ListItem", "position": 2, "name": "About", "item": `${SITE_URL}/about` }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [aboutSchema, breadcrumbSchema]
+      };
+    } else if (type === "faq" || path === "/faq") {
+      const faqPageSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Pairo Lifestyle's estimated delivery time?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Our handcrafted pieces are made-to-order. The estimated delivery time is between 15–20 working days."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you support custom/bespoke configurations?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, we support extensive bespoke modifications including custom leather types, colors, hardware finishes, fur accents, and branding uploads."
+            }
+          }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [faqPageSchema]
+      };
+    } else if (type === "search") {
+      const searchSchema = {
+        "@context": "https://schema.org",
+        "@type": "SearchResultsPage",
+        "name": "Search Results",
+        "url": `${SITE_URL}/search`
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [searchSchema]
+      };
     }
   }
 
@@ -341,7 +569,6 @@ export function resolveSEOMetadata(options = {}) {
     twitter,
   };
 
-  // Attach structuredDataJson for the page to render inline in a script tag if requested
   return {
     metadata,
     structuredData: structuredDataJson

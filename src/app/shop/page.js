@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }) {
 
   await dbConnect();
   const shopPage = await Page.findOne({ slug: "shop" }).lean();
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: shopPage || {},
     type: "page",
     fallbackTitle: "Shop All | Pairo Store",

@@ -12,7 +12,7 @@ export async function generateMetadata() {
     return {};
   }
 
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: page,
     type: "page",
     fallbackTitle: "Contact Us - Pairo",
@@ -43,7 +43,7 @@ export default async function ContactPage() {
     JSON.stringify(resolvedSections.sort((a, b) => (a.order || 0) - (b.order || 0)))
   );
 
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: page,
     type: "page",
     path: "/contact"

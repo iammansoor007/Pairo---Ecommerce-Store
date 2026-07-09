@@ -35,7 +35,7 @@ export async function generateMetadata({ params }) {
     return { title: "Page Not Found" };
   }
 
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: page,
     type: "page",
     path: currentPath
@@ -81,7 +81,7 @@ export default async function CatchAllCMSPage({ params, searchParams }) {
     JSON.stringify(resolvedSections.sort((a, b) => (a.order || 0) - (b.order || 0)))
   );
 
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: page,
     type: "page",
     path: currentPath

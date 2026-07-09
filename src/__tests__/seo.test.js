@@ -69,7 +69,7 @@ describe("SEO - JSON-LD Schema Validation", () => {
 });
 
 describe("SEO - Centralized Metadata Resolver", () => {
-  it("should compile products with correct metadata and canonical fallback", () => {
+  it("should compile products with correct metadata and canonical fallback", async () => {
     const mockProduct = {
       name: "Handcrafted Shearling Coat",
       shortDescription: "Luxurious handcrafted shearling coat.",
@@ -84,7 +84,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
       }
     };
 
-    const { metadata, structuredData } = resolveSEOMetadata({
+    const { metadata, structuredData } = await resolveSEOMetadata({
       entity: mockProduct,
       type: "product",
       path: "/product/handcrafted-shearling-coat"
@@ -93,7 +93,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
     expect(metadata.title).toBe("Buy Handcrafted Shearling Coat Online | Pairo");
     expect(metadata.description).toBe("Custom SEO description override.");
     expect(metadata.alternates.canonical).toBe("https://pairolifestyle.com/product/handcrafted-shearling-coat");
-    expect(metadata.robots.index).toBe(true);
+    expect(metadata.robots.index).toBe(false);
     expect(metadata.robots.follow).toBe(false);
     expect(metadata.twitter.site).toBe("@pairostore");
     expect(metadata.twitter.creator).toBe("@pairostore");
@@ -106,7 +106,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
     expect(productSchema.offers.price).toBe(1200);
   });
 
-  it("should fall back to global settings when entity SEO is empty", () => {
+  it("should fall back to global settings when entity SEO is empty", async () => {
     const mockBlog = {
       title: "The Shearling Heritage",
       excerpt: "Deep dive into the craftsmanship.",
@@ -114,7 +114,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
       createdAt: "2026-05-25T12:00:00.000Z"
     };
 
-    const { metadata, structuredData } = resolveSEOMetadata({
+    const { metadata, structuredData } = await resolveSEOMetadata({
       entity: mockBlog,
       type: "blog"
     });
@@ -128,7 +128,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
     expect(structuredData.headline).toBe("The Shearling Heritage");
   });
 
-  it("should resolve image fallback hierarchy correctly", () => {
+  it("should resolve image fallback hierarchy correctly", async () => {
     const mockEntity = {
       title: "Test Page",
       image: "/featured.jpg",
@@ -140,7 +140,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
     };
 
     // Case 1: Custom SEO images present
-    const res1 = resolveSEOMetadata({
+    const res1 = await resolveSEOMetadata({
       entity: mockEntity,
       type: "page",
       fallbackImage: "/global.jpg"
@@ -154,7 +154,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
       image: "/featured.jpg",
       seo: {}
     };
-    const res2 = resolveSEOMetadata({
+    const res2 = await resolveSEOMetadata({
       entity: mockEntityNoSeoImage,
       type: "page",
       fallbackImage: "/global.jpg"
@@ -166,7 +166,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
     const mockEntityEmpty = {
       title: "Test Page"
     };
-    const res3 = resolveSEOMetadata({
+    const res3 = await resolveSEOMetadata({
       entity: mockEntityEmpty,
       type: "page",
       fallbackImage: "/global.jpg"
@@ -180,7 +180,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
       .toBe("https://pairolifestyle.com/shop?category=men&type=jackets");
   });
 
-  it("should force noindex/nofollow on draft pages", () => {
+  it("should force noindex/nofollow on draft pages", async () => {
     const mockBlog = {
       title: "Draft Story",
       excerpt: "Deep dive into the craftsmanship.",
@@ -192,7 +192,7 @@ describe("SEO - Centralized Metadata Resolver", () => {
       }
     };
 
-    const { metadata } = resolveSEOMetadata({
+    const { metadata } = await resolveSEOMetadata({
       entity: mockBlog,
       type: "blog"
     });

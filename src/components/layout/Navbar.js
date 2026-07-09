@@ -137,16 +137,10 @@ function MegaMenuContent({ item }) {
 
           {/* Premium Editorial Content */}
           <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-start gap-2 z-30 select-none">
-            <span className="text-[8px] font-bold tracking-[0.3em] text-white/70 uppercase">Discover</span>
             {item.megaBannerHeading && (
               <h4 className="text-[18px] md:text-[22px] font-bold uppercase tracking-[0.15em] text-white w-full leading-tight">
                 {item.megaBannerHeading}
               </h4>
-            )}
-            {item.megaBannerDesc && (
-              <p className="text-[11px] tracking-wide text-white/80 max-w-md font-light leading-relaxed">
-                {item.megaBannerDesc}
-              </p>
             )}
           </div>
         </div>

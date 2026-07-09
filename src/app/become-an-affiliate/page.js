@@ -35,7 +35,7 @@ export default async function BecomeAnAffiliatePage() {
           <p className="text-[10px] md:text-[11px] font-bold text-neutral-400 uppercase tracking-[0.3em]">
             Pairo Studio
           </p>
-          <h1 className="text-3xl md:text-4xl font-normal tracking-tight text-black uppercase">
+          <h1 className="text-3xl md:text-4xl font-normal tracking-tight text-black">
             Become an Affiliate
           </h1>
           <p className="text-xs md:text-sm text-neutral-500 font-light leading-relaxed max-w-lg mx-auto">

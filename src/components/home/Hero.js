@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +12,8 @@ export default function Hero({
   slides: propSlides,
   brand: propBrand,
   labels: propLabels,
-  marqueeItems: propMarqueeItems
+  marqueeItems: propMarqueeItems,
+  headingLevel = "h1"
 }) {
   const siteData = useSiteData();
 
@@ -66,7 +67,18 @@ export default function Hero({
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div key={currentSlide} custom={direction} variants={slideVariants} initial="initial" animate="animate" exit="exit" className="absolute inset-0">
             <div className="absolute inset-0">
-              <Image src={hero.slides[currentSlide].image} alt={hero.slides[currentSlide].title} fill className="object-cover object-right md:object-center brightness-[0.9]" priority />
+              {hero.slides[currentSlide].mobileImage ? (
+                <>
+                  <div className="block md:hidden absolute inset-0">
+                    <Image src={hero.slides[currentSlide].mobileImage} alt={hero.slides[currentSlide].title} fill className="object-cover object-center brightness-[0.9]" priority />
+                  </div>
+                  <div className="hidden md:block absolute inset-0">
+                    <Image src={hero.slides[currentSlide].image} alt={hero.slides[currentSlide].title} fill className="object-cover object-right md:object-center brightness-[0.9]" priority />
+                  </div>
+                </>
+              ) : (
+                <Image src={hero.slides[currentSlide].image} alt={hero.slides[currentSlide].title} fill className="object-cover object-right md:object-center brightness-[0.9]" priority />
+              )}
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent md:from-black/70 md:via-black/20" />
             <div className="container mx-auto px-6 md:px-16 h-full flex items-center relative z-10">
@@ -76,7 +88,11 @@ export default function Hero({
                     <div className="h-[1.5px] w-8 bg-white/30" />
                     <span className="text-white/90 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase">{brand.tagline}</span>
                   </div>
-                  <p className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white heading-font leading-[1.05] tracking-tight max-w-[15ch] md:max-w-none">{hero.slides[currentSlide].title}</p>
+                  {React.createElement(
+                    headingLevel,
+                    { className: "text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white heading-font leading-[1.05] tracking-tight max-w-[15ch] md:max-w-none" },
+                    hero.slides[currentSlide].title
+                  )}
                   <p className="text-white/90 text-xs md:text-base lg:text-lg max-w-md leading-relaxed font-sans">{hero.slides[currentSlide].subtitle}</p>
                   <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-4 pt-4 md:pt-6">
                     {hero.slides[currentSlide].link ? (

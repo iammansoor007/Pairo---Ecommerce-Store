@@ -7,7 +7,7 @@ import { resolvePageAndTemplate } from "@/lib/page-cache";
 export async function generateMetadata() {
   const { page } = await resolvePageAndTemplate("home", "home");
   
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: page,
     type: "page",
     fallbackTitle: "Pairo | Premium Handcrafted Shearling Jackets",
@@ -36,7 +36,7 @@ export default async function Home() {
   );
 
   // Generate dynamic Schema structured data
-  const seoRes = resolveSEOMetadata({
+  const seoRes = await resolveSEOMetadata({
     entity: page,
     type: "page",
     path: "/"

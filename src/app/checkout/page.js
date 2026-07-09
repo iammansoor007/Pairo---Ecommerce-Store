@@ -347,13 +347,112 @@ export default function CheckoutPage() {
     }
   }, [formData.email, appliedPromo?.code, applyPromoCode]);
 
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    let error = "";
+    const cleanVal = (value || "").trim();
+
+    if (["email", "lastName", "street", "city", "phone"].includes(name) && !cleanVal) {
+      return "This field is required";
+    }
+
+    switch (name) {
+      case "firstName":
+      case "lastName":
+        if (cleanVal && cleanVal.length < 2) {
+          error = "Must be at least 2 characters";
+        } else if (cleanVal && cleanVal.length > 50) {
+          error = "Must be at most 50 characters";
+        } else if (cleanVal && !/^[A-Za-z\s\-]+$/.test(cleanVal)) {
+          error = "Only letters, spaces, or hyphens are allowed";
+        }
+        break;
+      case "email":
+        if (cleanVal && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(cleanVal)) {
+          error = "Please enter a valid email address";
+        } else if (cleanVal && cleanVal.length > 100) {
+          error = "Email is too long";
+        }
+        break;
+      case "phone":
+        if (cleanVal && !/^\+?[0-9\s\-\(\)]{7,20}$/.test(cleanVal)) {
+          error = "Please enter a valid phone number (7-20 digits)";
+        }
+        break;
+      case "street":
+        if (cleanVal && cleanVal.length < 5) {
+          error = "Please enter a valid street address";
+        } else if (cleanVal && cleanVal.length > 150) {
+          error = "Address is too long";
+        }
+        break;
+      case "city":
+        if (cleanVal && cleanVal.length < 2) {
+          error = "Please enter a valid city";
+        } else if (cleanVal && cleanVal.length > 50) {
+          error = "City name is too long";
+        } else if (cleanVal && !/^[A-Za-z\s\-\.]+$/.test(cleanVal)) {
+          error = "City contains invalid characters";
+        }
+        break;
+      case "zip":
+        if (cleanVal && !/^[A-Za-z0-9\s\-]{3,10}$/.test(cleanVal)) {
+          error = "Please enter a valid postal code (3-10 characters)";
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Sanitize input values on the fly: restrict emojis, script tags, HTML tags
+    let sanitized = value
+      .replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "")
+      .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, "")
+      .replace(/<\/?[^>]+(>|$)/g, "");
+
+    if (name === "firstName" || name === "lastName" || name === "city") {
+      sanitized = sanitized.slice(0, 50);
+    } else if (name === "email") {
+      sanitized = sanitized.slice(0, 100);
+    } else if (name === "phone") {
+      sanitized = sanitized.replace(/[^0-9\s\+\-\(\)]/g, "").slice(0, 25);
+    } else if (name === "street") {
+      sanitized = sanitized.slice(0, 150);
+    } else if (name === "zip") {
+      sanitized = sanitized.slice(0, 10);
+    }
+
+    setFormData(prev => ({ ...prev, [name]: sanitized }));
+
+    const error = validateField(name, sanitized);
+    setErrors(prev => ({ ...prev, [name]: error }));
   };
 
   const handlePayment = async () => {
-    if (!formData.email || !formData.street || !formData.city || !formData.phone) {
-      alert("Please fill in all required fields (Email, Phone, Street Address, and City)");
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      if (key !== "customerNote" && key !== "stateCode" && key !== "countryCode" && key !== "firstName") {
+        const err = validateField(key, formData[key]);
+        if (err) {
+          newErrors[key] = err;
+        }
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const firstErrKey = Object.keys(newErrors)[0];
+      const el = document.getElementsByName(firstErrKey)[0];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus();
+      }
       return;
     }
 
@@ -515,6 +614,9 @@ export default function CheckoutPage() {
 
       {/* Main Container - Matches site margins/padding */}
       <main className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
+        <h1 className="text-[28px] md:text-[36px] font-bold tracking-tight text-black mb-8 leading-none">
+          Checkout
+        </h1>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* Left Column: Checkout Forms (60% / 7 Cols) */}
@@ -535,9 +637,10 @@ export default function CheckoutPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Email"
-                    className={inputClass}
+                    className={`${inputClass} ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     required
                   />
+                  {errors.email && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.email}</p>}
                 </div>
                 <label className="flex items-center gap-2.5 cursor-pointer select-none py-1">
                   <input
@@ -579,6 +682,7 @@ export default function CheckoutPage() {
                               country: addr.country || "United States",
                               phone: addr.phone || prev.phone
                             }));
+                            setErrors({});
                           }
                         }}
                         className="w-full bg-white border border-neutral-300 rounded-[4px] px-3.5 py-2.5 text-xs font-semibold focus:border-black outline-none transition-all text-black appearance-none"
@@ -611,8 +715,10 @@ export default function CheckoutPage() {
                       countryCode: matched ? matched.isoCode : "",
                       state: "", stateCode: "", city: ""
                     }));
+                    setErrors(prev => ({ ...prev, country: "" }));
                   }}
                 />
+                {errors.country && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.country}</p>}
 
                 {/* Names */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -624,8 +730,9 @@ export default function CheckoutPage() {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       placeholder="First name"
-                      className={inputClass}
+                      className={`${inputClass} ${errors.firstName ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     />
+                    {errors.firstName && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.firstName}</p>}
                   </div>
                   <div className="space-y-1">
                     <label className={labelClass}>Last name *</label>
@@ -635,9 +742,10 @@ export default function CheckoutPage() {
                       value={formData.lastName}
                       onChange={handleInputChange}
                       placeholder="Last name"
-                      className={inputClass}
+                      className={`${inputClass} ${errors.lastName ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                       required
                     />
+                    {errors.lastName && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.lastName}</p>}
                   </div>
                 </div>
 
@@ -650,30 +758,35 @@ export default function CheckoutPage() {
                     value={formData.street}
                     onChange={handleInputChange}
                     placeholder="Address"
-                    className={inputClass}
+                    className={`${inputClass} ${errors.street ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     required
                   />
+                  {errors.street && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.street}</p>}
                 </div>
 
                 {/* State / Province */}
                 {states.length > 0 ? (
-                  <SearchableDropdown
-                    label="State / Province *"
-                    placeholder="Search State / Province…"
-                    value={formData.state}
-                    options={states}
-                    loading={loadingStates}
-                    labelClass={labelClass}
-                    required
-                    onChange={(val, matched) => {
-                      setFormData(prev => ({
-                        ...prev,
-                        state: val,
-                        stateCode: matched ? matched.isoCode : "",
-                        city: ""
-                      }));
-                    }}
-                  />
+                  <>
+                    <SearchableDropdown
+                      label="State / Province *"
+                      placeholder="Search State / Province…"
+                      value={formData.state}
+                      options={states}
+                      loading={loadingStates}
+                      labelClass={labelClass}
+                      required
+                      onChange={(val, matched) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          state: val,
+                          stateCode: matched ? matched.isoCode : "",
+                          city: ""
+                        }));
+                        setErrors(prev => ({ ...prev, state: "" }));
+                      }}
+                    />
+                    {errors.state && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.state}</p>}
+                  </>
                 ) : (
                   <div className="space-y-1">
                     <label className={labelClass}>State / Province</label>
@@ -683,29 +796,34 @@ export default function CheckoutPage() {
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="State / Province"
-                      className={inputClass}
+                      className={`${inputClass} ${errors.state ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     />
+                    {errors.state && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.state}</p>}
                   </div>
                 )}
 
                 {/* City + ZIP */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   {cities.length > 0 ? (
-                    <SearchableDropdown
-                      label="City *"
-                      placeholder="Search City…"
-                      value={formData.city}
-                      options={cities}
-                      loading={loadingCities}
-                      labelClass={labelClass}
-                      required
-                      onChange={(val) => {
-                        setFormData(prev => ({
-                          ...prev,
-                          city: val
-                        }));
-                      }}
-                    />
+                    <div className="space-y-1">
+                      <SearchableDropdown
+                        label="City *"
+                        placeholder="Search City…"
+                        value={formData.city}
+                        options={cities}
+                        loading={loadingCities}
+                        labelClass={labelClass}
+                        required
+                        onChange={(val) => {
+                          setFormData(prev => ({
+                            ...prev,
+                            city: val
+                          }));
+                          setErrors(prev => ({ ...prev, city: "" }));
+                        }}
+                      />
+                      {errors.city && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.city}</p>}
+                    </div>
                   ) : (
                     <div className="space-y-1">
                       <label className={labelClass}>City *</label>
@@ -715,9 +833,10 @@ export default function CheckoutPage() {
                         value={formData.city}
                         onChange={handleInputChange}
                         placeholder="City"
-                        className={inputClass}
+                        className={`${inputClass} ${errors.city ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                         required
                       />
+                      {errors.city && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.city}</p>}
                     </div>
                   )}
                   <div className="space-y-1">
@@ -728,8 +847,9 @@ export default function CheckoutPage() {
                       value={formData.zip}
                       onChange={handleInputChange}
                       placeholder="Postal code"
-                      className={inputClass}
+                      className={`${inputClass} ${errors.zip ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     />
+                    {errors.zip && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.zip}</p>}
                   </div>
                 </div>
 
@@ -742,9 +862,10 @@ export default function CheckoutPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="Phone"
-                    className={inputClass}
+                    className={`${inputClass} ${errors.phone ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}`}
                     required
                   />
+                  {errors.phone && <p className="text-[11px] text-red-500 font-semibold mt-1">{errors.phone}</p>}
                 </div>
 
                 {/* Customer Note */}

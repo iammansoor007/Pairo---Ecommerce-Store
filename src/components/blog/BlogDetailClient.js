@@ -323,7 +323,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
           <header className="pt-6 pb-4 md:pt-8 md:pb-6 border-b border-black/5">
              <div className="container mx-auto px-2 sm:px-4 md:px-8">
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black uppercase leading-tight mb-2 max-w-4xl">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold heading-font tracking-tight text-black leading-tight mb-2 max-w-4xl">
                    {post.title}
                 </h1>
              </div>
@@ -336,16 +336,45 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                      <img src={post.image} alt={post.imageAlts?.[post.image] || post.title || "Blog Image"} className="w-full h-full object-cover" />
                   </div>
 
+                  {post.showSidebarIndex !== false && (
+                     <div className="block lg:hidden space-y-3 p-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] mb-6">
+                        <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
+                        <div className="flex flex-col gap-2">
+                           {tocSections.length > 0 ? (
+                              tocSections.map((section) => (
+                                 <button
+                                    key={section.id}
+                                    onClick={() => scrollToSection(section.id, section.title)}
+                                    className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
+                                 >
+                                    <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
+                                       {section.title}
+                                    </span>
+                                    <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
+                                 </button>
+                              ))
+                           ) : (
+                              <p className="text-[10px] text-neutral-400 italic">No sections found</p>
+                           )}
+                        </div>
+                     </div>
+                  )}
+
                   <div className="w-full space-y-8 md:space-y-12">
                      {/* General Content */}
-                     {post.content && (
-                        <section id="general" className="scroll-mt-32">
-                           <div
-                              className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
-                              dangerouslySetInnerHTML={{ __html: post.content }}
-                           />
-                        </section>
-                     )}
+                     {post.content && (() => {
+                        const sanitizedContent = (post.content || "")
+                           .replace(/<h1([^>]*)>/gi, "<h2$1>")
+                           .replace(/<\/h1>/gi, "</h2>");
+                        return (
+                           <section id="general" className="scroll-mt-32">
+                              <div
+                                 className="text-sm md:text-base text-black leading-relaxed space-y-4 font-medium blog-content"
+                                 dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                              />
+                           </section>
+                        );
+                     })()}
 
                        {/* FAQ Section */}
                        {post.faqs && post.faqs.length > 0 && (
@@ -450,7 +479,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                        </div>
 
                         {post.showSidebarIndex !== false && (
-                           <div className="space-y-3 pt-6 border-t border-black/5">
+                           <div className="hidden lg:block space-y-3 pt-6 border-t border-black/5">
                               <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
                               <div className="flex flex-col gap-2">
                                  {tocSections.length > 0 ? (

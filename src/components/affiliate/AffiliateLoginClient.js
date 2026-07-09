@@ -138,7 +138,7 @@ export default function AffiliateLoginClient() {
             <p className="text-xs text-black/40">
               Not a partner yet?{" "}
               <Link
-                href="/become-affiliate"
+                href="/become-an-affiliate"
                 className="text-black font-bold hover:underline underline-offset-4"
               >
                 Apply to join

@@ -112,7 +112,7 @@ describe("Reviews Hardening Verification Suite", () => {
     await Review.deleteMany({ _id: { $in: reviewIds } });
   });
 
-  it("should ensure only approved and non-deleted reviews enter SEO structured JSON-LD data", () => {
+  it("should ensure only approved and non-deleted reviews enter SEO structured JSON-LD data", async () => {
     const mockProduct = {
       name: "SEO Test Jacket",
       shortDescription: "Sleek shearling",
@@ -130,7 +130,7 @@ describe("Reviews Hardening Verification Suite", () => {
       { customerName: "Deleted User", comment: "Old comment", rating: 5, status: "Approved", isDeleted: true }
     ];
 
-    const { structuredData } = resolveSEOMetadata({
+    const { structuredData } = await resolveSEOMetadata({
       entity: mockProduct,
       type: "product",
       path: "/product/seo-test",

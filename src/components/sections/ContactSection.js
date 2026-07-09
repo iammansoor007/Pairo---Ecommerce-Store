@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { Mail, Phone, MapPin, ArrowRight, User, Tag, MessageSquare, ChevronDown } from "lucide-react";
+import { useSiteData } from "@/context/SiteContext";
 
 const InstagramIcon = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -174,27 +175,16 @@ export default function ContactSection({
                   {officeTitle}
                 </h2>
                 
-                {/* Location Info & Hours */}
+                {/* Location Info */}
                 <div className="border-t border-b border-black py-8 space-y-6">
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Atelier Location</p>
                     <p className="text-lg sm:text-xl text-black font-normal leading-relaxed max-w-sm font-sans">
                       {address}
                     </p>
-                    <p className="text-[10px] font-mono tracking-wider text-black/60 font-normal pt-1">
-                      Florence, Italy • 43.7696° N, 11.2558° E
-                    </p>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-8 pt-6 border-t border-black/20">
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Opening Hours</p>
-                      <ul className="text-xs text-black space-y-1 font-medium font-sans">
-                        {hoursLines.map((line, idx) => (
-                          <li key={idx}>{line}</li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div className="pt-6 border-t border-black/20">
                     <div className="space-y-2">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black">Bespoke Fittings</p>
                       <p className="text-xs text-black font-sans leading-relaxed">
@@ -238,33 +228,44 @@ export default function ContactSection({
             </div>
 
             {/* Social Links */}
-            <motion.div variants={itemVariants} className="space-y-4">
-              <span className="text-[10px] font-semibold tracking-[0.25em] text-black uppercase block">{socialLabel}</span>
-              <div className="flex flex-wrap gap-4">
-                {(Array.isArray(socialLinks) && socialLinks.length > 0
-                  ? socialLinks.filter(s => s.url && s.platform)
-                  : [
-                      { platform: "instagram", url: "#" },
-                      { platform: "twitter", url: "#" },
-                      { platform: "linkedin", url: "#" },
-                    ]
-                ).map((s, i) => {
-                  const Icon = CONTACT_SOCIAL_ICONS[s.platform?.toLowerCase()] || InstagramIcon;
-                  return (
-                    <a
-                      key={i}
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={s.platform}
-                      className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1 shadow-sm"
-                    >
-                      <Icon />
-                    </a>
-                  );
-                })}
-              </div>
-            </motion.div>
+            {(() => {
+              const siteData = useSiteData() || {};
+              const brand = siteData.brand || {};
+              const whatsappUrl = brand.whatsappUrl;
+              const activeSocials = Array.isArray(socialLinks) && socialLinks.length > 0
+                ? socialLinks.filter(s => s.url && s.platform)
+                : [
+                    { platform: "instagram", url: "#" },
+                    { platform: "twitter", url: "#" },
+                    { platform: "linkedin", url: "#" },
+                  ];
+              const finalSocials = [...activeSocials];
+              if (whatsappUrl && !finalSocials.some(s => s.platform?.toLowerCase() === "whatsapp")) {
+                finalSocials.push({ platform: "whatsapp", url: whatsappUrl });
+              }
+              return (
+                <motion.div variants={itemVariants} className="space-y-4">
+                  <span className="text-[10px] font-semibold tracking-[0.25em] text-black uppercase block">{socialLabel}</span>
+                  <div className="flex flex-wrap gap-4">
+                    {finalSocials.map((s, i) => {
+                      const Icon = CONTACT_SOCIAL_ICONS[s.platform?.toLowerCase()] || InstagramIcon;
+                      return (
+                        <a
+                          key={i}
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={s.platform}
+                          className="w-12 h-12 rounded-full border-2 border-black flex items-center justify-center text-black hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1 shadow-sm"
+                        >
+                          <Icon />
+                        </a>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })()}
           </motion.div>
 
           {/* Right Side: Glassmorphic Contact Form */}

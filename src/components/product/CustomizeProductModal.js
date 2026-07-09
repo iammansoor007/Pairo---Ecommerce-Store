@@ -108,6 +108,21 @@ function ArtworkSlot({ slot, artwork, onChange }) {
     if (!file) return;
     setUploadError(null);
     setUploading(true);
+
+    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+    const allowed = ACCEPTED_FORMATS.split(",");
+    if (!allowed.includes(ext)) {
+      setUploadError("Invalid file format. Allowed: PNG, JPG, JPEG, SVG, PDF, AI, EPS, WEBP");
+      setUploading(false);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("File size exceeds the 5MB limit.");
+      setUploading(false);
+      return;
+    }
+
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -204,9 +219,11 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
   const [artworkOtherNote, setArtworkOtherNote] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (isOpen) {
-      setStep("form"); setSubmitError(null);
+      setStep("form"); setSubmitError(null); setErrors({});
       setCustomer({ name: "", email: "", phone: "" });
       setLeatherColor("None"); setLeatherColorNote("");
       setLeatherType("None"); setLeatherTypeNote("");
@@ -227,11 +244,61 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
 
   const updateArtwork = (key, val) => setArtwork((prev) => ({ ...prev, [key]: val }));
 
+  const validateCustomization = () => {
+    const errs = {};
+    const nameClean = (customer.name || "").trim();
+    const emailClean = (customer.email || "").trim();
+    const phoneClean = (customer.phone || "").trim();
+
+    if (!nameClean) {
+      errs.name = "Name is required";
+    } else if (nameClean.length < 2) {
+      errs.name = "Name must be at least 2 characters";
+    } else if (nameClean.length > 50) {
+      errs.name = "Name must be at most 50 characters";
+    } else if (!/^[A-Za-z\s\-]+$/.test(nameClean)) {
+      errs.name = "Only letters, spaces, or hyphens are allowed";
+    }
+
+    if (!emailClean) {
+      errs.email = "Email is required";
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(emailClean)) {
+      errs.email = "Please enter a valid email address";
+    }
+
+    if (!phoneClean) {
+      errs.phone = "Phone number is required";
+    } else if (!/^\+?[0-9\s\-\(\)]{7,20}$/.test(phoneClean)) {
+      errs.phone = "Please enter a valid phone number (7-20 digits)";
+    }
+
+    if (leatherColor === "Other" && (!leatherColorNote || !leatherColorNote.trim())) {
+      errs.leatherColorNote = "Please specify custom leather color";
+    }
+    if (leatherType === "Other" && (!leatherTypeNote || !leatherTypeNote.trim())) {
+      errs.leatherTypeNote = "Please specify custom leather type";
+    }
+    if (innerLining === "Other" && (!innerLiningNote || !innerLiningNote.trim())) {
+      errs.innerLiningNote = "Please specify custom inner lining";
+    }
+    if (hardwareColor === "Other" && (!hardwareColorNote || !hardwareColorNote.trim())) {
+      errs.hardwareColorNote = "Please specify custom hardware color";
+    }
+    if (furType === "Other" && (!furTypeNote || !furTypeNote.trim())) {
+      errs.furTypeNote = "Please specify custom fur type";
+    }
+
+    return errs;
+  };
+
   const handleSubmit = async () => {
-    if (!customer.name.trim() || !customer.email.trim()) {
-      setSubmitError("Please enter your name and email address.");
+    const errs = validateCustomization();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      setSubmitError("Please correct the errors in the form before submitting.");
       return;
     }
+    setErrors({});
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -352,19 +419,40 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 </p>
                 <div className="space-y-2.5">
                   {[
-                    { key: "name", icon: User, type: "text", placeholder: "Full Name" },
-                    { key: "email", icon: Mail, type: "email", placeholder: "your@email.com" },
-                    { key: "phone", icon: Phone, type: "tel", placeholder: "Phone Number (Optional)" },
+                    { key: "name", icon: User, type: "text", placeholder: "Full Name *" },
+                    { key: "email", icon: Mail, type: "email", placeholder: "your@email.com *" },
+                    { key: "phone", icon: Phone, type: "tel", placeholder: "Phone Number *" },
                   ].map((f) => (
-                    <div key={f.key} className="relative">
-                      <f.icon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/50" />
-                      <input
-                        type={f.type}
-                        placeholder={f.placeholder}
-                        value={customer[f.key]}
-                        onChange={(e) => setCustomer((p) => ({ ...p, [f.key]: e.target.value }))}
-                        className={`${inputCls} pl-9`}
-                      />
+                    <div key={f.key} className="space-y-1">
+                      <div className="relative">
+                        <f.icon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black/50" />
+                        <input
+                          type={f.type}
+                          name={f.key}
+                          placeholder={f.placeholder}
+                          value={customer[f.key]}
+                          onChange={(e) => {
+                            let val = e.target.value;
+                            val = val
+                              .replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, "")
+                              .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, "")
+                              .replace(/<\/?[^>]+(>|$)/g, "");
+                            if (f.key === "phone") {
+                              val = val.replace(/[^0-9\s\+\-\(\)]/g, "").slice(0, 25);
+                            } else if (f.key === "name") {
+                              val = val.slice(0, 50);
+                            } else if (f.key === "email") {
+                              val = val.slice(0, 100);
+                            }
+                            setCustomer((p) => ({ ...p, [f.key]: val }));
+                            setErrors((prev) => ({ ...prev, [f.key]: "" }));
+                          }}
+                          className={`${inputCls} pl-9 ${errors[f.key] ? "border-red-500" : ""}`}
+                        />
+                      </div>
+                      {errors[f.key] && (
+                        <p className="text-[10px] text-red-500 font-semibold">{errors[f.key]}</p>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -378,28 +466,40 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
               <Section icon={Palette} title="Change Leather Color">
                 <PillSelect options={CHANGE_LEATHER_COLORS} value={leatherColor} onChange={setLeatherColor} />
                 {leatherColor === "Other" && (
-                  <input type="text" placeholder="Describe your custom leather color..." value={leatherColorNote} onChange={(e) => setLeatherColorNote(e.target.value)} className={`${inputCls} mt-1`} />
+                  <>
+                    <input type="text" placeholder="Describe your custom leather color..." value={leatherColorNote} onChange={(e) => { setLeatherColorNote(e.target.value); setErrors(prev => ({ ...prev, leatherColorNote: "" })); }} className={`${inputCls} mt-1 ${errors.leatherColorNote ? "border-red-500" : ""}`} />
+                    {errors.leatherColorNote && <p className="text-[10px] text-red-500 font-semibold mt-1">{errors.leatherColorNote}</p>}
+                  </>
                 )}
               </Section>
 
               <Section icon={Layers} title="Change Leather Type">
-                <PillSelect options={CHANGE_LEATHER_TYPES} value={leatherType} onChange={setLeatherType} />
+                <PillSelect options={CHANGE_LEATHER_TYPES} value={leatherType} onChange={(v) => { setLeatherType(v); setErrors(prev => ({ ...prev, leatherTypeNote: "" })); }} />
                 {leatherType === "Other" && (
-                  <input type="text" placeholder="Describe your custom leather type..." value={leatherTypeNote} onChange={(e) => setLeatherTypeNote(e.target.value)} className={`${inputCls} mt-1`} />
+                  <>
+                    <input type="text" placeholder="Describe your custom leather type..." value={leatherTypeNote} onChange={(e) => { setLeatherTypeNote(e.target.value); setErrors(prev => ({ ...prev, leatherTypeNote: "" })); }} className={`${inputCls} mt-1 ${errors.leatherTypeNote ? "border-red-500" : ""}`} />
+                    {errors.leatherTypeNote && <p className="text-[10px] text-red-500 font-semibold mt-1">{errors.leatherTypeNote}</p>}
+                  </>
                 )}
               </Section>
 
               <Section icon={Layers} title="Change Inner Lining">
-                <PillSelect options={CHANGE_INNER_LININGS} value={innerLining} onChange={setInnerLining} />
+                <PillSelect options={CHANGE_INNER_LININGS} value={innerLining} onChange={(v) => { setInnerLining(v); setErrors(prev => ({ ...prev, innerLiningNote: "" })); }} />
                 {innerLining === "Other" && (
-                  <input type="text" placeholder="Describe your custom lining..." value={innerLiningNote} onChange={(e) => setInnerLiningNote(e.target.value)} className={`${inputCls} mt-1`} />
+                  <>
+                    <input type="text" placeholder="Describe your custom lining..." value={innerLiningNote} onChange={(e) => { setInnerLiningNote(e.target.value); setErrors(prev => ({ ...prev, innerLiningNote: "" })); }} className={`${inputCls} mt-1 ${errors.innerLiningNote ? "border-red-500" : ""}`} />
+                    {errors.innerLiningNote && <p className="text-[10px] text-red-500 font-semibold mt-1">{errors.innerLiningNote}</p>}
+                  </>
                 )}
               </Section>
 
               <Section icon={Settings} title="Change Hardware Tone">
-                <PillSelect options={CHANGE_HARDWARE_COLORS} value={hardwareColor} onChange={setHardwareColor} />
+                <PillSelect options={CHANGE_HARDWARE_COLORS} value={hardwareColor} onChange={(v) => { setHardwareColor(v); setErrors(prev => ({ ...prev, hardwareColorNote: "" })); }} />
                 {hardwareColor === "Other" && (
-                  <input type="text" placeholder="Describe your custom hardware finish..." value={hardwareColorNote} onChange={(e) => setHardwareColorNote(e.target.value)} className={`${inputCls} mt-1`} />
+                  <>
+                    <input type="text" placeholder="Describe your custom hardware finish..." value={hardwareColorNote} onChange={(e) => { setHardwareColorNote(e.target.value); setErrors(prev => ({ ...prev, hardwareColorNote: "" })); }} className={`${inputCls} mt-1 ${errors.hardwareColorNote ? "border-red-500" : ""}`} />
+                    {errors.hardwareColorNote && <p className="text-[10px] text-red-500 font-semibold mt-1">{errors.hardwareColorNote}</p>}
+                  </>
                 )}
               </Section>
 
@@ -407,9 +507,12 @@ export default function CustomizeProductModal({ product, isOpen, onClose }) {
                 <div className="space-y-3.5">
                   <div>
                     <SubLabel>Change Fur Type</SubLabel>
-                    <PillSelect options={CHANGE_FUR_TYPES} value={furType} onChange={setFurType} />
+                    <PillSelect options={CHANGE_FUR_TYPES} value={furType} onChange={(v) => { setFurType(v); setErrors(prev => ({ ...prev, furTypeNote: "" })); }} />
                     {furType === "Other" && (
-                      <input type="text" placeholder="Describe your custom fur type..." value={furTypeNote} onChange={(e) => setFurTypeNote(e.target.value)} className={`${inputCls} mt-2`} />
+                      <>
+                        <input type="text" placeholder="Describe your custom fur type..." value={furTypeNote} onChange={(e) => { setFurTypeNote(e.target.value); setErrors(prev => ({ ...prev, furTypeNote: "" })); }} className={`${inputCls} mt-2 ${errors.furTypeNote ? "border-red-500" : ""}`} />
+                        {errors.furTypeNote && <p className="text-[10px] text-red-500 font-semibold mt-1">{errors.furTypeNote}</p>}
+                      </>
                     )}
                   </div>
                   {furType !== "None" && (

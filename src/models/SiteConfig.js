@@ -67,6 +67,8 @@ const SiteConfigSchema = new mongoose.Schema({
     copyrightText: String,        // e.g. "PAIRO — ALL RIGHTS RESERVED © 2026"
     privacyUrl: String,
     termsUrl: String,
+    whatsappNumber: String,
+    whatsappUrl: String,
   },
 
   // ─── Header Configuration ──────────────────────────────────

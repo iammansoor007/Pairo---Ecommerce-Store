@@ -59,7 +59,7 @@ export async function generateMetadata({ params, searchParams }) {
     isDeleted: { $ne: true }
   }).limit(5).lean();
 
-  const { metadata } = resolveSEOMetadata({
+  const { metadata } = await resolveSEOMetadata({
     entity: product,
     type: "product",
     path: currentPath,
@@ -154,7 +154,7 @@ export default async function ProductDetailPage({ params, searchParams }) {
     isDeleted: { $ne: true }
   }).limit(5).lean();
 
-  const { structuredData } = resolveSEOMetadata({
+  const { structuredData } = await resolveSEOMetadata({
     entity: product,
     type: "product",
     path: currentPath,

@@ -65,7 +65,11 @@ export default function SectionRenderer({ sections = [] }) {
 
           return (
             <SectionWrapper key={section.id} section={section} isFirst={index === 0}>
-              <Component {...(section.config || {})} sectionId={section.id} />
+              <Component 
+                {...(section.config || {})} 
+                sectionId={section.id} 
+                headingLevel={index === 0 ? "h1" : "h2"} 
+              />
             </SectionWrapper>
           );
         })}
