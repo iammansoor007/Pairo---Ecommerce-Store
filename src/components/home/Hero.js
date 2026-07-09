@@ -53,7 +53,7 @@ export default function Hero({
     return () => clearInterval(timer);
   }, [hero.slides.length]);
 
-  if ((!siteData && !propSlides) || !hero.slides || hero.slides.length === 0) return <div className="h-[550px] md:h-[650px] lg:h-[750px] bg-black/5 rounded-[32px] md:rounded-[40px] m-4 md:m-8 animate-pulse" />;
+  if ((!siteData && !propSlides) || !hero.slides || hero.slides.length === 0) return <div className="h-[550px] md:h-[650px] lg:h-[750px] bg-black/5 m-4 md:m-8 animate-pulse" />;
 
   const slideVariants = {
     initial: (direction) => ({ x: direction > 0 ? "20%" : "-20%", opacity: 0 }),
@@ -63,7 +63,7 @@ export default function Hero({
 
   return (
     <section className="container mx-auto px-2 sm:px-4 md:px-8 my-6">
-      <div className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden rounded-[32px] md:rounded-[40px] shadow-2xl bg-black relative">
+      <div className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden shadow-2xl bg-black relative">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div key={currentSlide} custom={direction} variants={slideVariants} initial="initial" animate="animate" exit="exit" className="absolute inset-0">
             <div className="absolute inset-0">
