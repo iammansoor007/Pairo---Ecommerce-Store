@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Star, ChevronLeft, ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { useSiteData } from "@/context/SiteContext";
