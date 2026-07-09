@@ -124,9 +124,7 @@ export default function Hero({
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 h-[3px] bg-black/10 w-full z-40 overflow-hidden">
-          <motion.div className="h-full bg-black" initial={{ width: 0 }} animate={{ width: "100%" }} key={currentSlide} transition={{ duration: 7, ease: "linear" }} />
-        </div>
+
         <MarqueeSection items={hero.marqueeItems} />
       </div>
     </section>
