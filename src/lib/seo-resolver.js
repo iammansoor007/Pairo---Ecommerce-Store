@@ -143,16 +143,19 @@ export async function resolveSEOMetadata(options = {}) {
 
   const brandName = siteConfig?.brand?.name || "Pairo Lifestyle";
   const brandDescription = siteConfig?.brand?.description || "Pairo Lifestyle is a premium clothing and leather apparel store dealing in custom tailored shearling coats, blazers, and jackets.";
-  const logoUrl = siteConfig?.brand?.logo || siteConfig?.brand?.faviconUrl || `${SITE_URL}/assets/pairo.webp`;
+  const logoUrl = siteConfig?.headerConfig?.logoUrl || siteConfig?.footerConfig?.logoUrl || siteConfig?.brand?.logo || siteConfig?.brand?.faviconUrl || "/assets/pairo.webp";
   const logoUrlAbsolute = logoUrl.startsWith("http") ? logoUrl : `${SITE_URL}${logoUrl.startsWith("/") ? "" : "/"}${logoUrl}`;
   const telephone = siteConfig?.brand?.whatsappNumber || siteConfig?.brand?.phone || "+1 847-999-3787";
 
-  const firstSlideImage = siteConfig?.hero?.slides?.[0]?.image || "/hero-image.png";
+  const heroSliderSection = entity?.sections?.find?.(s => s.type === "hero_slider");
+  const sectionFirstSlideImage = heroSliderSection?.fields?.slides?.[0]?.image;
+  const firstSlideImage = sectionFirstSlideImage || siteConfig?.hero?.slides?.[0]?.image || "/hero-image.png";
   const heroImageUrl = firstSlideImage.startsWith("http") ? firstSlideImage : `${SITE_URL}${firstSlideImage.startsWith("/") ? "" : "/"}${firstSlideImage}`;
 
   const socials = [];
-  if (siteConfig?.socials) {
-    siteConfig.socials.forEach(s => {
+  const dbSocials = siteConfig?.socialLinks || siteConfig?.socials;
+  if (dbSocials && Array.isArray(dbSocials)) {
+    dbSocials.forEach(s => {
       if (s.url && s.enabled !== false) {
         socials.push(s.url);
       }
@@ -162,6 +165,34 @@ export async function resolveSEOMetadata(options = {}) {
     socials.push("https://www.instagram.com/pairolifestyle");
     socials.push("https://www.facebook.com/pairolifestyle");
   }
+
+  const orgSchema = {
+    "@id": `${SITE_URL}/#organization`,
+    "@type": "Organization",
+    "name": brandName,
+    "url": SITE_URL,
+    "logo": {
+      "@id": `${SITE_URL}/#logo`,
+      "@type": "ImageObject",
+      "caption": brandName,
+      "contentUrl": logoUrlAbsolute,
+      "height": 219,
+      "inLanguage": "en-US",
+      "url": logoUrlAbsolute,
+      "width": 512
+    },
+    "sameAs": socials
+  };
+
+  const websiteSchema = {
+    "@id": `${SITE_URL}/#website`,
+    "@type": "WebSite",
+    "alternateName": brandName,
+    "inLanguage": "en-US",
+    "name": brandName,
+    "url": SITE_URL,
+    "publisher": { "@id": `${SITE_URL}/#organization` }
+  };
 
   // 1. Core Titles and Descriptions (Sanitized)
   const metaTitle = sanitizeSEOString(seo.title || entity.name || entity.title || fallbackTitle);
@@ -245,32 +276,7 @@ export async function resolveSEOMetadata(options = {}) {
          }
       }
 
-      const orgSchema = {
-        "@id": `${SITE_URL}/#organization`,
-        "@type": "Organization",
-        "name": brandName,
-        "url": SITE_URL,
-        "logo": {
-          "@id": `${SITE_URL}/#logo`,
-          "@type": "ImageObject",
-          "caption": brandName,
-          "contentUrl": logoUrlAbsolute,
-          "height": 219,
-          "inLanguage": "en-US",
-          "url": logoUrlAbsolute,
-          "width": 512
-        }
-      };
 
-      const websiteSchema = {
-        "@id": `${SITE_URL}/#website`,
-        "@type": "WebSite",
-        "alternateName": "Pairo",
-        "inLanguage": "en-US",
-        "name": brandName,
-        "url": SITE_URL,
-        "publisher": { "@id": `${SITE_URL}/#organization` }
-      };
 
       const imageSchema = {
         "@id": `${prodUrl}/#primaryimage`,
@@ -461,37 +467,44 @@ export async function resolveSEOMetadata(options = {}) {
         "@graph": [orgSchema, websiteSchema, imageSchema, itemPageSchema, productSchema, breadcrumbSchema, faqSchema]
       };
     } else if (type === "category" && entity.name) {
-      const catUrl = `${SITE_URL}/collections/${entity.slug}`;
+      const catUrl = `${SITE_URL}/${entity.slug}`;
       const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2024-10-30T11:33:17+05:00";
       const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : new Date().toISOString();
 
-      const orgSchema = {
-        "@id": `${SITE_URL}/#organization`,
-        "@type": "Organization",
-        "name": brandName,
-        "url": SITE_URL
-      };
+      let collectionProducts = [];
+      try {
+        const mongoose = require("mongoose");
+        if (mongoose.connection && mongoose.connection.readyState === 1) {
+          let ProductModel;
+          try {
+            ProductModel = mongoose.model("Product");
+          } catch {
+            ProductModel = require("../models/Product").default || require("../models/Product");
+          }
+          collectionProducts = await ProductModel.find({
+            $or: [
+              { primaryCategory: entity._id || entity.id },
+              { categories: entity._id || entity.id }
+            ]
+          }).limit(10).lean();
+        }
+      } catch (err) {
+        console.error("[SEO Resolver] Failed to query category products", err.message);
+      }
 
-      const websiteSchema = {
-        "@id": `${SITE_URL}/#website`,
-        "@type": "WebSite",
-        "alternateName": "Pairo",
-        "inLanguage": "en-US",
-        "name": brandName,
-        "url": SITE_URL,
-        "publisher": { "@id": `${SITE_URL}/#organization` }
-      };
+
 
       const webpageSchema = {
         "@id": `${catUrl}/#webpage`,
-        "@type": "WebPage",
+        "@type": "CollectionPage",
         "datePublished": datePublished,
         "dateModified": dateModified,
         "inLanguage": "en-US",
         "name": entity.name,
         "url": catUrl,
         "about": { "@id": `${SITE_URL}/#organization` },
-        "isPartOf": { "@id": `${SITE_URL}/#website` }
+        "isPartOf": { "@id": `${SITE_URL}/#website` },
+        "mainEntity": { "@id": `${catUrl}/#itemlist` }
       };
 
       const breadcrumbSchema = {
@@ -551,9 +564,31 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
+      const itemListSchema = {
+        "@type": "ItemList",
+        "@id": `${catUrl}/#itemlist`,
+        "numberOfItems": collectionProducts.length,
+        "itemListElement": collectionProducts.map((prod, idx) => ({
+          "@type": "ListItem",
+          "position": idx + 1,
+          "item": {
+            "@type": "Product",
+            "name": prod.name,
+            "url": `${SITE_URL}/product/${prod.slug}`,
+            "image": prod.images?.[0] || prod.image,
+            "offers": {
+              "@type": "Offer",
+              "price": prod.price || 0,
+              "priceCurrency": "USD",
+              "availability": prod.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+            }
+          }
+        }))
+      };
+
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqSchema]
+        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqSchema, itemListSchema]
       };
     } else if (type === "blog" && entity.title) {
       const postUrl = `${SITE_URL}/blog/${entity.slug}`;
@@ -640,42 +675,7 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
-      const websiteSchema = {
-        "@id": `${SITE_URL}/#website`,
-        "@type": "WebSite",
-        "description": brandDescription,
-        "inLanguage": "en-US",
-        "name": `${brandName} Journal`,
-        "url": `${SITE_URL}/`,
-        "potentialAction": {
-          "@type": "SearchAction",
-          "query-input": {
-            "@type": "PropertyValueSpecification",
-            "valueName": "search_term_string",
-            "valueRequired": true
-          },
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": `${SITE_URL}/search?q={search_term_string}`
-          }
-        },
-        "publisher": { "@id": `${SITE_URL}/#organization` }
-      };
 
-      const orgSchema = {
-        "@id": `${SITE_URL}/#organization`,
-        "@type": "Organization",
-        "name": brandName,
-        "url": `${SITE_URL}/`,
-        "image": { "@id": `${SITE_URL}/#logo` },
-        "logo": {
-          "@type": "ImageObject",
-          "@id": `${SITE_URL}/#logo`,
-          "url": logoUrlAbsolute,
-          "caption": brandName
-        },
-        "sameAs": socials
-      };
 
       const personSchema = {
         "@id": authorId,
@@ -746,57 +746,14 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
-      const websiteSchema = {
-        "@id": `${SITE_URL}/#website`,
-        "@type": "WebSite",
-        "name": brandName,
-        "url": `${SITE_URL}/`,
-        "publisher": { "@id": `${SITE_URL}/#organization` }
-      };
 
-      const orgSchema = {
-        "@id": `${SITE_URL}/#organization`,
-        "@type": "Organization",
-        "name": brandName,
-        "url": `${SITE_URL}/`,
-        "logo": {
-          "@type": "ImageObject",
-          "@id": `${SITE_URL}/#logo`,
-          "url": logoUrlAbsolute,
-          "caption": brandName
-        },
-        "sameAs": socials
-      };
 
       structuredDataJson = {
         "@context": "https://schema.org",
         "@graph": [webpageSchema, primaryImageSchema, breadcrumbSchema, websiteSchema, orgSchema]
       };
     } else if (type === "shop" || path === "/shop") {
-      const orgSchema = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        "name": brandName,
-        "url": SITE_URL,
-        "logo": {
-          "@type": "ImageObject",
-          "@id": `${SITE_URL}/#logo`,
-          "url": logoUrlAbsolute,
-          "caption": brandName
-        }
-      };
 
-      const websiteSchema = {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        "name": brandName,
-        "url": SITE_URL,
-        "publisher": {
-          "@id": `${SITE_URL}/#organization`
-        }
-      };
 
       const breadcrumbSchema = {
         "@context": "https://schema.org",
@@ -841,42 +798,7 @@ export async function resolveSEOMetadata(options = {}) {
       const datePublished = "2025-04-28T06:51:14+00:00";
       const dateModified = new Date().toISOString();
 
-      const websiteSchema = {
-        "@id": `${SITE_URL}/#website`,
-        "@type": "WebSite",
-        "description": brandDescription,
-        "inLanguage": "en-US",
-        "name": brandName,
-        "url": SITE_URL,
-        "potentialAction": {
-          "@type": "SearchAction",
-          "query-input": {
-            "@type": "PropertyValueSpecification",
-            "valueName": "search_term_string",
-            "valueRequired": true
-          },
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": `${SITE_URL}/search?q={search_term_string}`
-          }
-        },
-        "publisher": { "@id": `${SITE_URL}/#organization` }
-      };
 
-      const orgSchema = {
-        "@id": `${SITE_URL}/#organization`,
-        "@type": "Organization",
-        "description": brandDescription,
-        "image": logoUrlAbsolute,
-        "logo": logoUrlAbsolute,
-        "name": brandName,
-        "url": SITE_URL,
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": telephone
-        },
-        "sameAs": socials
-      };
 
       const webpageSchema = {
         "@id": `${pageUrl}/`,
@@ -938,7 +860,7 @@ export async function resolveSEOMetadata(options = {}) {
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [contactSchema, breadcrumbSchema]
+        "@graph": [contactSchema, breadcrumbSchema, websiteSchema, orgSchema]
       };
     } else if (type === "about" || path === "/about") {
       const aboutSchema = {
@@ -961,7 +883,7 @@ export async function resolveSEOMetadata(options = {}) {
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [aboutSchema, breadcrumbSchema]
+        "@graph": [aboutSchema, breadcrumbSchema, websiteSchema, orgSchema]
       };
     } else if (type === "faq" || path === "/faq") {
       const faqPageSchema = {
@@ -989,7 +911,7 @@ export async function resolveSEOMetadata(options = {}) {
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [faqPageSchema]
+        "@graph": [faqPageSchema, websiteSchema, orgSchema]
       };
     } else if (type === "search") {
       const searchSchema = {
@@ -1001,7 +923,37 @@ export async function resolveSEOMetadata(options = {}) {
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [searchSchema]
+        "@graph": [searchSchema, websiteSchema, orgSchema]
+      };
+    }
+
+    if (!structuredDataJson) {
+      const pageUrl = `${SITE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`;
+      const pageId = `${pageUrl}/#webpage`;
+
+      const webpageSchema = {
+        "@id": pageId,
+        "@type": "WebPage",
+        "inLanguage": "en-US",
+        "name": metaTitle,
+        "description": metaDescription,
+        "url": pageUrl,
+        "about": { "@id": `${SITE_URL}/#organization` },
+        "isPartOf": { "@id": `${SITE_URL}/#website` }
+      };
+
+      const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+          { "@type": "ListItem", "position": 2, "name": metaTitle, "item": pageUrl }
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema]
       };
     }
   }
