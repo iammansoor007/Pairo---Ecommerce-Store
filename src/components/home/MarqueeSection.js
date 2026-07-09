@@ -27,7 +27,7 @@ export default function MarqueeSection({ items: propItems, speed = 75, className
 
   return (
     <div className="absolute bottom-0 left-0 w-full z-30 pointer-events-none">
-      <div className={`bg-white py-3.5 overflow-hidden flex items-center ${className}`}>
+      <div className={`bg-white h-12 md:h-14 overflow-hidden flex items-center ${className}`}>
         <motion.div 
           animate={{ x: [0, -1000] }}
           transition={{ duration: speed, repeat: Infinity, ease: "linear" }}

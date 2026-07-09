@@ -63,8 +63,8 @@ export default function Hero({
 
   return (
     <section className="container mx-auto px-2 sm:px-4 md:px-8 my-6">
-      <div className="relative rounded-[32px] md:rounded-[40px] shadow-2xl [transform:translateZ(0)]">
-        <div className="relative h-[550px] md:h-[650px] lg:h-[750px] overflow-hidden rounded-[32px] md:rounded-[40px] bg-transparent">
+      <div className="relative h-[550px] md:h-[650px] lg:h-[750px] rounded-[32px] md:rounded-[40px] shadow-2xl overflow-hidden bg-white [transform:translateZ(0)]">
+        <div className="relative h-[calc(100%-48px)] md:h-[calc(100%-56px)] overflow-hidden">
           <AnimatePresence initial={false} custom={direction} mode="popLayout">
             <motion.div key={currentSlide} custom={direction} variants={slideVariants} initial="initial" animate="animate" exit="exit" className="absolute inset-0 bg-black">
               <div className="absolute inset-0">
@@ -126,7 +126,7 @@ export default function Hero({
           </div>
         </div>
 
-        <MarqueeSection items={hero.marqueeItems} className="rounded-b-[32px] md:rounded-b-[40px]" />
+        <MarqueeSection items={hero.marqueeItems} />
       </div>
     </section>
   );
