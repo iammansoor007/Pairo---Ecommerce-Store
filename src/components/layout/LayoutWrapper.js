@@ -11,7 +11,7 @@ export default function LayoutWrapper({ children }) {
   const isIsolatedRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/affiliate") || pathname?.startsWith("/profile");
 
   if (isIsolatedRoute) {
-    return <main>{children}</main>;
+    return <main className="w-full overflow-x-hidden">{children}</main>;
   }
 
   return (
@@ -19,7 +19,7 @@ export default function LayoutWrapper({ children }) {
       <Navbar />
       <ReferralDiscountPopup />
       <CartDrawer />
-      <main>{children}</main>
+      <main className="w-full overflow-x-hidden">{children}</main>
       <Footer />
     </>
   );

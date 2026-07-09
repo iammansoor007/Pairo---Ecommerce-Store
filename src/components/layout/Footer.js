@@ -423,9 +423,9 @@ export default function Footer() {
       </div>
 
       {/* Animated Brand Name Section */}
-      <div className="relative my-8 md:my-12">
+      <div className="relative my-8 md:my-12 overflow-hidden w-full">
         <div className="text-center px-4">
-          <div className="text-[25vw] font-bold heading-font leading-[0.75] uppercase tracking-tighter text-white inline-flex justify-center flex-wrap">
+          <div className="text-[18vw] sm:text-[22vw] md:text-[25vw] font-bold heading-font leading-[0.75] uppercase tracking-tighter text-white inline-flex justify-center flex-wrap">
             {footerBrandName.split("").map((letter, i) => (
               <motion.span key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: false, amount: 0.1 }} variants={letterVariants} className="inline-block">{letter}</motion.span>
             ))}
