@@ -346,10 +346,34 @@ export default function BecomeAffiliateClient() {
          toast.error("Please fill in your complete address.");
          return;
        }
-       if (formData.zipCode.trim().length < 3) {
-         toast.error("Please enter a valid Zip/Postal Code.");
-         return;
-       }
+        const countryCode = (formData.countryCode || "").toUpperCase();
+        const zipClean = formData.zipCode.trim();
+        let zipErr = null;
+        if (countryCode === "US") {
+          if (!/^\d{5}(-\d{4})?$/.test(zipClean)) {
+            zipErr = "US ZIP code must be 5 digits (e.g., 90210) or 5+4 format";
+          }
+        } else if (countryCode === "PK") {
+          if (!/^\d{5}$/.test(zipClean)) {
+            zipErr = "Pakistan postal code must be exactly 5 digits (e.g., 44000)";
+          }
+        } else if (countryCode === "GB") {
+          if (!/^[A-Z]{1,2}[0-9R][0-9A-Z]?\s*[0-9][ABD-HJLNP-UW-Z]{2}$/i.test(zipClean)) {
+            zipErr = "Please enter a valid UK postcode (e.g., SW1A 1AA)";
+          }
+        } else if (countryCode === "CA") {
+          if (!/^[A-Z][0-9][A-Z]\s*[0-9][A-Z][0-9]$/i.test(zipClean)) {
+            zipErr = "Please enter a valid Canadian postal code (e.g., K1A 0B1)";
+          }
+        } else {
+          if (!/^(?=.*\d)[A-Za-z0-9\s\-]{3,10}$/.test(zipClean)) {
+            zipErr = "Please enter a valid postal code (3-10 characters, including digits)";
+          }
+        }
+        if (zipErr) {
+          toast.error(zipErr);
+          return;
+        }
        if (!formData.accountHolder || !formData.bankName || !formData.accountNumber) {
          toast.error("Please fill in your primary bank account details.");
          return;

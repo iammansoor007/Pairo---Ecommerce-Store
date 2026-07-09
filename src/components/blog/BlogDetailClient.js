@@ -336,29 +336,61 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                      <img src={post.image} alt={post.imageAlts?.[post.image] || post.title || "Blog Image"} className="w-full h-full object-cover" />
                   </div>
 
-                  {post.showSidebarIndex !== false && (
-                     <div className="block lg:hidden space-y-3 p-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] mb-6">
-                        <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
-                        <div className="flex flex-col gap-2">
-                           {tocSections.length > 0 ? (
-                              tocSections.map((section) => (
-                                 <button
-                                    key={section.id}
-                                    onClick={() => scrollToSection(section.id, section.title)}
-                                    className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
-                                 >
-                                    <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
-                                       {section.title}
-                                    </span>
-                                    <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
-                                 </button>
-                              ))
-                           ) : (
-                              <p className="text-[10px] text-neutral-400 italic">No sections found</p>
+                  <div className="block lg:hidden bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-5 mb-6 space-y-6">
+                     {/* Article Overview */}
+                     <div className="space-y-3">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Article Overview</span>
+                        {post.excerpt && (
+                           <div className="space-y-1">
+                              <h4 className="text-[10px] font-bold uppercase tracking-wider text-black">Synopsis</h4>
+                              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
+                                 {post.excerpt}
+                              </p>
+                           </div>
+                        )}
+                        <div className={`${post.excerpt ? 'pt-3.5 border-t border-black/5' : ''} flex flex-col gap-2.5`}>
+                           <div className="flex justify-between items-center text-xs text-black">
+                              <span className="font-medium text-neutral-500">Author</span>
+                              <span className="font-semibold">{post.author || "Pairo Studio"}</span>
+                           </div>
+                           <div className="flex justify-between items-center text-xs text-black">
+                              <span className="font-medium text-neutral-500">Published</span>
+                              <span className="font-semibold">{postDate}</span>
+                           </div>
+                           {post.category && (
+                              <div className="flex justify-between items-center text-xs text-black">
+                                 <span className="font-medium text-neutral-500">Category</span>
+                                 <span className="font-semibold">{post.category}</span>
+                              </div>
                            )}
                         </div>
                      </div>
-                  )}
+
+                     {/* Table of Contents (only if enabled) */}
+                     {post.showSidebarIndex !== false && (
+                        <div className="pt-5 border-t border-black/5 space-y-3">
+                           <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
+                           <div className="flex flex-col gap-2">
+                              {tocSections.length > 0 ? (
+                                 tocSections.map((section) => (
+                                    <button
+                                       key={section.id}
+                                       onClick={() => scrollToSection(section.id, section.title)}
+                                       className="group flex items-center justify-between text-left py-1 hover:opacity-75 transition-all"
+                                    >
+                                       <span className="text-sm font-normal text-black group-hover:underline transition-all text-left leading-relaxed">
+                                          {section.title}
+                                       </span>
+                                       <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black transition-colors shrink-0 ml-3" />
+                                    </button>
+                                 ))
+                              ) : (
+                                 <p className="text-[10px] text-neutral-400 italic">No sections found</p>
+                              )}
+                           </div>
+                        </div>
+                     )}
+                  </div>
 
                   <div className="w-full space-y-8 md:space-y-12">
                      {/* General Content */}
@@ -448,7 +480,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                 <div className="lg:col-span-4 relative">
                    <aside className="sticky top-24 space-y-8 lg:pl-6 lg:border-l lg:border-black/5 border-t border-t-black/5 lg:border-t-0 pt-8 lg:pt-0 mt-8 lg:mt-0">
                       {/* Article Overview Widget */}
-                      <div className="space-y-3">
+                      <div className="hidden lg:block space-y-3">
                          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Article Overview</span>
                          <div className="p-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] space-y-4">
                             {post.excerpt && (

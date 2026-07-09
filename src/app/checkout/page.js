@@ -396,11 +396,34 @@ export default function CheckoutPage() {
           error = "City contains invalid characters";
         }
         break;
-      case "zip":
-        if (cleanVal && !/^[A-Za-z0-9\s\-]{3,10}$/.test(cleanVal)) {
-          error = "Please enter a valid postal code (3-10 characters)";
+      case "zip": {
+        const countryCode = (formData.countryCode || "").toUpperCase();
+        if (!cleanVal) {
+          error = "Postal code / ZIP is required";
+        } else if (countryCode === "US") {
+          if (!/^\d{5}(-\d{4})?$/.test(cleanVal)) {
+            error = "US ZIP code must be 5 digits (e.g., 90210) or 5+4 format";
+          }
+        } else if (countryCode === "PK") {
+          if (!/^\d{5}$/.test(cleanVal)) {
+            error = "Pakistan postal code must be exactly 5 digits (e.g., 44000)";
+          }
+        } else if (countryCode === "GB") {
+          if (!/^[A-Z]{1,2}[0-9R][0-9A-Z]?\s*[0-9][ABD-HJLNP-UW-Z]{2}$/i.test(cleanVal)) {
+            error = "Please enter a valid UK postcode (e.g., SW1A 1AA)";
+          }
+        } else if (countryCode === "CA") {
+          if (!/^[A-Z][0-9][A-Z]\s*[0-9][A-Z][0-9]$/i.test(cleanVal)) {
+            error = "Please enter a valid Canadian postal code (e.g., K1A 0B1)";
+          }
+        } else {
+          // General fallback: must contain at least one digit and be 3-10 alphanumeric characters
+          if (!/^(?=.*\d)[A-Za-z0-9\s\-]{3,10}$/.test(cleanVal)) {
+            error = "Please enter a valid postal code (3-10 characters, including digits)";
+          }
         }
         break;
+      }
       default:
         break;
     }

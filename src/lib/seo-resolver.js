@@ -416,27 +416,68 @@ export async function resolveSEOMetadata(options = {}) {
         "@graph": [orgSchema, websiteSchema]
       };
     } else if (type === "shop" || path === "/shop") {
-      const shopSchema = {
+      const orgSchema = {
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "@id": `${SITE_URL}/shop#collection`,
-        "name": "Shop All Handcrafted Shearling Jackets",
-        "description": "Browse the complete archival collection of Pairo's premium shearling and leather jackets.",
-        "url": `${SITE_URL}/shop`
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "logo": {
+          "@type": "ImageObject",
+          "@id": `${SITE_URL}/#logo`,
+          "url": `${SITE_URL}/assets/pairo.webp`,
+          "caption": "Pairo Lifestyle"
+        }
       };
-      
+
+      const websiteSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "publisher": {
+          "@id": `${SITE_URL}/#organization`
+        }
+      };
+
       const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/shop/#breadcrumb`,
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-          { "@type": "ListItem", "position": 2, "name": "Shop", "item": `${SITE_URL}/shop` }
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": SITE_URL
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Shop",
+            "item": `${SITE_URL}/shop`
+          }
         ]
+      };
+
+      const shopSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${SITE_URL}/shop/#webpage`,
+        "name": "Shop - Pairo Lifestyle",
+        "url": `${SITE_URL}/shop`,
+        "breadcrumb": {
+          "@id": `${SITE_URL}/shop/#breadcrumb`
+        },
+        "isPartOf": {
+          "@id": `${SITE_URL}/#website`
+        }
       };
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [shopSchema, breadcrumbSchema]
+        "@graph": [orgSchema, websiteSchema, breadcrumbSchema, shopSchema]
       };
     } else if (type === "blog_list" || path === "/blog") {
       const blogListSchema = {

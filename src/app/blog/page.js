@@ -52,12 +52,12 @@ const BlogCard = ({ post }) => (
         </span>
       </div>
       
-      <h3 
+      <h2 
         style={{ fontFamily: "var(--brand-font)" }}
         className="text-[14px] sm:text-[15px] font-bold uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
       >
         {post.title}
-      </h3>
+      </h2>
     </div>
   </Link>
 );

@@ -212,7 +212,7 @@ export default function Footer() {
   const legacyInfoLinks = footer?.sections?.[1]?.links || [];
 
   // ── Social Links ──
-  const activeSocialLinks = (socialLinks || []).filter(s => s.enabled && s.url);
+  const activeSocialLinks = (socialLinks || []).filter(s => s.url);
   if (brand?.whatsappUrl && !activeSocialLinks.some(s => s.platform.toLowerCase() === 'whatsapp')) {
     activeSocialLinks.push({ platform: 'whatsapp', url: brand.whatsappUrl, enabled: true });
   }
