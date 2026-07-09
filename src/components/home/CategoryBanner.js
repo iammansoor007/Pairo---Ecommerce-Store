@@ -98,9 +98,7 @@ export default function CategoryBanner({
                 <div className={`absolute inset-0 p-5 sm:p-8 md:p-12 flex flex-col justify-end items-center text-center ${isSmall ? '' : 'sm:items-start sm:text-left'}`}>
                   <div className={`space-y-3 sm:space-y-5 w-full flex flex-col items-center ${isSmall ? '' : 'sm:items-start'}`}>
                     <div className="space-y-1 sm:space-y-2">
-                      <span className="inline-flex bg-white/50 backdrop-blur-md text-white text-[8px] font-bold px-2.5 py-1 rounded-md tracking-[0.2em] uppercase border border-white/10">
-                        DEPARTMENT 0{index + 1}
-                      </span>
+
                       <p className="text-[16px] sm:text-xl md:text-2xl lg:text-3xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
                         {category.name}
                       </p>
