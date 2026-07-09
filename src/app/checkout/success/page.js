@@ -274,7 +274,7 @@ export default function SuccessPage() {
               </button>
 
               <Link
-                href="/profile/orders"
+                href="/profile"
                 className="border border-neutral-300 hover:border-black text-black px-6 py-3.5 rounded-[4px] text-xs font-bold uppercase tracking-wider flex items-center justify-center bg-white transition-all shrink-0"
               >
                 <span>Track Order</span>

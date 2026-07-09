@@ -11,6 +11,8 @@ const CustomerSchema = new mongoose.Schema({
   pendingEmail: { type: String, default: null },
   pendingEmailToken: { type: String, default: null },
   pendingEmailTokenExpiry: { type: Date, default: null },
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
   cart: [{
     productId: { type: Number },
     quantity: { type: Number, default: 1 },

@@ -806,17 +806,17 @@ export default function ShopContentClient({ initialCategory = null, initialType 
             </div>
 
             {/* Sort bar — product count left, sort+filter right */}
-            <div className="flex items-center justify-between gap-8 mb-8 border-b border-border pb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-8 border-b border-border pb-6">
               <span className="text-[13px] font-bold text-foreground/80 uppercase tracking-widest">
                 {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'}
               </span>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest hidden sm:inline">Sort by:</span>
                   <select
                     value={sortBy}
-                  onChange={(e) => { scrollToGridTop(); setSortBy(e.target.value); setCurrentPage(1); }}
-                    className="font-bold text-sm bg-transparent focus:outline-none cursor-pointer uppercase pr-8 text-foreground"
+                    onChange={(e) => { scrollToGridTop(); setSortBy(e.target.value); setCurrentPage(1); }}
+                    className="font-bold text-xs bg-transparent focus:outline-none cursor-pointer uppercase text-foreground max-w-[130px] sm:max-w-none"
                   >
                     <option>Most Popular</option>
                     <option>Newest</option>
@@ -829,9 +829,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 <button
                   type="button"
                   onClick={() => setShowFilters(true)}
-                  className="lg:hidden flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-full text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-transform relative hover:bg-foreground/90"
+                  className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-foreground text-background rounded-full text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-transform relative hover:bg-foreground/90 whitespace-nowrap"
                 >
-                  <SlidersHorizontal className="w-4 h-4" />
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
                   Filter
                   {getActiveFilterCount() > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[8px] flex items-center justify-center">
@@ -867,13 +867,13 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                 {getActiveFilterCount() > 0 && ` • ${getActiveFilterCount()} active filter${getActiveFilterCount() > 1 ? 's' : ''}`}
               </p>
             </div>
-            <div className="flex items-center justify-between md:justify-end gap-8 border-t border-border md:border-none pt-8 md:pt-0">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3 border-t border-border md:border-none pt-6 md:pt-0 flex-wrap">
+              <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest hidden sm:inline">Sort by:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => { scrollToGridTop(); setSortBy(e.target.value); setCurrentPage(1); }}
-                  className="font-bold text-sm bg-transparent focus:outline-none cursor-pointer uppercase pr-8 text-foreground"
+                  className="font-bold text-xs bg-transparent focus:outline-none cursor-pointer uppercase text-foreground max-w-[130px] sm:max-w-none"
                 >
                   <option>Most Popular</option>
                   <option>Newest</option>
@@ -886,9 +886,9 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               <button
                 type="button"
                 onClick={() => setShowFilters(true)}
-                className="lg:hidden flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-full text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-transform relative hover:bg-foreground/90"
+                className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-foreground text-background rounded-full text-[10px] font-bold uppercase tracking-widest active:scale-95 transition-transform relative hover:bg-foreground/90 whitespace-nowrap"
               >
-                <SlidersHorizontal className="w-4 h-4" />
+                <SlidersHorizontal className="w-3.5 h-3.5" />
                 Filter
                 {getActiveFilterCount() > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white w-5 h-5 rounded-full text-[8px] flex items-center justify-center animate-pulse">
