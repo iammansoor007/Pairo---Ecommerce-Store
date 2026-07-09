@@ -50,7 +50,7 @@ export default function FeatureMarquee({
     icon: LucideIcons[item.icon] || Zap
   }));
 
-  const speed = propSpeed || 40;
+  const speed = propSpeed || 80;
 
   return (
     <section className="py-4 md:py-8 bg-[var(--background)] overflow-hidden border-y border-[var(--border)]">
