@@ -192,7 +192,10 @@ export async function resolveSEOMetadata(options = {}) {
       const { getProductPrimaryCategorySlug } = require("./routes");
       const categorySlugRaw = getProductPrimaryCategorySlug(entity);
       const categorySlug = categorySlugRaw === 'uncategorized' ? 'shop' : categorySlugRaw;
-      
+      const prodUrl = `${SITE_URL}/product/${entity.slug}`;
+      const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2024-02-03T15:05:44+05:00";
+      const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : new Date().toISOString();
+
       let categoryName = "Products";
       if (entity.primaryCategory && typeof entity.primaryCategory === 'object') {
          categoryName = entity.primaryCategory.name || "Products";
@@ -203,6 +206,55 @@ export async function resolveSEOMetadata(options = {}) {
          }
       }
 
+      const orgSchema = {
+        "@id": `${SITE_URL}/#organization`,
+        "@type": "Organization",
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "logo": {
+          "@id": `${SITE_URL}/#logo`,
+          "@type": "ImageObject",
+          "caption": "Pairo Lifestyle",
+          "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+          "height": 219,
+          "inLanguage": "en-US",
+          "url": `${SITE_URL}/assets/pairo.webp`,
+          "width": 512
+        }
+      };
+
+      const websiteSchema = {
+        "@id": `${SITE_URL}/#website`,
+        "@type": "WebSite",
+        "alternateName": "Pairo",
+        "inLanguage": "en-US",
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      };
+
+      const imageSchema = {
+        "@id": `${prodUrl}/#primaryimage`,
+        "@type": "ImageObject",
+        "caption": entity.name,
+        "height": 1400,
+        "inLanguage": "en-US",
+        "url": ogImgUrl,
+        "width": 1400
+      };
+
+      const itemPageSchema = {
+        "@id": `${prodUrl}/#webpage`,
+        "@type": "ItemPage",
+        "dateModified": dateModified,
+        "datePublished": datePublished,
+        "inLanguage": "en-US",
+        "name": `${entity.name} | Pairo`,
+        "url": prodUrl,
+        "isPartOf": { "@id": `${SITE_URL}/#website` },
+        "primaryImageOfPage": { "@id": `${prodUrl}/#primaryimage` }
+      };
+
       const productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
@@ -210,7 +262,7 @@ export async function resolveSEOMetadata(options = {}) {
         "name": entity.name,
         "description": entity.shortDescription || metaDescription,
         "image": ogImgUrl,
-        "url": `${SITE_URL}${canonical}`,
+        "url": prodUrl,
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
@@ -274,13 +326,55 @@ export async function resolveSEOMetadata(options = {}) {
             "@type": "ListItem",
             "position": 3,
             "name": entity.name,
-            "item": `${SITE_URL}${canonical}`
+            "item": prodUrl
           }
         ]
       };
 
+      const finalFaqList = [
+        {
+          "@type": "Question",
+          "name": `What inspired the ${entity.name}?`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `The design draws inspiration from classic heritage styles, blending premium leather craftsmanship with modern streetwear aesthetics.`
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What material is used?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "This piece is crafted from premium-quality genuine leather and luxury shearling, offering exceptional warmth, durability, and comfort designed for long-term wear."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I wear this jacket casually?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely, the design pairs effortlessly with jeans, boots, and sweaters, making it a versatile statement piece for both casual outings and urban styling."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How should I maintain this leather piece?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Store in a cool, dry place; hang on a thick padded hanger; avoid direct wetness and follow a proper leather care guide to preserve the texture and longevity."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it available in multiple sizes?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, we offer standard sizing along with bespoke custom options tailored to your exact measurements."
+          }
+        }
+      ];
+
       // Query ProductQuestions asynchronously for FAQ Schema
-      let faqSchema = null;
       try {
         const mongoose = require("mongoose");
         if (mongoose.connection && mongoose.connection.readyState === 1) {
@@ -297,52 +391,68 @@ export async function resolveSEOMetadata(options = {}) {
             isDeleted: false
           }).lean();
 
-          const qaList = questions
+          questions
             .filter(q => q.replies && q.replies.length > 0)
-            .map(q => {
+            .forEach(q => {
               const firstStaffReply = q.replies.find(r => r.isStaff || r.isAdmin);
               if (firstStaffReply) {
-                return {
+                finalFaqList.push({
                   "@type": "Question",
                   "name": q.questionText || q.question,
                   "acceptedAnswer": {
                     "@type": "Answer",
                     "text": firstStaffReply.replyText || firstStaffReply.text
                   }
-                };
+                });
               }
-              return null;
-            })
-            .filter(Boolean);
-
-          if (qaList.length > 0) {
-            faqSchema = {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              "mainEntity": qaList
-            };
-          }
+            });
         }
       } catch (e) {
         console.error("[SEO Resolver] Failed to load Product FAQs:", e.message);
       }
 
-      structuredDataJson = {
-        "@context": "https://schema.org",
-        "@graph": [productSchema, breadcrumbSchema]
+      const faqSchema = {
+        "@type": "FAQPage",
+        "name": `Is the ${entity.name} available in multiple sizes?`,
+        "mainEntity": finalFaqList
       };
 
-      if (faqSchema) {
-        structuredDataJson["@graph"].push(faqSchema);
-      }
-    } else if (type === "category" && entity.name) {
-      const categorySchema = {
+      structuredDataJson = {
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "@id": `${SITE_URL}${canonical}#collection`,
+        "@graph": [orgSchema, websiteSchema, imageSchema, itemPageSchema, productSchema, breadcrumbSchema, faqSchema]
+      };
+    } else if (type === "category" && entity.name) {
+      const catUrl = `${SITE_URL}/collections/${entity.slug}`;
+      const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2024-10-30T11:33:17+05:00";
+      const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : new Date().toISOString();
+
+      const orgSchema = {
+        "@id": `${SITE_URL}/#organization`,
+        "@type": "Organization",
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL
+      };
+
+      const websiteSchema = {
+        "@id": `${SITE_URL}/#website`,
+        "@type": "WebSite",
+        "alternateName": "Pairo",
+        "inLanguage": "en-US",
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      };
+
+      const webpageSchema = {
+        "@id": `${catUrl}/#webpage`,
+        "@type": "WebPage",
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "inLanguage": "en-US",
         "name": entity.name,
-        "description": entity.description || metaDescription,
-        "url": `${SITE_URL}${canonical}`
+        "url": catUrl,
+        "about": { "@id": `${SITE_URL}/#organization` },
+        "isPartOf": { "@id": `${SITE_URL}/#website` }
       };
 
       const breadcrumbSchema = {
@@ -359,35 +469,166 @@ export async function resolveSEOMetadata(options = {}) {
             "@type": "ListItem",
             "position": 2,
             "name": entity.name,
-            "item": `${SITE_URL}${canonical}`
+            "item": catUrl
+          }
+        ]
+      };
+
+      const faqSchema = {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How often should I wear a leather blazer?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "While leather blazers are durable, it’s important to avoid wearing them too frequently, especially in humid conditions. Overexposure to moisture can damage the leather. Allow your blazer to rest and breathe between wears. While warm weather may pose challenges, it is possible to wear a leather blazer nonetheless. In this instance, it is best to stick to soft shades of leather such as tan brown, and use a soft inner lining."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can I get rid of creases on a leather jacket?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "All you need to do is hang the coat and place the steamer in the right position to release the wrinkles."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I wash a leather jacket in a dry cleaning facility?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Don’t dry clean the leather, because leather does not like the dry cleaning chemicals. Instead, try to find a wet leather cleaner, or do it at home with a gentle leather cleaning solution."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do you take care of a leather jacket?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "First, make sure that there are no creases on the leather jacket then hang the coat on a thick padded hanger in a dark and well-aired region. Considering these and any other everyday problems, your leather blazer is sure to last intact for many a year."
+            }
           }
         ]
       };
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [categorySchema, breadcrumbSchema]
+        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqSchema]
       };
     } else if (type === "blog" && entity.title) {
-      structuredDataJson = {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
+      const postUrl = `${SITE_URL}/blog/${entity.slug}`;
+      const articleId = `${postUrl}/#article`;
+      const primaryImageId = `${postUrl}/#primaryimage`;
+      const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : new Date().toISOString();
+      const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : datePublished;
+      const authorName = entity.author || "Pairo Studio";
+      const authorId = `${SITE_URL}/#/schema/person/${Buffer.from(authorName).toString('hex').slice(0, 16)}`;
+
+      const articleSchema = {
+        "@id": articleId,
+        "@type": "Article",
+        "articleSection": entity.category || "Style & Care",
+        "commentCount": 0,
+        "dateModified": dateModified,
+        "datePublished": datePublished,
         "headline": entity.title,
-        "description": entity.excerpt || metaDescription,
-        "image": ogImgUrl,
-        "datePublished": entity.createdAt,
+        "inLanguage": "en-US",
+        "thumbnailUrl": ogImgUrl,
+        "wordCount": entity.wordCount || 1200,
         "author": {
-          "@type": "Person",
-          "name": entity.author || "Pairo Studio"
-        }
+          "@id": authorId,
+          "name": authorName,
+          "image": { "@id": primaryImageId }
+        },
+        "isPartOf": { "@id": postUrl },
+        "mainEntityOfPage": { "@id": postUrl },
+        "potentialAction": {
+          "@type": "CommentAction",
+          "name": "Comment",
+          "target": `${postUrl}#respond`
+        },
+        "publisher": { "@id": `${SITE_URL}/#organization` }
       };
-    } else if (type === "home" || path === "/" || path === "/home") {
+
+      const webpageSchema = {
+        "@id": postUrl,
+        "@type": "WebPage",
+        "dateModified": dateModified,
+        "datePublished": datePublished,
+        "description": entity.excerpt || metaDescription,
+        "inLanguage": "en-US",
+        "name": `${entity.title} - Pairo Lifestyle Journal`,
+        "thumbnailUrl": ogImgUrl,
+        "url": postUrl,
+        "breadcrumb": { "@id": `${postUrl}/#breadcrumb` },
+        "image": { "@id": primaryImageId },
+        "isPartOf": { "@id": `${SITE_URL}/#website` },
+        "potentialAction": {
+          "@type": "ReadAction",
+          "target": postUrl
+        },
+        "primaryImageOfPage": { "@id": primaryImageId }
+      };
+
+      const imageSchema = {
+        "@id": primaryImageId,
+        "@type": "ImageObject",
+        "caption": entity.title,
+        "contentUrl": ogImgUrl,
+        "height": 628,
+        "inLanguage": "en-US",
+        "url": ogImgUrl,
+        "width": 1200
+      };
+
+      const breadcrumbSchema = {
+        "@id": `${postUrl}/#breadcrumb`,
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${SITE_URL}/`
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": entity.title,
+            "item": postUrl
+          }
+        ]
+      };
+
+      const websiteSchema = {
+        "@id": `${SITE_URL}/#website`,
+        "@type": "WebSite",
+        "description": "Premium Handcrafted Shearling & Leather Jackets",
+        "inLanguage": "en-US",
+        "name": "Pairo Lifestyle Journal",
+        "url": `${SITE_URL}/`,
+        "potentialAction": {
+          "@type": "SearchAction",
+          "query-input": {
+            "@type": "PropertyValueSpecification",
+            "valueName": "search_term_string",
+            "valueRequired": true
+          },
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${SITE_URL}/search?q={search_term_string}`
+          }
+        },
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      };
+
       const orgSchema = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
+        "@type": "Organization",
         "name": "Pairo Lifestyle",
-        "url": SITE_URL,
+        "url": `${SITE_URL}/`,
+        "image": { "@id": `${SITE_URL}/#logo` },
         "logo": {
           "@type": "ImageObject",
           "@id": `${SITE_URL}/#logo`,
@@ -400,20 +641,103 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
-      const websiteSchema = {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        "name": "Pairo Lifestyle",
-        "url": SITE_URL,
-        "publisher": {
-          "@id": `${SITE_URL}/#organization`
+      const personSchema = {
+        "@id": authorId,
+        "@type": "Person",
+        "description": "Editorial and fashion contributor at Pairo Lifestyle.",
+        "name": authorName,
+        "image": {
+          "@id": `${SITE_URL}/#/schema/person/image/`,
+          "@type": "ImageObject",
+          "caption": authorName,
+          "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+          "inLanguage": "en-US",
+          "url": `${SITE_URL}/assets/pairo.webp`
         }
       };
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [orgSchema, websiteSchema]
+        "@graph": [articleSchema, webpageSchema, imageSchema, breadcrumbSchema, websiteSchema, orgSchema, personSchema]
+      };
+    } else if (type === "home" || path === "/" || path === "/home") {
+      const pageId = `${SITE_URL}/`;
+      const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2025-08-18T09:21:09+00:00";
+      const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : "2026-07-03T17:14:58+00:00";
+      const pageDesc = metaDescription || "Shop Premium Shearling Jackets and custom leather outerwear from Pairo Lifestyle. Discover affordable luxury, including handcrafted shearling coats, blazers, and trench coats.";
+
+      const webpageSchema = {
+        "@id": pageId,
+        "@type": "WebPage",
+        "dateModified": dateModified,
+        "datePublished": datePublished,
+        "description": pageDesc,
+        "inLanguage": "en-US",
+        "name": metaTitle || "Pairo Lifestyle | Premium Handcrafted Shearling & Leather Jackets",
+        "thumbnailUrl": `${SITE_URL}/assets/pairo.webp`,
+        "url": pageId,
+        "about": { "@id": `${SITE_URL}/#organization` },
+        "breadcrumb": { "@id": `${SITE_URL}/#breadcrumb` },
+        "image": { "@id": `${SITE_URL}/#primaryimage` },
+        "isPartOf": { "@id": `${SITE_URL}/#website` },
+        "potentialAction": {
+          "@type": "ReadAction",
+          "target": pageId
+        },
+        "primaryImageOfPage": { "@id": `${SITE_URL}/#primaryimage` }
+      };
+
+      const primaryImageSchema = {
+        "@id": `${SITE_URL}/#primaryimage`,
+        "@type": "ImageObject",
+        "contentUrl": `${SITE_URL}/assets/pairo.webp`,
+        "height": 916,
+        "inLanguage": "en-US",
+        "url": `${SITE_URL}/assets/pairo.webp`,
+        "width": 1717
+      };
+
+      const breadcrumbSchema = {
+        "@id": `${SITE_URL}/#breadcrumb`,
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": pageId
+          }
+        ]
+      };
+
+      const websiteSchema = {
+        "@id": `${SITE_URL}/#website`,
+        "@type": "WebSite",
+        "name": "Pairo Lifestyle",
+        "url": `${SITE_URL}/`,
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      };
+
+      const orgSchema = {
+        "@id": `${SITE_URL}/#organization`,
+        "@type": "Organization",
+        "name": "Pairo Lifestyle",
+        "url": `${SITE_URL}/`,
+        "logo": {
+          "@type": "ImageObject",
+          "@id": `${SITE_URL}/#logo`,
+          "url": `${SITE_URL}/assets/pairo.webp`,
+          "caption": "Pairo Lifestyle"
+        },
+        "sameAs": [
+          "https://www.instagram.com/pairolifestyle",
+          "https://www.facebook.com/pairolifestyle"
+        ]
+      };
+
+      structuredDataJson = {
+        "@context": "https://schema.org",
+        "@graph": [webpageSchema, primaryImageSchema, breadcrumbSchema, websiteSchema, orgSchema]
       };
     } else if (type === "shop" || path === "/shop") {
       const orgSchema = {
@@ -480,27 +804,88 @@ export async function resolveSEOMetadata(options = {}) {
         "@graph": [orgSchema, websiteSchema, breadcrumbSchema, shopSchema]
       };
     } else if (type === "blog_list" || path === "/blog") {
-      const blogListSchema = {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "@id": `${SITE_URL}/blog#collection`,
-        "name": "Editorial Journal - Pairo Lifestyle",
-        "description": "Explore the stories, craftsmanship, and heritage behind Pairo's archival shearling collection.",
-        "url": `${SITE_URL}/blog`
+      const pageUrl = `${SITE_URL}/blog`;
+      const datePublished = "2025-04-28T06:51:14+00:00";
+      const dateModified = new Date().toISOString();
+
+      const websiteSchema = {
+        "@id": `${SITE_URL}/#website`,
+        "@type": "WebSite",
+        "description": "Premium Handcrafted Shearling & Leather Jackets",
+        "inLanguage": "en-US",
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "potentialAction": {
+          "@type": "SearchAction",
+          "query-input": {
+            "@type": "PropertyValueSpecification",
+            "valueName": "search_term_string",
+            "valueRequired": true
+          },
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${SITE_URL}/search?q={search_term_string}`
+          }
+        },
+        "publisher": { "@id": `${SITE_URL}/#organization` }
+      };
+
+      const orgSchema = {
+        "@id": `${SITE_URL}/#organization`,
+        "@type": "Organization",
+        "description": "Pairo Lifestyle is a premium clothing and leather apparel store dealing in custom tailored shearling coats, blazers, and jackets.",
+        "image": `${SITE_URL}/assets/pairo.webp`,
+        "logo": `${SITE_URL}/assets/pairo.webp`,
+        "name": "Pairo Lifestyle",
+        "url": SITE_URL,
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+1 847-999-3787"
+        },
+        "sameAs": [
+          "https://www.facebook.com/pairolifestyle",
+          "https://www.instagram.com/pairolifestyle"
+        ]
+      };
+
+      const webpageSchema = {
+        "@id": `${pageUrl}/`,
+        "@type": "WebPage",
+        "dateModified": dateModified,
+        "datePublished": datePublished,
+        "inLanguage": "en-US",
+        "name": "Blogs | Pairo Lifestyle",
+        "url": pageUrl,
+        "breadcrumb": { "@id": `${pageUrl}/#breadcrumb` },
+        "isPartOf": { "@id": `${SITE_URL}/#website` },
+        "potentialAction": {
+          "@type": "ReadAction",
+          "target": pageUrl
+        }
       };
 
       const breadcrumbSchema = {
-        "@context": "https://schema.org",
+        "@id": `${pageUrl}/#breadcrumb`,
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
-          { "@type": "ListItem", "position": 2, "name": "Journal", "item": `${SITE_URL}/blog` }
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${SITE_URL}/`
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blogs",
+            "item": pageUrl
+          }
         ]
       };
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [blogListSchema, breadcrumbSchema]
+        "@graph": [websiteSchema, orgSchema, webpageSchema, breadcrumbSchema]
       };
     } else if (type === "contact" || path === "/contact") {
       const contactSchema = {

@@ -124,8 +124,10 @@ describe("SEO - Centralized Metadata Resolver", () => {
     expect(metadata.alternates.canonical).toBe("https://pairolifestyle.com/blog/shearling-heritage");
 
     expect(structuredData).toBeDefined();
-    expect(structuredData["@type"]).toBe("BlogPosting");
-    expect(structuredData.headline).toBe("The Shearling Heritage");
+    expect(structuredData["@graph"]).toBeDefined();
+    const article = structuredData["@graph"].find(x => x["@type"] === "Article");
+    expect(article).toBeDefined();
+    expect(article.headline).toBe("The Shearling Heritage");
   });
 
   it("should resolve image fallback hierarchy correctly", async () => {
