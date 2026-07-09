@@ -191,7 +191,11 @@ const SectionMetaBox = ({
 
          {isExpanded && (
             <div className="p-5 bg-white space-y-6">
-               {schema.fields.filter(field => field.dependsOn ? config[field.dependsOn] === field.visibleIf : true).map((field) => (
+               {schema.fields.filter(field => {
+                   if (!field.dependsOn) return true;
+                   const val = config[field.dependsOn] !== undefined ? config[field.dependsOn] : (field.dependsOn === 'showType' ? 'collection' : undefined);
+                   return val === field.visibleIf;
+                }).map((field) => (
                   <div key={field.name} className="space-y-1.5">
                      <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400">{field.label}</label>
                      {renderField(field, config[field.name], (val) => onUpdate(section.id, { [field.name]: val }), onOpenMediaPicker)}

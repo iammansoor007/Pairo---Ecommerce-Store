@@ -31,8 +31,13 @@ export const SECTION_SCHEMAS = {
       { name: "title", label: "Section Title", type: "text" },
       { name: "seriesLabel", label: "Series Label (Badge)", type: "text" },
       { name: "ctaLabel", label: "CTA Button Text", type: "text" },
-      { name: "collectionId", label: "Select Collection", type: "select", options: "categories" },
-      { name: "limit", label: "Product Limit", type: "number", default: 8 },
+      { name: "showType", label: "Display Type", type: "select", default: "collection", options: [
+        { label: "Collection", value: "collection" },
+        { label: "Specific Products", value: "products" }
+      ]},
+      { name: "collectionId", label: "Select Collection", type: "select", options: "categories", dependsOn: "showType", visibleIf: "collection" },
+      { name: "productIds", label: "Select Products", type: "multiselect", options: "products", dependsOn: "showType", visibleIf: "products" },
+      { name: "limit", label: "Product Limit (Collection only)", type: "number", default: 8, dependsOn: "showType", visibleIf: "collection" },
     ]
   },
   feature_marquee: {
@@ -44,7 +49,7 @@ export const SECTION_SCHEMAS = {
         { name: "subText", label: "Sub Text (e.g. PAIRO — 26)", type: "text" },
         { name: "icon", label: "Icon", type: "icon" }
       ]},
-      { name: "speed", label: "Scroll Speed (seconds)", type: "number", default: 40 }
+      { name: "speed", label: "Scroll Speed (seconds)", type: "number", default: 80 }
     ]
   },
   category_showcase: {

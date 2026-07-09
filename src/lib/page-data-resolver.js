@@ -10,32 +10,73 @@ export async function resolvePageSections(sections) {
       // Resolve Product Grid Data
       if (section.type === 'product_grid') {
         const query = { isDeleted: false, status: 'Published', tenantId: 'DEFAULT_STORE' };
-        if (config.collectionId) {
+        let products = [];
+
+        if (config.showType === 'products' && config.productIds && config.productIds.length > 0) {
           const mongoose = require('mongoose');
-          let categoryId = config.collectionId;
-          if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-            // Resolve slug to ObjectId
-            const catDoc = await Category.findOne({ slug: categoryId, isDeleted: false });
-            if (catDoc) {
-              categoryId = catDoc._id;
+          const productIdsOrSlugs = config.productIds;
+          const orConditions = [];
+          const objectIds = [];
+          const slugs = [];
+
+          productIdsOrSlugs.forEach(id => {
+            if (mongoose.Types.ObjectId.isValid(id)) {
+              objectIds.push(new mongoose.Types.ObjectId(id));
             } else {
-              categoryId = null;
+              slugs.push(id);
+            }
+          });
+
+          if (objectIds.length > 0) {
+            orConditions.push({ _id: { $in: objectIds } });
+          }
+          if (slugs.length > 0) {
+            orConditions.push({ slug: { $in: slugs } });
+          }
+
+          if (orConditions.length > 0) {
+            query.$or = orConditions;
+          } else {
+            query._id = new mongoose.Types.ObjectId();
+          }
+
+          const rawProducts = await Product.find(query)
+            .populate('categories')
+            .populate('primaryCategory')
+            .lean();
+
+          // Order products exactly as they are arranged in the productIds array
+          products = productIdsOrSlugs.map(id => {
+            return rawProducts.find(p => p._id.toString() === id || p.slug === id);
+          }).filter(Boolean);
+        } else {
+          if (config.collectionId) {
+            const mongoose = require('mongoose');
+            let categoryId = config.collectionId;
+            if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+              // Resolve slug to ObjectId
+              const catDoc = await Category.findOne({ slug: categoryId, isDeleted: false });
+              if (catDoc) {
+                categoryId = catDoc._id;
+              } else {
+                categoryId = null;
+              }
+            }
+            if (categoryId) {
+              query.categories = categoryId;
+            } else {
+              // Force empty result if category doesn't exist
+              query.categories = new mongoose.Types.ObjectId();
             }
           }
-          if (categoryId) {
-            query.categories = categoryId;
-          } else {
-            // Force empty result if category doesn't exist
-            query.categories = new mongoose.Types.ObjectId();
-          }
+
+          products = await Product.find(query)
+            .populate('categories')
+            .populate('primaryCategory')
+            .sort({ createdAt: -1 })
+            .limit(config.limit || 8)
+            .lean();
         }
-        
-        const products = await Product.find(query)
-          .populate('categories')
-          .populate('primaryCategory')
-          .sort({ createdAt: -1 })
-          .limit(config.limit || 8)
-          .lean();
           
         const { getAltTextMap } = await import("@/lib/mediaUsage");
         const allUrls = [];
