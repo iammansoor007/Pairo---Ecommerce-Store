@@ -991,32 +991,31 @@ export default function ShopContentClient({ initialCategory = null, initialType 
         {/* Dynamic Category FAQs */}
         {currentDbCategory && currentDbCategory.faqs && Array.isArray(currentDbCategory.faqs) && currentDbCategory.faqs.length > 0 && (
           <div className="mt-16 border-t border-border pt-12">
-            <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-10">
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Q&A Session</span>
-                <h2 className="text-xl sm:text-2xl font-black heading-font tracking-tight text-foreground uppercase mt-2">
+            <div className="w-full">
+              <div className="text-left mb-8">
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400 block mb-1">Q&A Session</span>
+                <h2 className="text-sm font-black heading-font tracking-widest text-foreground uppercase">
                   Frequently Asked Questions
                 </h2>
-                <div className="w-12 h-1 bg-black/10 mx-auto mt-4" />
               </div>
-              <div className="space-y-4">
+              <div className="divide-y divide-black/5 border-t border-b border-black/5">
                 {currentDbCategory.faqs.map((faq, idx) => {
                   const isOpen = openCategoryFaqIndex === idx;
                   return (
                     <div 
                       key={idx} 
-                      className="border border-border/80 rounded-[4px] bg-[#FAF9F6] overflow-hidden transition-all duration-300"
+                      className="py-1 transition-all duration-300"
                     >
                       <button
                         type="button"
                         onClick={() => setOpenCategoryFaqIndex(isOpen ? null : idx)}
-                        className="w-full flex items-center justify-between text-left p-5 hover:bg-neutral-50/50 transition-colors"
+                        className="w-full flex items-center justify-between text-left py-4.5 hover:opacity-70 transition-opacity"
                         aria-expanded={isOpen}
                       >
-                        <h3 className="text-[13px] font-extrabold uppercase tracking-wide text-foreground leading-snug pr-4">
+                        <h3 className="text-xs sm:text-[13px] font-bold uppercase tracking-wider text-black leading-snug pr-4">
                           {faq.question}
                         </h3>
-                        <span className={`text-lg font-light text-neutral-400 transform transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
+                        <span className={`text-base font-light text-neutral-400 transform transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
                           +
                         </span>
                       </button>
@@ -1028,7 +1027,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.25, ease: "easeInOut" }}
                           >
-                            <div className="px-5 pb-5 pt-1 text-xs sm:text-[13px] text-neutral-600 leading-relaxed font-medium border-t border-black/[0.02]">
+                            <div className="pb-5 pt-1 text-xs sm:text-[13px] text-neutral-600 leading-relaxed font-medium">
                               {faq.answer}
                             </div>
                           </motion.div>
