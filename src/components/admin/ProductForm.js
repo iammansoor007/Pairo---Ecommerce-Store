@@ -289,16 +289,22 @@ export default function ProductForm({ productId = null }) {
       // Auto-generate slug from name if still empty
       const finalSlug = formData.slug ? formData.slug : toSlug(formData.name);
       
-      // Synchronize parent prices and stock to combinations for variable products
-      let updatedCombinations = formData.variantCombinations || [];
-      if (formData.productType === "variable") {
-         updatedCombinations = updatedCombinations.map(comb => ({
-            ...comb,
-            price: formData.price !== "" && formData.price !== undefined && formData.price !== null ? Number(formData.price) : undefined,
-            compareAtPrice: formData.compareAtPrice !== "" && formData.compareAtPrice !== undefined && formData.compareAtPrice !== null ? Number(formData.compareAtPrice) : undefined,
-            stock: formData.stock !== "" && formData.stock !== undefined && formData.stock !== null ? Number(formData.stock) : 0
-         }));
-      }
+       // Synchronize parent prices and stock to combinations for variable products only if not explicitly set
+       let updatedCombinations = formData.variantCombinations || [];
+       if (formData.productType === "variable") {
+          updatedCombinations = updatedCombinations.map(comb => ({
+             ...comb,
+             price: comb.price !== "" && comb.price !== undefined && comb.price !== null 
+                ? Number(comb.price) 
+                : (formData.price !== "" && formData.price !== undefined && formData.price !== null ? Number(formData.price) : undefined),
+             compareAtPrice: comb.compareAtPrice !== "" && comb.compareAtPrice !== undefined && comb.compareAtPrice !== null 
+                ? Number(comb.compareAtPrice) 
+                : (formData.compareAtPrice !== "" && formData.compareAtPrice !== undefined && formData.compareAtPrice !== null ? Number(formData.compareAtPrice) : undefined),
+             stock: comb.stock !== "" && comb.stock !== undefined && comb.stock !== null 
+                ? Number(comb.stock) 
+                : (formData.stock !== "" && formData.stock !== undefined && formData.stock !== null ? Number(formData.stock) : 0)
+          }));
+       }
 
       const normalizedData = { 
          ...formData, 
@@ -909,9 +915,11 @@ export default function ProductForm({ productId = null }) {
                                              <table className="w-full text-left text-[11px]">
                                                 <thead className="bg-gray-50 border-b border-gray-200 text-gray-400 uppercase font-bold">
                                                    <tr>
-                                                      <th className="px-4 py-3">IMG</th>
+                                                      <th className="px-4 py-3 w-16">IMG</th>
                                                       <th className="px-4 py-3">Variant</th>
-                                                      <th className="px-4 py-3"></th>
+                                                      <th className="px-4 py-3 w-32">Regular Price ($)</th>
+                                                      <th className="px-4 py-3 w-32">Sale Price ($)</th>
+                                                      <th className="px-4 py-3 w-10"></th>
                                                    </tr>
                                                 </thead>
                                                 <tbody>
@@ -919,6 +927,34 @@ export default function ProductForm({ productId = null }) {
                                                       <tr key={cIdx} className="border-b border-gray-100">
                                                          <td className="px-4 py-2"><InlinePick value={comb.image} onChange={url=>{ const n=[...formData.variantCombinations]; n[cIdx].image=url; setFormData({...formData,variantCombinations:n}); }} /></td>
                                                          <td className="px-4 py-2 font-bold">{comb.title}</td>
+                                                         <td className="px-4 py-2">
+                                                            <input
+                                                               type="number"
+                                                               step="0.01"
+                                                               className="w-full border border-gray-200 p-1 text-[11px] outline-none focus:border-[#2271b1] rounded"
+                                                               placeholder="e.g. 0.00"
+                                                               value={comb.compareAtPrice !== undefined && comb.compareAtPrice !== null ? comb.compareAtPrice : ""}
+                                                               onChange={(e) => {
+                                                                  const n = [...formData.variantCombinations];
+                                                                  n[cIdx].compareAtPrice = e.target.value === "" ? "" : Number(e.target.value);
+                                                                  setFormData({ ...formData, variantCombinations: n });
+                                                               }}
+                                                            />
+                                                         </td>
+                                                         <td className="px-4 py-2">
+                                                            <input
+                                                               type="number"
+                                                               step="0.01"
+                                                               className="w-full border border-gray-200 p-1 text-[11px] outline-none focus:border-[#2271b1] rounded font-bold"
+                                                               placeholder="e.g. 0.00"
+                                                               value={comb.price !== undefined && comb.price !== null ? comb.price : ""}
+                                                               onChange={(e) => {
+                                                                  const n = [...formData.variantCombinations];
+                                                                  n[cIdx].price = e.target.value === "" ? "" : Number(e.target.value);
+                                                                  setFormData({ ...formData, variantCombinations: n });
+                                                               }}
+                                                            />
+                                                         </td>
                                                          <td className="px-4 py-2"><button type="button" onClick={()=>setFormData({...formData,variantCombinations:formData.variantCombinations.filter((_,i)=>i!==cIdx)})}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button></td>
                                                       </tr>
                                                    ))}

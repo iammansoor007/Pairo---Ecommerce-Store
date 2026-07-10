@@ -86,9 +86,10 @@ export default function ClientProductActions({ product, onVariantChange }) {
     }
 
     if (product.variantCombinations?.length) {
-      const selectedStr = Object.values(newOptions).join(" / ");
+      const attrOrder = product.attributes?.map(a => newOptions[a.name]).filter(Boolean) || [];
+      const selectedStr = attrOrder.join(" / ");
       const match = product.variantCombinations.find(
-        (v) => v.title === selectedStr
+        (v) => v.title === selectedStr || Object.values(newOptions).join(" / ") === v.title
       );
       if (match && onVariantChange) onVariantChange(match);
     }

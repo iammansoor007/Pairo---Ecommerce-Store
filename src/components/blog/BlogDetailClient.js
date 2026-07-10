@@ -416,9 +416,6 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                    <span className="text-[10px] font-bold tracking-[0.25em] text-neutral-400 uppercase">INQUIRIES</span>
                                    <h2 className="text-xl font-extrabold heading-font text-black uppercase tracking-tight">Frequently Asked Questions</h2>
                                 </div>
-                                <p className="text-xs text-neutral-500 max-w-xs font-medium leading-relaxed">
-                                   Common queries regarding materials, custom sizing, care instructions, and delivery timelines.
-                                </p>
                              </div>
                              
                              <div className="space-y-3">
