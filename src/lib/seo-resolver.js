@@ -152,19 +152,13 @@ export async function resolveSEOMetadata(options = {}) {
   const firstSlideImage = sectionFirstSlideImage || siteConfig?.hero?.slides?.[0]?.image || "/hero-image.png";
   const heroImageUrl = firstSlideImage.startsWith("http") ? firstSlideImage : `${SITE_URL}${firstSlideImage.startsWith("/") ? "" : "/"}${firstSlideImage}`;
 
-  const socials = [];
-  const dbSocials = siteConfig?.socialLinks || siteConfig?.socials;
-  if (dbSocials && Array.isArray(dbSocials)) {
-    dbSocials.forEach(s => {
-      if (s.url && s.enabled !== false) {
-        socials.push(s.url);
-      }
-    });
-  }
-  if (socials.length === 0) {
-    socials.push("https://www.instagram.com/pairolifestyle");
-    socials.push("https://www.facebook.com/pairolifestyle");
-  }
+  const socials = [
+    "https://www.facebook.com/pairolifestyle/",
+    "https://www.instagram.com/pairo.lifestyle",
+    "https://www.youtube.com/@PairoLifestyle",
+    "https://www.tiktok.com/@pairo.lifestyle",
+    "https://x.com/Pairolifestyle"
+  ];
 
   const orgSchema = {
     "@id": `${SITE_URL}/#organization`,
@@ -208,7 +202,7 @@ export async function resolveSEOMetadata(options = {}) {
     } else if (type === "blog" && entity.slug) {
       canonical = `/blog/${entity.slug}`;
     } else if (type === "category" && entity.slug) {
-      canonical = `/${entity.slug}`;
+      canonical = `/collections/${entity.slug}`;
     } else if (type === "page" && entity.slug) {
       canonical = `/${entity.slug}`;
     } else {
@@ -262,7 +256,7 @@ export async function resolveSEOMetadata(options = {}) {
       const { getProductPrimaryCategorySlug } = require("./routes");
       const categorySlugRaw = getProductPrimaryCategorySlug(entity);
       const categorySlug = categorySlugRaw === 'uncategorized' ? 'shop' : categorySlugRaw;
-      const prodUrl = `${SITE_URL}/product/${entity.slug}`;
+      const prodUrl = canonical;
       const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2024-02-03T15:05:44+05:00";
       const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : new Date().toISOString();
 
@@ -303,7 +297,7 @@ export async function resolveSEOMetadata(options = {}) {
       const productSchema = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "@id": `${SITE_URL}${canonical}#product`,
+        "@id": `${canonical}#product`,
         "name": entity.name,
         "description": entity.shortDescription || metaDescription,
         "image": ogImgUrl,
@@ -467,7 +461,7 @@ export async function resolveSEOMetadata(options = {}) {
         "@graph": [orgSchema, websiteSchema, imageSchema, itemPageSchema, productSchema, breadcrumbSchema, faqSchema]
       };
     } else if (type === "category" && entity.name) {
-      const catUrl = `${SITE_URL}/${entity.slug}`;
+      const catUrl = canonical;
       const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : "2024-10-30T11:33:17+05:00";
       const dateModified = entity.updatedAt ? new Date(entity.updatedAt).toISOString() : new Date().toISOString();
 
@@ -526,43 +520,20 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
-      const faqSchema = {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
+      let faqSchema = null;
+      if (entity.faqs && Array.isArray(entity.faqs) && entity.faqs.length > 0) {
+        faqSchema = {
+          "@type": "FAQPage",
+          "mainEntity": entity.faqs.map(faq => ({
             "@type": "Question",
-            "name": "How often should I wear a leather blazer?",
+            "name": faq.question,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "While leather blazers are durable, it’s important to avoid wearing them too frequently, especially in humid conditions. Overexposure to moisture can damage the leather. Allow your blazer to rest and breathe between wears. While warm weather may pose challenges, it is possible to wear a leather blazer nonetheless. In this instance, it is best to stick to soft shades of leather such as tan brown, and use a soft inner lining."
+              "text": faq.answer
             }
-          },
-          {
-            "@type": "Question",
-            "name": "How can I get rid of creases on a leather jacket?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "All you need to do is hang the coat and place the steamer in the right position to release the wrinkles."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Can I wash a leather jacket in a dry cleaning facility?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Don’t dry clean the leather, because leather does not like the dry cleaning chemicals. Instead, try to find a wet leather cleaner, or do it at home with a gentle leather cleaning solution."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do you take care of a leather jacket?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "First, make sure that there are no creases on the leather jacket then hang the coat on a thick padded hanger in a dark and well-aired region. Considering these and any other everyday problems, your leather blazer is sure to last intact for many a year."
-            }
-          }
-        ]
-      };
+          }))
+        };
+      }
 
       const itemListSchema = {
         "@type": "ItemList",
@@ -588,10 +559,10 @@ export async function resolveSEOMetadata(options = {}) {
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqSchema, itemListSchema]
+        "@graph": [orgSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqSchema, itemListSchema].filter(Boolean)
       };
     } else if (type === "blog" && entity.title) {
-      const postUrl = `${SITE_URL}/blog/${entity.slug}`;
+      const postUrl = canonical;
       const articleId = `${postUrl}/#article`;
       const primaryImageId = `${postUrl}/#primaryimage`;
       const datePublished = entity.createdAt ? new Date(entity.createdAt).toISOString() : new Date().toISOString();
@@ -692,9 +663,24 @@ export async function resolveSEOMetadata(options = {}) {
         }
       };
 
+      let faqSchema = null;
+      if (entity.faqs && Array.isArray(entity.faqs) && entity.faqs.length > 0) {
+        faqSchema = {
+          "@type": "FAQPage",
+          "mainEntity": entity.faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.answer
+            }
+          }))
+        };
+      }
+
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [articleSchema, webpageSchema, imageSchema, breadcrumbSchema, websiteSchema, orgSchema, personSchema]
+        "@graph": [articleSchema, webpageSchema, imageSchema, breadcrumbSchema, websiteSchema, orgSchema, personSchema, faqSchema].filter(Boolean)
       };
     } else if (type === "home" || path === "/" || path === "/home") {
       const pageId = `${SITE_URL}/`;
@@ -928,7 +914,7 @@ export async function resolveSEOMetadata(options = {}) {
     }
 
     if (!structuredDataJson) {
-      const pageUrl = `${SITE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`;
+      const pageUrl = canonical;
       const pageId = `${pageUrl}/#webpage`;
 
       const webpageSchema = {

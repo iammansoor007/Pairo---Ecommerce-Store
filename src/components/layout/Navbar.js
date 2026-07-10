@@ -138,9 +138,9 @@ function MegaMenuContent({ item }) {
           {/* Premium Editorial Content */}
           <div className="absolute inset-x-0 bottom-0 p-8 flex flex-col items-start gap-2 z-30 select-none">
             {item.megaBannerHeading && (
-              <h4 className="text-[18px] md:text-[22px] font-bold uppercase tracking-[0.15em] text-white w-full leading-tight">
+              <p className="text-[18px] md:text-[22px] font-bold uppercase tracking-[0.15em] text-white w-full leading-tight">
                 {item.megaBannerHeading}
-              </h4>
+              </p>
             )}
           </div>
         </div>

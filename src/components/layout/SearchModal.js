@@ -127,9 +127,9 @@ export default function SearchModal({ isOpen, onClose }) {
                 >
                   {/* Main Results: Products */}
                   <div>
-                    <h4 className="text-[8px] md:text-[9px] font-bold text-black uppercase tracking-[0.3em] mb-4">
+                    <p className="text-[8px] md:text-[9px] font-bold text-black uppercase tracking-[0.3em] mb-4">
                       {search.matchingProducts} ({results.products.length})
-                    </h4>
+                    </p>
                     {results.products.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
                         {results.products.map((product) => (
@@ -156,7 +156,7 @@ export default function SearchModal({ isOpen, onClose }) {
                             </div>
                             <div className="space-y-0.5">
                                <p className="text-[7px] font-bold text-black uppercase tracking-widest">{product.category}</p>
-                               <h5 className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight leading-tight line-clamp-2 text-black group-hover:text-black/75 transition-colors">{product.name}</h5>
+                               <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-tight leading-tight line-clamp-2 text-black group-hover:text-black/75 transition-colors">{product.name}</p>
                                <p className="text-[8px] md:text-[9px] font-semibold text-black">${product.price}</p>
                             </div>
                           </Link>

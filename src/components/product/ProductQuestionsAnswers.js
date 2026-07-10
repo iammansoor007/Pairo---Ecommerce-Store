@@ -78,9 +78,9 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
       {/* Header section matching Reviews tab */}
       <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center justify-between border-b border-black/5 pb-8 mb-8">
         <div>
-          <p className="text-lg sm:text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
             Questions & Answers
-          </p>
+          </h2>
           <p className="text-xs text-[#6F655B]/60 uppercase tracking-widest font-medium">
             Ask our team about materials, sizing, and styling details.
           </p>
@@ -146,9 +146,9 @@ export default function ProductQuestionsAnswers({ productId, productName }) {
                     <div className={`w-8 h-8 shrink-0 rounded-[var(--radius,0px)] flex items-center justify-center transition-colors ${isOpen ? 'bg-accent' : 'bg-white border border-border'}`}>
                       <HelpCircle className={`w-3.5 h-3.5 ${isOpen ? 'text-white' : 'text-primary/50'}`} />
                     </div>
-                    <p className="text-xs md:text-sm font-semibold uppercase tracking-wider text-primary leading-snug">
+                    <h3 className="text-xs md:text-sm font-semibold uppercase tracking-wider text-primary leading-snug">
                       {q.question}
-                    </p>
+                    </h3>
                   </div>
                   <ChevronDown className={`w-3.5 h-3.5 shrink-0 ml-4 transition-transform duration-300 ${isOpen ? 'text-accent rotate-180' : 'text-primary/40'}`} />
                 </button>

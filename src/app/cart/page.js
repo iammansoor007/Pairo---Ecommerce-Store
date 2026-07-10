@@ -269,7 +269,7 @@ export default function CartPage() {
 
           {/* Right Column: Order Summary Sidebar (35% / 4 Cols) - STICKY */}
           <div className="lg:col-span-4 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h2>
             
             <div className="space-y-4">
               <div className="flex justify-between items-center text-[12px] font-bold uppercase tracking-wider">

@@ -259,7 +259,7 @@ export default function AdminBlogs() {
                       </div>
                     </td>
                     <td className="px-3 py-4 align-top text-[#2271b1] hover:underline cursor-pointer">Admin</td>
-                    <td className="px-3 py-4 align-top text-[#2271b1] font-medium hover:underline cursor-pointer">{b.category || "Uncategorized"}</td>
+                    <td className="px-3 py-4 align-top text-[#2271b1] font-medium hover:underline cursor-pointer">{b.category && b.category !== "Uncategorized" ? b.category : "—"}</td>
                     <td className="px-3 py-4 align-top">
                        <span className={`px-2 py-0.5 rounded-[2px] text-[10px] font-bold uppercase ${b.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                           {b.status || "Published"}

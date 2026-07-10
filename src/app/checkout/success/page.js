@@ -188,7 +188,7 @@ export default function SuccessPage() {
               </div>
 
               <div className="border border-neutral-200 rounded-[4px] p-5 space-y-4">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-black">Your Order is Confirmed</p>
+                <h2 className="text-[11px] font-bold uppercase tracking-widest text-black">Your Order is Confirmed</h2>
                 <p className="text-[13px] text-black leading-relaxed">
                   We have accepted your order and are preparing it. A confirmation email has been sent.
                 </p>
@@ -209,14 +209,14 @@ export default function SuccessPage() {
             {/* Shipping & Payment Details */}
             {order && (
               <div className="border border-neutral-200 rounded-[4px] p-5 space-y-6 print-avoid-break">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-black pb-3 border-b border-neutral-100">Order Details</p>
+                <h2 className="text-[11px] font-bold uppercase tracking-widest text-black pb-3 border-b border-neutral-100">Order Details</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
                   {/* Shipping Address */}
                   <div className="space-y-2">
-                    <p className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
+                    <h2 className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Shipping Address
-                    </p>
+                    </h2>
                     <div className="text-[13px] text-black space-y-0.5 font-semibold">
                       <p className="font-bold text-black">{order.shippingAddress.fullName}</p>
                       <p>{order.shippingAddress.street}</p>
@@ -228,9 +228,9 @@ export default function SuccessPage() {
 
                   {/* Billing Address */}
                   <div className="space-y-2">
-                    <p className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
+                    <h2 className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-black shrink-0" /> Billing Address
-                    </p>
+                    </h2>
                     <div className="text-[13px] text-black space-y-0.5 font-semibold">
                       <p className="font-bold text-black">{order.shippingAddress.fullName}</p>
                       <p>{order.shippingAddress.street}</p>
@@ -242,9 +242,9 @@ export default function SuccessPage() {
 
                   {/* Payment Method */}
                   <div className="space-y-2 md:col-span-2 pt-2 border-t border-neutral-100 print:col-span-2">
-                    <p className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
+                    <h2 className="text-[9px] font-bold text-black uppercase tracking-widest flex items-center gap-1.5">
                       <CreditCard className="w-3.5 h-3.5 text-black shrink-0" /> Payment Information
-                    </p>
+                    </h2>
                     <div className="text-[13px] text-black">
                       <p className="font-bold text-black">{order.payment?.method || "Cash on Delivery"}</p>
                       <p className="text-[11px] text-black mt-0.5 font-medium">Payment Status: <span className="font-bold uppercase tracking-wider text-black">{order.payment?.status || "Pending"}</span></p>

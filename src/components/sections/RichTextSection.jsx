@@ -1,6 +1,6 @@
 "use client";
 
-export default function RichTextSection({ title = "", content = "" }) {
+export default function RichTextSection({ title = "", content = "", headingLevel = "h1" }) {
   if (!content && !title) return null;
 
   return (
@@ -89,11 +89,14 @@ export default function RichTextSection({ title = "", content = "" }) {
       <section className="py-10 md:py-16 bg-white min-h-[50vh]">
         <div className="container mx-auto px-2 sm:px-4 md:px-8">
           <div className="w-full">
-            {title && (
-              <h1 className="text-[16px] sm:text-[20px] font-black uppercase tracking-[0.06em] text-black mb-8 pb-4 border-b border-black/10">
-                {title}
-              </h1>
-            )}
+            {(() => {
+              const HeadingTag = headingLevel;
+              return title && (
+                <HeadingTag className="text-[16px] sm:text-[20px] font-black uppercase tracking-[0.06em] text-black mb-8 pb-4 border-b border-black/10">
+                  {title}
+                </HeadingTag>
+              );
+            })()}
             {content && (
               <div
                 className="rich-text-body"

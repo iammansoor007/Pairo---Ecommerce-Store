@@ -89,12 +89,12 @@ export default function ProductCard({ product }) {
 
       {/* Info Section */}
       <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-        <p 
+        <h3 
           style={{ fontFamily: "var(--brand-font)" }}
           className="text-[11px] md:text-[13px] font-bold uppercase tracking-wider text-foreground/85 group-hover:text-foreground transition-colors truncate"
         >
           {product.name}
-        </p>
+        </h3>
 
         <div className="flex items-center justify-between border-t border-border pt-2 md:pt-3">
           <div className="flex items-center gap-2 md:gap-3">

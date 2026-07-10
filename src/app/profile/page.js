@@ -233,6 +233,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-black font-sans selection:bg-black selection:text-white pt-2 pb-12">
+      <h1 className="sr-only">My Account</h1>
       <div className="container mx-auto px-2 sm:px-4 md:px-8">
         <div className="w-full mx-auto">
           {/* Main Dashboard Content Layout */}

@@ -32,7 +32,7 @@ const BlogCard = ({ post }) => (
       {/* Metadata Block */}
       <div className="mt-3.5 space-y-1 px-0.5">
          <div className="flex items-center gap-2">
-            {post.category && (
+            {post.category && post.category.trim() !== "" && post.category.toLowerCase() !== "uncategorized" && (
                <>
                   <span className="text-[9px] font-black tracking-[0.2em] text-neutral-400 uppercase">
                      {post.category}
@@ -357,7 +357,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                               <span className="font-medium text-neutral-500">Published</span>
                               <span className="font-semibold">{postDate}</span>
                            </div>
-                           {post.category && (
+                           {post.category && post.category.trim() !== "" && post.category.toLowerCase() !== "uncategorized" && (
                               <div className="flex justify-between items-center text-xs text-black">
                                  <span className="font-medium text-neutral-500">Category</span>
                                  <span className="font-semibold">{post.category}</span>
@@ -440,9 +440,9 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                                <span className="font-mono text-[9px] font-bold text-neutral-400 mr-4 tracking-wider">
                                                   {String(idx + 1).padStart(2, '0')} //
                                                </span>
-                                               <span className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-opacity pr-4 leading-snug">
+                                               <h3 className="text-sm font-bold uppercase tracking-wide text-black group-hover:opacity-75 transition-opacity pr-4 leading-snug">
                                                   {faq.question}
-                                               </span>
+                                               </h3>
                                             </div>
                                             <div className={`w-6 h-6 rounded-full border border-black/5 flex items-center justify-center transition-all duration-300 ${
                                                isOpen ? "bg-black border-black text-white rotate-180" : "bg-white text-black group-hover:border-black/20"
@@ -485,7 +485,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                          <div className="p-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] space-y-4">
                             {post.excerpt && (
                                <div className="space-y-1">
-                                  <h4 className="text-[10px] font-bold uppercase tracking-wider text-black">Synopsis</h4>
+                                  <h3 className="text-[10px] font-bold uppercase tracking-wider text-black">Synopsis</h3>
                                   <p className="text-xs text-neutral-700 leading-relaxed font-medium">
                                      {post.excerpt}
                                   </p>
@@ -500,7 +500,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
                                    <span className="font-medium text-neutral-500">Published</span>
                                    <span className="font-semibold">{postDate}</span>
                                 </div>
-                                {post.category && (
+                                {post.category && post.category.trim() !== "" && post.category.toLowerCase() !== "uncategorized" && (
                                    <div className="flex justify-between items-center text-xs text-black">
                                       <span className="font-medium text-neutral-500">Category</span>
                                       <span className="font-semibold">{post.category}</span>
@@ -512,7 +512,7 @@ export default function BlogDetailClient({ post, posts, featuredProduct, postDat
 
                         {post.showSidebarIndex !== false && (
                            <div className="hidden lg:block space-y-3 pt-6 border-t border-black/5">
-                              <span className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</span>
+                              <h2 className="text-xs font-bold uppercase tracking-wider text-black block mb-2">Table of Contents</h2>
                               <div className="flex flex-col gap-2">
                                  {tocSections.length > 0 ? (
                                     tocSections.map((section) => (

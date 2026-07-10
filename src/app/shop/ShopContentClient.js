@@ -902,10 +902,12 @@ export default function ShopContentClient({ initialCategory = null, initialType 
 
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-16">
           <aside className="hidden lg:block lg:col-span-3 h-fit sticky top-32">
+            <h2 className="sr-only">Filters</h2>
             {renderFilterSections(false)}
           </aside>
 
-          <main id="product-grid-main" className="lg:col-span-9 min-h-[200vh]">
+          <div id="product-grid-main" className="lg:col-span-9 min-h-[200vh]">
+            <h2 className="sr-only">Collections</h2>
             {loading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
                 {[1, 2, 3, 4, 5, 6].map(i => (
@@ -972,7 +974,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
               </div>
             )}
 
-          </main>
+          </div>
         </div>
 
         {/* Category Full Description (content) */}

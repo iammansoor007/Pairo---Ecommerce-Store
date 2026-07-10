@@ -19,10 +19,10 @@ export default function StudioGallery({
       <div className="mx-4 md:mx-8 bg-black rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16 text-white">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div className="space-y-4">
-             <span className="text-[10px] font-bold tracking-[0.3em] text-white/70 uppercase">{label}</span>
-             <p className="text-2xl md:text-4xl font-bold heading-font tracking-tighter uppercase leading-none">
+             <h3 className="text-[10px] font-bold tracking-[0.3em] text-white/70 uppercase">{label}</h3>
+             <h2 className="text-2xl md:text-4xl font-bold heading-font tracking-tighter uppercase leading-none">
                {title}
-             </p>
+             </h2>
           </div>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">

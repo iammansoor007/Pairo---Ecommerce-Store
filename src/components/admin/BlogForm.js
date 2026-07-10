@@ -9,7 +9,8 @@ import {
    Image as ImageIcon, 
    ChevronDown,
    Calendar,
-   Eye
+   Eye,
+   Edit
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 const TiptapEditor = dynamic(() => import('./TiptapEditor'), { ssr: false });
@@ -22,13 +23,15 @@ export default function BlogForm({ blogId }) {
    const [loading, setLoading] = useState(blogId ? true : false);
    const [saving, setSaving] = useState(false);
    const [activeFormTab, setActiveFormTab] = useState("content");
+   const [editSlug, setEditSlug] = useState(false);
+   const [editorMode, setEditorMode] = useState("visual");
    const [formData, setFormData] = useState({
       title: "",
       slug: "",
       content: "",
       excerpt: "",
       image: "",
-      category: "Uncategorized",
+      category: "",
       status: "Draft",
       heritage: "",
       process: "",
@@ -91,7 +94,7 @@ export default function BlogForm({ blogId }) {
                    showFeaturedProduct: data.showFeaturedProduct !== false,
                    showSidebarIndex: data.showSidebarIndex !== false,
                    ...data,
-                   category: data.category || "Uncategorized",
+                   category: data.category === "Uncategorized" ? "" : (data.category || ""),
                    seo: {
                      title: "", description: "", keywords: [], focusKeyword: "",
                      canonicalUrl: "", noIndex: false, noFollow: false,
@@ -211,9 +214,35 @@ export default function BlogForm({ blogId }) {
                      value={formData.title}
                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   />
-                  <div className="text-[12px] text-gray-500 px-1 mt-1 flex items-center gap-1">
-                     Permalink: <span className="text-gray-400">pairo.store/blog/</span>
-                     <input className="border-none bg-transparent outline-none text-[#2271b1] font-mono w-fit min-w-[50px]" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
+                  <div className="text-[12px] text-gray-500 px-1 mt-1 flex items-center gap-1.5 flex-wrap">
+                     <span>Permalink:</span>
+                     <span className="text-gray-400 font-mono">pairo.store/blog/</span>
+                     <input
+                        readOnly={!editSlug}
+                        className={`outline-none text-[#2271b1] font-mono px-1.5 py-0.5 rounded transition-all text-xs ${
+                           editSlug ? "border border-[#c3c4c7] bg-white ring-1 ring-[#2271b1]/20" : "border-none bg-transparent pointer-events-none"
+                        }`}
+                        style={{ width: `${Math.max(60, (formData.slug || "").length * 8.5)}px` }}
+                        value={formData.slug}
+                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                     />
+                     {!editSlug ? (
+                        <button
+                           type="button"
+                           onClick={() => setEditSlug(true)}
+                           className="text-gray-400 hover:text-gray-600 transition-colors p-0.5"
+                        >
+                           <Edit className="w-3.5 h-3.5" />
+                        </button>
+                     ) : (
+                        <button
+                           type="button"
+                           onClick={() => setEditSlug(false)}
+                           className="text-[10px] text-green-600 hover:underline font-bold"
+                        >
+                           Done
+                        </button>
+                     )}
                   </div>
                </div>
 
@@ -258,11 +287,38 @@ export default function BlogForm({ blogId }) {
                   <>
                      {/* Content Meta Box (General) */}
                      <div className="bg-white border border-[#c3c4c7] shadow-sm">
-                        <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">General Content</div>
-                        <TiptapEditor
-                           content={formData.content}
-                           onChange={(html) => setFormData({ ...formData, content: html })}
-                        />
+                        <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700 flex justify-between items-center">
+                           <span>General Content</span>
+                           <div className="flex gap-2 text-xs">
+                              <button
+                                 type="button"
+                                 onClick={() => setEditorMode("visual")}
+                                 className={`px-3 py-1 font-semibold rounded ${editorMode === "visual" ? "bg-white border border-[#c3c4c7] text-[#2271b1]" : "text-gray-600 hover:text-black"}`}
+                              >
+                                 Visual
+                              </button>
+                              <button
+                                 type="button"
+                                 onClick={() => setEditorMode("html")}
+                                 className={`px-3 py-1 font-semibold rounded ${editorMode === "html" ? "bg-white border border-[#c3c4c7] text-[#2271b1]" : "text-gray-600 hover:text-black"}`}
+                              >
+                                 HTML
+                              </button>
+                           </div>
+                        </div>
+                        {editorMode === "visual" ? (
+                           <TiptapEditor
+                              content={formData.content}
+                              onChange={(html) => setFormData({ ...formData, content: html })}
+                           />
+                        ) : (
+                           <textarea
+                              className="w-full p-4 font-mono text-[13px] outline-none border-none min-h-[350px] bg-[#fcfcfc] focus:bg-white transition-colors"
+                              placeholder="Type HTML content here..."
+                              value={formData.content}
+                              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                           />
+                        )}
                      </div>
 
                      {/* Excerpt Meta Box */}
@@ -427,7 +483,7 @@ export default function BlogForm({ blogId }) {
                                  type="checkbox" 
                                  className="w-4 h-4 rounded border-gray-300 text-[#2271b1] focus:ring-[#2271b1]" 
                                  checked={formData.category === cat.name}
-                                 onChange={() => setFormData({...formData, category: cat.name})}
+                                 onChange={() => setFormData({...formData, category: formData.category === cat.name ? "" : cat.name})}
                               />
                               {cat.name}
                            </label>

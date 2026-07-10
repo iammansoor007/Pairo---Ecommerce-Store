@@ -62,7 +62,7 @@ const TestimonialCard = ({ review, isActive, position, onSwipe, labels, multipli
             <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent" />
           </div>
           <div className="flex flex-col">
-            <p className="text-black font-bold text-[12px] sm:text-[14px] md:text-[18px] heading-font tracking-tighter leading-none uppercase">{review.name}</p>
+            <h3 className="text-black font-bold text-[12px] sm:text-[14px] md:text-[18px] heading-font tracking-tighter leading-none uppercase">{review.name}</h3>
             <span className="text-black/30 text-[7px] md:text-[9px] font-bold uppercase tracking-[0.2em] mt-1.5">{labels.verifiedLabel}</span>
           </div>
         </div>
@@ -137,9 +137,9 @@ export default function Testimonials({
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</span>
+              <h3 className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</h3>
             </div>
-            <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">{testimonialsConfig.title}</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">{testimonialsConfig.title}</h2>
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => handleSwipe("prev")} className="w-10 h-10 md:w-16 md:h-16 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-500 active:scale-90 group"><ChevronLeft className="w-5 h-5 md:w-8 md:h-8 transition-transform duration-500 group-hover:-translate-x-1" /></button>

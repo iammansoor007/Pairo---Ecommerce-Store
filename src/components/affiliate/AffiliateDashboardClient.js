@@ -254,7 +254,7 @@ export default function AffiliateDashboardClient({ userSession }) {
           {/* Header Profile info */}
           <div className="space-y-1 pb-5 border-b border-neutral-700/60">
             <p className="text-[9px] font-bold text-[#72aee6] uppercase tracking-[0.3em]">Pairo Partner</p>
-            <h1 className="text-sm font-bold tracking-tight text-white uppercase truncate">{profile?.name}</h1>
+            <h3 className="text-sm font-bold tracking-tight text-white uppercase truncate">{profile?.name}</h3>
             <div className="inline-flex px-1.5 py-0.5 rounded bg-neutral-800 text-[9px] font-mono text-neutral-400 uppercase font-bold">
               ID: {profile?.referralCode}
             </div>
@@ -306,9 +306,10 @@ export default function AffiliateDashboardClient({ userSession }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-6 md:p-8 space-y-8 overflow-x-hidden md:h-screen md:overflow-y-auto">
+      <div className="flex-1 p-6 md:p-8 space-y-8 overflow-x-hidden md:h-screen md:overflow-y-auto">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-[#dcdcde] gap-4">
+          <h1 className="sr-only">Affiliate Dashboard</h1>
           <div>
             <span className="text-[9px] bg-[#2271b1] text-white px-2 py-0.5 rounded font-bold uppercase tracking-widest">Affiliate Portal</span>
             <h2 className="text-2xl font-bold tracking-tight text-[#1d2327] mt-2">
@@ -1113,7 +1114,7 @@ export default function AffiliateDashboardClient({ userSession }) {
             </div>
           </form>
         )}
-      </main>
+      </div>
     </div>
   );
 }

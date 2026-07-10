@@ -12,7 +12,8 @@ export default function CategoryBanner({
   title,
   label,
   viewAll,
-  categories: propCategories
+  categories: propCategories,
+  headingLevel = "h2"
 }) {
   const siteData = useSiteData();
   const [hoveredIndex, setHoveredIndex] = useState(null);
@@ -38,6 +39,8 @@ export default function CategoryBanner({
 
   if (displayCategories.length === 0) return null;
 
+  const HeadingTag = headingLevel;
+
   return (
     <section className="container mx-auto px-2 sm:px-4 md:px-8 py-2 md:py-4">
       <div className="bg-white border border-black/5 rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
@@ -45,13 +48,13 @@ export default function CategoryBanner({
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <span className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
+              <h3 className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
                 {categoriesConfig.label || "The Collection"}
-              </span>
+              </h3>
             </div>
-            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">
+            <HeadingTag className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">
               {categoriesConfig.title || "Shop By Category"}
-            </p>
+            </HeadingTag>
           </div>
 
           <Link href="/shop" className="group relative hidden sm:flex items-center gap-4 border border-black px-8 py-3 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] overflow-hidden transition-all duration-500 hover:text-white active:scale-95">
@@ -99,9 +102,9 @@ export default function CategoryBanner({
                   <div className={`space-y-3 sm:space-y-5 w-full flex flex-col items-center ${isSmall ? '' : 'sm:items-start'}`}>
                     <div className="space-y-1 sm:space-y-2">
 
-                      <p className="text-[16px] sm:text-xl md:text-2xl lg:text-3xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
+                      <h3 className="text-[16px] sm:text-xl md:text-2xl lg:text-3xl font-bold text-white uppercase tracking-tighter leading-[0.9]">
                         {category.name}
-                      </p>
+                      </h3>
                     </div>
 
                     <div className={`w-full flex justify-center ${isSmall ? '' : 'sm:justify-start'}`}>

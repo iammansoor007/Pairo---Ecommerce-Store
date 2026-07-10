@@ -366,9 +366,9 @@ export default function ProductReviews({ productId, productName }) {
     <div className="w-full bg-white border border-[#E3DACB] rounded-[var(--radius,0px)] p-6 md:p-10 font-sans">
       <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center justify-between border-b border-black/5 pb-8 mb-8">
         <div>
-          <p className="text-lg sm:text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-medium tracking-tight uppercase heading-font text-[#1E1B19] mb-1">
             Ratings & Reviews
-          </p>
+          </h2>
           <p className="text-xs text-[#6F655B]/60 uppercase tracking-widest font-medium">
             Verified purchases from Pairo store
           </p>
@@ -901,7 +901,7 @@ export default function ProductReviews({ productId, productName }) {
                     {getInitials(review.customerName)}
                   </div>
                   <div className="flex flex-wrap items-center gap-3 text-[10px] text-[#6F655B]/70 font-medium uppercase tracking-wider">
-                    <span className="text-[#1E1B19]">{review.customerName}</span>
+                    <h3 className="text-[#1E1B19]">{review.customerName}</h3>
                     {review.verifiedPurchase && (
                       <div className="flex items-center gap-1.5">
                         <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-[var(--radius,0px)] border border-emerald-100/50 text-[9px] font-medium uppercase tracking-wider select-none">

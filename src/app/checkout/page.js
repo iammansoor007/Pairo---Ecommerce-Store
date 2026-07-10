@@ -636,7 +636,7 @@ export default function CheckoutPage() {
 
 
       {/* Main Container - Matches site margins/padding */}
-      <main className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
+      <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 md:py-12">
         <h1 className="text-[28px] md:text-[36px] font-bold tracking-tight text-black mb-8 leading-none">
           Checkout
         </h1>
@@ -648,7 +648,7 @@ export default function CheckoutPage() {
             {/* 1. Contact Info */}
             <section className="space-y-4">
               <div className="flex justify-between items-baseline">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-black">Contact</h3>
+                <h2 className="text-xs font-bold uppercase tracking-wider text-black">Contact</h2>
                 <Link href="/login" className="text-xs font-bold text-neutral-600 hover:text-black underline tracking-wide">Log in</Link>
               </div>
               <div className="space-y-3">
@@ -678,7 +678,7 @@ export default function CheckoutPage() {
 
             {/* 2. Delivery Info */}
             <section className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Delivery</h3>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black">Delivery</h2>
 
               <div className="space-y-3.5">
                 {/* Saved Address Selector */}
@@ -908,7 +908,7 @@ export default function CheckoutPage() {
 
             {/* 3. Shipping Method */}
             <section className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Shipping Method</h3>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black">Shipping Method</h2>
               {loadingRates && (
                 <div className="flex items-center gap-2 py-3 text-xs text-neutral-500">
                   <Loader2 className="w-4 h-4 animate-spin text-black" />
@@ -950,7 +950,7 @@ export default function CheckoutPage() {
 
             {/* 4. Payment Method */}
             <section className="space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-black">Payment</h3>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-black">Payment</h2>
               <div className="border border-neutral-200 rounded-[4px] p-4 bg-[#FAF9F6]/40 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <CreditCard className="w-5 h-5 text-neutral-600" />
@@ -976,7 +976,7 @@ export default function CheckoutPage() {
 
           {/* Right Column: Order Summary (40% / 5 Cols) - STICKY */}
           <div className="lg:col-span-5 bg-[#FAF9F6] border border-black/[0.04] rounded-[4px] p-6 md:p-8 space-y-6 lg:sticky lg:top-28 self-start">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h3>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-black">Order Summary</h2>
 
             {/* Cart Products List */}
             <div className="divide-y divide-neutral-200/80 max-h-[360px] overflow-y-auto pr-2 custom-scrollbar">
@@ -1131,7 +1131,7 @@ export default function CheckoutPage() {
           </div>
 
         </div>
-      </main>
+      </div>
     </div>
   );
 }

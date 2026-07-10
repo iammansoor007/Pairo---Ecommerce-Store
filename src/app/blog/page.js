@@ -39,7 +39,7 @@ const BlogCard = ({ post }) => (
     {/* Metadata Block */}
     <div className="mt-3.5 space-y-1 px-0.5">
       <div className="flex items-center gap-2">
-        {post.category && (
+        {post.category && post.category.trim() !== "" && post.category.toLowerCase() !== "uncategorized" && (
           <>
             <span className="text-[10px] font-bold tracking-wider text-neutral-400 uppercase">
               {post.category}
@@ -52,12 +52,12 @@ const BlogCard = ({ post }) => (
         </span>
       </div>
       
-      <h2 
+      <h3 
         style={{ fontFamily: "var(--brand-font)" }}
         className="text-[14px] sm:text-[15px] font-bold uppercase tracking-wide text-black transition-colors group-hover:underline decoration-1 underline-offset-4 leading-snug"
       >
         {post.title}
-      </h2>
+      </h3>
     </div>
   </Link>
 );
@@ -90,7 +90,7 @@ export default async function BlogArchive() {
   });
 
   return (
-    <main className="bg-white min-h-screen text-black">
+    <div className="bg-white min-h-screen text-black">
       {structuredData && (
         <script
           type="application/ld+json"
@@ -123,6 +123,7 @@ export default async function BlogArchive() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-8">
+                 <h2 className="sr-only">Latest Articles</h2>
                  {posts.map((post) => (
                     <BlogCard key={post.id} post={post} />
                  ))}
@@ -140,6 +141,6 @@ export default async function BlogArchive() {
             <BlogNewsletterForm />
          </div>
       </section>
-    </main>
+    </div>
   );
 }

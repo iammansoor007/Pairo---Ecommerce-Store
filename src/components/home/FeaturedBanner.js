@@ -52,19 +52,19 @@ export default function FeaturedBanner({
           <div className="max-w-full md:max-w-lg lg:max-w-xl space-y-6 md:space-y-8">
             {/* Minimalist Badges */}
             <div className="flex flex-wrap gap-2">
-              <span className="bg-white/10 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
+              <h3 className="bg-white/10 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
                 {bannerData.badge1}
-              </span>
-              <span className="bg-primary text-background text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
+              </h3>
+              <h3 className="bg-primary text-background text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
                 {bannerData.badge2}
-              </span>
+              </h3>
             </div>
 
             {/* Scaled Typography */}
             <div className="space-y-2 md:space-y-4">
-              <p className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
+              <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold heading-font text-white uppercase leading-none tracking-tighter">
                 {bannerData.title}
-              </p>
+              </h2>
               <p className="text-white/80 text-[10px] md:text-sm lg:text-base font-light leading-relaxed max-w-sm md:max-w-md">
                 {bannerData.description}
               </p>

@@ -24,8 +24,8 @@ export default function StorySection({
 
   const itemVariants = {
     hidden: { y: 30, opacity: 0 },
-    visible: { 
-      y: 0, 
+    visible: {
+      y: 0,
       opacity: 1,
       transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
     }
@@ -35,7 +35,7 @@ export default function StorySection({
     <section className="container mx-auto px-2 sm:px-4 md:px-8 py-12 md:py-16">
       <div className="bg-background border border-border rounded-[32px] md:rounded-[40px] shadow-sm overflow-hidden py-16 md:py-24 px-6 md:px-16">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -44,8 +44,8 @@ export default function StorySection({
           >
             <motion.div variants={itemVariants} className="space-y-4">
               <div className="flex items-center gap-2">
-                 <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
-                 <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-foreground/80 uppercase">{label}</span>
+                <div className="w-1.5 h-1.5 rounded-full bg-foreground" />
+                <span className="text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-foreground/80 uppercase">{label}</span>
               </div>
               <p className="text-2xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-foreground uppercase leading-[0.9]">
                 {title}
@@ -63,7 +63,7 @@ export default function StorySection({
               ))}
             </motion.div>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}

@@ -11,7 +11,8 @@ export default function ProductSection({
   title,
   products = [],
   seriesLabel,
-  ctaLabel
+  ctaLabel,
+  headingLevel = "h2"
 }) {
   const siteData = useSiteData();
   const productLabels = {
@@ -30,33 +31,44 @@ export default function ProductSection({
     }
   };
 
-  const checkScroll = () => {
+  const updateScrollButtons = () => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-      setCanScrollLeft(scrollLeft > 20);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 20);
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
     }
   };
 
   useEffect(() => {
     const current = carouselRef.current;
     if (current) {
-      current.addEventListener("scroll", checkScroll);
-      checkScroll();
+      current.addEventListener("scroll", updateScrollButtons);
+      // Run once initially to check constraints
+      updateScrollButtons();
+      // Add resize listener
+      window.addEventListener("resize", updateScrollButtons);
     }
-    return () => current?.removeEventListener("scroll", checkScroll);
-  }, []);
+    return () => {
+      if (current) {
+        current.removeEventListener("scroll", updateScrollButtons);
+      }
+      window.removeEventListener("resize", updateScrollButtons);
+    };
+  }, [products]);
+
+  // Clean empty/deleted items from products list
+  const activeProducts = (products || []).filter(
+    (p) => p && !p.isDeleted && p.status === "Published"
+  );
 
   if (!siteData) return null;
 
-  if (!products || products.length === 0) {
+  if (activeProducts.length === 0) {
     return (
-      <section className="py-4 md:py-6">
-        <div className="container mx-auto px-2 sm:px-4 md:px-8 py-16 md:py-20 text-center">
-          <div className="max-w-md mx-auto space-y-4">
-            <p className="text-xl md:text-2xl font-bold heading-font text-foreground uppercase tracking-tight">{title}</p>
-            <div className="w-12 h-[1px] bg-border/60 mx-auto" />
-            <p className="text-[10px] text-foreground/45 font-bold uppercase tracking-widest leading-relaxed">
+      <section className="py-4 bg-background">
+        <div className="container mx-auto px-2 sm:px-4 md:px-8 py-8 text-center">
+          <div className="py-12 bg-neutral-50 rounded-2xl border border-border/40">
+            <p className="text-xs font-bold uppercase tracking-wider text-neutral-400">
               No products are currently available in this collection.
             </p>
           </div>
@@ -64,6 +76,8 @@ export default function ProductSection({
       </section>
     );
   }
+
+  const MotionHeading = motion[headingLevel] || motion.h2;
 
   return (
     <section className="py-4 md:py-6 bg-background">
@@ -79,11 +93,11 @@ export default function ProductSection({
               transition={{ duration: 0.6 }}
               className="inline-flex items-center bg-black text-white px-3 py-1 rounded-full"
             >
-              <span className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
+              <h3 className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
                 {productLabels.seriesLabel}
-              </span>
+              </h3>
             </motion.div>
-            <motion.p
+            <MotionHeading
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -91,7 +105,7 @@ export default function ProductSection({
               className="text-[22px] md:text-[30px] font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate"
             >
               {title}
-            </motion.p>
+            </MotionHeading>
           </div>
 
           <div className="flex items-center justify-between lg:justify-end gap-4 md:gap-8 shrink-0 w-full lg:w-auto">

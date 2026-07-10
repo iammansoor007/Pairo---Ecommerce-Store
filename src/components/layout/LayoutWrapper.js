@@ -11,17 +11,21 @@ export default function LayoutWrapper({ children }) {
   const isIsolatedRoute = pathname?.startsWith("/admin") || pathname?.startsWith("/admin-login") || pathname?.startsWith("/affiliate") || pathname?.startsWith("/profile");
 
   if (isIsolatedRoute) {
-    return <main>{children}</main>;
+    return (
+      <div className="relative w-full overflow-x-hidden min-h-screen flex flex-col">
+        <main className="flex-1 flex flex-col">{children}</main>
+      </div>
+    );
   }
 
   return (
-    <>
+    <div className="relative w-full overflow-x-hidden min-h-screen flex flex-col">
       <Navbar />
       <ReferralDiscountPopup />
       <CartDrawer />
-      <main>{children}</main>
+      <main className="flex-1 flex flex-col">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }
 
