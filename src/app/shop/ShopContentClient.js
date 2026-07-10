@@ -26,7 +26,7 @@ const silentReplaceState = (newUrl) => {
   }
 };
 
-export default function ShopContentClient({ initialCategory = null, initialType = null, initialProducts = [] }) {
+export default function ShopContentClient({ initialCategory = null, initialType = null, initialProducts = [], categoryData = null }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -44,13 +44,16 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   const dbCategories = siteContextData?._dbCategories || [];
 
   const currentDbCategory = useMemo(() => {
+    if (categoryData && (categoryData.slug === selectedCategory || categoryData._id === selectedCategory)) {
+      return categoryData;
+    }
     if (!selectedCategory) return null;
     return dbCategories.find(c =>
       c.name.toLowerCase() === selectedCategory.toLowerCase() ||
       c.slug?.toLowerCase() === selectedCategory.toLowerCase() ||
       c._id === selectedCategory
     );
-  }, [selectedCategory, dbCategories]);
+  }, [selectedCategory, dbCategories, categoryData]);
 
   // Enforce manual scroll restoration on mount to prevent Next.js layout jumps on route mutations
   useEffect(() => {

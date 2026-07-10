@@ -79,7 +79,12 @@ export default async function DynamicCategoryCatcherPage({ params, searchParams 
           </div>
         </div>
       }>
-        <ShopContentClient initialCategory={category.slug} initialType={typeSlug} initialProducts={products} />
+        <ShopContentClient 
+          initialCategory={category.slug} 
+          initialType={typeSlug} 
+          initialProducts={products} 
+          categoryData={JSON.parse(JSON.stringify(category))} 
+        />
       </Suspense>
     </>
   );
