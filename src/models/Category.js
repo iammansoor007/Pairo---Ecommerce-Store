@@ -27,7 +27,12 @@ const CategorySchema = new mongoose.Schema({
     structuredData: String // JSON-LD
   },
   type: { type: String, enum: ['product', 'blog'], default: 'product' },
-  productCount: { type: Number, default: 0 }
+  productCount: { type: Number, default: 0 },
+  faqs: [{
+    question: String,
+    answer: String
+  }],
+  faqSchemaCustom: { type: String }
 }, { timestamps: true });
 
 // Compound index to allow same slug for DIFFERENT types, but unique for SAME type

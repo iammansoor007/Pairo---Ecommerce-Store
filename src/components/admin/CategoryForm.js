@@ -14,6 +14,8 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
   const [availableItems, setAvailableItems] = useState([]);
   const [itemSearchTerm, setItemSearchTerm] = useState("");
 
+  const [activeTab, setActiveTab] = useState("content");
+
   const [formData, setFormData] = useState({
     _id: null,
     name: "",
@@ -26,7 +28,9 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
     isFeatured: false,
     seo: { title: "", description: "", keywords: [], canonicalUrl: "", ogTitle: "", ogDescription: "", ogImage: "", noIndex: false, noFollow: false },
     linkedItems: [],
-    type: type
+    type: type,
+    faqs: [],
+    faqSchemaCustom: ""
   });
 
   const fetchCategory = async () => {
@@ -38,6 +42,8 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
         setFormData(prev => ({
           ...prev,
           ...cat,
+          faqs: cat.faqs || [],
+          faqSchemaCustom: cat.faqSchemaCustom || "",
           seo: { ...prev.seo, ...(cat.seo || {}) }
         }));
         return cat;
@@ -152,71 +158,186 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
                </div>
             </div>
 
-            {/* Short Description — shown in banner overlay */}
-            <div className="bg-white border border-[#c3c4c7] shadow-sm">
-               <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
-                  Short Description
-                  <span className="text-[11px] font-normal text-gray-400">Shown in banner overlay</span>
-               </div>
-               <div className="p-3">
-                  <textarea
-                     rows={3}
-                     placeholder="A brief tagline shown inside the category banner image..."
-                     className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] outline-none focus:border-[#2271b1] resize-none"
-                     value={formData.description || ""}
-                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  />
-               </div>
+            {/* Tabs Selector */}
+            <div className="flex border-b border-[#c3c4c7] mb-4 gap-1">
+               <button
+                  type="button"
+                  onClick={() => setActiveTab("content")}
+                  className={`px-4 py-2 text-[13px] font-bold border-t border-x rounded-t-[3px] -mb-[1px] transition-colors ${
+                     activeTab === "content"
+                        ? "bg-white border-[#c3c4c7] border-b-white text-gray-700"
+                        : "bg-[#eaeaea] border-transparent text-[#2271b1] hover:text-[#135e96]"
+                  }`}
+               >
+                  Content
+               </button>
+               <button
+                  type="button"
+                  onClick={() => setActiveTab("faq")}
+                  className={`px-4 py-2 text-[13px] font-bold border-t border-x rounded-t-[3px] -mb-[1px] transition-colors ${
+                     activeTab === "faq"
+                        ? "bg-white border-[#c3c4c7] border-b-white text-gray-700"
+                        : "bg-[#eaeaea] border-transparent text-[#2271b1] hover:text-[#135e96]"
+                  }`}
+               >
+                  FAQ ({formData.faqs?.length || 0})
+               </button>
             </div>
 
-            {/* Content Editor */}
-            <div className="bg-white border border-[#c3c4c7] shadow-sm">
-               <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
-                  Full Description
-               </div>
-               <div className="p-0">
-                  <TiptapEditor content={formData.content} onChange={(html) => setFormData({...formData, content: html})} />
-               </div>
-            </div>
-
-
-
-            {/* Link Items */}
-            <div className="bg-white border border-[#c3c4c7] shadow-sm">
-               <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 font-bold text-[13px] text-gray-700 flex justify-between">
-                  <span>Link {type === 'product' ? 'Products' : 'Blogs'}</span>
-                  <span className="text-[#2271b1]">{formData.linkedItems.length} selected</span>
-               </div>
-               <div className="p-3 space-y-3">
-                  <input 
-                     type="text" 
-                     placeholder={`Search ${type}s...`}
-                     value={itemSearchTerm}
-                     onChange={(e) => setItemSearchTerm(e.target.value)}
-                     className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[12px] focus:border-[#2271b1] outline-none"
-                  />
-                  <div className="max-h-48 overflow-y-auto border border-gray-200 divide-y divide-gray-100">
-                     {filteredItems.length === 0 ? (
-                        <div className="p-3 text-center text-gray-400 text-[12px]">No items available.</div>
-                     ) : (
-                        filteredItems.map(item => (
-                           <label key={item._id} className="flex items-center gap-3 p-2 hover:bg-[#f6f7f7] cursor-pointer">
-                              <input 
-                                 type="checkbox" 
-                                 className="w-4 h-4 text-[#2271b1]"
-                                 checked={formData.linkedItems.includes(item._id)}
-                                 onChange={(e) => {
-                                    if(e.target.checked) setFormData({...formData, linkedItems: [...formData.linkedItems, item._id]});
-                                    else setFormData({...formData, linkedItems: formData.linkedItems.filter(id => id !== item._id)});
-                                 }}
-                              />
-                              <span className="text-[13px]">{item.title || item.name}</span>
-                           </label>
-                        ))
-                     )}
+            {activeTab === "content" ? (
+               <>
+                  {/* Short Description — shown in banner overlay */}
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                     <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
+                        Short Description
+                        <span className="text-[11px] font-normal text-gray-400">Shown in banner overlay</span>
+                     </div>
+                     <div className="p-3">
+                        <textarea
+                           rows={3}
+                           placeholder="A brief tagline shown inside the category banner image..."
+                           className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] outline-none focus:border-[#2271b1] resize-none"
+                           value={formData.description || ""}
+                           onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        />
+                     </div>
                   </div>
-               </div>
-            </div>
+
+                  {/* Content Editor */}
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                     <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
+                        Full Description
+                     </div>
+                     <div className="p-0">
+                        <TiptapEditor content={formData.content} onChange={(html) => setFormData({...formData, content: html})} />
+                     </div>
+                  </div>
+
+                  {/* Link Items */}
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                     <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 font-bold text-[13px] text-gray-700 flex justify-between">
+                        <span>Link {type === 'product' ? 'Products' : 'Blogs'}</span>
+                        <span className="text-[#2271b1]">{formData.linkedItems.length} selected</span>
+                     </div>
+                     <div className="p-3 space-y-3">
+                        <input 
+                           type="text" 
+                           placeholder={`Search ${type}s...`}
+                           value={itemSearchTerm}
+                           onChange={(e) => setItemSearchTerm(e.target.value)}
+                           className="w-full border border-[#c3c4c7] px-3 py-1.5 text-[12px] focus:border-[#2271b1] outline-none"
+                        />
+                        <div className="max-h-48 overflow-y-auto border border-gray-200 divide-y divide-gray-100">
+                           {filteredItems.length === 0 ? (
+                              <div className="p-3 text-center text-gray-400 text-[12px]">No items available.</div>
+                           ) : (
+                              filteredItems.map(item => (
+                                 <label key={item._id} className="flex items-center gap-3 p-2 hover:bg-[#f6f7f7] cursor-pointer">
+                                    <input 
+                                       type="checkbox" 
+                                       className="w-4 h-4 text-[#2271b1]"
+                                       checked={formData.linkedItems.includes(item._id)}
+                                       onChange={(e) => {
+                                          if(e.target.checked) setFormData({...formData, linkedItems: [...formData.linkedItems, item._id]});
+                                          else setFormData({...formData, linkedItems: formData.linkedItems.filter(id => id !== item._id)});
+                                       }}
+                                    />
+                                    <span className="text-[13px]">{item.title || item.name}</span>
+                                 </label>
+                              ))
+                           )}
+                        </div>
+                     </div>
+                  </div>
+               </>
+            ) : (
+               <>
+                  {/* FAQ Manager */}
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                     <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
+                        <span>Frequently Asked Questions</span>
+                        <button
+                           type="button"
+                           onClick={() => {
+                              const faqs = [...(formData.faqs || []), { question: "", answer: "" }];
+                              setFormData({ ...formData, faqs });
+                           }}
+                           className="bg-[#2271b1] text-white px-2.5 py-1 rounded-[3px] text-[11px] font-bold hover:bg-[#135e96]"
+                        >
+                           Add New FAQ
+                        </button>
+                     </div>
+                     <div className="p-4 space-y-4">
+                        {(!formData.faqs || formData.faqs.length === 0) ? (
+                           <div className="text-center py-6 text-[13px] text-gray-400 italic">No FAQs configured yet. Click "Add New FAQ" to create one.</div>
+                        ) : (
+                           formData.faqs.map((faq, idx) => (
+                              <div key={idx} className="border border-[#ccd0d4] rounded p-3 bg-gray-50/50 space-y-2 relative">
+                                 <div className="flex justify-between items-center border-b border-gray-100 pb-1.5">
+                                    <span className="text-[11px] font-bold text-gray-400 uppercase">FAQ #{idx + 1}</span>
+                                    <button
+                                       type="button"
+                                       onClick={() => {
+                                          const faqs = formData.faqs.filter((_, i) => i !== idx);
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                       className="text-red-600 hover:text-red-800 text-[11px] font-bold"
+                                    >
+                                       Delete
+                                    </button>
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-gray-600 block">Question</label>
+                                    <input
+                                       type="text"
+                                       className="w-full border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[12px] outline-none focus:border-[#2271b1]"
+                                       placeholder="e.g. Do you ship worldwide?"
+                                       value={faq.question}
+                                       onChange={(e) => {
+                                          const faqs = [...formData.faqs];
+                                          faqs[idx].question = e.target.value;
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                    />
+                                 </div>
+                                 <div className="space-y-1">
+                                    <label className="text-[11px] font-bold text-gray-600 block">Answer</label>
+                                    <textarea
+                                       rows={3}
+                                       className="w-full border border-[#ccd0d4] rounded-[3px] px-3 py-1.5 text-[12px] outline-none focus:border-[#2271b1] resize-none"
+                                       placeholder="Enter the answer..."
+                                       value={faq.answer}
+                                       onChange={(e) => {
+                                          const faqs = [...formData.faqs];
+                                          faqs[idx].answer = e.target.value;
+                                          setFormData({ ...formData, faqs });
+                                       }}
+                                    />
+                                 </div>
+                              </div>
+                           ))
+                        )}
+                     </div>
+                  </div>
+
+                  {/* FAQ Schema Custom Block */}
+                  <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                     <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between font-bold text-[13px] text-gray-700">
+                        <span>Custom FAQ JSON-LD Schema</span>
+                        <span className="text-[11px] font-normal text-gray-400">Optional: Overrides auto-generated schema</span>
+                     </div>
+                     <div className="p-3">
+                        <textarea
+                           rows={6}
+                           placeholder={`{\n  "@type": "FAQPage",\n  "mainEntity": [\n     ...\n  ]\n}`}
+                           className="w-full border border-[#c3c4c7] rounded-[3px] p-3 text-[12px] font-mono outline-none focus:border-[#2271b1] bg-gray-50/20"
+                           value={formData.faqSchemaCustom || ""}
+                           onChange={(e) => setFormData({...formData, faqSchemaCustom: e.target.value})}
+                        />
+                     </div>
+                  </div>
+               </>
+            )}
 
             {/* SEO Settings */}
             <SEOConfigPanel

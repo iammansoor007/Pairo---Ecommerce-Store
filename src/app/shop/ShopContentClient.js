@@ -38,6 +38,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
   const [products, setProducts] = useState(initialProducts);
   const [selectedCategory, setSelectedCategory] = useState(categoryParam || "");
   const [loading, setLoading] = useState(initialProducts.length === 0);
+  const [openCategoryFaqIndex, setOpenCategoryFaqIndex] = useState(null);
   const { filters } = siteData;
   const siteContextData = useSiteData();
   const dbCategories = siteContextData?._dbCategories || [];
@@ -981,6 +982,60 @@ export default function ShopContentClient({ initialCategory = null, initialType 
         {currentDbCategory && currentDbCategory.content && (
           <div className="mt-16 border-t border-border pt-12 prose max-w-none text-foreground/75 text-sm leading-relaxed">
             <div dangerouslySetInnerHTML={{ __html: currentDbCategory.content }} />
+          </div>
+        )}
+
+        {/* Dynamic Category FAQs */}
+        {currentDbCategory && currentDbCategory.faqs && Array.isArray(currentDbCategory.faqs) && currentDbCategory.faqs.length > 0 && (
+          <div className="mt-16 border-t border-border pt-12">
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-10">
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-400">Q&A Session</span>
+                <h2 className="text-xl sm:text-2xl font-black heading-font tracking-tight text-foreground uppercase mt-2">
+                  Frequently Asked Questions
+                </h2>
+                <div className="w-12 h-1 bg-black/10 mx-auto mt-4" />
+              </div>
+              <div className="space-y-4">
+                {currentDbCategory.faqs.map((faq, idx) => {
+                  const isOpen = openCategoryFaqIndex === idx;
+                  return (
+                    <div 
+                      key={idx} 
+                      className="border border-border/80 rounded-[4px] bg-[#FAF9F6] overflow-hidden transition-all duration-300"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenCategoryFaqIndex(isOpen ? null : idx)}
+                        className="w-full flex items-center justify-between text-left p-5 hover:bg-neutral-50/50 transition-colors"
+                        aria-expanded={isOpen}
+                      >
+                        <h3 className="text-[13px] font-extrabold uppercase tracking-wide text-foreground leading-snug pr-4">
+                          {faq.question}
+                        </h3>
+                        <span className={`text-lg font-light text-neutral-400 transform transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
+                          +
+                        </span>
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: "easeInOut" }}
+                          >
+                            <div className="px-5 pb-5 pt-1 text-xs sm:text-[13px] text-neutral-600 leading-relaxed font-medium border-t border-black/[0.02]">
+                              {faq.answer}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
       </div>

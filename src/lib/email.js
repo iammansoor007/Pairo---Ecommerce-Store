@@ -12,9 +12,13 @@ import Role from '@/models/Role';
  * 3. Use that 16-character password in EMAIL_PASS.
  */
 
+const smtpHost = process.env.AWS_SMTP_HOST || process.env.EMAIL_SERVER || 'smtp.gmail.com';
+const smtpPort = parseInt(process.env.AWS_SMTP_PORT || process.env.EMAIL_PORT || '465');
+
 const transporter = nodemailer.createTransport({
-  // Use 'gmail' service directly as it handles the host/port/secure defaults automatically
-  service: 'gmail',
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpPort === 465,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,

@@ -370,48 +370,21 @@ export async function resolveSEOMetadata(options = {}) {
         ]
       };
 
-      const finalFaqList = [
-        {
-          "@type": "Question",
-          "name": `What inspired the ${entity.name}?`,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": `The design draws inspiration from classic heritage styles, blending premium leather craftsmanship with modern streetwear aesthetics.`
+      const finalFaqList = [];
+      if (entity.faqs && Array.isArray(entity.faqs) && entity.faqs.length > 0) {
+        entity.faqs.forEach(faq => {
+          if (faq.question && faq.answer) {
+            finalFaqList.push({
+              "@type": "Question",
+              "name": faq.question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": faq.answer
+              }
+            });
           }
-        },
-        {
-          "@type": "Question",
-          "name": "What material is used?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "This piece is crafted from premium-quality genuine leather and luxury shearling, offering exceptional warmth, durability, and comfort designed for long-term wear."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I wear this jacket casually?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Absolutely, the design pairs effortlessly with jeans, boots, and sweaters, making it a versatile statement piece for both casual outings and urban styling."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How should I maintain this leather piece?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Store in a cool, dry place; hang on a thick padded hanger; avoid direct wetness and follow a proper leather care guide to preserve the texture and longevity."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is it available in multiple sizes?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, we offer standard sizing along with bespoke custom options tailored to your exact measurements."
-          }
-        }
-      ];
+        });
+      }
 
       // Query ProductQuestions asynchronously for FAQ Schema
       try {
@@ -450,15 +423,18 @@ export async function resolveSEOMetadata(options = {}) {
         console.error("[SEO Resolver] Failed to load Product FAQs:", e.message);
       }
 
-      const faqSchema = {
-        "@type": "FAQPage",
-        "name": `Is the ${entity.name} available in multiple sizes?`,
-        "mainEntity": finalFaqList
-      };
+      let faqSchema = null;
+      if (finalFaqList.length > 0) {
+        faqSchema = {
+          "@type": "FAQPage",
+          "name": `Is the ${entity.name} available in multiple sizes?`,
+          "mainEntity": finalFaqList
+        };
+      }
 
       structuredDataJson = {
         "@context": "https://schema.org",
-        "@graph": [orgSchema, websiteSchema, imageSchema, itemPageSchema, productSchema, breadcrumbSchema, faqSchema]
+        "@graph": [orgSchema, websiteSchema, imageSchema, itemPageSchema, productSchema, breadcrumbSchema, faqSchema].filter(Boolean)
       };
     } else if (type === "category" && entity.name) {
       const catUrl = canonical;
@@ -521,7 +497,14 @@ export async function resolveSEOMetadata(options = {}) {
       };
 
       let faqSchema = null;
-      if (entity.faqs && Array.isArray(entity.faqs) && entity.faqs.length > 0) {
+      if (entity.faqSchemaCustom && entity.faqSchemaCustom.trim() !== "") {
+        try {
+          faqSchema = JSON.parse(entity.faqSchemaCustom);
+        } catch (err) {
+          console.error("[SEO Resolver] Failed to parse custom category FAQ schema:", err.message);
+        }
+      }
+      if (!faqSchema && entity.faqs && Array.isArray(entity.faqs) && entity.faqs.length > 0) {
         faqSchema = {
           "@type": "FAQPage",
           "mainEntity": entity.faqs.map(faq => ({
