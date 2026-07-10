@@ -79,11 +79,6 @@ export default function ProductMainSection({ product }) {
   const displayPrice = selectedVariant?.price || product.price;
   const displayCompareAtPrice = selectedVariant ? (selectedVariant.compareAtPrice !== undefined && selectedVariant.compareAtPrice !== null ? selectedVariant.compareAtPrice : null) : product.compareAtPrice;
   const displaySku = selectedVariant?.sku || product.sku;
-
-  const variantPrices = (product.variantCombinations || []).map(v => v.price).filter(p => p !== undefined && p !== null);
-  const minPrice = variantPrices.length > 0 ? Math.min(...variantPrices) : product.price;
-  const maxPrice = variantPrices.length > 0 ? Math.max(...variantPrices) : product.price;
-  const hasPriceRange = product.productType === 'variable' && minPrice !== maxPrice && !selectedVariant;
   let displayStock = product.stock;
   if (selectedVariant?.stock !== undefined) {
     displayStock = selectedVariant.stock;
@@ -150,9 +145,7 @@ export default function ProductMainSection({ product }) {
           </div>
 
           <div className="flex items-center flex-wrap gap-3.5">
-            {hasPriceRange ? (
-              <span className="text-2xl font-semibold tracking-tight text-primary">${minPrice.toFixed(2)} – ${maxPrice.toFixed(2)}</span>
-            ) : hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
+            {hasAffiliateDiscount && affiliateDiscountedPrice !== null ? (
               <>
                 <span className="text-2xl font-semibold tracking-tight text-primary">${affiliateDiscountedPrice.toFixed(2)}</span>
                 <span className="text-sm font-medium text-primary/40 line-through">${displayPrice}</span>
