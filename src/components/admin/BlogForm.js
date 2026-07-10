@@ -458,7 +458,7 @@ export default function BlogForm({ blogId }) {
                         >
                             Save Draft
                         </button>
-                        <button type="button" className="text-[#2271b1] underline text-[12px]">Preview</button>
+                        <button type="button" onClick={() => formData.slug && window.open(`/blog/${formData.slug}`, '_blank')} className="text-[#2271b1] underline text-[12px]" title={formData.slug ? `Preview /blog/${formData.slug}` : 'Save first to preview'}>Preview</button>
                      </div>
                      <div className="space-y-3 py-3 border-y border-gray-100 text-[13px]">
                         <div className="flex items-center justify-between">
