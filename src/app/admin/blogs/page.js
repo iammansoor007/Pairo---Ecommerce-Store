@@ -28,6 +28,26 @@ export default function AdminBlogs() {
   const [bulkAction, setBulkAction] = useState("Bulk actions");
   const [counts, setCounts] = useState({ all: 0, published: 0, trash: 0 });
 
+  const fetchCounts = useCallback(async () => {
+    try {
+      const [resAll, resTrash] = await Promise.all([
+        fetch("/api/admin/blogs"),
+        fetch("/api/admin/blogs?isDeleted=true")
+      ]);
+      if (resAll.ok && resTrash.ok) {
+        const allList = await resAll.json();
+        const trashList = await resTrash.json();
+        setCounts({
+          all: allList.length,
+          published: allList.filter(b => b.status === "Published").length,
+          trash: trashList.length
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch counts:", err);
+    }
+  }, []);
+
   const fetchBlogs = useCallback(async () => {
     setLoading(true);
     try {
@@ -40,23 +60,17 @@ export default function AdminBlogs() {
       if (res.ok) {
          const list = Array.isArray(data) ? data : [];
          setBlogs(list);
-         if (view === "all") {
-            const all = list.length;
-            const published = list.filter(b => b.status === "Published").length;
-            setCounts(prev => ({ ...prev, all, published }));
-         }
       }
+      await fetchCounts();
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [view]);
+  }, [view, fetchCounts]);
 
   useEffect(() => {
-    Promise.resolve().then(() => {
-      fetchBlogs();
-    });
+    fetchBlogs();
   }, [fetchBlogs]);
 
   const handleTrash = async (id) => {
@@ -165,7 +179,7 @@ export default function AdminBlogs() {
            </li>
            <span className="text-[#c3c4c7]">|</span>
            <li className={`${view === "trash" ? "text-[#1d2327] font-semibold" : "cursor-pointer hover:text-[#135e96]"}`} onClick={() => setView("trash")}>
-              Trash <span className="text-[#646970] font-normal">({view === "trash" ? blogs.length : "-"})</span>
+              Trash <span className="text-[#646970] font-normal">({counts.trash})</span>
            </li>
         </ul>
 
@@ -209,7 +223,7 @@ export default function AdminBlogs() {
           <table className="w-full text-left border-collapse table-fixed min-w-[900px] text-[13px]">
             <thead>
               <tr className="bg-[#f6f7f7] border-b border-[#ccd0d4]">
-                <th className="px-3 py-2 w-8 text-center"><input type="checkbox" checked={selectedIds.length > 0 && selectedIds.length === filteredBlogs.length} onChange={toggleSelectAll} /></th>
+                <th className="px-3 py-2 w-10 text-center"><input type="checkbox" checked={selectedIds.length > 0 && selectedIds.length === filteredBlogs.length} onChange={toggleSelectAll} /></th>
                 <th className="px-3 py-2 font-bold text-[#1d2327]">Title</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-32">Author</th>
                 <th className="px-3 py-2 font-bold text-[#1d2327] w-40">Categories</th>
@@ -228,8 +242,8 @@ export default function AdminBlogs() {
                     <td className="px-3 py-4 text-center align-top"><input type="checkbox" checked={selectedIds.includes(b._id)} onChange={() => toggleSelect(b._id)} /></td>
                     <td className="px-3 py-4 align-top">
                       <div className="flex items-start gap-3">
-                         <div className="w-10 h-10 bg-white border border-[#dcdcde] rounded-[2px] mx-auto overflow-hidden">
-                            {b.image ? <img src={b.image} className="w-full h-full object-cover" /> : <ImageIcon className="w-5 h-5 text-[#dcdcde] mt-2.5 mx-auto" />}
+                         <div className="w-10 h-10 bg-white border border-[#dcdcde] rounded-[2px] overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            {b.image ? <img src={b.image} className="w-full h-full object-cover" /> : <ImageIcon className="w-5 h-5 text-[#dcdcde]" />}
                          </div>
                          <div className="flex flex-col">
                             <Link href={`/admin/blogs/${b._id}`} className="text-[#2271b1] font-bold hover:underline block mb-1 text-[14px]">

@@ -149,6 +149,7 @@ export async function DELETE(req) {
          return NextResponse.json({ message: "Blog permanently deleted", success: true });
       } else {
          blog.isDeleted = true;
+         blog.status = "Draft";
          await blog.save();
          return NextResponse.json({ message: "Blog moved to trash", success: true, blog });
       }

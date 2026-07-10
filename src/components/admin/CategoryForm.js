@@ -6,6 +6,7 @@ import MediaPicker from "@/components/admin/MediaPicker";
 import { useRouter } from "next/navigation";
 import TiptapEditor from "@/components/admin/TiptapEditor";
 import SEOConfigPanel from "@/components/admin/SEOConfigPanel";
+import { Pencil, ExternalLink } from "lucide-react";
 
 export default function CategoryForm({ categoryId = null, type = "product" }) {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
   const [itemSearchTerm, setItemSearchTerm] = useState("");
 
   const [activeTab, setActiveTab] = useState("content");
+  const [slugLocked, setSlugLocked] = useState(true);
 
   const [formData, setFormData] = useState({
     _id: null,
@@ -152,9 +154,38 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
                      setFormData({...formData, name, slug: formData._id ? formData.slug : slug});
                   }}
                />
-               <div className="text-[12px] text-gray-500 px-1 mt-1 flex items-center gap-1">
-                  Permalink: <span className="text-gray-400">pairo.store/{type === 'product' ? 'collections' : 'blog-category'}/</span>
-                  <input className="border-none bg-transparent outline-none text-[#2271b1] font-mono w-fit min-w-[50px]" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
+               <div className="text-[12px] text-gray-500 px-1 mt-1 flex flex-wrap items-center gap-1.5">
+                  <span>Permalink:</span>
+                  <span className="text-gray-400 font-mono">
+                    pairolifestyle.com/{type === 'product' ? 'collections' : 'blog'}/
+                  </span>
+                  {slugLocked ? (
+                    <>
+                      <span className="font-mono text-[#2271b1] font-semibold">{formData.slug || <span className="text-gray-300 italic">auto-generated</span>}</span>
+                      <button
+                        type="button"
+                        title="Edit permalink"
+                        onClick={() => setSlugLocked(false)}
+                        className="ml-1 p-0.5 rounded hover:bg-gray-100 transition text-gray-400 hover:text-[#2271b1]"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        className="border border-[#2271b1] bg-white outline-none text-[#2271b1] font-mono rounded px-1 py-0.5 text-[12px] min-w-[120px]"
+                        value={formData.slug}
+                        onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setSlugLocked(true)}
+                        className="text-[11px] text-[#2271b1] underline"
+                      >OK</button>
+                    </>
+                  )}
                </div>
             </div>
 
@@ -363,12 +394,21 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
                            <option>Draft</option>
                         </select>
                      </p>
-                     <p className="flex items-center gap-2"><span className="text-gray-500 w-16">Visibility:</span> <strong>Public</strong></p>
                      <label className="flex items-center gap-2 cursor-pointer mt-2">
                         <input type="checkbox" checked={formData.isFeatured} onChange={(e) => setFormData({...formData, isFeatured: e.target.checked})} />
                         Featured Category
                      </label>
                   </div>
+                  {formData.slug && (
+                     <a
+                        href={`/${type === 'product' ? 'collections' : 'blog'}/${formData.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[11px] text-[#2271b1] hover:underline"
+                     >
+                        <ExternalLink className="w-3 h-3" /> Preview live page
+                     </a>
+                  )}
                   <div className="bg-[#f6f7f7] border-t border-[#c3c4c7] -mx-3 -mb-3 p-3 flex justify-between items-center">
                      <button type="button" onClick={() => router.push(type === 'product' ? '/admin/categories' : '/admin/blogs/categories')} className="text-red-600 hover:underline">Cancel</button>
                      <button type="submit" disabled={saving} className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] font-bold hover:bg-[#135e96]">

@@ -486,7 +486,7 @@ export default function ProductForm({ productId = null }) {
                   {/* Permalink / Slug Row */}
                   <div className="text-[12px] text-gray-500 px-1 mt-1 flex flex-wrap items-center gap-1.5">
                      <span>Permalink:</span>
-                     <span className="text-gray-400 font-mono">pairolifestyle.com/{getPreviewCategorySlug()}/</span>
+                     <span className="text-gray-400 font-mono">pairolifestyle.com/product/</span>
 
                      {slugLocked ? (
                         // Read-only view with pencil edit button
@@ -1014,118 +1014,203 @@ export default function ProductForm({ productId = null }) {
                                                  <p className="text-[11px] text-gray-400">URL to instructions video (YouTube embed/watch link).</p>
                                               </div>
                                            </div>
+                                            {(() => {
+                                               const DEFAULT_COLS_CM = [
+                                                  { key: "size", label: "Size" },
+                                                  { key: "us", label: "US Size" },
+                                                  { key: "eu", label: "EU Size" },
+                                                  { key: "chest", label: "Chest (CM)" },
+                                                  { key: "sleeves", label: "Sleeves (CM)" },
+                                               ];
+                                               const colsCm = formData.sizeGuide?.columnsCm?.length > 0
+                                                  ? formData.sizeGuide.columnsCm
+                                                  : DEFAULT_COLS_CM;
+                                               const updateColsCm = (cols) =>
+                                                  setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), columnsCm: cols } });
+                                               const addColCm = () => {
+                                                  const key = `col_${Date.now()}`;
+                                                  updateColsCm([...colsCm, { key, label: "New Column" }]);
+                                               };
+                                               const removeColCm = (idx) => updateColsCm(colsCm.filter((_, i) => i !== idx));
+                                               const renameColCm = (idx, label) => {
+                                                  const updated = colsCm.map((c, i) => i === idx ? { ...c, label } : c);
+                                                  updateColsCm(updated);
+                                               };
+                                               return (
+                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                                     <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+                                                        <h4 className="text-[13px] font-bold text-gray-700">Size Chart (CM)</h4>
+                                                        <div className="flex gap-2">
+                                                           <button type="button" onClick={addColCm}
+                                                              className="border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded text-[11px] font-bold hover:bg-[#2271b1] hover:text-white transition">
+                                                              + Add Column
+                                                           </button>
+                                                           <button type="button"
+                                                              onClick={() => {
+                                                                 const cm = [...(formData.sizeGuide?.sizesCm || [])];
+                                                                 const emptyRow = {};
+                                                                 colsCm.forEach(c => { emptyRow[c.key] = ""; });
+                                                                 cm.push(emptyRow);
+                                                                 setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                              }}
+                                                              className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]">
+                                                              + Add Row
+                                                           </button>
+                                                        </div>
+                                                     </div>
+                                                     <div className="overflow-x-auto">
+                                                        <table className="w-full text-left text-[11px] border-collapse">
+                                                           <thead>
+                                                              <tr className="bg-gray-50 border-b border-gray-200">
+                                                                 {colsCm.map((col, cIdx) => (
+                                                                    <th key={col.key} className="p-1">
+                                                                       <div className="flex items-center gap-1 group">
+                                                                          <input
+                                                                             className="border border-transparent hover:border-gray-200 focus:border-[#2271b1] bg-transparent outline-none text-gray-500 font-bold uppercase text-[10px] w-full min-w-[60px] px-1 py-0.5 rounded"
+                                                                             value={col.label}
+                                                                             onChange={(e) => renameColCm(cIdx, e.target.value)}
+                                                                          />
+                                                                          {colsCm.length > 1 && (
+                                                                             <button type="button" onClick={() => removeColCm(cIdx)}
+                                                                                className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition flex-shrink-0">
+                                                                                <X className="w-3 h-3" />
+                                                                             </button>
+                                                                          )}
+                                                                       </div>
+                                                                    </th>
+                                                                 ))}
+                                                                 <th className="p-1 w-8" />
+                                                              </tr>
+                                                           </thead>
+                                                           <tbody className="divide-y divide-gray-100">
+                                                              {(formData.sizeGuide?.sizesCm || []).map((row, rIdx) => (
+                                                                 <tr key={rIdx}>
+                                                                    {colsCm.map(col => (
+                                                                       <td key={col.key} className="p-1">
+                                                                          <input
+                                                                             className="w-full border border-gray-200 p-1 text-[11px]"
+                                                                             value={row[col.key] || ""}
+                                                                             onChange={(e) => {
+                                                                                const cm = [...(formData.sizeGuide?.sizesCm || [])];
+                                                                                cm[rIdx] = { ...cm[rIdx], [col.key]: e.target.value };
+                                                                                setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                                             }}
+                                                                          />
+                                                                       </td>
+                                                                    ))}
+                                                                    <td className="p-1 text-center">
+                                                                       <button type="button" onClick={() => {
+                                                                          const cm = (formData.sizeGuide?.sizesCm || []).filter((_, i) => i !== rIdx);
+                                                                          setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
+                                                                       }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
+                                                                    </td>
+                                                                 </tr>
+                                                              ))}
+                                                           </tbody>
+                                                        </table>
+                                                     </div>
+                                                  </div>
+                                               );
+                                            })()}
 
-                                           {/* CM Table */}
-                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded">
-                                              <div className="flex justify-between items-center mb-3">
-                                                 <h4 className="text-[13px] font-bold text-gray-700">Size Chart (CM)</h4>
-                                                 <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                       const cm = [...(formData.sizeGuide?.sizesCm || [])];
-                                                       cm.push({ size: "", us: "", eu: "", chest: "", sleeves: "" });
-                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
-                                                    }}
-                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
-                                                 >
-                                                    + Add Row (CM)
-                                                 </button>
-                                              </div>
-                                              <div className="overflow-x-auto">
-                                                 <table className="w-full text-left text-[11px] border-collapse">
-                                                    <thead>
-                                                       <tr className="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold uppercase">
-                                                          <th className="p-2 w-20">Size</th>
-                                                          <th className="p-2 w-24">US Size</th>
-                                                          <th className="p-2 w-24">EU Size</th>
-                                                          <th className="p-2">Chest (CM)</th>
-                                                          <th className="p-2">Sleeves (CM)</th>
-                                                          <th className="p-2 w-10"></th>
-                                                       </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-100">
-                                                       {(formData.sizeGuide?.sizesCm || []).map((row, rIdx) => {
-                                                          const updateRow = (key, val) => {
-                                                             const cm = [...(formData.sizeGuide?.sizesCm || [])];
-                                                             cm[rIdx] = { ...cm[rIdx], [key]: val };
-                                                             setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
-                                                          };
-                                                          return (
-                                                             <tr key={rIdx}>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.size || ""} onChange={(e) => updateRow("size", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.us || ""} onChange={(e) => updateRow("us", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.eu || ""} onChange={(e) => updateRow("eu", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.chest || ""} onChange={(e) => updateRow("chest", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.sleeves || ""} onChange={(e) => updateRow("sleeves", e.target.value)} /></td>
-                                                                <td className="p-1 text-center">
-                                                                   <button type="button" onClick={() => {
-                                                                      const cm = (formData.sizeGuide?.sizesCm || []).filter((_, idx) => idx !== rIdx);
-                                                                      setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesCm: cm } });
-                                                                   }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
-                                                                </td>
-                                                             </tr>
-                                                          );
-                                                       })}
-                                                    </tbody>
-                                                 </table>
-                                              </div>
-                                           </div>
-
-                                           {/* IN Table */}
-                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded">
-                                              <div className="flex justify-between items-center mb-3">
-                                                 <h4 className="text-[13px] font-bold text-gray-700">Size Chart (INCHES)</h4>
-                                                 <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                       const inches = [...(formData.sizeGuide?.sizesIn || [])];
-                                                       inches.push({ size: "", us: "", eu: "", chest: "", sleeves: "" });
-                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
-                                                    }}
-                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
-                                                 >
-                                                    + Add Row (IN)
-                                                 </button>
-                                              </div>
-                                              <div className="overflow-x-auto">
-                                                 <table className="w-full text-left text-[11px] border-collapse">
-                                                    <thead>
-                                                       <tr className="bg-gray-50 border-b border-gray-200 text-gray-400 font-bold uppercase">
-                                                          <th className="p-2 w-20">Size</th>
-                                                          <th className="p-2 w-24">US Size</th>
-                                                          <th className="p-2 w-24">EU Size</th>
-                                                          <th className="p-2">Chest (IN)</th>
-                                                          <th className="p-2">Sleeves (IN)</th>
-                                                          <th className="p-2 w-10"></th>
-                                                       </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-gray-100">
-                                                       {(formData.sizeGuide?.sizesIn || []).map((row, rIdx) => {
-                                                          const updateRow = (key, val) => {
-                                                             const inches = [...(formData.sizeGuide?.sizesIn || [])];
-                                                             inches[rIdx] = { ...inches[rIdx], [key]: val };
-                                                             setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
-                                                          };
-                                                          return (
-                                                             <tr key={rIdx}>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.size || ""} onChange={(e) => updateRow("size", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.us || ""} onChange={(e) => updateRow("us", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.eu || ""} onChange={(e) => updateRow("eu", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.chest || ""} onChange={(e) => updateRow("chest", e.target.value)} /></td>
-                                                                <td className="p-1"><input className="w-full border border-gray-200 p-1 text-[11px]" value={row.sleeves || ""} onChange={(e) => updateRow("sleeves", e.target.value)} /></td>
-                                                                <td className="p-1 text-center">
-                                                                   <button type="button" onClick={() => {
-                                                                      const inches = (formData.sizeGuide?.sizesIn || []).filter((_, idx) => idx !== rIdx);
-                                                                      setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
-                                                                   }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
-                                                                </td>
-                                                             </tr>
-                                                          );
-                                                       })}
-                                                    </tbody>
-                                                 </table>
-                                              </div>
-                                           </div>
+                                            {(() => {
+                                               const DEFAULT_COLS_IN = [
+                                                  { key: "size", label: "Size" },
+                                                  { key: "us", label: "US Size" },
+                                                  { key: "eu", label: "EU Size" },
+                                                  { key: "chest", label: "Chest (IN)" },
+                                                  { key: "sleeves", label: "Sleeves (IN)" },
+                                               ];
+                                               const colsIn = formData.sizeGuide?.columnsIn?.length > 0
+                                                  ? formData.sizeGuide.columnsIn
+                                                  : DEFAULT_COLS_IN;
+                                               const updateColsIn = (cols) =>
+                                                  setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), columnsIn: cols } });
+                                               const addColIn = () => {
+                                                  const key = `col_${Date.now()}`;
+                                                  updateColsIn([...colsIn, { key, label: "New Column" }]);
+                                               };
+                                               const removeColIn = (idx) => updateColsIn(colsIn.filter((_, i) => i !== idx));
+                                               const renameColIn = (idx, label) => {
+                                                  const updated = colsIn.map((c, i) => i === idx ? { ...c, label } : c);
+                                                  updateColsIn(updated);
+                                               };
+                                               return (
+                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                                     <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
+                                                        <h4 className="text-[13px] font-bold text-gray-700">Size Chart (INCHES)</h4>
+                                                        <div className="flex gap-2">
+                                                           <button type="button" onClick={addColIn}
+                                                              className="border border-[#2271b1] text-[#2271b1] px-3 py-1 rounded text-[11px] font-bold hover:bg-[#2271b1] hover:text-white transition">
+                                                              + Add Column
+                                                           </button>
+                                                           <button type="button"
+                                                              onClick={() => {
+                                                                 const inches = [...(formData.sizeGuide?.sizesIn || [])];
+                                                                 const emptyRow = {};
+                                                                 colsIn.forEach(c => { emptyRow[c.key] = ""; });
+                                                                 inches.push(emptyRow);
+                                                                 setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                              }}
+                                                              className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]">
+                                                              + Add Row
+                                                           </button>
+                                                        </div>
+                                                     </div>
+                                                     <div className="overflow-x-auto">
+                                                        <table className="w-full text-left text-[11px] border-collapse">
+                                                           <thead>
+                                                              <tr className="bg-gray-50 border-b border-gray-200">
+                                                                 {colsIn.map((col, cIdx) => (
+                                                                    <th key={col.key} className="p-1">
+                                                                       <div className="flex items-center gap-1 group">
+                                                                          <input
+                                                                             className="border border-transparent hover:border-gray-200 focus:border-[#2271b1] bg-transparent outline-none text-gray-500 font-bold uppercase text-[10px] w-full min-w-[60px] px-1 py-0.5 rounded"
+                                                                             value={col.label}
+                                                                             onChange={(e) => renameColIn(cIdx, e.target.value)}
+                                                                          />
+                                                                          {colsIn.length > 1 && (
+                                                                             <button type="button" onClick={() => removeColIn(cIdx)}
+                                                                                className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition flex-shrink-0">
+                                                                                <X className="w-3 h-3" />
+                                                                             </button>
+                                                                          )}
+                                                                       </div>
+                                                                    </th>
+                                                                 ))}
+                                                                 <th className="p-1 w-8" />
+                                                              </tr>
+                                                           </thead>
+                                                           <tbody className="divide-y divide-gray-100">
+                                                              {(formData.sizeGuide?.sizesIn || []).map((row, rIdx) => (
+                                                                 <tr key={rIdx}>
+                                                                    {colsIn.map(col => (
+                                                                       <td key={col.key} className="p-1">
+                                                                          <input
+                                                                             className="w-full border border-gray-200 p-1 text-[11px]"
+                                                                             value={row[col.key] || ""}
+                                                                             onChange={(e) => {
+                                                                                const inches = [...(formData.sizeGuide?.sizesIn || [])];
+                                                                                inches[rIdx] = { ...inches[rIdx], [col.key]: e.target.value };
+                                                                                setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                                             }}
+                                                                          />
+                                                                       </td>
+                                                                    ))}
+                                                                    <td className="p-1 text-center">
+                                                                       <button type="button" onClick={() => {
+                                                                          const inches = (formData.sizeGuide?.sizesIn || []).filter((_, i) => i !== rIdx);
+                                                                          setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), sizesIn: inches } });
+                                                                       }}><X className="w-3.5 h-3.5 text-gray-300 hover:text-red-500" /></button>
+                                                                    </td>
+                                                                 </tr>
+                                                              ))}
+                                                           </tbody>
+                                                        </table>
+                                                     </div>
+                                                  </div>
+                                               );
+                                            })()}
 
                                            {/* Instructions */}
                                            <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-4">
@@ -1210,7 +1295,7 @@ export default function ProductForm({ productId = null }) {
                   <div className="p-3 space-y-4 text-[13px]">
                      <div className="flex justify-between items-center">
                         <button type="button" onClick={handleSubmit} className="border border-[#c3c4c7] px-3 py-1.5 rounded-[3px] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[12px] font-medium">Save Draft</button>
-                        <button type="button" className="text-[#2271b1] underline">Preview</button>
+                        <button type="button" onClick={() => formData.slug && window.open(`/product/${formData.slug}`, '_blank')} className="text-[#2271b1] underline text-[12px]" title={formData.slug ? `Preview /product/${formData.slug}` : 'Save first to preview'}>Preview</button>
                      </div>
                      <div className="space-y-3 py-3 border-y border-gray-100">
                         <div className="flex items-center justify-between">
@@ -1261,35 +1346,13 @@ export default function ProductForm({ productId = null }) {
                                   checked={(formData.categories || []).includes(cat._id)} 
                                   onChange={e => {
                                      const n = e.target.checked ? [...(formData.categories || []), cat._id] : (formData.categories || []).filter(id => id !== cat._id);
-                                     let newPrimary = formData.primaryCategory;
-                                     if (!e.target.checked && formData.primaryCategory === cat._id) {
-                                        newPrimary = n.length > 0 ? n[0] : "";
-                                     } else if (e.target.checked && !formData.primaryCategory) {
-                                        newPrimary = cat._id;
-                                     }
-                                     setFormData({ ...formData, categories: n, primaryCategory: newPrimary });
+                                     setFormData({ ...formData, categories: n });
                                   }} 
                                /> 
                                {cat.name}
                             </label>
                          ))
                       )}
-                   </div>
-                   <div className="p-4">
-                      <label className="text-[12px] font-bold text-gray-700 block mb-1">Primary Category</label>
-                      <select 
-                         className="w-full text-[13px] border border-gray-200 rounded px-2 py-1.5 outline-none focus:border-[#2271b1] bg-white cursor-pointer"
-                         value={formData.primaryCategory || ""}
-                         onChange={(e) => setFormData({ ...formData, primaryCategory: e.target.value })}
-                      >
-                         <option value="">-- None --</option>
-                         {categories.filter(c => (formData.categories || []).includes(c._id)).map(cat => (
-                            <option key={cat._id} value={cat._id}>{cat.name}</option>
-                         ))}
-                      </select>
-                      <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">
-                         Used for URL hierarchy, SEO canonical tags, and breadcrumbs.
-                      </p>
                    </div>
                 </div>
 

@@ -112,8 +112,29 @@ export default function BlogForm({ blogId }) {
             setLoading(false);
          }
       };
+
       fetchData();
    }, [blogId]);
+
+   const handleTrash = async () => {
+      if (!blogId) return;
+      if (!confirm("Are you sure you want to move this post to trash?")) return;
+      try {
+         const res = await fetch(`/api/admin/blogs?id=${blogId}`, {
+            method: "DELETE"
+         });
+         if (res.ok) {
+            alert("Blog post moved to trash successfully.");
+            router.push("/admin/blogs");
+         } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(`Failed to move to trash: ${errData.error || res.statusText || "Unknown error"}`);
+         }
+      } catch (err) {
+         console.error(err);
+         alert(`Network Error: ${err.message}`);
+      }
+   };
 
    useEffect(() => {
       if (typeof window !== 'undefined') {
@@ -451,11 +472,13 @@ export default function BlogForm({ blogId }) {
                                 <option value="Published">Published</option>
                             </select>
                         </div>
-                        <p className="flex items-center gap-2"><span className="text-gray-400">Visibility:</span> <strong>Public</strong> <button type="button" className="text-[#2271b1] underline ml-auto text-[12px]">Edit</button></p>
-                        <p className="flex items-center gap-2"><span className="text-gray-400"><Calendar className="w-3.5 h-3.5 inline mr-1" /> Publish immediately</span> <button type="button" className="text-[#2271b1] underline ml-auto text-[12px]">Edit</button></p>
                      </div>
                      <div className="flex items-center justify-between bg-[#f6f7f7] -mx-3 -mb-3 p-3 border-t border-[#ccd0d4]">
-                        <button type="button" className="text-[#d63638] underline text-[12px]">Move to Trash</button>
+                        {blogId ? (
+                           <button type="button" onClick={handleTrash} className="text-[#d63638] underline text-[12px]">Move to Trash</button>
+                        ) : (
+                           <div />
+                        )}
                         <button 
                            type="submit" 
                            disabled={saving}
