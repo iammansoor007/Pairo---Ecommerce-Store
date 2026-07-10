@@ -52,12 +52,12 @@ export default function FeaturedBanner({
           <div className="max-w-full md:max-w-lg lg:max-w-xl space-y-6 md:space-y-8">
             {/* Minimalist Badges */}
             <div className="flex flex-wrap gap-2">
-              <h3 className="bg-white/10 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
+              <p className="bg-white/10 backdrop-blur-md text-white text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase border border-white/10">
                 {bannerData.badge1}
-              </h3>
-              <h3 className="bg-primary text-background text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
+              </p>
+              <p className="bg-primary text-background text-[9px] md:text-[11px] font-bold px-3 py-1.5 rounded-full tracking-[0.1em] md:tracking-[0.2em] uppercase">
                 {bannerData.badge2}
-              </h3>
+              </p>
             </div>
 
             {/* Scaled Typography */}

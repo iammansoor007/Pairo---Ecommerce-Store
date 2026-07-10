@@ -48,9 +48,9 @@ export default function CategoryBanner({
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <h3 className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
+              <p className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">
                 {categoriesConfig.label || "The Collection"}
-              </h3>
+              </p>
             </div>
             <HeadingTag className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">
               {categoriesConfig.title || "Shop By Category"}

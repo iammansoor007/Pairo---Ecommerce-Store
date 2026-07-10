@@ -1,27 +1,49 @@
+import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import dbConnect from './db';
 import Staff from '@/models/Staff';
 import Role from '@/models/Role';
 
-/**
- * Enterprise Email Dispatcher (Optimized for Gmail)
- * 
- * Note: To use Gmail, you must:
- * 1. Enable 2-Step Verification on your Google Account.
- * 2. Generate an "App Password" (Security > App Passwords).
- * 3. Use that 16-character password in EMAIL_PASS.
- */
-
-const smtpHost = process.env.AWS_SMTP_HOST || process.env.EMAIL_SERVER || 'smtp.gmail.com';
+const smtpHost = process.env.AWS_SMTP_HOST || process.env.EMAIL_SERVER || 'email-smtp.eu-north-1.amazonaws.com';
 const smtpPort = parseInt(process.env.AWS_SMTP_PORT || process.env.EMAIL_PORT || '465');
+
+// Extract AWS SES Region from SMTP Host to derive signing key correctly
+const regionMatch = smtpHost.match(/email-smtp\.(.*?)\.amazonaws\.com/);
+const sesRegion = regionMatch ? regionMatch[1] : 'eu-north-1';
+
+function getSmtpPassword(secretKey, region) {
+  if (!secretKey) return '';
+  const date = "11111111";
+  const service = "ses";
+  const terminal = "aws4_request";
+  const message = "SendRawEmail";
+  const version = 0x04;
+
+  let signature = crypto.createHmac('sha256', "AWS4" + secretKey).update(date).digest();
+  signature = crypto.createHmac('sha256', signature).update(region).digest();
+  signature = crypto.createHmac('sha256', signature).update(service).digest();
+  signature = crypto.createHmac('sha256', signature).update(terminal).digest();
+  signature = crypto.createHmac('sha256', signature).update(message).digest();
+
+  const signatureAndVersion = Buffer.alloc(signature.length + 1);
+  signatureAndVersion.writeUInt8(version, 0);
+  signature.copy(signatureAndVersion, 1);
+
+  return signatureAndVersion.toString('base64');
+}
+
+const smtpUser = process.env.AWS_ACCESS_KEY_ID || process.env.EMAIL_USER;
+const smtpPass = process.env.AWS_SECRET_ACCESS_KEY 
+  ? getSmtpPassword(process.env.AWS_SECRET_ACCESS_KEY, sesRegion) 
+  : process.env.EMAIL_PASS;
 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: smtpPort === 465,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: smtpUser,
+    pass: smtpPass,
   },
 });
 

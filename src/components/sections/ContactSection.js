@@ -306,7 +306,7 @@ export default function ContactSection({
                     <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                     <span className="text-[9px] font-bold tracking-[0.25em] text-foreground/50 uppercase block">{formSubtitle}</span>
                   </div>
-                  <p className="text-xl md:text-2xl font-bold heading-font uppercase tracking-tighter text-foreground leading-none">{formTitle}</p>
+                  <h2 className="text-xl md:text-2xl font-bold heading-font uppercase tracking-tighter text-foreground leading-none">{formTitle}</h2>
                 </div>
 
                 <form className="space-y-6" onSubmit={handleSubmit}>

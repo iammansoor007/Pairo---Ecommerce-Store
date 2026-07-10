@@ -137,7 +137,7 @@ export default function Testimonials({
         <div className="flex items-end justify-between mb-8 md:mb-12 gap-6">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <h3 className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</h3>
+              <p className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{testimonialsConfig.label}</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">{testimonialsConfig.title}</h2>
           </div>

@@ -64,7 +64,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
   if (col.type === 'newsletter') {
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
+        <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</p>
         <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
           <input
             type="email"
@@ -90,7 +90,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
+        <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</p>
         <ul className="space-y-3">
           {cats.map(cat => (
             <li key={cat.slug || cat.name}>
@@ -111,7 +111,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
+        <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</p>
         <ul className="space-y-3">
           {blogs.map(blog => (
             <li key={blog._id?.toString()}>
@@ -132,7 +132,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
       .filter(Boolean);
     return (
       <motion.div variants={itemVariants} className="space-y-6">
-        <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
+        <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</p>
         <ul className="space-y-3">
           {pages.map(page => {
             const href = page.slug ? `/${page.slug}` : '#';
@@ -153,7 +153,7 @@ function FooterColumn({ col, siteData, handleNewsletterSubmit, email, setEmail, 
   const links = (col.customLinks || []).sort((a, b) => (a.order || 0) - (b.order || 0));
   return (
     <motion.div variants={itemVariants} className="space-y-6">
-      <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</h3>
+      <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{heading}</p>
       <ul className="space-y-3">
         {links.map(link => {
           const href = link.url || '#';
@@ -337,7 +337,7 @@ export default function Footer() {
             <>
               {/* Column 1 — Newsletter */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{newsletterHeading}</h3>
+                <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{newsletterHeading}</h3>
                 <form onSubmit={handleNewsletterSubmit} className="relative group max-w-sm">
                   <input
                     type="email"
@@ -356,7 +356,7 @@ export default function Footer() {
 
               {/* Column 2 — Product Categories */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">Collections</h3>
+                <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">Collections</h3>
                 <ul className="space-y-3">
                   {footerCategories.map((cat) => (
                     <li key={cat.slug || cat.name}>
@@ -371,7 +371,7 @@ export default function Footer() {
               {/* Column 3 — Blog Posts */}
               {footerBlogs.length > 0 ? (
                 <motion.div variants={itemVariants} className="space-y-6">
-                  <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerBlogHeading}</h3>
+                  <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerBlogHeading}</h3>
                   <ul className="space-y-3">
                     {footerBlogs.map((blog) => (
                       <li key={blog._id?.toString()}>
@@ -388,7 +388,7 @@ export default function Footer() {
 
               {/* Column 4 — Custom Links */}
               <motion.div variants={itemVariants} className="space-y-6">
-                <h3 className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerCustomLinksHeading}</h3>
+                <p className="text-[13px] font-bold text-white/90 uppercase tracking-[0.2em]">{footerCustomLinksHeading}</h3>
                 <ul className="space-y-3">
                   {footerCustomLinks.length > 0 ? (
                     footerCustomLinks.map((link) => {

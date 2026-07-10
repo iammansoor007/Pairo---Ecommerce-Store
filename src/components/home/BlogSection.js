@@ -14,7 +14,7 @@ const BlogCard = ({ post, readMoreLabel }) => (
       </div>
       {post.category && (
         <div className="absolute top-2 md:top-4 left-2 md:left-4 z-10">
-          <h3 className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category}</h3>
+          <p className="bg-black/80 backdrop-blur-md text-white text-[6px] md:text-[8px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-md md:rounded-lg tracking-[0.1em] md:tracking-[0.2em] uppercase shadow-lg">{post.category}</p>
         </div>
       )}
       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -116,7 +116,7 @@ export default function BlogSection({
         <div className="flex items-end justify-between mb-10 md:mb-14 gap-4">
           <div className="space-y-3 md:space-y-4 flex-1 min-w-0">
             <div className="inline-flex items-center bg-black text-white px-3 py-1 rounded-md">
-              <h3 className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</h3>
+              <p className="text-[9px] md:text-[11px] font-bold tracking-[0.2em] uppercase">{blogsConfig.label}</p>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold heading-font tracking-tighter text-[#000000] uppercase leading-none truncate">{blogsConfig.title}</h2>
           </div>

@@ -93,9 +93,9 @@ export default function ProductSection({
               transition={{ duration: 0.6 }}
               className="inline-flex items-center bg-black text-white px-3 py-1 rounded-full"
             >
-              <h3 className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
+              <p className="text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase">
                 {productLabels.seriesLabel}
-              </h3>
+              </p>
             </motion.div>
             <MotionHeading
               initial={{ opacity: 0, y: 20 }}
