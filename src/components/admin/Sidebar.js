@@ -101,7 +101,7 @@ export default function AdminSidebar() {
     else if (pathname.startsWith("/admin/pages") || pathname.startsWith("/admin/gallery-items") || pathname.startsWith("/admin/size-chart-items")) setOpenAccordion("pages");
     else if (pathname.startsWith("/admin/settings/team") || pathname.startsWith("/admin/settings/roles")) setOpenAccordion("users");
     else if (pathname.startsWith("/admin/appearance")) setOpenAccordion("appearance");
-    else if (pathname.startsWith("/admin/contact") || pathname.startsWith("/admin/custom-jacket-inquiries") || pathname.startsWith("/admin/settings/logs") || pathname.startsWith("/admin/settings/scripts")) setOpenAccordion("tools");
+    else if (pathname.startsWith("/admin/contact") || pathname.startsWith("/admin/custom-jacket-inquiries") || pathname.startsWith("/admin/settings/logs") || pathname.startsWith("/admin/settings/scripts") || pathname.startsWith("/admin/settings/filters")) setOpenAccordion("tools");
     else if (pathname.startsWith("/admin/settings/site")) setOpenAccordion("settings");
     else setOpenAccordion("");
   }, [pathname]);
@@ -248,6 +248,7 @@ export default function AdminSidebar() {
             <NavLink href="/admin/custom-jacket-inquiries" exact isSubmenu>Custom Inquiries</NavLink>
             <NavLink href="/admin/settings/logs" exact isSubmenu>Audit Logs</NavLink>
             <NavLink href="/admin/settings/scripts" exact isSubmenu>Custom Scripts</NavLink>
+            <NavLink href="/admin/settings/filters" exact isSubmenu>Category Filters</NavLink>
           </AccordionMenu>
 
           {/* Settings Accordion */}

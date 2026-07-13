@@ -102,6 +102,7 @@ export default function ShopContentClient({ initialCategory = null, initialType 
       if (!c) return false;
       if (c.isDeleted === true || c.isDeleted === 'true') return false;
       if (c.status === 'Draft') return false;
+      if (c.showInFilters === false || c.showInFilters === 'false') return false;
       return true;
     };
 

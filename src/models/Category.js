@@ -9,6 +9,7 @@ const CategorySchema = new mongoose.Schema({
   content: { type: String }, // Full description
   status: { type: String, enum: ['Draft', 'Published'], default: 'Published' },
   isFeatured: { type: Boolean, default: false },
+  showInFilters: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   seo: {
     title: String,
