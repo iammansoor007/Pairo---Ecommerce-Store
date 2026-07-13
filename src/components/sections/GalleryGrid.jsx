@@ -82,7 +82,7 @@ function GalleryDetailModal({ item, onClose }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative max-w-4xl w-full bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2 max-h-[90vh] md:max-h-[80vh]"
+        className="relative max-w-4xl w-full bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2 h-auto md:h-[520px] max-h-[95vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -94,7 +94,7 @@ function GalleryDetailModal({ item, onClose }) {
         </button>
 
         {/* Left Side: Image */}
-        <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-muted min-h-[300px]">
+        <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-muted min-h-[250px] md:min-h-[520px]">
           {item.image ? (
             <Image
               src={item.image}
@@ -112,30 +112,33 @@ function GalleryDetailModal({ item, onClose }) {
         </div>
 
         {/* Right Side: Details */}
-        <div className="p-8 md:p-12 flex flex-col justify-between overflow-y-auto bg-white">
-          <div className="space-y-6">
+        <div className="p-6 md:p-10 flex flex-col justify-between bg-white overflow-hidden h-full">
+          <div className="space-y-4">
+            <span className="text-[9px] font-black uppercase tracking-[3px] text-foreground/45">
+              Gallery Item
+            </span>
             <h2
               style={{ fontFamily: "var(--brand-font)" }}
-              className="font-heading font-black text-2xl md:text-3xl text-foreground leading-tight tracking-tight"
+              className="font-heading font-black text-xl md:text-2xl text-foreground leading-tight tracking-tight"
             >
               {item.title}
             </h2>
-
-            {item.description && (
-              <div className="border-t border-border pt-4">
-                <p className="text-foreground/60 text-sm md:text-base leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            )}
           </div>
 
+          {item.description && (
+            <div className="border-t border-border pt-4 overflow-y-auto flex-1 max-h-[160px] md:max-h-[240px] pr-2 mt-4">
+              <p className="text-foreground/60 text-xs md:text-sm leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+          )}
+
           {/* Bottom: View Product button */}
-          <div className="pt-8 mt-8 border-t border-border flex flex-col gap-4">
+          <div className="pt-4 mt-4 border-t border-border flex flex-col gap-4">
             <Link
               href={productUrl}
               onClick={onClose}
-              className="w-full inline-flex items-center justify-center bg-black text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-neutral-800 transition-all duration-300 shadow-md active:scale-98"
+              className="w-full inline-flex items-center justify-center bg-black text-white py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-neutral-800 transition-all duration-300 shadow-md active:scale-98"
             >
               View Product
             </Link>
