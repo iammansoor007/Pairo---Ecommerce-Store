@@ -285,7 +285,12 @@ export const SECTION_SCHEMAS = {
     fields: [
       { name: "sectionTitle", label: "Section Title", type: "text" },
       { name: "sectionLabel", label: "Section Label", type: "text" },
-      { name: "sectionDescription", label: "Section Description", type: "textarea" }
+      { name: "sectionDescription", label: "Section Description", type: "textarea" },
+      { name: "customSteps", label: "Custom Steps (Optional)", type: "repeater", fields: [
+        { name: "title", label: "Step Title", type: "text" },
+        { name: "description", label: "Step Description", type: "textarea" },
+        { name: "image", label: "Step Image", type: "image" }
+      ]}
     ]
   },
   custom_jacket_form: {

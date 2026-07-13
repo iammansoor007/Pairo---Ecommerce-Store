@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 function ProcessStep({ item, index }) {
   const isEven = index % 2 === 0; // Even = image left, content right
+  const headingText = item.heading || item.title || "Process Step";
 
   return (
     <motion.div
@@ -21,7 +22,7 @@ function ProcessStep({ item, index }) {
           {item.image ? (
             <Image
               src={item.image}
-              alt={item.heading || `Step ${item.stepNumber}`}
+              alt={headingText}
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -48,7 +49,7 @@ function ProcessStep({ item, index }) {
           </span>
         </div>
         <h3 className="font-heading text-3xl md:text-4xl font-black text-foreground leading-tight tracking-tight">
-          {item.heading || "Process Step"}
+          {headingText}
         </h3>
         <p className="text-foreground/65 text-base md:text-lg leading-relaxed">
           {item.description || ""}
@@ -68,21 +69,28 @@ export default function CustomJacketProcess({
   sectionTitle = "HOW IT WORKS",
   sectionLabel = "THE PROCESS",
   sectionDescription = "We've streamlined the bespoke jacket experience into four elegant steps — from your first idea to your finished masterpiece.",
-  headingLevel = "h2"
+  headingLevel = "h2",
+  customSteps = []
 }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const Heading = headingLevel;
 
   useEffect(() => {
-    fetch("/api/custom-jacket/process")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) setItems(data);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (customSteps && customSteps.length > 0) {
+      setItems(customSteps);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      fetch("/api/custom-jacket/process")
+        .then((r) => r.json())
+        .then((data) => {
+          if (Array.isArray(data)) setItems(data);
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [customSteps]);
 
   const defaultSteps = [
     {
@@ -114,7 +122,7 @@ export default function CustomJacketProcess({
   const displayItems = items.length > 0 ? items : defaultSteps;
 
   return (
-    <section className="container mx-auto px-4 md:px-8 py-20 md:py-28">
+    <section className="container mx-auto px-4 md:px-8 py-10 md:py-16">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

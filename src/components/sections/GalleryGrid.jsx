@@ -21,58 +21,53 @@ function GalleryCard({ item, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-      className="group relative bg-white rounded-[20px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 border border-border"
+      className="group relative rounded-[24px] overflow-hidden shadow-lg aspect-[3/4] border border-white/10 bg-muted cursor-pointer"
     >
       {/* Image */}
-      <div className="relative overflow-hidden bg-muted aspect-[3/4]">
-        {item.image ? (
-          <Image
-            src={item.image}
-            alt={item.title}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-108"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
-            <ShoppingBag className="w-12 h-12 text-border" />
-          </div>
-        )}
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-500 flex items-center justify-center">
+      {item.image ? (
+        <Image
+          src={item.image}
+          alt={item.title}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
+          <ShoppingBag className="w-12 h-12 text-border" />
+        </div>
+      )}
+
+      {/* Ambient Dark Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-100" />
+
+      {/* Immersive Editorial Content */}
+      <div className="absolute inset-x-0 bottom-0 p-6 z-20 flex flex-col justify-end h-[60%] text-white space-y-2">
+        <span className="text-[9px] font-black uppercase tracking-[3px] text-white/50">
+          PAIRO GALLERY
+        </span>
+
+        <h3 className="font-heading font-black text-white text-xl leading-tight tracking-tight">
+          {item.title}
+        </h3>
+
+        {/* Collapsible Details on Hover */}
+        <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-500 overflow-hidden space-y-4">
+          {item.description && (
+            <p className="text-white/70 text-[12px] leading-relaxed line-clamp-3">
+              {item.description}
+            </p>
+          )}
+
           {productUrl && (
             <Link
               href={productUrl}
-              className="opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 inline-flex items-center gap-2 bg-white text-primary px-5 py-2.5 rounded-full font-bold text-[12px] uppercase tracking-wider shadow-lg hover:bg-primary hover:text-white"
+              className="inline-flex items-center justify-center gap-2 bg-white text-primary px-5 py-2 rounded-full font-bold text-[10px] uppercase tracking-wider hover:bg-primary hover:text-white transition-all duration-300 shadow-md"
             >
-              View Product <ArrowRight className="w-3.5 h-3.5" />
+              View Product <ArrowRight className="w-3 h-3" />
             </Link>
           )}
         </div>
-      </div>
-
-      {/* Card Body */}
-      <div className="p-5">
-        <h3 className="font-heading font-black text-foreground text-[17px] mb-1.5 line-clamp-1">
-          {item.title}
-        </h3>
-        {item.description && (
-          <p className="text-foreground/55 text-[13px] leading-relaxed line-clamp-2 mb-4">
-            {item.description}
-          </p>
-        )}
-        {productUrl ? (
-          <Link
-            href={productUrl}
-            className="inline-flex items-center gap-2 text-primary font-bold text-[12px] uppercase tracking-wider hover:gap-3 transition-all duration-200"
-          >
-            View Product <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        ) : (
-          <span className="inline-flex items-center gap-2 text-foreground/30 text-[12px] uppercase tracking-wider">
-            <ShoppingBag className="w-3.5 h-3.5" /> No product linked
-          </span>
-        )}
       </div>
     </motion.div>
   );
@@ -107,7 +102,7 @@ export default function GalleryGrid({
   }, [customItems]);
 
   return (
-    <section className="container mx-auto px-4 md:px-8 py-20 md:py-28">
+    <section className="container mx-auto px-4 md:px-8 py-10 md:py-16">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

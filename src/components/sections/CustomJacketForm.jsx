@@ -164,7 +164,7 @@ export default function CustomJacketForm({
   }
 
   return (
-    <section id="inquiry-form" className="bg-secondary py-20 md:py-28">
+    <section id="inquiry-form" className="bg-secondary py-10 md:py-16">
       <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         {/* Header */}
         <motion.div
@@ -184,7 +184,7 @@ export default function CustomJacketForm({
         </motion.div>
 
         {/* 2-Column Form Layout */}
-        <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
           {/* Left Column: Details & Specs */}
           <motion.div
@@ -192,95 +192,96 @@ export default function CustomJacketForm({
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-8"
+            className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-8 h-full flex flex-col justify-between"
           >
-            {/* Section: Personal Info */}
             <div>
-              <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">1</span>
-                Personal Information
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <InputField label="First Name" required error={errors.firstName}>
-                  <input type="text" name="firstName" value={form.firstName} onChange={handleChange} placeholder="John" className={inputClass} />
-                </InputField>
-                <InputField label="Last Name" required error={errors.lastName}>
-                  <input type="text" name="lastName" value={form.lastName} onChange={handleChange} placeholder="Doe" className={inputClass} />
-                </InputField>
-                <InputField label="Email Address" required error={errors.email}>
-                  <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="john@example.com" className={inputClass} />
-                </InputField>
-                <InputField label="Phone Number" required error={errors.phone}>
-                  <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className={inputClass} />
-                </InputField>
-                <InputField label="Country" error={errors.country}>
-                  <select name="country" value={form.country} onChange={handleChange} className={selectClass}>
-                    <option value="">Select country...</option>
-                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </InputField>
-                <InputField label="City" error={errors.city}>
-                  <input type="text" name="city" value={form.city} onChange={handleChange} placeholder="New York" className={inputClass} />
-                </InputField>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-border" />
-
-            {/* Section: Jacket Specs */}
-            <div>
-              <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">2</span>
-                Jacket Specifications
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <InputField label="Jacket Type" required error={errors.jacketType}>
-                  <select name="jacketType" value={form.jacketType} onChange={handleChange} className={selectClass}>
-                    <option value="">Select jacket type...</option>
-                    {JACKET_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </InputField>
-                <InputField label="Gender" error={errors.gender}>
-                  <select name="gender" value={form.gender} onChange={handleChange} className={selectClass}>
-                    <option value="">Select gender...</option>
-                    <option value="Men">Men</option>
-                    <option value="Women">Women</option>
-                    <option value="Unisex">Unisex</option>
-                  </select>
-                </InputField>
-                <InputField label="Preferred Leather" required error={errors.preferredLeather}>
-                  <select name="preferredLeather" value={form.preferredLeather} onChange={handleChange} className={selectClass}>
-                    <option value="">Select leather type...</option>
-                    {LEATHER_TYPES.map(l => <option key={l} value={l}>{l}</option>)}
-                  </select>
-                </InputField>
-                <InputField label="Preferred Color" error={errors.preferredColor}>
-                  <input type="text" name="preferredColor" value={form.preferredColor} onChange={handleChange} placeholder="e.g. Cognac Brown, Jet Black" className={inputClass} />
-                </InputField>
-                <div className="sm:col-span-2">
-                  <InputField label="Size" error={errors.size}>
-                    <select name="size" value={form.size} onChange={handleChange} className={selectClass}>
-                      <option value="">Select size...</option>
-                      {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+              {/* Section: Personal Info */}
+              <div>
+                <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">1</span>
+                  Personal Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <InputField label="First Name" required error={errors.firstName}>
+                    <input type="text" name="firstName" value={form.firstName} onChange={handleChange} placeholder="John" className={inputClass} />
+                  </InputField>
+                  <InputField label="Last Name" required error={errors.lastName}>
+                    <input type="text" name="lastName" value={form.lastName} onChange={handleChange} placeholder="Doe" className={inputClass} />
+                  </InputField>
+                  <InputField label="Email Address" required error={errors.email}>
+                    <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="john@example.com" className={inputClass} />
+                  </InputField>
+                  <InputField label="Phone Number" required error={errors.phone}>
+                    <input type="tel" name="phone" value={form.phone} onChange={handleChange} placeholder="+1 (555) 000-0000" className={inputClass} />
+                  </InputField>
+                  <InputField label="Country" error={errors.country}>
+                    <select name="country" value={form.country} onChange={handleChange} className={selectClass}>
+                      <option value="">Select country...</option>
+                      {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
+                  </InputField>
+                  <InputField label="City" error={errors.city}>
+                    <input type="text" name="city" value={form.city} onChange={handleChange} placeholder="New York" className={inputClass} />
                   </InputField>
                 </div>
               </div>
-            </div>
 
+              {/* Divider */}
+              <div className="border-t border-border my-8" />
+
+              {/* Section: Jacket Specs */}
+              <div>
+                <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">2</span>
+                  Jacket Specifications
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <InputField label="Jacket Type" required error={errors.jacketType}>
+                    <select name="jacketType" value={form.jacketType} onChange={handleChange} className={selectClass}>
+                      <option value="">Select jacket type...</option>
+                      {JACKET_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </InputField>
+                  <InputField label="Gender" error={errors.gender}>
+                    <select name="gender" value={form.gender} onChange={handleChange} className={selectClass}>
+                      <option value="">Select gender...</option>
+                      <option value="Men">Men</option>
+                      <option value="Women">Women</option>
+                      <option value="Unisex">Unisex</option>
+                    </select>
+                  </InputField>
+                  <InputField label="Preferred Leather" required error={errors.preferredLeather}>
+                    <select name="preferredLeather" value={form.preferredLeather} onChange={handleChange} className={selectClass}>
+                      <option value="">Select leather type...</option>
+                      {LEATHER_TYPES.map(l => <option key={l} value={l}>{l}</option>)}
+                    </select>
+                  </InputField>
+                  <InputField label="Preferred Color" error={errors.preferredColor}>
+                    <input type="text" name="preferredColor" value={form.preferredColor} onChange={handleChange} placeholder="e.g. Cognac Brown, Jet Black" className={inputClass} />
+                  </InputField>
+                  <div className="sm:col-span-2">
+                    <InputField label="Size" error={errors.size}>
+                      <select name="size" value={form.size} onChange={handleChange} className={selectClass}>
+                        <option value="">Select size...</option>
+                        {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </InputField>
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Right Column: References & Notes */}
+          {/* Right Column: References, Notes & Submit (Merged into a single Card) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="space-y-6"
+            className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-8 h-full flex flex-col justify-between"
           >
-            {/* References Card */}
-            <div className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10">
+            {/* References Card Section */}
+            <div>
               <h3 className="font-heading text-lg font-black text-foreground mb-2 flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">3</span>
                 Reference Images
@@ -331,8 +332,11 @@ export default function CustomJacketForm({
               )}
             </div>
 
-            {/* Notes & Submit Card */}
-            <div className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-6">
+            {/* Divider */}
+            <div className="border-t border-border" />
+
+            {/* Notes & Submit Section */}
+            <div className="space-y-6">
               <div>
                 <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
                   <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">4</span>
@@ -376,7 +380,6 @@ export default function CustomJacketForm({
                 </p>
               </div>
             </div>
-
           </motion.div>
           
         </form>

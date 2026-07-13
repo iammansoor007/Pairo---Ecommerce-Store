@@ -21,7 +21,7 @@ export default function CustomJacketHero({
 
   return (
     <section className="container mx-auto px-2 sm:px-4 md:px-8 my-6">
-      <div className="relative h-[560px] md:h-[660px] lg:h-[760px] rounded-[32px] md:rounded-[40px] shadow-2xl overflow-hidden bg-primary">
+      <div className="relative h-[420px] md:h-[480px] lg:h-[540px] rounded-[32px] md:rounded-[40px] shadow-2xl overflow-hidden bg-primary">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image

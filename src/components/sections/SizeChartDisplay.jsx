@@ -66,12 +66,6 @@ function LightboxModal({ items, activeIndex, onClose, onPrev, onNext }) {
               className="max-w-full max-h-[75vh] object-contain mx-auto rounded-xl shadow-2xl"
             />
           </div>
-          {(item.title || item.description) && (
-            <div className="text-center">
-              {item.title && <p className="text-white font-bold text-lg">{item.title}</p>}
-              {item.description && <p className="text-white/50 text-sm mt-1">{item.description}</p>}
-            </div>
-          )}
           <div className="text-white/30 text-[12px]">{activeIndex + 1} / {items.length}</div>
         </motion.div>
 
@@ -121,7 +115,7 @@ export default function SizeChartDisplay({
   const handleNext = () => setLightboxIndex(i => (i === items.length - 1 ? 0 : i + 1));
 
   return (
-    <section className="container mx-auto px-4 md:px-8 py-20 md:py-28">
+    <section className="container mx-auto px-4 md:px-8 py-10 md:py-16">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -167,35 +161,21 @@ export default function SizeChartDisplay({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="rounded-[24px] border border-border overflow-hidden shadow-md bg-white"
+              className="rounded-[24px] border border-border overflow-hidden shadow-md bg-white relative group"
             >
-              {/* Chart header */}
-              <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-secondary/50">
-                <div>
-                  <h3 className="font-heading font-black text-foreground text-lg">{item.title}</h3>
-                  {item.description && (
-                    <p className="text-foreground/50 text-sm mt-0.5">{item.description}</p>
-                  )}
-                </div>
-                <button
-                  onClick={() => setLightboxIndex(index)}
-                  className="flex items-center gap-2 text-primary text-[12px] font-bold uppercase tracking-wider hover:bg-primary/5 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  <ZoomIn className="w-4 h-4" /> Zoom
-                </button>
-              </div>
-
               {/* Chart image */}
               <div
-                className="relative cursor-zoom-in group overflow-hidden"
+                className="relative cursor-zoom-in overflow-hidden"
                 onClick={() => setLightboxIndex(index)}
               >
                 <img
                   src={item.image}
-                  alt={item.title}
-                  className="w-full h-auto transition-transform duration-500 group-hover:scale-102"
+                  alt="Size Chart"
+                  className="w-full h-auto transition-transform duration-500 group-hover:scale-101"
                   loading="lazy"
                 />
+                
+                {/* Floating Zoom Button */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity w-14 h-14 rounded-full bg-white/90 shadow-lg flex items-center justify-center">
                     <ZoomIn className="w-6 h-6 text-primary" />
