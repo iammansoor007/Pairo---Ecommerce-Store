@@ -70,7 +70,7 @@ function GalleryDetailModal({ item, onClose }) {
     ? `/product/${item.linkedProductId}`
     : item.linkedProduct
     ? `/product/${item.linkedProduct}`
-    : null;
+    : "/shop";
 
   return (
     <div
@@ -114,10 +114,6 @@ function GalleryDetailModal({ item, onClose }) {
         {/* Right Side: Details */}
         <div className="p-8 md:p-12 flex flex-col justify-between overflow-y-auto bg-white">
           <div className="space-y-6">
-            <span className="text-[10px] font-black uppercase tracking-[3px] text-foreground/40">
-              Bespoke Creation
-            </span>
-
             <h2
               style={{ fontFamily: "var(--brand-font)" }}
               className="font-heading font-black text-2xl md:text-3xl text-foreground leading-tight tracking-tight"
@@ -136,19 +132,13 @@ function GalleryDetailModal({ item, onClose }) {
 
           {/* Bottom: View Product button */}
           <div className="pt-8 mt-8 border-t border-border flex flex-col gap-4">
-            {productUrl ? (
-              <Link
-                href={productUrl}
-                onClick={onClose}
-                className="w-full inline-flex items-center justify-center bg-black text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-neutral-800 transition-all duration-300 shadow-md active:scale-98"
-              >
-                View Product
-              </Link>
-            ) : (
-              <p className="text-foreground/35 text-xs italic">
-                This custom creation is currently not linked to a standard store product.
-              </p>
-            )}
+            <Link
+              href={productUrl}
+              onClick={onClose}
+              className="w-full inline-flex items-center justify-center bg-black text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-neutral-800 transition-all duration-300 shadow-md active:scale-98"
+            >
+              View Product
+            </Link>
           </div>
         </div>
       </motion.div>
