@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 
 function GalleryCard({ item, index }) {
+  const [isHovered, setIsHovered] = useState(false);
   const productUrl = item.linkedProductSlug
     ? `/product/${item.linkedProductSlug}`
     : item.linkedProductId
@@ -15,57 +16,80 @@ function GalleryCard({ item, index }) {
     ? `/product/${item.linkedProduct}`
     : null;
 
+  const CardWrapper = productUrl ? Link : "div";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-      className="group relative rounded-[24px] overflow-hidden shadow-lg aspect-[3/4] border border-white/10 bg-muted cursor-pointer"
+      className="group cursor-pointer w-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image */}
-      {item.image ? (
-        <Image
-          src={item.image}
-          alt={item.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
-          <ShoppingBag className="w-12 h-12 text-border" />
-        </div>
-      )}
+      {/* Product Image Container */}
+      <div className="relative aspect-[3/4] bg-[var(--secondary)] rounded-[16px] md:rounded-[24px] overflow-hidden border border-[var(--border)]">
+        <CardWrapper href={productUrl || "#"} className="block h-full w-full">
+          {/* Main Image */}
+          <motion.div
+            animate={{ scale: isHovered ? 1.05 : 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            {item.image ? (
+              <Image
+                src={item.image}
+                alt={item.title || "Gallery Item"}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover"
+                quality={75}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
+                <ShoppingBag className="w-12 h-12 text-border" />
+              </div>
+            )}
+          </motion.div>
 
-      {/* Ambient Dark Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent z-10 transition-opacity duration-300 group-hover:opacity-100" />
+          {/* Hover Image Overlay with Action */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center z-10">
+            {productUrl && (
+              <button
+                className="bg-black text-white h-9 md:h-10 px-5 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out active:scale-95 hover:bg-neutral-800"
+              >
+                View Jacket
+              </button>
+            )}
+          </div>
+        </CardWrapper>
+      </div>
 
-      {/* Immersive Editorial Content */}
-      <div className="absolute inset-x-0 bottom-0 p-6 z-20 flex flex-col justify-end h-[60%] text-white space-y-2">
-        <span className="text-[9px] font-black uppercase tracking-[3px] text-white/50">
-          PAIRO GALLERY
-        </span>
-
-        <h3 className="font-heading font-black text-white text-xl leading-tight tracking-tight">
+      {/* Info Section under Image (Matching Pairo's native ProductCard layout) */}
+      <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
+        <h3 
+          style={{ fontFamily: "var(--brand-font)" }}
+          className="text-[11px] md:text-[13px] font-bold uppercase tracking-wider text-foreground/85 group-hover:text-primary transition-colors truncate"
+        >
           {item.title}
         </h3>
 
-        {/* Collapsible Details on Hover */}
-        <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-500 overflow-hidden space-y-4">
-          {item.description && (
-            <p className="text-white/70 text-[12px] leading-relaxed line-clamp-3">
-              {item.description}
-            </p>
-          )}
+        {item.description && (
+          <p className="text-[12px] text-foreground/45 line-clamp-2 mt-1 leading-relaxed font-medium">
+            {item.description}
+          </p>
+        )}
 
-          {productUrl && (
-            <Link
-              href={productUrl}
-              className="inline-flex items-center justify-center gap-2 bg-white text-primary px-5 py-2 rounded-full font-bold text-[10px] uppercase tracking-wider hover:bg-primary hover:text-white transition-all duration-300 shadow-md"
-            >
-              View Product <ArrowRight className="w-3 h-3" />
-            </Link>
+        <div className="flex items-center justify-between border-t border-[var(--border)] pt-2 md:pt-3 mt-2 md:mt-3">
+          {productUrl ? (
+            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-1 group-hover:gap-1.5 transition-all duration-200">
+              Explore Collection →
+            </span>
+          ) : (
+            <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/35">
+              Bespoke Gallery
+            </span>
           )}
         </div>
       </div>
