@@ -3,20 +3,11 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, X } from "lucide-react";
 
-function GalleryCard({ item, index }) {
+function GalleryCard({ item, index, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
-  const productUrl = item.linkedProductSlug
-    ? `/product/${item.linkedProductSlug}`
-    : item.linkedProductId
-    ? `/product/${item.linkedProductId}`
-    : item.linkedProduct
-    ? `/product/${item.linkedProduct}`
-    : null;
-
-  const CardWrapper = productUrl ? Link : "div";
 
   return (
     <motion.div
@@ -27,73 +18,141 @@ function GalleryCard({ item, index }) {
       className="group cursor-pointer w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
     >
       {/* Product Image Container */}
-      <div className="relative aspect-[3/4] bg-[var(--secondary)] rounded-[16px] md:rounded-[24px] overflow-hidden border border-[var(--border)]">
-        <CardWrapper href={productUrl || "#"} className="block h-full w-full">
-          {/* Main Image */}
-          <motion.div
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0"
-          >
-            {item.image ? (
-              <Image
-                src={item.image}
-                alt={item.title || "Gallery Item"}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover"
-                quality={75}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
-                <ShoppingBag className="w-12 h-12 text-border" />
-              </div>
-            )}
-          </motion.div>
-
-          {/* Hover Image Overlay with Action */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-all duration-300 flex items-center justify-center z-10">
-            {productUrl && (
-              <button
-                className="bg-black text-white h-9 md:h-10 px-5 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[11px] uppercase tracking-widest flex items-center justify-center gap-1.5 shadow-xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out active:scale-95 hover:bg-neutral-800"
-              >
-                View Jacket
-              </button>
-            )}
-          </div>
-        </CardWrapper>
-      </div>
-
-      {/* Info Section under Image (Matching Pairo's native ProductCard layout) */}
-      <div className="mt-3 md:mt-4 space-y-1 md:space-y-2 px-1">
-        <h3 
-          style={{ fontFamily: "var(--brand-font)" }}
-          className="text-[11px] md:text-[13px] font-bold uppercase tracking-wider text-foreground/85 group-hover:text-primary transition-colors truncate"
+      <div className="relative aspect-[3/4] bg-[var(--secondary)] rounded-[16px] md:rounded-[24px] overflow-hidden border border-[var(--border)] shadow-md hover:shadow-xl transition-all duration-500">
+        {/* Main Image */}
+        <motion.div
+          animate={{ scale: isHovered ? 1.05 : 1 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
         >
-          {item.title}
-        </h3>
-
-        {item.description && (
-          <p className="text-[12px] text-foreground/45 line-clamp-2 mt-1 leading-relaxed font-medium">
-            {item.description}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between border-t border-[var(--border)] pt-2 md:pt-3 mt-2 md:mt-3">
-          {productUrl ? (
-            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-1 group-hover:gap-1.5 transition-all duration-200">
-              Explore Collection →
-            </span>
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.title || "Gallery Item"}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+              quality={75}
+            />
           ) : (
-            <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/35">
-              Bespoke Gallery
-            </span>
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-border">
+              <ShoppingBag className="w-12 h-12 text-border" />
+            </div>
           )}
-        </div>
+        </motion.div>
+
+        {/* Hover Image Overlay with subtle darken to indicate clickability */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-10" />
       </div>
     </motion.div>
+  );
+}
+
+function GalleryDetailModal({ item, onClose }) {
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  const productUrl = item.linkedProductSlug
+    ? `/product/${item.linkedProductSlug}`
+    : item.linkedProductId
+    ? `/product/${item.linkedProductId}`
+    : item.linkedProduct
+    ? `/product/${item.linkedProduct}`
+    : null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="relative max-w-4xl w-full bg-white rounded-[24px] md:rounded-[32px] overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2 max-h-[90vh] md:max-h-[80vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 text-black shadow-md flex items-center justify-center hover:bg-white hover:scale-105 transition-all z-20"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Left Side: Image */}
+        <div className="relative aspect-[4/3] md:aspect-auto md:h-full bg-muted min-h-[300px]">
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.title || "Gallery Product"}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <ShoppingBag className="w-16 h-16 text-border" />
+            </div>
+          )}
+        </div>
+
+        {/* Right Side: Details */}
+        <div className="p-8 md:p-12 flex flex-col justify-between overflow-y-auto bg-white">
+          <div className="space-y-6">
+            <span className="text-[10px] font-black uppercase tracking-[3px] text-foreground/40">
+              Bespoke Creation
+            </span>
+
+            <h2
+              style={{ fontFamily: "var(--brand-font)" }}
+              className="font-heading font-black text-2xl md:text-3xl text-foreground leading-tight tracking-tight"
+            >
+              {item.title}
+            </h2>
+
+            {item.description && (
+              <div className="border-t border-border pt-4">
+                <p className="text-foreground/60 text-sm md:text-base leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom: View Product button */}
+          <div className="pt-8 mt-8 border-t border-border flex flex-col gap-4">
+            {productUrl ? (
+              <Link
+                href={productUrl}
+                onClick={onClose}
+                className="w-full inline-flex items-center justify-center bg-black text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-neutral-800 transition-all duration-300 shadow-md active:scale-98"
+              >
+                View Product
+              </Link>
+            ) : (
+              <p className="text-foreground/35 text-xs italic">
+                This custom creation is currently not linked to a standard store product.
+              </p>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -107,6 +166,7 @@ export default function GalleryGrid({
 }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeItem, setActiveItem] = useState(null);
   const Heading = headingLevel;
 
   useEffect(() => {
@@ -170,10 +230,25 @@ export default function GalleryGrid({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((item, index) => (
-            <GalleryCard key={item._id || index} item={item} index={index} />
+            <GalleryCard
+              key={item._id || index}
+              item={item}
+              index={index}
+              onClick={() => setActiveItem(item)}
+            />
           ))}
         </div>
       )}
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {activeItem && (
+          <GalleryDetailModal
+            item={activeItem}
+            onClose={() => setActiveItem(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

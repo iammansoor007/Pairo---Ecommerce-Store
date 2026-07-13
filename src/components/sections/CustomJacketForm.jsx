@@ -7,7 +7,7 @@ import { Upload, X, Check, AlertCircle, ArrowRight, Loader2, ImageIcon } from "l
 
 const JACKET_TYPES = ["Biker Jacket", "Bomber Jacket", "Racer Jacket", "Aviator / Shearling", "Trench Coat", "Blazer", "Vest / Gilet", "Custom / Other"];
 const LEATHER_TYPES = ["Full-Grain Cowhide", "Top-Grain Lambskin", "Genuine Suede", "Shearling", "Nappa Leather", "Distressed Leather", "Vegan Leather", "Custom Specification"];
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "Custom (provide measurements)"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "Custom (provide measurements)"];
 const BUDGET_RANGES = ["Under $300", "$300 – $500", "$500 – $800", "$800 – $1,200", "$1,200 – $2,000", "$2,000+", "Flexible"];
 const COUNTRIES = ["United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "UAE", "Saudi Arabia", "Pakistan", "India", "Other"];
 
