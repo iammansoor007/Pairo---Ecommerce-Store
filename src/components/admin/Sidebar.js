@@ -98,10 +98,10 @@ export default function AdminSidebar() {
     else if (pathname.startsWith("/admin/affiliates")) setOpenAccordion("affiliates");
     else if (pathname.startsWith("/admin/orders") || pathname.startsWith("/admin/customers") || pathname.startsWith("/admin/discounts")) setOpenAccordion("commerce");
     else if (pathname.startsWith("/admin/blogs")) setOpenAccordion("posts");
-    else if (pathname.startsWith("/admin/pages")) setOpenAccordion("pages");
+    else if (pathname.startsWith("/admin/pages") || pathname.startsWith("/admin/gallery-items") || pathname.startsWith("/admin/size-chart-items")) setOpenAccordion("pages");
     else if (pathname.startsWith("/admin/settings/team") || pathname.startsWith("/admin/settings/roles")) setOpenAccordion("users");
     else if (pathname.startsWith("/admin/appearance")) setOpenAccordion("appearance");
-    else if (pathname.startsWith("/admin/contact") || pathname.startsWith("/admin/settings/logs") || pathname.startsWith("/admin/settings/scripts")) setOpenAccordion("tools");
+    else if (pathname.startsWith("/admin/contact") || pathname.startsWith("/admin/custom-jacket-inquiries") || pathname.startsWith("/admin/settings/logs") || pathname.startsWith("/admin/settings/scripts")) setOpenAccordion("tools");
     else if (pathname.startsWith("/admin/settings/site")) setOpenAccordion("settings");
     else setOpenAccordion("");
   }, [pathname]);
@@ -156,6 +156,8 @@ export default function AdminSidebar() {
           >
             <NavLink href="/admin/pages" exact isSubmenu>All Pages</NavLink>
             <NavLink href="/admin/pages/new" exact isSubmenu>Add New</NavLink>
+            <NavLink href="/admin/gallery-items" exact isSubmenu>Gallery Items</NavLink>
+            <NavLink href="/admin/size-chart-items" exact isSubmenu>Size Charts</NavLink>
           </AccordionMenu>
 
           {/* Comments / Reviews Standalone */}
@@ -243,6 +245,7 @@ export default function AdminSidebar() {
             isOpen={openAccordion === "tools"} onToggle={() => handleToggle("tools")}
           >
             <NavLink href="/admin/contact" exact isSubmenu>Contact Forms</NavLink>
+            <NavLink href="/admin/custom-jacket-inquiries" exact isSubmenu>Custom Inquiries</NavLink>
             <NavLink href="/admin/settings/logs" exact isSubmenu>Audit Logs</NavLink>
             <NavLink href="/admin/settings/scripts" exact isSubmenu>Custom Scripts</NavLink>
           </AccordionMenu>

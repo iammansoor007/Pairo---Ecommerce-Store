@@ -262,5 +262,90 @@ export const SECTION_SCHEMAS = {
       { name: "title", label: "Page Heading", type: "text" },
       { name: "content", label: "Page Content", type: "quill" }
     ]
+  },
+
+  // ─── CUSTOM JACKET SECTIONS ────────────────────────────────
+  custom_jacket_hero: {
+    name: "Custom Jacket Hero",
+    icon: "Layout",
+    fields: [
+      { name: "title", label: "Hero Title", type: "text" },
+      { name: "subtitle", label: "Hero Subtitle", type: "textarea" },
+      { name: "label", label: "Badge Label", type: "text" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "mobileImage", label: "Mobile Background Image", type: "image" },
+      { name: "buttonText", label: "CTA Button Text", type: "text" },
+      { name: "buttonLink", label: "CTA Button Link", type: "text" },
+      { name: "breadcrumb", label: "Breadcrumb Label", type: "text" }
+    ]
+  },
+  custom_jacket_process: {
+    name: "How It Works Process",
+    icon: "Layers",
+    fields: [
+      { name: "sectionTitle", label: "Section Title", type: "text" },
+      { name: "sectionLabel", label: "Section Label", type: "text" },
+      { name: "sectionDescription", label: "Section Description", type: "textarea" }
+    ]
+  },
+  custom_jacket_form: {
+    name: "Custom Jacket Inquiry Form",
+    icon: "Mail",
+    fields: [
+      { name: "formTitle", label: "Form Title", type: "text" },
+      { name: "formSubtitle", label: "Form Subtitle", type: "textarea" }
+    ]
+  },
+
+  // ─── GALLERY SECTIONS ──────────────────────────────────────
+  gallery_hero: {
+    name: "Gallery Hero",
+    icon: "Layout",
+    fields: [
+      { name: "title", label: "Hero Title", type: "text" },
+      { name: "subtitle", label: "Hero Subtitle", type: "textarea" },
+      { name: "label", label: "Badge Label", type: "text" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "mobileImage", label: "Mobile Background Image", type: "image" },
+      { name: "buttonText", label: "CTA Button Text", type: "text" },
+      { name: "buttonLink", label: "CTA Button Link", type: "text" },
+      { name: "breadcrumb", label: "Breadcrumb Label", type: "text" }
+    ]
+  },
+  gallery_grid: {
+    name: "Gallery Grid",
+    icon: "Grid",
+    fields: [
+      { name: "sectionTitle", label: "Section Title", type: "text" },
+      { name: "sectionLabel", label: "Section Label", type: "text" },
+      { name: "sectionDescription", label: "Section Description", type: "textarea" },
+      { name: "emptyText", label: "Empty State Text", type: "text" }
+    ]
+  },
+
+  // ─── SIZE CHART SECTIONS ────────────────────────────────────
+  size_chart_hero: {
+    name: "Size Chart Hero",
+    icon: "Ruler",
+    fields: [
+      { name: "title", label: "Hero Title", type: "text" },
+      { name: "subtitle", label: "Hero Subtitle", type: "textarea" },
+      { name: "label", label: "Badge Label", type: "text" },
+      { name: "image", label: "Background Image", type: "image" },
+      { name: "mobileImage", label: "Mobile Background Image", type: "image" },
+      { name: "buttonText", label: "CTA Button Text", type: "text" },
+      { name: "buttonLink", label: "CTA Button Link", type: "text" },
+      { name: "breadcrumb", label: "Breadcrumb Label", type: "text" }
+    ]
+  },
+  size_chart_display: {
+    name: "Size Charts Display",
+    icon: "Ruler",
+    fields: [
+      { name: "sectionTitle", label: "Section Title", type: "text" },
+      { name: "sectionLabel", label: "Section Label", type: "text" },
+      { name: "sectionDescription", label: "Section Description", type: "textarea" }
+    ]
   }
 };
+

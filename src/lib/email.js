@@ -1037,3 +1037,147 @@ export async function sendCustomerPasswordReset(toEmail, name, resetUrl) {
   }
 }
 
+// ─── CUSTOM JACKET INQUIRY EMAILS ─────────────────────────────────────────────
+
+/**
+ * Send a confirmation email to the customer who submitted a Custom Jacket inquiry.
+ */
+export async function sendCustomJacketConfirmation(toEmail, firstName, inquiry) {
+  const storeEmail = process.env.STORE_EMAIL || process.env.FROM_EMAIL || 'info@pairolifestyle.com';
+  const storeName = process.env.STORE_NAME || 'PAIRO Lifestyle';
+  const storeUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://pairolifestyle.com';
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Jacket Inquiry Received</title></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 16px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.08);">
+  <!-- Header -->
+  <tr><td style="background:#1a1a1a;padding:32px 40px;text-align:center;">
+    <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;letter-spacing:4px;text-transform:uppercase;">${storeName}</h1>
+    <p style="margin:8px 0 0;color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:3px;text-transform:uppercase;">Bespoke Jacket Service</p>
+  </td></tr>
+  <!-- Body -->
+  <tr><td style="padding:40px;">
+    <h2 style="margin:0 0 16px;color:#1a1a1a;font-size:20px;font-weight:700;">Thank you, ${firstName}!</h2>
+    <p style="margin:0 0 16px;color:#555;font-size:14px;line-height:1.7;">We've received your custom jacket inquiry and are thrilled to help you create something truly special. Our expert team will review your specifications and contact you within <strong>24 hours</strong>.</p>
+
+    <!-- Summary Box -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;margin:24px 0;">
+      <tr><td style="padding:20px;">
+        <p style="margin:0 0 12px;color:#1a1a1a;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Your Inquiry Summary</p>
+        ${inquiry.jacketType ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Jacket Type:</strong> ${inquiry.jacketType}</p>` : ''}
+        ${inquiry.preferredLeather ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Leather:</strong> ${inquiry.preferredLeather}</p>` : ''}
+        ${inquiry.preferredColor ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Color:</strong> ${inquiry.preferredColor}</p>` : ''}
+        ${inquiry.size ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Size:</strong> ${inquiry.size}</p>` : ''}
+        ${inquiry.budget ? `<p style="margin:0 0 0;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Budget:</strong> ${inquiry.budget}</p>` : ''}
+      </td></tr>
+    </table>
+
+    <p style="margin:0 0 24px;color:#555;font-size:14px;line-height:1.7;">While you wait, feel free to explore our existing collection for inspiration.</p>
+    <a href="${storeUrl}/shop" style="display:inline-block;background:#1a1a1a;color:#ffffff;text-decoration:none;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;">Explore Collection</a>
+  </td></tr>
+  <!-- Footer -->
+  <tr><td style="background:#f9f9f9;border-top:1px solid #e8e8e8;padding:24px 40px;text-align:center;">
+    <p style="margin:0;color:#999;font-size:12px;">You received this because you submitted an inquiry at <a href="${storeUrl}" style="color:#1a1a1a;">${storeName}</a>.</p>
+    <p style="margin:8px 0 0;color:#999;font-size:11px;">&copy; ${new Date().getFullYear()} ${storeName}. All rights reserved.</p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>
+  `.trim();
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${storeName}" <${storeEmail}>`,
+      to: toEmail,
+      subject: `Your Custom Jacket Inquiry — We'll Be In Touch!`,
+      html
+    });
+    console.log(`[Email] ✅ Custom jacket confirmation sent to ${toEmail} | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send custom jacket confirmation:', err.message);
+    throw err;
+  }
+}
+
+/**
+ * Notify admin of a new Custom Jacket inquiry.
+ */
+export async function sendCustomJacketAdminNotification(inquiry) {
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.STORE_EMAIL || 'info@pairolifestyle.com';
+  const storeEmail = process.env.STORE_EMAIL || process.env.FROM_EMAIL || 'info@pairolifestyle.com';
+  const storeName = process.env.STORE_NAME || 'PAIRO Lifestyle';
+  const storeUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://pairolifestyle.com';
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>New Custom Jacket Inquiry</title></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 16px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.08);">
+  <tr><td style="background:#1a1a1a;padding:28px 40px;">
+    <p style="margin:0;color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:3px;text-transform:uppercase;">Admin Notification</p>
+    <h1 style="margin:6px 0 0;color:#ffffff;font-size:20px;font-weight:700;">New Custom Jacket Inquiry</h1>
+  </td></tr>
+  <tr><td style="padding:32px 40px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;margin:0 0 24px;">
+      <tr><td style="padding:20px;">
+        <p style="margin:0 0 12px;color:#1a1a1a;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Customer</p>
+        <p style="margin:0 0 4px;font-size:14px;color:#1a1a1a;font-weight:700;">${inquiry.firstName} ${inquiry.lastName}</p>
+        <p style="margin:0 0 4px;font-size:13px;color:#555;">${inquiry.email}</p>
+        ${inquiry.phone ? `<p style="margin:0;font-size:13px;color:#555;">${inquiry.phone}</p>` : ''}
+        ${inquiry.country ? `<p style="margin:4px 0 0;font-size:13px;color:#555;">${inquiry.city ? inquiry.city + ', ' : ''}${inquiry.country}</p>` : ''}
+      </td></tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;margin:0 0 24px;">
+      <tr><td style="padding:20px;">
+        <p style="margin:0 0 12px;color:#1a1a1a;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Specifications</p>
+        ${inquiry.jacketType ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Type:</strong> ${inquiry.jacketType}</p>` : ''}
+        ${inquiry.gender ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Gender:</strong> ${inquiry.gender}</p>` : ''}
+        ${inquiry.preferredLeather ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Leather:</strong> ${inquiry.preferredLeather}</p>` : ''}
+        ${inquiry.preferredColor ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Color:</strong> ${inquiry.preferredColor}</p>` : ''}
+        ${inquiry.size ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Size:</strong> ${inquiry.size}</p>` : ''}
+        ${inquiry.budget ? `<p style="margin:0 0 6px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Budget:</strong> ${inquiry.budget}</p>` : ''}
+        ${inquiry.deadline ? `<p style="margin:0 0 0;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Deadline:</strong> ${inquiry.deadline}</p>` : ''}
+      </td></tr>
+    </table>
+    ${inquiry.additionalNotes ? `
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9f9f9;border:1px solid #e8e8e8;border-radius:8px;margin:0 0 24px;">
+      <tr><td style="padding:20px;">
+        <p style="margin:0 0 8px;color:#1a1a1a;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Additional Notes</p>
+        <p style="margin:0;font-size:13px;color:#555;line-height:1.7;">${inquiry.additionalNotes}</p>
+      </td></tr>
+    </table>` : ''}
+    ${inquiry.referenceImages?.length > 0 ? `<p style="margin:0 0 16px;font-size:13px;color:#555;"><strong style="color:#1a1a1a;">Reference Images:</strong> ${inquiry.referenceImages.length} uploaded</p>` : ''}
+    <a href="${storeUrl}/admin/custom-jacket-inquiries" style="display:inline-block;background:#1a1a1a;color:#ffffff;text-decoration:none;padding:12px 28px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;">View in Dashboard</a>
+  </td></tr>
+  <tr><td style="background:#f9f9f9;border-top:1px solid #e8e8e8;padding:20px 40px;text-align:center;">
+    <p style="margin:0;color:#999;font-size:11px;">${storeName} Admin Notification &mdash; ${new Date().toLocaleString()}</p>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>
+  `.trim();
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"${storeName}" <${storeEmail}>`,
+      to: adminEmail,
+      subject: `🧥 New Custom Jacket Inquiry — ${inquiry.firstName} ${inquiry.lastName}`,
+      html
+    });
+    console.log(`[Email] ✅ Admin custom jacket notification sent | MsgID: ${info.messageId}`);
+  } catch (err) {
+    console.error('[Email] ❌ Failed to send custom jacket admin notification:', err.message);
+    throw err;
+  }
+}

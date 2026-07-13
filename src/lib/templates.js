@@ -2,6 +2,9 @@ import HomeTemplate from "@/templates/HomeTemplate";
 import AboutTemplate from "@/templates/AboutTemplate";
 import ContactTemplate from "@/templates/ContactTemplate";
 import DefaultTemplate from "@/templates/DefaultTemplate";
+import CustomJacketTemplate from "@/templates/CustomJacketTemplate";
+import GalleryTemplate from "@/templates/GalleryTemplate";
+import SizeChartTemplate from "@/templates/SizeChartTemplate";
 
 export const TEMPLATE_REGISTRY = {
   home: {
@@ -68,6 +71,44 @@ export const TEMPLATE_REGISTRY = {
       "rich_text"
     ],
     defaultSections: []
+  },
+  "custom-jacket": {
+    name: "Custom Jacket Page",
+    component: CustomJacketTemplate,
+    allowedSections: [
+      "custom_jacket_hero",
+      "custom_jacket_process",
+      "custom_jacket_form"
+    ],
+    defaultSections: [
+      { type: "custom_jacket_hero", config: {} },
+      { type: "custom_jacket_process", config: {} },
+      { type: "custom_jacket_form", config: {} }
+    ]
+  },
+  gallery: {
+    name: "Gallery Page",
+    component: GalleryTemplate,
+    allowedSections: [
+      "gallery_hero",
+      "gallery_grid"
+    ],
+    defaultSections: [
+      { type: "gallery_hero", config: {} },
+      { type: "gallery_grid", config: {} }
+    ]
+  },
+  "size-chart": {
+    name: "Size Chart Page",
+    component: SizeChartTemplate,
+    allowedSections: [
+      "size_chart_hero",
+      "size_chart_display"
+    ],
+    defaultSections: [
+      { type: "size_chart_hero", config: {} },
+      { type: "size_chart_display", config: {} }
+    ]
   }
 };
 
