@@ -319,7 +319,13 @@ export const SECTION_SCHEMAS = {
       { name: "sectionTitle", label: "Section Title", type: "text" },
       { name: "sectionLabel", label: "Section Label", type: "text" },
       { name: "sectionDescription", label: "Section Description", type: "textarea" },
-      { name: "emptyText", label: "Empty State Text", type: "text" }
+      { name: "emptyText", label: "Empty State Text", type: "text" },
+      { name: "customItems", label: "Custom Gallery Items (Optional)", type: "repeater", fields: [
+        { name: "image", label: "Image", type: "image" },
+        { name: "title", label: "Image Name", type: "text" },
+        { name: "description", label: "Description", type: "textarea" },
+        { name: "linkedProduct", label: "Linked Product", type: "select", options: "products" }
+      ]}
     ]
   },
 
@@ -344,8 +350,12 @@ export const SECTION_SCHEMAS = {
     fields: [
       { name: "sectionTitle", label: "Section Title", type: "text" },
       { name: "sectionLabel", label: "Section Label", type: "text" },
-      { name: "sectionDescription", label: "Section Description", type: "textarea" }
+      { name: "sectionDescription", label: "Section Description", type: "textarea" },
+      { name: "customCharts", label: "Custom Size Charts (Optional)", type: "repeater", fields: [
+        { name: "title", label: "Chart Title", type: "text" },
+        { name: "description", label: "Chart Description", type: "textarea" },
+        { name: "image", label: "Chart Image", type: "image" }
+      ]}
     ]
   }
 };
-

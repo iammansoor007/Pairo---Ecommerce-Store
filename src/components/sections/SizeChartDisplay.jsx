@@ -93,7 +93,8 @@ export default function SizeChartDisplay({
   sectionTitle = "SIZE CHARTS",
   sectionLabel = "MEASUREMENTS",
   sectionDescription = "Use these detailed size charts to find your perfect fit. Click any chart to zoom in for a closer look.",
-  headingLevel = "h2"
+  headingLevel = "h2",
+  customCharts = []
 }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,14 +102,20 @@ export default function SizeChartDisplay({
   const Heading = headingLevel;
 
   useEffect(() => {
-    fetch("/api/size-chart/items")
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setItems(data);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (customCharts && customCharts.length > 0) {
+      setItems(customCharts);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      fetch("/api/size-chart/items")
+        .then(r => r.json())
+        .then(data => {
+          if (Array.isArray(data)) setItems(data);
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [customCharts]);
 
   const handlePrev = () => setLightboxIndex(i => (i === 0 ? items.length - 1 : i - 1));
   const handleNext = () => setLightboxIndex(i => (i === items.length - 1 ? 0 : i + 1));
@@ -186,7 +193,7 @@ export default function SizeChartDisplay({
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-auto object-contain max-h-[700px] transition-transform duration-500 group-hover:scale-102"
+                  className="w-full h-auto transition-transform duration-500 group-hover:scale-102"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">

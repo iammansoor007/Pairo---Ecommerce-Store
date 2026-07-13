@@ -40,7 +40,7 @@ export default function CustomJacketForm({
     firstName: "", lastName: "", email: "", phone: "",
     country: "", city: "", jacketType: "", gender: "",
     preferredLeather: "", preferredColor: "", size: "",
-    budget: "", deadline: "", additionalNotes: ""
+    additionalNotes: ""
   };
 
   const [form, setForm] = useState(initialForm);
@@ -165,7 +165,7 @@ export default function CustomJacketForm({
 
   return (
     <section id="inquiry-form" className="bg-secondary py-20 md:py-28">
-      <div className="container mx-auto px-4 md:px-8">
+      <div className="container mx-auto px-4 md:px-8 max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -183,22 +183,24 @@ export default function CustomJacketForm({
           <p className="text-foreground/60 max-w-xl mx-auto text-base leading-relaxed">{formSubtitle}</p>
         </motion.div>
 
-        {/* Form Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="max-w-4xl mx-auto bg-white rounded-[32px] shadow-xl border border-border overflow-hidden"
-        >
-          <form onSubmit={handleSubmit} noValidate>
+        {/* 2-Column Form Layout */}
+        <form onSubmit={handleSubmit} noValidate className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          
+          {/* Left Column: Details & Specs */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-8"
+          >
             {/* Section: Personal Info */}
-            <div className="p-8 md:p-10 border-b border-border">
-              <h3 className="font-heading text-xl font-black text-foreground mb-6 flex items-center gap-3">
+            <div>
+              <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">1</span>
                 Personal Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <InputField label="First Name" required error={errors.firstName}>
                   <input type="text" name="firstName" value={form.firstName} onChange={handleChange} placeholder="John" className={inputClass} />
                 </InputField>
@@ -223,13 +225,16 @@ export default function CustomJacketForm({
               </div>
             </div>
 
+            {/* Divider */}
+            <div className="border-t border-border" />
+
             {/* Section: Jacket Specs */}
-            <div className="p-8 md:p-10 border-b border-border">
-              <h3 className="font-heading text-xl font-black text-foreground mb-6 flex items-center gap-3">
+            <div>
+              <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">2</span>
                 Jacket Specifications
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <InputField label="Jacket Type" required error={errors.jacketType}>
                   <select name="jacketType" value={form.jacketType} onChange={handleChange} className={selectClass}>
                     <option value="">Select jacket type...</option>
@@ -253,34 +258,35 @@ export default function CustomJacketForm({
                 <InputField label="Preferred Color" error={errors.preferredColor}>
                   <input type="text" name="preferredColor" value={form.preferredColor} onChange={handleChange} placeholder="e.g. Cognac Brown, Jet Black" className={inputClass} />
                 </InputField>
-                <InputField label="Size" error={errors.size}>
-                  <select name="size" value={form.size} onChange={handleChange} className={selectClass}>
-                    <option value="">Select size...</option>
-                    {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </InputField>
-                <InputField label="Budget" error={errors.budget}>
-                  <select name="budget" value={form.budget} onChange={handleChange} className={selectClass}>
-                    <option value="">Select budget range...</option>
-                    {BUDGET_RANGES.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </InputField>
-                <div className="md:col-span-2">
-                  <InputField label="Deadline / Event Date (optional)" error={errors.deadline}>
-                    <input type="text" name="deadline" value={form.deadline} onChange={handleChange} placeholder="e.g. December 2025, or leave blank" className={inputClass} />
+                <div className="sm:col-span-2">
+                  <InputField label="Size" error={errors.size}>
+                    <select name="size" value={form.size} onChange={handleChange} className={selectClass}>
+                      <option value="">Select size...</option>
+                      {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
                   </InputField>
                 </div>
               </div>
             </div>
 
-            {/* Section: Reference Images */}
-            <div className="p-8 md:p-10 border-b border-border">
-              <h3 className="font-heading text-xl font-black text-foreground mb-2 flex items-center gap-3">
+          </motion.div>
+
+          {/* Right Column: References & Notes */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="space-y-6"
+          >
+            {/* References Card */}
+            <div className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10">
+              <h3 className="font-heading text-lg font-black text-foreground mb-2 flex items-center gap-3">
                 <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">3</span>
                 Reference Images
                 <span className="text-[12px] font-normal text-foreground/40">(optional, max 5)</span>
               </h3>
-              <p className="text-foreground/50 text-sm mb-5">Upload photos of designs, colors, or styles that inspire you. JPG, PNG, WebP — max 8MB each.</p>
+              <p className="text-foreground/50 text-[13px] mb-5 leading-relaxed">Upload photos of designs, colors, or styles that inspire you. JPG, PNG, WebP — max 8MB each.</p>
 
               {/* Upload Area */}
               <div
@@ -308,7 +314,7 @@ export default function CustomJacketForm({
 
               {/* Uploaded files grid */}
               {uploadedFiles.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {uploadedFiles.map((file, i) => (
                     <div key={i} className="relative group rounded-xl overflow-hidden bg-muted aspect-square border border-border">
                       <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
@@ -325,52 +331,55 @@ export default function CustomJacketForm({
               )}
             </div>
 
-            {/* Section: Notes */}
-            <div className="p-8 md:p-10 border-b border-border">
-              <h3 className="font-heading text-xl font-black text-foreground mb-6 flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">4</span>
-                Additional Notes
-              </h3>
-              <InputField label="Anything else we should know?" error={errors.additionalNotes}>
-                <textarea
-                  name="additionalNotes"
-                  value={form.additionalNotes}
-                  onChange={handleChange}
-                  rows={5}
-                  placeholder="Share any additional details about your vision, special requirements, embroidery, hardware preferences, lining details, etc."
-                  className={`${inputClass} resize-none`}
-                />
-              </InputField>
-              <p className="text-[11px] text-foreground/30 mt-1.5 text-right">
-                {form.additionalNotes.length}/2000
-              </p>
+            {/* Notes & Submit Card */}
+            <div className="bg-white rounded-[32px] shadow-xl border border-border p-8 md:p-10 space-y-6">
+              <div>
+                <h3 className="font-heading text-lg font-black text-foreground mb-6 flex items-center gap-3">
+                  <span className="w-7 h-7 rounded-full bg-primary text-white text-[12px] font-bold flex items-center justify-center">4</span>
+                  Additional Notes
+                </h3>
+                <InputField label="Anything else we should know?" error={errors.additionalNotes}>
+                  <textarea
+                    name="additionalNotes"
+                    value={form.additionalNotes}
+                    onChange={handleChange}
+                    rows={4}
+                    placeholder="Share any additional details about your vision, special requirements, embroidery, hardware preferences, lining details, etc."
+                    className={`${inputClass} resize-none`}
+                  />
+                </InputField>
+                <p className="text-[11px] text-foreground/30 mt-1.5 text-right">
+                  {form.additionalNotes.length}/2000
+                </p>
+              </div>
+
+              <div className="border-t border-border pt-6">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full flex items-center justify-center gap-3 bg-primary text-white px-10 py-4 font-bold text-[13px] uppercase tracking-widest rounded-lg hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed group"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      Submit Inquiry
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+                <p className="text-[11px] text-foreground/45 mt-3 leading-relaxed">
+                  By submitting, you agree that we may contact you regarding your inquiry. No payment is required at this stage.
+                </p>
+              </div>
             </div>
 
-            {/* Submit */}
-            <div className="p-8 md:p-10 bg-secondary/50">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full md:w-auto min-w-[220px] flex items-center justify-center gap-3 bg-primary text-white px-10 py-4 font-bold text-[13px] uppercase tracking-widest rounded-lg hover:bg-primary/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed group"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    Submit Inquiry
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </button>
-              <p className="text-[12px] text-foreground/40 mt-3">
-                By submitting, you agree that we may contact you regarding your inquiry. No payment is required at this stage.
-              </p>
-            </div>
-          </form>
-        </motion.div>
+          </motion.div>
+          
+        </form>
       </div>
     </section>
   );

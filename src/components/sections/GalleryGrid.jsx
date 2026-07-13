@@ -11,6 +11,8 @@ function GalleryCard({ item, index }) {
     ? `/product/${item.linkedProductSlug}`
     : item.linkedProductId
     ? `/product/${item.linkedProductId}`
+    : item.linkedProduct
+    ? `/product/${item.linkedProduct}`
     : null;
 
   return (
@@ -81,21 +83,28 @@ export default function GalleryGrid({
   sectionLabel = "FEATURED PIECES",
   sectionDescription = "A carefully curated selection of our finest pieces — each one a testament to premium leather craftsmanship.",
   emptyText = "Gallery coming soon. Check back for our latest work.",
-  headingLevel = "h2"
+  headingLevel = "h2",
+  customItems = []
 }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const Heading = headingLevel;
 
   useEffect(() => {
-    fetch("/api/gallery/items")
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setItems(data);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (customItems && customItems.length > 0) {
+      setItems(customItems);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      fetch("/api/gallery/items")
+        .then(r => r.json())
+        .then(data => {
+          if (Array.isArray(data)) setItems(data);
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [customItems]);
 
   return (
     <section className="container mx-auto px-4 md:px-8 py-20 md:py-28">

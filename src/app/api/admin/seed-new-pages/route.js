@@ -58,18 +58,6 @@ const NEW_PAGES = [
     isHomePage: false,
     sections: [
       {
-        id: "gallery-hero-1",
-        type: "gallery_hero",
-        config: {
-          title: "OUR COLLECTION GALLERY",
-          subtitle: "Explore the artistry behind every piece — a curated showcase of Pairo's finest leather jackets.",
-          label: "GALLERY",
-          buttonText: "Shop All",
-          buttonLink: "/shop",
-          breadcrumb: "Gallery"
-        }
-      },
-      {
         id: "gallery-grid-1",
         type: "gallery_grid",
         config: {
@@ -94,18 +82,6 @@ const NEW_PAGES = [
     isSystem: true,
     isHomePage: false,
     sections: [
-      {
-        id: "sc-hero-1",
-        type: "size_chart_hero",
-        config: {
-          title: "SIZE GUIDE",
-          subtitle: "Find your perfect fit with our comprehensive size charts.",
-          label: "SIZING",
-          buttonText: "Shop Now",
-          buttonLink: "/shop",
-          breadcrumb: "Size Chart"
-        }
-      },
       {
         id: "sc-display-1",
         type: "size_chart_display",
@@ -139,19 +115,16 @@ export async function POST(req) {
     const results = [];
 
     for (const pageData of NEW_PAGES) {
-      const existing = await pagesCollection.findOne({ slug: pageData.slug });
-      if (existing) {
-        results.push({ slug: pageData.slug, status: "skipped", message: "Already exists" });
-        continue;
-      }
+      await pagesCollection.deleteOne({ slug: pageData.slug });
 
       await pagesCollection.insertOne({
         ...pageData,
+        tenantId: "DEFAULT_STORE",
         createdAt: new Date(),
         updatedAt: new Date()
       });
 
-      results.push({ slug: pageData.slug, status: "created", title: pageData.title });
+      results.push({ slug: pageData.slug, status: "seeded", title: pageData.title });
     }
 
     return NextResponse.json({ success: true, results });
