@@ -928,16 +928,11 @@ export async function resolveSEOMetadata(options = {}) {
   }
 
   // Next.js App Router metadata format
-  // Build robots object — only add rich directives when the page is indexable
-  const robotsDirectives = noIndex
-    ? { index: false, follow: !noFollow }
-    : {
-        index: true,
-        follow: !noFollow,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      };
+  // Use a plain string for robots — object format causes duplicate tags in Next.js.
+  // String is passed directly as meta content: zero risk of duplication or key conflicts.
+  const robotsString = noIndex
+    ? `noindex, ${noFollow ? "nofollow" : "follow"}`
+    : `index, follow, max-video-preview:-1, max-image-preview:large, max-snippet:-1`;
 
   const metadata = {
     title: metaTitle,
@@ -945,7 +940,7 @@ export async function resolveSEOMetadata(options = {}) {
     alternates: {
       canonical: canonical,
     },
-    robots: robotsDirectives,
+    robots: robotsString,
     openGraph,
     twitter,
   };

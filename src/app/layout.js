@@ -38,6 +38,7 @@ export async function generateMetadata() {
         title,
         description: config.brand.description || "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
         metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairolifestyle.com"),
+        robots: "noindex, nofollow",
       };
 
       if (config.brand.faviconUrl) {
@@ -63,6 +64,7 @@ export async function generateMetadata() {
     title: "Pairo | Premium Shearling Jackets",
     description: "Experience the ultimate warmth and luxury with Pairo's handcrafted shearling jackets.",
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://pairolifestyle.com"),
+    robots: "noindex, nofollow",
   };
 }
 
