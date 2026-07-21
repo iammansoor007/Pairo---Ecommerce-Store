@@ -26,6 +26,54 @@ export default function ClientProductActions({ product, onVariantChange }) {
   const { addToCart } = useCart();
   const router = useRouter();
 
+  const getResolvedSizeChart = () => {
+    const source = product.sizeChartSource || (product.sizeGuide?.enabled ? "product_custom" : "category_default");
+    
+    if (source === "none") {
+      return null;
+    }
+    
+    if (source === "product_custom") {
+      return {
+        type: "product_custom",
+        sizeGuide: product.sizeGuide
+      };
+    }
+    
+    if (source === "custom" && product.sizeChart) {
+      return {
+        type: "reusable",
+        chart: product.sizeChart
+      };
+    }
+    
+    if (source === "category_default") {
+      const primaryCat = product.primaryCategory;
+      if (primaryCat && primaryCat.sizeChart) {
+        return {
+          type: "reusable",
+          chart: primaryCat.sizeChart
+        };
+      }
+      
+      if (product.categories && product.categories.length > 0) {
+        for (const cat of product.categories) {
+          if (cat && cat.sizeChart) {
+             return {
+               type: "reusable",
+               chart: cat.sizeChart
+             };
+          }
+        }
+      }
+    }
+    
+    return null;
+  };
+
+  const resolvedSizeChart = getResolvedSizeChart();
+  const hasSizeChart = resolvedSizeChart !== null;
+
   const attributes =
     product.attributes ||
     product.variants?.map((v) => ({
@@ -169,7 +217,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
                     </span>
                   )}
                 </div>
-                {attr.name.toLowerCase() === "size" && (
+                {attr.name.toLowerCase() === "size" && hasSizeChart && (
                   <button
                     type="button"
                     onClick={() => setSizeGuideOpen(true)}
@@ -335,7 +383,7 @@ export default function ClientProductActions({ product, onVariantChange }) {
           <SizeGuideModal
             isOpen={sizeGuideOpen}
             onClose={() => setSizeGuideOpen(false)}
-            sizeGuide={product.sizeGuide}
+            resolvedSizeChart={resolvedSizeChart}
           />
         </>,
         document.body

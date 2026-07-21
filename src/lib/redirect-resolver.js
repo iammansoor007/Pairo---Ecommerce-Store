@@ -16,7 +16,8 @@ export const RESERVED_SLUGS = [
   "order-tracking",
   "search",
   "sitemap.xml",
-  "robots.txt"
+  "robots.txt",
+  "sitemap"
 ];
 
 /**

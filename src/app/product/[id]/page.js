@@ -4,6 +4,7 @@ import ProductSection from "@/components/home/ProductSection";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import "@/models/Category";
+import "@/models/SizeChart";
 import Link from "next/link";
 import ClientProductActions from "@/components/product/ClientProductActions";
 import ClientTabSystem from "@/components/product/ClientTabSystem";
@@ -42,7 +43,13 @@ export async function generateMetadata({ params, searchParams }) {
   const product = await Product.findOne({
     $or: queryOr,
     isDeleted: { $ne: true }
-  }).populate('categories').populate('primaryCategory').lean();
+  }).populate({
+    path: 'categories',
+    populate: { path: 'sizeChart' }
+  }).populate({
+    path: 'primaryCategory',
+    populate: { path: 'sizeChart' }
+  }).populate('sizeChart').lean();
 
   if (!product) return { title: "Product Not Found" };
 
@@ -94,8 +101,15 @@ export default async function ProductDetailPage({ params, searchParams }) {
     $or: queryOr,
     isDeleted: { $ne: true }
   })
-    .populate('categories')
-    .populate('primaryCategory')
+    .populate({
+      path: 'categories',
+      populate: { path: 'sizeChart' }
+    })
+    .populate({
+      path: 'primaryCategory',
+      populate: { path: 'sizeChart' }
+    })
+    .populate('sizeChart')
     .lean();
 
   if (!product) {

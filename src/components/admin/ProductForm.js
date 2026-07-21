@@ -115,6 +115,7 @@ export default function ProductForm({ productId = null }) {
    const [slugCheckState, setSlugCheckState] = useState(null);
    const [slugDraftValue, setSlugDraftValue] = useState("");
    const [categories, setCategories] = useState([]);
+   const [sizeCharts, setSizeCharts] = useState([]);
 
    const getPreviewCategorySlug = () => {
       if (formData.primaryCategory) {
@@ -165,6 +166,8 @@ export default function ProductForm({ productId = null }) {
       variantCombinations: [], // { title: "", price: "", stock: "", sku: "", image: "" }
       stats: [],
       faqs: [],
+      sizeChartSource: "category_default",
+      sizeChart: "",
       sizeGuide: {
          enabled: false,
          chartImage: "",
@@ -185,6 +188,13 @@ export default function ProductForm({ productId = null }) {
             const data = await catsRes.json();
             setCategories(Array.isArray(data) ? data : []);
 
+            // Fetch size charts
+            const scRes = await fetch("/api/admin/size-charts");
+            if (scRes.ok) {
+               const scData = await scRes.json();
+               setSizeCharts(scData.filter(sc => sc.status === "Published" && !sc.isDeleted));
+            }
+
             if (productId) {
                const prodRes = await fetch(`/api/admin/products?id=${productId}`);
                if (!prodRes.ok) {
@@ -198,6 +208,8 @@ export default function ProductForm({ productId = null }) {
                   images: prodData.images || [],
                   categories: prodData.categories || [],
                   primaryCategory: prodData.primaryCategory || "",
+                  sizeChartSource: prodData.sizeChartSource || "category_default",
+                  sizeChart: prodData.sizeChart || "",
                   seo: {
                      title: "", description: "", keywords: [], focusKeyword: "",
                      canonicalUrl: "", noIndex: false, noFollow: false,
@@ -993,63 +1005,110 @@ export default function ProductForm({ productId = null }) {
                               )}
 
                                {activeTab === "sizeguide" && (
-                                  <div className="space-y-6">
-                                     <div className="flex items-center gap-3 bg-gray-50 p-4 border border-gray-200 rounded">
-                                        <input
-                                           type="checkbox"
-                                           id="sg_enabled"
-                                           className="w-4 h-4 rounded border-gray-300 text-[#2271b1] focus:ring-[#2271b1]"
-                                           checked={formData.sizeGuide?.enabled || false}
-                                           onChange={(e) => setFormData({
-                                              ...formData,
-                                              sizeGuide: {
-                                                 ...(formData.sizeGuide || {}),
-                                                 enabled: e.target.checked
-                                              }
-                                           })}
-                                        />
-                                        <label htmlFor="sg_enabled" className="text-[13px] font-bold text-gray-700 cursor-pointer">
-                                           Enable Custom Size Guide for this Product
-                                        </label>
-                                     </div>
+                                   <div className="space-y-6">
+                                      <div className="bg-white border border-gray-100 p-6 rounded shadow-sm space-y-4 max-w-xl">
+                                         <h3 className="text-[14px] font-bold text-gray-700 border-b border-gray-100 pb-2">Size Chart Configuration</h3>
+                                         
+                                         {/* Size Chart Source */}
+                                         <div className="space-y-1.5">
+                                            <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Size Chart Source</label>
+                                            <select 
+                                               className="w-full border border-gray-200 bg-white p-2 text-[13px] outline-none rounded focus:border-[#2271b1] cursor-pointer"
+                                               value={formData.sizeChartSource || "category_default"}
+                                               onChange={(e) => {
+                                                  const val = e.target.value;
+                                                  setFormData({ 
+                                                     ...formData, 
+                                                     sizeChartSource: val,
+                                                     sizeGuide: {
+                                                        ...(formData.sizeGuide || {}),
+                                                        enabled: val === "product_custom"
+                                                     }
+                                                  });
+                                               }}
+                                            >
+                                               <option value="category_default">Use Category Default</option>
+                                               <option value="custom">Select Reusable Size Chart</option>
+                                               <option value="product_custom">Create Custom Size Chart for this Product</option>
+                                               <option value="none">No Size Chart (Disabled)</option>
+                                            </select>
+                                            <p className="text-[11px] text-gray-400">
+                                               {formData.sizeChartSource === "category_default" 
+                                                  ? "This product will automatically inherit the size chart assigned to its primary category."
+                                                  : formData.sizeChartSource === "custom"
+                                                  ? "Select a specific master size chart below to override the category default."
+                                                  : formData.sizeChartSource === "product_custom"
+                                                  ? "Build a custom, one-off size chart directly for this product below."
+                                                  : "No size chart will be shown for this product."
+                                               }
+                                            </p>
+                                         </div>
 
-                                     {formData.sizeGuide?.enabled && (
-                                        <div className="space-y-6">
-                                           {/* Size Name & Video */}
-                                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3">
-                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase">Size Column Name</label>
-                                                 <input
-                                                    className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
-                                                    placeholder="e.g. Jacket Size, Waist Size, Dress Size"
-                                                    value={formData.sizeGuide?.sizeName || ""}
-                                                    onChange={(e) => setFormData({
-                                                       ...formData,
-                                                       sizeGuide: {
-                                                          ...(formData.sizeGuide || {}),
-                                                          sizeName: e.target.value
-                                                       }
-                                                    })}
-                                                 />
-                                                 <p className="text-[11px] text-gray-400">Label shown as the first column header in the size table (e.g. "Jacket Size").</p>
-                                              </div>
-                                              <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3">
-                                                 <label className="block text-[12px] font-bold text-gray-400 uppercase">YouTube Video Link</label>
-                                                 <input
-                                                    className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
-                                                    placeholder="e.g. https://www.youtube.com/watch?v=ipyhV51zUWk"
-                                                    value={formData.sizeGuide?.videoUrl || ""}
-                                                    onChange={(e) => setFormData({
-                                                       ...formData,
-                                                       sizeGuide: {
-                                                          ...(formData.sizeGuide || {}),
-                                                          videoUrl: e.target.value
-                                                       }
-                                                    })}
-                                                 />
-                                                 <p className="text-[11px] text-gray-400">URL to instructions video (YouTube embed/watch link).</p>
-                                              </div>
-                                           </div>
+                                         {/* Size Chart Selection */}
+                                         {formData.sizeChartSource === "custom" && (
+                                            <div className="space-y-1.5 pt-2 animate-in fade-in duration-200">
+                                               <label className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Select Reusable Size Chart</label>
+                                               <select 
+                                                  className="w-full border border-gray-200 bg-white p-2 text-[13px] outline-none rounded focus:border-[#2271b1] cursor-pointer"
+                                                  value={formData.sizeChart || ""}
+                                                  onChange={(e) => setFormData({ ...formData, sizeChart: e.target.value })}
+                                               >
+                                                  <option value="">-- Choose Size Chart --</option>
+                                                  {sizeCharts.map((sc) => (
+                                                     <option key={sc._id} value={sc._id}>
+                                                        {sc.label}
+                                                     </option>
+                                                  ))}
+                                               </select>
+                                               {sizeCharts.length === 0 && (
+                                                  <p className="text-[11px] text-red-500 font-bold">
+                                                     No published size charts found. <a href="/admin/products/size-charts/new" className="underline" target="_blank" rel="noopener noreferrer">Create one here</a>
+                                                  </p>
+                                               )}
+                                            </div>
+                                         )}
+                                      </div>
+
+                                      {/* Inline Custom Size Chart Editor (only shown if sizeChartSource is product_custom) */}
+                                      {formData.sizeChartSource === "product_custom" && (
+                                         <div className="space-y-6 animate-in fade-in duration-300">
+                                            {/* Size Name & Video */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+                                               <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3 shadow-sm">
+                                                  <label className="block text-[11px] font-bold text-gray-400 uppercase">Size Column Name</label>
+                                                  <input
+                                                     className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
+                                                     placeholder="e.g. Jacket Size, Waist Size, Dress Size"
+                                                     value={formData.sizeGuide?.sizeName || ""}
+                                                     onChange={(e) => setFormData({
+                                                        ...formData,
+                                                        sizeGuide: {
+                                                           ...(formData.sizeGuide || {}),
+                                                           sizeName: e.target.value
+                                                        }
+                                                     })}
+                                                  />
+                                                  <p className="text-[11px] text-gray-400">Label shown as the first column header in the size table (e.g. "Jacket Size").</p>
+                                               </div>
+                                               <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-3 shadow-sm">
+                                                  <label className="block text-[11px] font-bold text-gray-400 uppercase">YouTube Video Link</label>
+                                                  <input
+                                                     className="w-full border border-[#c3c4c7] p-2 text-[13px] outline-none focus:border-[#2271b1] bg-white rounded"
+                                                     placeholder="e.g. https://www.youtube.com/watch?v=ipyhV51zUWk"
+                                                     value={formData.sizeGuide?.videoUrl || ""}
+                                                     onChange={(e) => setFormData({
+                                                        ...formData,
+                                                        sizeGuide: {
+                                                           ...(formData.sizeGuide || {}),
+                                                           videoUrl: e.target.value
+                                                        }
+                                                     })}
+                                                  />
+                                                  <p className="text-[11px] text-gray-400">URL to instructions video (YouTube embed/watch link).</p>
+                                               </div>
+                                            </div>
+
+                                            {/* CM Table */}
                                             {(() => {
                                                const DEFAULT_COLS_CM = [
                                                   { key: "size", label: "Size" },
@@ -1073,7 +1132,7 @@ export default function ProductForm({ productId = null }) {
                                                   updateColsCm(updated);
                                                };
                                                return (
-                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded max-w-4xl shadow-sm">
                                                      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
                                                         <h4 className="text-[13px] font-bold text-gray-700">Size Chart (CM)</h4>
                                                         <div className="flex gap-2">
@@ -1149,6 +1208,7 @@ export default function ProductForm({ productId = null }) {
                                                );
                                             })()}
 
+                                            {/* INCHES Table */}
                                             {(() => {
                                                const DEFAULT_COLS_IN = [
                                                   { key: "size", label: "Size" },
@@ -1172,7 +1232,7 @@ export default function ProductForm({ productId = null }) {
                                                   updateColsIn(updated);
                                                };
                                                return (
-                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded">
+                                                  <div className="bg-white border border-[#c3c4c7] p-4 rounded max-w-4xl shadow-sm">
                                                      <div className="flex justify-between items-center mb-3 flex-wrap gap-2">
                                                         <h4 className="text-[13px] font-bold text-gray-700">Size Chart (INCHES)</h4>
                                                         <div className="flex gap-2">
@@ -1248,65 +1308,64 @@ export default function ProductForm({ productId = null }) {
                                                );
                                             })()}
 
-                                           {/* Instructions */}
-                                           <div className="bg-white border border-[#c3c4c7] p-4 rounded space-y-4">
-                                              <div className="flex justify-between items-center">
-                                                 <h4 className="text-[13px] font-bold text-gray-700">How To Measure Instructions</h4>
-                                                 <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                       const inst = [...(formData.sizeGuide?.instructions || [])];
-                                                       inst.push({ title: "", desc: "" });
-                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
-                                                    }}
-                                                    className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]"
-                                                 >
-                                                    + Add Instruction Step
-                                                 </button>
-                                              </div>
-                                              <div className="space-y-3">
-                                                 {(formData.sizeGuide?.instructions || []).map((row, rIdx) => {
-                                                    const updateRow = (key, val) => {
-                                                       const inst = [...(formData.sizeGuide?.instructions || [])];
-                                                       inst[rIdx] = { ...inst[rIdx], [key]: val };
-                                                       setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
-                                                    };
-                                                    return (
-                                                       <div key={rIdx} className="border border-gray-150 p-3 bg-gray-50/30 rounded flex items-start gap-4">
-                                                          <div className="flex-1 space-y-2">
-                                                             <input
-                                                                className="w-full border border-gray-200 p-2 text-[12px] font-bold bg-white outline-none focus:border-[#2271b1]"
-                                                                placeholder="Instruction Title (e.g. Shoulder)"
-                                                                value={row.title || ""}
-                                                                onChange={(e) => updateRow("title", e.target.value)}
-                                                             />
-                                                             <textarea
-                                                                className="w-full border border-gray-200 p-2 text-[12px] bg-white outline-none focus:border-[#2271b1] resize-none"
-                                                                placeholder="Instruction Description..."
-                                                                rows={2}
-                                                                value={row.desc || ""}
-                                                                onChange={(e) => updateRow("desc", e.target.value)}
-                                                             />
-                                                          </div>
-                                                          <button
-                                                             type="button"
-                                                             onClick={() => {
-                                                                const inst = (formData.sizeGuide?.instructions || []).filter((_, idx) => idx !== rIdx);
-                                                                setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
-                                                             }}
-                                                             className="text-gray-300 hover:text-red-500 mt-1"
-                                                          >
-                                                             <X className="w-4 h-4" />
-                                                          </button>
-                                                       </div>
-                                                    );
-                                                 })}
-                                              </div>
-                                           </div>
-                                        </div>
-                                     )}
-                                  </div>
-                               )}
+                                            {/* Instructions */}
+                                            <div className="bg-white border border-[#c3c4c7] p-4 rounded max-w-4xl shadow-sm space-y-4">
+                                               <div className="flex justify-between items-center mb-1 flex-wrap gap-2">
+                                                  <h4 className="text-[13px] font-bold text-gray-700">How to Measure Instructions</h4>
+                                                  <button type="button"
+                                                     onClick={() => {
+                                                        const inst = [...(formData.sizeGuide?.instructions || [])];
+                                                        inst.push({ title: "", desc: "" });
+                                                        setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                     }}
+                                                     className="bg-[#2271b1] text-white px-3 py-1 rounded text-[11px] font-bold hover:bg-[#135e96]">
+                                                     + Add Instruction
+                                                  </button>
+                                               </div>
+                                               <div className="space-y-4">
+                                                  {(formData.sizeGuide?.instructions || []).map((row, rIdx) => {
+                                                     const updateRow = (key, val) => {
+                                                        const inst = [...(formData.sizeGuide?.instructions || [])];
+                                                        inst[rIdx][key] = val;
+                                                        setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                     };
+                                                     return (
+                                                        <div key={rIdx} className="border border-gray-100 p-3 rounded bg-gray-50/50 flex gap-4 items-start">
+                                                           <div className="flex-1 space-y-2">
+                                                              <input
+                                                                 className="w-full border border-gray-200 p-1.5 text-[12px] font-bold bg-white"
+                                                                 placeholder="e.g. Sleeve Length"
+                                                                 value={row.title}
+                                                                 onChange={(e) => updateRow("title", e.target.value)}
+                                                              />
+                                                              <textarea
+                                                                 className="w-full border border-gray-200 p-1.5 text-[12px] bg-white resize-none"
+                                                                 placeholder="Instruction text..."
+                                                                 rows={2}
+                                                                 value={row.desc}
+                                                                 onChange={(e) => updateRow("desc", e.target.value)}
+                                                              />
+                                                           </div>
+                                                           <button
+                                                              type="button"
+                                                              onClick={() => {
+                                                                 const inst = (formData.sizeGuide?.instructions || []).filter((_, idx) => idx !== rIdx);
+                                                                 setFormData({ ...formData, sizeGuide: { ...(formData.sizeGuide || {}), instructions: inst } });
+                                                              }}
+                                                              className="text-gray-300 hover:text-red-500 mt-1"
+                                                           >
+                                                              <X className="w-4 h-4" />
+                                                           </button>
+                                                        </div>
+                                                     );
+                                                  })}
+                                               </div>
+                                            </div>
+                                         </div>
+                                      )}
+                                   </div>
+                                )}
+
                            </div>
                         </div>
                      </div>

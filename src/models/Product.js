@@ -140,7 +140,9 @@ const ProductSchema = new mongoose.Schema({
       title: String,
       desc: String
     }]
-  }
+  },
+  sizeChartSource: { type: String, enum: ['category_default', 'custom', 'none'], default: 'category_default' },
+  sizeChart: { type: mongoose.Schema.Types.ObjectId, ref: 'SizeChart', default: null }
 }, { timestamps: true });
 
 // Ensure unique slugs per tenant

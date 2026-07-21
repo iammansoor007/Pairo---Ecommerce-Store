@@ -98,7 +98,7 @@ export default function AdminSidebar() {
     else if (pathname.startsWith("/admin/affiliates")) setOpenAccordion("affiliates");
     else if (pathname.startsWith("/admin/orders") || pathname.startsWith("/admin/customers") || pathname.startsWith("/admin/discounts")) setOpenAccordion("commerce");
     else if (pathname.startsWith("/admin/blogs")) setOpenAccordion("posts");
-    else if (pathname.startsWith("/admin/pages") || pathname.startsWith("/admin/gallery-items") || pathname.startsWith("/admin/size-chart-items")) setOpenAccordion("pages");
+    else if (pathname.startsWith("/admin/pages") || pathname.startsWith("/admin/gallery-items")) setOpenAccordion("pages");
     else if (pathname.startsWith("/admin/settings/team") || pathname.startsWith("/admin/settings/roles")) setOpenAccordion("users");
     else if (pathname.startsWith("/admin/appearance")) setOpenAccordion("appearance");
     else if (pathname.startsWith("/admin/contact") || pathname.startsWith("/admin/custom-jacket-inquiries") || pathname.startsWith("/admin/settings/logs") || pathname.startsWith("/admin/settings/scripts") || pathname.startsWith("/admin/settings/filters")) setOpenAccordion("tools");
@@ -157,7 +157,6 @@ export default function AdminSidebar() {
             <NavLink href="/admin/pages" exact isSubmenu>All Pages</NavLink>
             <NavLink href="/admin/pages/new" exact isSubmenu>Add New</NavLink>
             <NavLink href="/admin/gallery-items" exact isSubmenu>Gallery Items</NavLink>
-            <NavLink href="/admin/size-chart-items" exact isSubmenu>Size Charts</NavLink>
           </AccordionMenu>
 
           {/* Comments / Reviews Standalone */}
@@ -219,6 +218,7 @@ export default function AdminSidebar() {
           >
             <NavLink href="/admin/products" exact isSubmenu>All Products</NavLink>
             <NavLink href="/admin/products/new" exact isSubmenu>Add New</NavLink>
+            <NavLink href="/admin/products/size-charts" exact isSubmenu>Size Charts</NavLink>
             <NavLink href="/admin/categories" exact isSubmenu>Categories</NavLink>
             <NavLink href="/admin/product-process" exact isSubmenu>Product Process</NavLink>
             <NavLink href="/admin/product-questions" exact isSubmenu>Product Questions</NavLink>

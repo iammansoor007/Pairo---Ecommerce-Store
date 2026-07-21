@@ -441,6 +441,7 @@ export default function Footer() {
           <div className="flex gap-10">
             <Link href={privacyUrl} className="text-white/50 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-colors">Privacy</Link>
             <Link href={termsUrl} className="text-white/50 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-colors">Terms</Link>
+            <Link href="/sitemap" className="text-white/50 hover:text-white text-[9px] font-bold uppercase tracking-widest transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

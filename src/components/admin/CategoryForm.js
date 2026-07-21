@@ -32,8 +32,10 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
     linkedItems: [],
     type: type,
     faqs: [],
-    faqSchemaCustom: ""
+    faqSchemaCustom: "",
+    sizeChart: ""
   });
+  const [sizeCharts, setSizeCharts] = useState([]);
 
   const fetchCategory = async () => {
     try {
@@ -44,6 +46,7 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
         setFormData(prev => ({
           ...prev,
           ...cat,
+          sizeChart: cat.sizeChart || "",
           faqs: cat.faqs || [],
           faqSchemaCustom: cat.faqSchemaCustom || "",
           seo: { ...prev.seo, ...(cat.seo || {}) }
@@ -82,10 +85,24 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
 
   useEffect(() => {
     const init = async () => {
-       let cat = null;
-       if (categoryId) cat = await fetchCategory();
-       await fetchAvailableItems(cat);
-       setLoading(false);
+        let cat = null;
+        if (categoryId) cat = await fetchCategory();
+        await fetchAvailableItems(cat);
+        if (type === "product") {
+          await fetchSizeCharts();
+        }
+        setLoading(false);
+    };
+    const fetchSizeCharts = async () => {
+      try {
+        const res = await fetch("/api/admin/size-charts");
+        if (res.ok) {
+          const data = await res.json();
+          setSizeCharts(data.filter(sc => sc.status === "Published" && !sc.isDeleted));
+        }
+      } catch (err) {
+        console.error(err);
+      }
     };
     init();
   }, [categoryId, type]);
@@ -417,6 +434,29 @@ export default function CategoryForm({ categoryId = null, type = "product" }) {
                   </div>
                </div>
             </div>
+
+             {type === "product" && (
+              <div className="bg-white border border-[#c3c4c7] shadow-sm">
+                <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Default Size Chart</div>
+                <div className="p-3">
+                  <select
+                    className="w-full border border-[#c3c4c7] px-2 py-1.5 text-[13px] outline-none bg-white focus:border-[#2271b1] cursor-pointer"
+                    value={formData.sizeChart || ""}
+                    onChange={(e) => setFormData({ ...formData, sizeChart: e.target.value })}
+                  >
+                    <option value="">None (No default size chart)</option>
+                    {sizeCharts.map((sc) => (
+                      <option key={sc._id} value={sc._id}>
+                        {sc.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-gray-400 mt-1.5">
+                    Products in this category will automatically inherit this size chart unless overridden.
+                  </p>
+                </div>
+              </div>
+             )}
 
             <div className="bg-white border border-[#c3c4c7] shadow-sm">
                <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 text-[13px] font-bold text-gray-700">Category Image</div>

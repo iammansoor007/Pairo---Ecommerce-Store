@@ -211,9 +211,9 @@ export async function resolveSEOMetadata(options = {}) {
   }
   canonical = normalizeCanonicalUrl(canonical);
 
-  // 3. Robots controls (Forced noindex, nofollow globally per user request)
-  const noIndex = true;
-  const noFollow = true;
+  // 3. Robots controls — read from CMS entity seo fields (noIndex / noFollow)
+  const noIndex  = seo.noIndex  === true;
+  const noFollow = seo.noFollow === true;
 
   // 4. OpenGraph and Twitter image fallback hierarchy
   const entityFeaturedImage = entity.image || (Array.isArray(entity.images) && entity.images[0]) || null;
@@ -928,20 +928,24 @@ export async function resolveSEOMetadata(options = {}) {
   }
 
   // Next.js App Router metadata format
+  // Build robots object — only add rich directives when the page is indexable
+  const robotsDirectives = noIndex
+    ? { index: false, follow: !noFollow }
+    : {
+        index: true,
+        follow: !noFollow,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      };
+
   const metadata = {
     title: metaTitle,
     description: metaDescription,
     alternates: {
       canonical: canonical,
     },
-    robots: {
-      index: !noIndex,
-      follow: !noFollow,
-      googleBot: {
-        index: !noIndex,
-        follow: !noFollow,
-      }
-    },
+    robots: robotsDirectives,
     openGraph,
     twitter,
   };

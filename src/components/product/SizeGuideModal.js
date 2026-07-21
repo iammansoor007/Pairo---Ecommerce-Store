@@ -46,7 +46,7 @@ function getYoutubeEmbedUrl(url) {
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
 }
 
-export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
+export default function SizeGuideModal({ isOpen, onClose, resolvedSizeChart }) {
   const [unit, setUnit] = useState("cm");
   const [showVideo, setShowVideo] = useState(false);
 
@@ -57,32 +57,120 @@ export default function SizeGuideModal({ isOpen, onClose, sizeGuide }) {
     };
   }, [isOpen]);
 
-  // Reset video state when modal closes
   useEffect(() => {
     if (!isOpen) setShowVideo(false);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !resolvedSizeChart) return null;
 
-  const isCustomEnabled = !!sizeGuide?.enabled;
+  const isReusable = resolvedSizeChart.type === "reusable";
+
+  if (isReusable) {
+    const chart = resolvedSizeChart.chart;
+    const columns = chart.columns || [];
+    const rows = chart.rows || [];
+    const heading = chart.publicHeading || chart.label || "Size Guide";
+    const description = chart.description || "";
+
+    return (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+        {/* Centered Panel */}
+        <div className="relative w-full max-w-2xl max-h-[90vh] bg-white flex flex-col overflow-hidden shadow-2xl border border-black rounded-[var(--radius,0px)] animate-sg-in">
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-black shrink-0">
+            <p className="text-[13px] sm:text-[15px] font-bold uppercase tracking-widest text-black">
+              {heading}
+            </p>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center border border-black rounded-[var(--radius,0px)] hover:bg-black hover:text-white transition-all duration-300 active:scale-[0.98] text-black"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 min-h-0">
+            {description && (
+              <p className="text-[12px] text-gray-500 leading-relaxed">
+                {description}
+              </p>
+            )}
+
+            {/* Dynamic Table */}
+            <div className="w-full overflow-x-auto border border-black rounded-[var(--radius,0px)]">
+              <table className="w-full text-left border-collapse text-[11px] sm:text-[12px]">
+                <thead>
+                  <tr className="bg-black/5 border-b border-black">
+                    {columns.map((col, idx) => (
+                      <th key={idx} className="px-3 py-2.5 font-bold uppercase text-black whitespace-nowrap">
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/10">
+                  {rows.map((row, rIdx) => (
+                    <tr key={rIdx} className="hover:bg-black/[0.02] text-black">
+                      {columns.map((_, cIdx) => (
+                        <td key={cIdx} className={`px-3 py-2.5 ${cIdx === 0 ? "font-bold" : ""}`}>
+                          {row[cIdx] || "-"}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Default Instructions */}
+            <div className="space-y-4 pt-4 border-t border-black/10">
+              <h3 className="text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-black text-center">
+                How To Measure
+              </h3>
+              
+              <div className="space-y-4 text-black">
+                {DEFAULT_INSTRUCTIONS.map((item, idx) => (
+                  <div key={item.title || idx} className="text-[11px] sm:text-[12px] leading-relaxed">
+                    <p className="font-bold uppercase tracking-wider">{item.title}</p>
+                    <p className="text-black/80">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <style>{`
+          @keyframes sgIn {
+            from { opacity: 0; transform: scale(0.96) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+          }
+          .animate-sg-in { animation: sgIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Legacy/Product-Custom mode
+  const sizeGuide = resolvedSizeChart.sizeGuide;
+  const isCustomEnabled = true;
 
   const tableData = unit === "cm"
-    ? (isCustomEnabled && sizeGuide?.sizesCm?.length > 0 ? sizeGuide.sizesCm : SIZES_CM)
-    : (isCustomEnabled && sizeGuide?.sizesIn?.length > 0 ? sizeGuide.sizesIn : SIZES_IN);
+    ? (sizeGuide?.sizesCm?.length > 0 ? sizeGuide.sizesCm : SIZES_CM)
+    : (sizeGuide?.sizesIn?.length > 0 ? sizeGuide.sizesIn : SIZES_IN);
 
-  const instructions = isCustomEnabled && sizeGuide?.instructions?.length > 0
+  const instructions = sizeGuide?.instructions?.length > 0
     ? sizeGuide.instructions
     : DEFAULT_INSTRUCTIONS;
 
-  // Dynamic size column name — falls back to "Size" if not set
-  const sizeColumnLabel = (isCustomEnabled && sizeGuide?.sizeName?.trim())
-    ? sizeGuide.sizeName.trim()
-    : "Size";
+  const sizeColumnLabel = sizeGuide?.sizeName?.trim() || "Size";
 
-  const rawVideoUrl = isCustomEnabled && sizeGuide?.videoUrl
-    ? sizeGuide.videoUrl
-    : "https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1";
-
+  const rawVideoUrl = sizeGuide?.videoUrl || "https://www.youtube.com/embed/ipyhV51zUWk?autoplay=1";
   const embedVideoUrl = getYoutubeEmbedUrl(rawVideoUrl);
 
   return (
